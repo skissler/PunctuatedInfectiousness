@@ -41,7 +41,7 @@ $$ a_i(\tau) = \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed accor
 
 In other words, our three main cases will be (a) the "all-equal case", where all individuals have the same individual generation interval distribution as the population, so there's no between-individual variation; (b) the "stepwise case", where people are infectious at the same level ($\beta$) for different amounts of time, and the timing of the onset and offset of infectiousness are exponentially distributed with rate $\gamma$ and $\alpha$, respectively; and (c) the "delta function", case, where each person's infectiousness is all concentrated at time $t_i$, and that time is distributed according to the population-level generation interval distribution. To my knowledge, it's the "stepwise" case that people usually have in mind when writing down the SEIR model. 
 
-- 
+- Develop a function that acts as a continuum between the all-equal case (a) and the delta function case (c), ensuring that everyone has the same total infectiousness (i.e., $$\int_\tau a_i(\tau) = R_0$$ for all individuals $i$). This continuum won't include the stepwise case (b), since people have different amounts of infectiousness in that case. 
 
 
 
