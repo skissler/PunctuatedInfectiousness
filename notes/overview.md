@@ -30,7 +30,7 @@ $$\lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = A(\tau)$$
 
 - Examine how three ways of parameterizing $a_i(\tau)$ yield different epidemic dynamics, even when all converge to the same $A(\tau)$. We will focus on the SEIR model, and the three cases will be: 
 	
-	$$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
+$$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
 
 
 
