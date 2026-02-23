@@ -10,5 +10,15 @@ where $S(t)$ is the proportion (density) of susceptible individuals at time $t$.
 
 $$ J(t) = -\dot{S}(t) = S(t) F(t) = S(t) \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau = S(t) \int_0^\infty J(t - \tau) A(\tau) d\tau$$ 
 
+For some choices of $A(\tau)$, the renewal equation framework is equivalent to more commonly known systems of ordinary differential equations: for example, we obtain the SIR model with 
+
+$$ A(\tau) = \beta e^{-\alpha \tau}$$ 
+
+and we obtain the SEIR model with 
+
+$$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}$$
+
+where $\alpha$ is the recovery rate (governing I $\rightarrow$ R transitions) and $\gamma$ is the latency rate (governing E $\rightarrow$ I transitions). 
 
 An individual-level analog of the basic reproduction number has been defined and analyzed extensively, *e.g.*, in ["Superspreading and the effect of individual variation on disease emergence"](https://www.nature.com/articles/nature04153) (Lloyd-Smith *et al.*, 2005). 
+
