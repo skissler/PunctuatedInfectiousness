@@ -32,6 +32,10 @@ $$\lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = A(\tau)$$
 	
 $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
 
+$$ a_i(\tau) = \begin{cases} 
+\beta & \tau \in [\tau_i^{on}, \tau_i^{off}] \\
+0 & otherwise 
+\end{cases} $$ 
 
 
 
