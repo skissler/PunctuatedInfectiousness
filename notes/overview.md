@@ -25,5 +25,6 @@ An individual-level analog of the basic reproduction number has been defined and
 We will: 
 
 - Develop a mathematical framework for describing $A(\tau)$ in terms of the individual generation interavl distribution, $a_i(\tau)$, where $a_i(\tau)$ converges to $A(\tau)$ in expectation in the limit of large population size (i.e., 
-$\limit_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = A(\tau)$)
+
+$$\limit_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = A(\tau)$$
 
