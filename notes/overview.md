@@ -35,7 +35,7 @@ $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gam
 $$ a_i(\tau) = \begin{cases} 
 \beta & \tau \in [\tau_i^{\text{on}}, \tau_i^{\text{on}} + \tau_i^{\text{off}}] \\
 0 & \text{otherwise }
-\end{cases} \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma)$$ 
+\end{cases} \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
 
 
