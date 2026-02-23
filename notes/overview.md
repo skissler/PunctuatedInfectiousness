@@ -22,5 +22,7 @@ where $\alpha$ is the recovery rate (governing I $\rightarrow$ R transitions) an
 
 An individual-level analog of the basic reproduction number has been defined and analyzed extensively, *e.g.*, in "Superspreading and the effect of individual variation on disease emergence" [(Lloyd-Smith *et al.*, 2005)]((https://www.nature.com/articles/nature04153)). The individual-level generation interval distribution has received less attention. The goal of this project is to examine how the shape of the generation interval distribution impacts disease transmission dynamics, *holding the population-level generation interval distribution and basic reproduction number constant*. 
 
+We will: 
 
+- Develop a mathematical framework for describing $A(\tau)$ in terms of the individual generation interavl distribution, $a_i(\tau)$, where $a_i(\tau)$ converges to $A(\tau)$ in expectation in the limit of large population size (i.e., $\limit_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = A(\tau)$)
 
