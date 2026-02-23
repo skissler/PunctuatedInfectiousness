@@ -20,5 +20,7 @@ $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma
 
 where $\alpha$ is the recovery rate (governing I $\rightarrow$ R transitions) and $\gamma$ is the latency rate (governing E $\rightarrow$ I transitions) [(Breda *et al.*, 2012)](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454). 
 
-An individual-level analog of the basic reproduction number has been defined and analyzed extensively, *e.g.*, in "Superspreading and the effect of individual variation on disease emergence" [(Lloyd-Smith *et al.*, 2005)]((https://www.nature.com/articles/nature04153)). 
+An individual-level analog of the basic reproduction number has been defined and analyzed extensively, *e.g.*, in "Superspreading and the effect of individual variation on disease emergence" [(Lloyd-Smith *et al.*, 2005)]((https://www.nature.com/articles/nature04153)). The individual-level generation interval distribution has received less attention. The goal of this project is to examine how the shape of the generation interval distribution impacts disease transmission dynamics, *holding the population-level generation interval distribution and basic reproduction number constant*. 
+
+
 
