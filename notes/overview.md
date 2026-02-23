@@ -47,6 +47,14 @@ In other words, our three main cases will be (a) the "all-equal case", where all
 
 - Split $a_i(\tau)$ further into a biological and "contact" component, $a_i(\tau) = b_i(\tau) c(t + \tau)$, where the normal assumption is that $c(t) = 1$. We'll assess how periodic $c(t)$ impacts overdispersion in the number of secondary infections -- i.e., all we need is punctuated infectiousness, stochastic variation in the timing of infectiousness, and variation in contact rate (at the population level, not at the individual level) to generate superspreading. To my knowledge, this is an unexamine source of superspreading. 
 
+## Work so far
+
+- The function `sim_stochastic()` generates stochastic simulations of epidemics under the three canonical individual infectiousness profiles 
+
+- We've shown that punctuated individual infectiousness yields dispersion in the secondary infection distribution (see `contacts.nb` and associated slides)
+
+
+ 
 
 
 
