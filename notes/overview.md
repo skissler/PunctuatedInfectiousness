@@ -6,8 +6,9 @@ Two central quantities - the basic reproduction number ($R_0$) and the generatio
 
 $$ F(t) = \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau$$
 
-where $S(t)$ is the proportion (density) of susceptible individuals at time $t$. 
+where $S(t)$ is the proportion (density) of susceptible individuals at time $t$. This gives an expression for the incidence: 
 
+$$ J(t) = -\dot{S}(t) = S(t) F(t) = S(t) \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau = S(t) \int_0^\infty J(t - \tau) d\tau$$ 
 
 
 An individual-level analog of the basic reproduction number has been defined and analyzed extensively, *e.g.*, in ["Superspreading and the effect of individual variation on disease emergence"](https://www.nature.com/articles/nature04153) (Lloyd-Smith *et al.*, 2005). 
