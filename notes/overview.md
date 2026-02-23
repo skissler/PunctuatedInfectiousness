@@ -24,7 +24,23 @@ An individual-level analog of the basic reproduction number has been defined and
 
 We will: 
 
-- Develop a mathematical framework for describing $A(\tau)$ in terms of the individual generation interavl distribution, $a_i(\tau)$, where $a_i(\tau)$ converges to $A(\tau)$ in expectation in the limit of large population size (i.e., 
+- Develop a mathematical framework for describing $A(\tau)$ in terms of the individual generation interval distribution, $a_i(\tau)$, where $a_i(\tau)$ converges to $A(\tau)$ in expectation in the limit of large population size, *i.e.*, 
 
 $$\lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = A(\tau)$$
+
+- Examine how three ways of parameterizing $a_i(\tau)$ yield different epidemic dynamics, even when all converge to the same $A(\tau)$. We will focus on the SEIR model, and the three cases will be: 
+	
+	$$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
+
+
+
+
+
+
+
+
+
+
+
+
 
