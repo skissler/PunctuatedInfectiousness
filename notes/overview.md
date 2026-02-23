@@ -2,7 +2,11 @@
 
 ## Summary 
 
-Two central quantities - the basic reproduction number ($R_0$) and the generation interval distribution - are critical for defining an epidemic's trajectory. In the renewal equation framework for epidemic modeling, both can be combined into a single "infectiousness trajectory", $A(\tau)$, where $\int_0^\infty A(t) dt = R_0$ and $A(\tau) / R_0$ is equal to the generation interval distribution.  
+Two central quantities - the basic reproduction number ($R_0$) and the generation interval distribution - are critical for defining an epidemic's trajectory. In the renewal equation framework for epidemic modeling, both can be combined into a single "infectiousness trajectory", $A(\tau)$, where $\tau$ represents the time elapsed since infection. Thus, $A(\tau)$ is the "expected contribution to the force of infection by an individual that was itself infected $\tau$ units of time ago" [(Breda *et al.*, 2012)](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454). Here, $\int_0^\infty A(t) dt = R_0$ and $A(\tau) / R_0$ is equal to the generation interval distribution. In this framework, the force of infection at time $t$ is 
+
+$$ F(t) = \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau$$
+
+where $S(t)$ is the proportion (density) of susceptible individuals at time $t$. 
 
 
 
