@@ -51,6 +51,8 @@ In other words, our three main cases will be (a) the "all-equal case", where all
 
 - The function `sim_stochastic()` generates stochastic simulations of epidemics under the three canonical individual infectiousness profiles 
 
+- The script `run_analysis.R` uses `sim_stochastic()` and other helper functions to simulate epidemics with each of the canonical individual infectiousness profiles and compare summary statistics 
+
 - We've shown that punctuated individual infectiousness yields dispersion in the secondary infection distribution (see `contacts.nb` and associated slides)
 
 
