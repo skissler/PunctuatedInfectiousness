@@ -16,9 +16,9 @@ $$ A(\tau) = \beta e^{-\alpha \tau}$$
 
 and we obtain the SEIR model with 
 
-$$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}$$
+$$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$
 
-where $\alpha$ is the recovery rate (governing I $\rightarrow$ R transitions) and $\gamma$ is the latency rate (governing E $\rightarrow$ I transitions). 
+where $\alpha$ is the recovery rate (governing I $\rightarrow$ R transitions) and $\gamma$ is the latency rate (governing E $\rightarrow$ I transitions) [(Breda *et al.*, 2012)](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454). 
 
 An individual-level analog of the basic reproduction number has been defined and analyzed extensively, *e.g.*, in ["Superspreading and the effect of individual variation on disease emergence"](https://www.nature.com/articles/nature04153) (Lloyd-Smith *et al.*, 2005). 
 
