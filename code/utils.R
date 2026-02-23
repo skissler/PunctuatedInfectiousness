@@ -1,7 +1,19 @@
-library(tidyverse) 
+library(tidyverse)
 library(odin)
 
-# define the mean-field ODE: 
+# ==============================================================================
+# Mean-field ODE models (proportions, not counts)
+# ==============================================================================
+
+#' SIR mean-field ODE model (odin)
+#'
+#' State variables are proportions: S + I + R = 1.
+#' Transmission rate beta = R0 * gamma so that R0 = beta / gamma.
+#' A single seed individual (1/N) starts in the I compartment.
+#'
+#' @param R0    Basic reproduction number (default 2)
+#' @param gamma Recovery rate, 1/mean infectious period (default 1/5)
+#' @param N     Population size, used only to set initial conditions (default 1000)
 sir <- odin({
   ## Derivatives
   deriv(S) <- -beta*S*I
@@ -22,7 +34,15 @@ sir <- odin({
   N <- user(1000)
 })
 
-
+#' SEIR mean-field ODE model (odin)
+#'
+#' Adds an exposed (E) compartment with latency rate nu = 1/mean latent period.
+#' R0 = beta / gamma (the E compartment adds delay but does not change R0).
+#'
+#' @param R0    Basic reproduction number (default 2)
+#' @param nu    Latency rate, 1/mean latent period (default 1/2)
+#' @param gamma Recovery rate, 1/mean infectious period (default 1/3)
+#' @param N     Population size, used only to set initial conditions (default 1000)
 seir <- odin({
   ## Derivatives
   deriv(S) <- -beta*S*I
@@ -46,30 +66,60 @@ seir <- odin({
   N <- user(1000)
 })
 
+# ==============================================================================
+# Stochastic epidemic simulation
+# ==============================================================================
 
-# Define a stochastic simulation function
+#' Simulate a stochastic epidemic under a specified individual infectiousness profile
+#'
+#' Runs an event-driven stochastic simulation of an SIR/SEIR-like epidemic.
+#' Each contact event targets a uniformly random individual; if the target is
+#' still susceptible it becomes infected, otherwise the contact is wasted.
+#' This gives frequency-dependent (mass-action) transmission consistent with
+#' the ODE models above.
+#'
+#' Three individual-level infectiousness profiles are available, all of which
+#' converge to the same population-level SEIR infectiousness kernel A(tau) in
+#' expectation (see notes/overview.md):
+#'
+#'   "stepwise" — infectious at constant rate beta during a random window
+#'     [onset, onset + duration], where onset ~ Exp(1/e_dur) and
+#'     duration ~ Exp(1/i_dur). Number of contacts is Poisson(beta * duration),
+#'     so the secondary infection count is overdispersed relative to Poisson(R0).
+#'
+#'   "smooth" — Poisson(R0) contacts, each independently timed according to
+#'     the SEIR generation interval (Exp(1/e_dur) + Exp(1/i_dur)). Every
+#'     individual has the same expected infectiousness profile; the only
+#'     stochasticity is Poisson variation in the contact count.
+#'
+#'   "spike" — Poisson(R0) contacts all occurring at a single random time
+#'     drawn from the SEIR generation interval. Maximally punctuated:
+#'     individual infectiousness is a (scaled) delta function.
+#'
+#' @param n           Population size (default 1000)
+#' @param e_dur       Mean latent period; 0 gives SIR dynamics (default 0)
+#' @param i_dur       Mean infectious period (default 5)
+#' @param R0          Basic reproduction number (default 2.5)
+#' @param profiletype One of "stepwise", "smooth", or "spike"
+#'
+#' @return Numeric vector of length n. Entry i is the infection time of
+#'   individual i, or Inf if individual i was never infected.
 sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwise"){
 
-	# Transform inputs: 
 	beta <- R0/i_dur
-
-	# Initialize infection times
 	tinf <- rep(Inf,n)
+	t <- 0
 
-	# Initialize the time
-	t <- 0 
-
-	# Set a seed infection 
+	# Seed infection
 	newinf <- ceiling(runif(1)*n)
 	tinf[newinf] <- t
 
-	# Initialize the event queue: 
+	# Generate the seed's contact events
 	queue <- c()
 	if(profiletype=="stepwise"){
 		t1 <- rexp(1,1/e_dur)
 		t2 <- t1+rexp(1, 1/i_dur)
-		nattempts <- rpois(1,(t2-t1)*beta) # the infectiousness profile assumption
-		# nattempts <- rpois(1,R0) # the all-equal assumption
+		nattempts <- rpois(1,(t2-t1)*beta)
 		inftimes <- t + sort(runif(nattempts, min=t1, max=t2))
 	} else if(profiletype=="smooth") {
 		nattempts <- rpois(1,R0)
@@ -82,25 +132,23 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 	}
 	queue <- sort(c(queue, inftimes))
 
-	# As long as there are more times in the queue 
+	# Process events in chronological order
 	while(length(queue)>0){
 
-		# Update the current time 
 		t <- queue[1]
 		queue <- queue[-1]
 
-		# Draw a potential infectee: 
+		# Draw a uniformly random target
 		newinf <- ceiling(runif(1)*n)
 
-		# If the potential infectee is still susceptible: 
+		# If the target is susceptible, infect and generate their contacts
 		if(tinf[newinf]==Inf){
 
 			tinf[newinf] <- t
 			if(profiletype=="stepwise"){
 				t1 <- rexp(1,1/e_dur)
 				t2 <- t1+rexp(1, 1/i_dur)
-				nattempts <- rpois(1,(t2-t1)*beta) # the infectiousness profile assumption
-				# nattempts <- rpois(1,R0) # the all-equal assumption
+				nattempts <- rpois(1,(t2-t1)*beta)
 				inftimes <- t + sort(runif(nattempts, min=t1, max=t2))
 			} else if(profiletype=="smooth") {
 				nattempts <- rpois(1,R0)
@@ -115,24 +163,30 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 
 		}
 
-
 	}
 
 	return(tinf)
 
 }
 
-# Faster implementation of sim_stochastic with identical logic:
-# - Contact generation defined once via switch (avoids repeated if/else branching)
-# - Index-based queue consumption (avoids O(queue_size) vector copy on failed contacts)
-# - sort.int instead of sort (less dispatch overhead)
-# - Early return on zero contacts
+#' Faster implementation of sim_stochastic (identical model logic)
+#'
+#' Speed-ups over the reference implementation:
+#' - Profile-specific contact generator resolved once via switch(), avoiding
+#'   repeated if/else branching on every event.
+#' - Index-based queue consumption: failed contacts (target already infected)
+#'   advance a pointer in O(1) rather than copying the queue via queue[-1].
+#' - sort.int() instead of sort() to skip S3 method dispatch.
+#' - Early return when rpois draws zero contacts.
+#'
+#' @inheritParams sim_stochastic
+#' @return Numeric vector of length n (same format as sim_stochastic).
 sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwise"){
 
 	beta <- R0/i_dur
 	tinf <- rep(Inf, n)
 
-	# Define contact generation function once
+	# Define the contact generation function once at entry
 	gen_contacts <- switch(profiletype,
 		"stepwise" = function(t_inf) {
 			t1 <- rexp(1, 1/e_dur)
@@ -161,6 +215,7 @@ sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="s
 	qi <- 1L
 	qn <- length(queue)
 
+	# Process events in chronological order
 	while(qi <= qn) {
 		t_event <- queue[qi]
 		qi <- qi + 1L
@@ -170,6 +225,7 @@ sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="s
 			tinf[target] <- t_event
 			new_events <- gen_contacts(t_event)
 			if(length(new_events) > 0L) {
+				# Merge new events with unprocessed remainder of queue
 				remaining <- if(qi <= qn) queue[qi:qn] else numeric(0)
 				queue <- sort.int(c(remaining, new_events))
 				qi <- 1L
@@ -181,4 +237,3 @@ sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="s
 	return(tinf)
 
 }
-

@@ -55,8 +55,17 @@ In other words, our three main cases will be (a) the "all-equal case", where all
 
 - We've shown that punctuated individual infectiousness yields dispersion in the secondary infection distribution (see `contacts.nb` and associated slides)
 
+## Plan 
 
- 
+### Task 1: examine the impact of punctuated infectiousness on test-based control 
+
+Diagnostic tests support outbreak control by helping identify a person's infectiousness status and take appropriate action. Screening interventions are a good example: a person takes a rapid test before work (regular screening), or beore an event (e.g., traveler screening or screening to attend a sporting event). If the test is positive, the person isolates. Another example is test-based *removal* from isolation: a person in isolation can leave when they test negative. Of course, there are many nuances and extensions of these, but these cover a widely used set of test-based interventions. 
+
+For this part of the project, we need to assume some relationship between viral load and infectiousness. For viral load, we can assume a log-linear viral load increase and decrease, which corresponds to an exponential increase/decrease in actual virus concentrations. We've already done a lot of work with this sort of model with SARS-CoV-2 viral kinetics from the NBA. 
+
+In general, the relationship between viral load and (biological) infectiousness is unknown. Recently, Dylan Morris and colleagues came up with a compelling viral load model that uses a random time shift to vary viral load curves and enable Bayesian fitting [(Morris *et al.*, 2025)](https://arxiv.org/pdf/2507.02884). I'd like to use a similar model for our viral load curves: everyone has the same viral load beyond some threshold, but the timing at which viral load crosses that threshold is variable. That takes care of the timing, I think; and we can assume that infectiousness is a function of when the peak happens, and we can model the delta function through the smooth case... maybe? 
+
+This needs a bit more thought. In the fully smooth deterministic case of infectiousness, I think everybody needs the same viral load; as we move towards the delta case, I think we need some amount of variation in the viral load. 
 
 
 
