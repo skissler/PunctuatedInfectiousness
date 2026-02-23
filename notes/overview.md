@@ -37,7 +37,7 @@ $$ a_i(\tau) = \begin{cases}
 0 & \text{otherwise }
 \end{cases} \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-$$ a_i(\tau) = \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the unnormalized density } f(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau})$$ 
+$$ a_i(\tau) = R_0 \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the (normalized) generation interval density } A(\tau)/R_0$$ 
 
 In other words, our three main cases will be (a) the "all-equal case", where all individuals have the same individual generation interval distribution as the population, so there's no between-individual variation; (b) the "stepwise case", where people are infectious at the same level ($\beta$) for different amounts of time, and the timing of the onset and offset of infectiousness are exponentially distributed with rate $\gamma$ and $\alpha$, respectively; and (c) the "delta function", case, where each person's infectiousness is all concentrated at time $t_i$, and that time is distributed according to the population-level generation interval distribution. To my knowledge, it's the "stepwise" case that people usually have in mind when writing down the SEIR model. 
 

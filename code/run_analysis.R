@@ -43,21 +43,21 @@ sir_out_weekly <- sir_out %>%
 # run the stochastic simulations: 
 cuminf_df <- tibble()
 for(sim in 1:1000){
-	tinf <- sim_stochastic(n=popsize, e_dur=e_dur, i_dur=i_dur, R0=R0, profiletype="stepwise")	
+	tinf <- sim_stochastic_fast(n=popsize, e_dur=e_dur, i_dur=i_dur, R0=R0, profiletype="stepwise")	
 	cuminf_df <- bind_rows(cuminf_df, 
 		(tibble(tinf=sort(tinf[tinf<Inf])) %>% 
 				mutate(cuminf=1:n()) %>% 
 				mutate(sim=sim) %>% 
 				mutate(profiletype="stepwise")))
 
-	tinf <- sim_stochastic(n=popsize, e_dur=e_dur, i_dur=i_dur, R0=R0, profiletype="smooth")	
+	tinf <- sim_stochastic_fast(n=popsize, e_dur=e_dur, i_dur=i_dur, R0=R0, profiletype="smooth")	
 	cuminf_df <- bind_rows(cuminf_df, 
 		(tibble(tinf=sort(tinf[tinf<Inf])) %>% 
 				mutate(cuminf=1:n()) %>% 
 				mutate(sim=sim) %>% 
 				mutate(profiletype="smooth")))
 
-	tinf <- sim_stochastic(n=popsize, e_dur=e_dur, i_dur=i_dur, R0=R0, profiletype="spike")	
+	tinf <- sim_stochastic_fast(n=popsize, e_dur=e_dur, i_dur=i_dur, R0=R0, profiletype="spike")	
 	cuminf_df <- bind_rows(cuminf_df, 
 		(tibble(tinf=sort(tinf[tinf<Inf])) %>% 
 				mutate(cuminf=1:n()) %>% 
