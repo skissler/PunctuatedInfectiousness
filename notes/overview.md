@@ -37,7 +37,7 @@ $$ a_i(\tau) = \begin{cases}
 0 & \text{otherwise }
 \end{cases} \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-$$ a_i(\tau) = \delta_{{t_i}^*}(\tau) \text{ where } {t_i}^* \text{ is distributed according to the unnormalized density } f(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau})$$ 
+$$ a_i(\tau) = \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the unnormalized density } f(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau})$$ 
 
 
 
