@@ -97,7 +97,7 @@ The shifted Gamma construction achieves all four simultaneously.
 
 Choose a population-level generation interval distribution
 
-$$A(\tau) = R_0 \cdot \text{Gamma}(\tau;\; \alpha_{\text{total}},\; r), \qquad r = \alpha_{\text{total}} / \mu,$$
+$$A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r), \qquad r = \alpha_{\text{total}} / \mu,$$
 
 where $\mu$ is the mean generation time and $\alpha_{\text{total}}$ controls the shape (larger = more symmetric/bell-shaped). This does not need to match the SEIR kernel exactly; it is a modelling choice.
 
