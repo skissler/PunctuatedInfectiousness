@@ -17,11 +17,19 @@ $$ J(t) = -\dot{S}(t) = S(t) F(t) $$
 
 The infectiousness profile $A(\tau)$ is thus the fundamental object that determines how the epidemic unfolds. 
 
-The infectiousness profile is related to two fundamental quantities, the basic reproduction number $R_0$ and the generation interval $g(\tau)$: 
+The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$: 
 
 $$ R_0 = \int_0^\infty A(\tau) d\tau $$ 
 
 $$ g(\tau) = A(\tau) / R_0 $$ 
+
+Furthermore, various choices of $A(\tau)$ generate equivalent disease transmission dynamics as more familiar ordinary differential equation-based models. For example, the SIR model is obtained when 
+
+$$ A(\tau) = \beta e^{-\alpha \tau}$$ 
+
+and the SEIR model is obtained when 
+
+$$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$
 
 
 
