@@ -1,0 +1,113 @@
+# Findings: Punctuated infectiousness and contact-driven overdispersion
+
+## Setup
+
+We decompose individual infectiousness as $a_i(\tau) = R_0 \cdot b_i(\tau) \cdot g(t_i + \tau)$, where:
+
+- $b_i(\tau) = f_\kappa(\tau - s_i)$ is the biological timing density (a Gamma($\kappa$, $r$) density shifted by individual onset $s_i \sim \text{Gamma}(\alpha - \kappa, r)$)
+- $g(t) = 1 + \epsilon \sin(2\pi t / T)$ is a periodic contact rate multiplier with period $T = 7$ days
+
+The parameter $\kappa$ controls punctuation: small $\kappa$ gives narrow, spike-like individual profiles; large $\kappa$ gives broad profiles that resemble the population average. The parameter $\epsilon$ controls the amplitude of contact variation ($\epsilon = 0$ is constant contacts, $\epsilon = 0.9$ is strong weekly oscillation).
+
+The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, r)$ is invariant across $\kappa$ by the Gamma additivity property. Parameters: $R_0 = 2$, $\alpha = 10$, $\mu = 5$ days, so $r = 2$.
+
+## Part A: Branching process offspring distributions
+
+For each ($\kappa$, $\epsilon$) pair, we drew 10,000 individuals with random infection phase $t_i \sim \text{Uniform}(0, T)$ and computed the realized reproduction number $\nu_i = R_0 \int b_i(\tau) \, g(t_i + \tau) \, d\tau$ via numerical integration, then drew offspring $n_i \sim \text{Poisson}(\nu_i)$.
+
+### Verification: mean offspring
+
+The mean offspring count is $\approx 2.0$ across all ($\kappa$, $\epsilon$) combinations (range: 1.91--2.02). This confirms that periodic contacts redistribute infectiousness across individuals but do not change the mean. The modulation is purely a second-order effect.
+
+### Verification: Poisson baseline
+
+At $\epsilon = 0$ (constant contacts), the variance/mean ratio is $\approx 1.0$ for all $\kappa$ values (range: 0.98--1.01). This confirms that without contact variation, the offspring distribution is Poisson regardless of how punctuated the biological profile is. Punctuation alone does not create overdispersion in a branching process with constant contacts.
+
+### Variance/mean ratio
+
+The core finding: overdispersion arises from the *interaction* between punctuated infectiousness and periodic contacts. Neither ingredient alone is sufficient.
+
+| $\kappa$ | $\epsilon = 0$ | $\epsilon = 0.3$ | $\epsilon = 0.5$ | $\epsilon = 0.7$ | $\epsilon = 0.9$ |
+|----------|----------------|-------------------|-------------------|-------------------|-------------------|
+| 0.5      | 1.00           | 1.10              | 1.20              | 1.41              | 1.69              |
+| 1        | 0.98           | 1.08              | 1.19              | 1.41              | 1.71              |
+| 2        | 0.99           | 1.05              | 1.21              | 1.37              | 1.60              |
+| 4        | 0.98           | 1.00              | 1.12              | 1.27              | 1.42              |
+| 6        | 1.00           | 1.03              | 1.06              | 1.17              | 1.24              |
+| 8        | 1.00           | 1.01              | 1.06              | 1.12              | 1.16              |
+| 9.5      | 1.01           | 1.05              | 1.04              | 1.07              | 1.12              |
+
+The overdispersion is concentrated in the **low-$\kappa$, high-$\epsilon$ corner**: punctuated profiles ($\kappa \leq 2$) with strong contact oscillation ($\epsilon \geq 0.7$) yield variance/mean ratios of 1.4--1.7. Smooth profiles ($\kappa = 9.5$) show at most a ratio of 1.12 even at maximum contact amplitude.
+
+### Negative binomial dispersion parameter $k$
+
+Fitting $k$ via method of moments ($k = \mu^2 / (\text{Var} - \mu)$):
+
+| $\kappa$ | $\epsilon = 0$ | $\epsilon = 0.5$ | $\epsilon = 0.7$ | $\epsilon = 0.9$ |
+|----------|----------------|-------------------|-------------------|-------------------|
+| 0.5      | $\infty$       | 9.7               | 4.7               | 2.8               |
+| 1        | $\infty$       | 10.3              | 4.9               | 2.8               |
+| 2        | $\infty$       | 9.6               | 5.4               | 3.4               |
+| 4        | $\infty$       | 17.2              | 7.3               | 4.7               |
+| 6        | $\infty$       | 30.9              | 11.8              | 8.4               |
+| 8        | $\infty$       | 32.5              | 16.5              | 12.4              |
+| 9.5      | $\infty$       | 51.0              | 27.7              | 16.8              |
+
+At $\epsilon = 0$, all $\kappa$ values give $k = \infty$ (Poisson). At $\epsilon = 0.9$ with $\kappa = 0.5$, we get $k \approx 2.8$ -- substantial overdispersion from a purely mechanistic origin, comparable to values estimated for some respiratory infections. The gradient from $k \approx 17$ (smooth + periodic) to $k \approx 3$ (punctuated + periodic) demonstrates that punctuation amplifies contact-driven overdispersion by roughly a factor of 6 in the dispersion parameter.
+
+### Mechanism
+
+The mechanism is transparent: when the biological profile $b_i$ is a narrow spike (small $\kappa$), the integral $\int b_i(\tau) \, g(t_i + \tau) \, d\tau$ essentially samples $g$ at one point, so $\nu_i$ varies between $R_0(1 - \epsilon)$ and $R_0(1 + \epsilon)$ depending on when the spike falls relative to the contact cycle. When $b_i$ is broad (large $\kappa$), it averages over the contact cycle, and $\nu_i \approx R_0$ for everyone.
+
+This is a sampling-vs-averaging effect: punctuated profiles *sample* the contact function; smooth profiles *average* over it.
+
+## Part B: Figures
+
+Generated in `figures/`:
+
+- **`fig_overdispersion_heatmap.pdf`**: Var/mean ratio across the ($\kappa$, $\epsilon$) grid. Overdispersion is concentrated in the low-$\kappa$, high-$\epsilon$ corner, confirming the interaction.
+- **`fig_overdispersion_lines.pdf`**: Var/mean ratio vs $\kappa$ for selected $\epsilon$ values. All curves converge to $\approx 1$ at high $\kappa$, and fan out at low $\kappa$ proportional to $\epsilon$.
+- **`fig_overdispersion_histograms.pdf`**: Offspring distributions for four corner cases compared to Poisson($R_0$). The punctuated + periodic case has visibly heavier tails than the Poisson reference; the other three are nearly indistinguishable from Poisson.
+- **`fig_overdispersion_nbk.pdf`**: Negative binomial $k$ parameter across the grid (lower = more overdispersed).
+
+## Part C: Full epidemic simulations
+
+200 stochastic epidemics per scenario ($N = 1000$, $R_0 = 2$), using `sim_stochastic_fast` with the `make_profile_gamma_contacts` factory.
+
+### Establishment probability
+
+| Scenario              | P(established) |
+|-----------------------|----------------|
+| Smooth + constant     | 0.75           |
+| Punctuated + constant | 0.77           |
+| Smooth + periodic     | 0.63           |
+| Punctuated + periodic | 0.55           |
+
+The punctuated + periodic scenario has the lowest establishment probability (0.55 vs 0.75 for the baseline). This is consistent with the overdispersed offspring distribution: higher variance in $\nu_i$ means more individuals with $\nu_i < 1$ who fail to sustain transmission, increasing the probability of early stochastic extinction.
+
+### Final size (established epidemics only)
+
+| Scenario              | N established | Mean final size | SD   |
+|-----------------------|---------------|-----------------|------|
+| Smooth + constant     | 150           | 796             | 19.6 |
+| Punctuated + constant | 153           | 796             | 20.9 |
+| Smooth + periodic     | 126           | 727             | 26.7 |
+| Punctuated + periodic | 110           | 730             | 30.0 |
+
+Among established epidemics, the final size is comparable between constant-contact scenarios ($\approx 796$) but lower for periodic scenarios ($\approx 728$). This is because the time-varying contact rate creates periods of suppressed transmission that slow propagation and allow more individuals to remain susceptible when the epidemic wanes. The punctuated + periodic scenario also has the highest final-size variability (SD = 30 vs 20 for baseline), consistent with its overdispersed dynamics.
+
+### Epidemic trajectories
+
+Example curves are in `figures/fig_epidemic_curves.pdf`. The constant-contact scenarios (both smooth and punctuated) produce classic sigmoid epidemic curves. The periodic scenarios show a subtle modulation in growth rate. The key difference is not in the shape of individual trajectories but in the *distribution* across simulation runs: the punctuated + periodic case has more variable outcomes, reflected in the wider spread of final sizes and the lower establishment probability.
+
+## Summary
+
+1. **Punctuation alone does not create overdispersion** in a branching process with constant contacts. The offspring distribution is Poisson($R_0$) for all $\kappa$ when $\epsilon = 0$.
+
+2. **Contact variation alone creates mild overdispersion** even with smooth profiles. At $\epsilon = 0.9$ and $\kappa = 9.5$, the variance/mean ratio is 1.12 ($k \approx 17$).
+
+3. **The interaction amplifies overdispersion**: punctuated profiles + periodic contacts yield variance/mean $\approx 1.7$ and $k \approx 3$ -- a 6-fold reduction in the dispersion parameter compared to smooth profiles with the same contact variation.
+
+4. **The mechanism is sampling vs averaging**: narrow individual profiles sample the contact function at a random phase; broad profiles average over it. This is a direct consequence of the decomposition $a_i(\tau) = R_0 \cdot b_i(\tau) \cdot g(t_i + \tau)$.
+
+5. **Epidemic consequences**: the overdispersion reduces establishment probability (0.55 vs 0.75) and increases variability in epidemic outcomes, without changing the mean offspring count.

@@ -290,6 +290,55 @@ make_profile_gamma <- function(mu = 5, R0 = 2, alpha_total = 10, kappa) {
 	}
 }
 
+#' Factory: shifted Gamma profile with time-varying contacts
+#'
+#' Extends make_profile_gamma by multiplying the biological timing density
+#' b_i(tau) = f_kappa(tau - s_i) by a calendar-time contact function g(t).
+#' The full individual infectiousness is:
+#'   a_i(tau) = R0 * b_i(tau) * g(t_i + tau)
+#'
+#' Implementation uses Poisson thinning:
+#' 1. Draw n_proposal ~ Poisson(R0 * g_max) candidate contacts
+#' 2. Draw biological timing for each (onset shift s_i shared, jitter per contact)
+#' 3. Accept contact j with probability g(t_inf + s_i + epsilon_j) / g_max
+#'
+#' The expected number of accepted contacts for individual i is:
+#'   nu_i = R0 * integral[ b_i(tau) * g(t_i + tau) dtau ]
+#' which varies across individuals — this is the superspreading mechanism.
+#'
+#' @param mu          Mean generation time (default 5)
+#' @param R0          Basic reproduction number (default 2)
+#' @param alpha_total Shape of the population kernel Gamma (default 10)
+#' @param kappa       Profile shape in (0, alpha_total). Small = punctuated,
+#'                    large = smooth.
+#' @param contact_fn  Function g(t) giving contact rate multiplier at calendar
+#'                    time t. Should average to ~1 over time.
+#' @param g_max       Supremum of contact_fn, needed for thinning.
+#' @return A function(t_inf) returning sorted contact times
+make_profile_gamma_contacts <- function(mu = 5, R0 = 2, alpha_total = 10, kappa,
+                                        contact_fn, g_max) {
+	stopifnot(kappa > 0, kappa < alpha_total)
+	stopifnot(g_max > 0)
+	r <- alpha_total / mu
+	alpha_shift <- alpha_total - kappa
+	function(t_inf) {
+		# Oversample by factor g_max
+		n_proposal <- rpois(1, R0 * g_max)
+		if (n_proposal == 0L) return(numeric(0))
+		# Onset shift shared across all contacts for this individual
+		s_i <- rgamma(1, shape = alpha_shift, rate = r)
+		# Independent jitter for each candidate contact
+		eps <- rgamma(n_proposal, shape = kappa, rate = r)
+		# Calendar times of candidate contacts
+		t_contacts <- t_inf + s_i + eps
+		# Thinning: accept with probability g(t) / g_max
+		accept_prob <- contact_fn(t_contacts) / g_max
+		keep <- runif(n_proposal) < accept_prob
+		if (!any(keep)) return(numeric(0))
+		sort.int(t_contacts[keep])
+	}
+}
+
 #' Faster implementation of sim_stochastic (identical model logic)
 #'
 #' Speed-ups over the reference implementation:
