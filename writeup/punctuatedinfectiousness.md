@@ -25,22 +25,30 @@ $$ g(\tau) = A(\tau) / R_0 $$
 
 Furthermore, various choices of $A(\tau)$ generate equivalent disease transmission dynamics as more familiar ordinary differential equation-based models. For example, the SIR model 
 
-$$ \begin{align}
+$$ 
+\begin{align}
 &\frac{dS}{dt} = -\beta S I \\
 &\frac{dI}{dt} = \beta S I - \alpha I  \\
 &\frac{dR}{dt} = \alpha I 
-\end{align} $$ 
+\end{align} 
+$$ 
 
 is obtained when 
 
-$$A(\tau) = \beta e^{-\alpha \tau}$$
+$$
+A(\tau) = \beta e^{-\alpha \tau}
+$$
 
 Likewise, the SEIR model 
 
-$$ \frac{dS}{dt} = -\beta S I $$ 
-$$ \frac{dE}{dt} = \beta S I - \gamma E $$ 
-$$ \frac{dI}{dt} = \gamma E - \alpha I $$ 
-$$ \frac{dR}{dt} = \alpha I $$ 
+$$
+\begin{align}
+&\frac{dS}{dt} = -\beta S I  \\ 
+&\frac{dE}{dt} = \beta S I - \gamma E  \\ 
+&\frac{dI}{dt} = \gamma E - \alpha I  \\ 
+&\frac{dR}{dt} = \alpha I  
+\end{align}
+$$
 
 is obtained when 
 
