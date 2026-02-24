@@ -82,6 +82,90 @@ Consider a one-time intervention that removes a fraction of infectious individua
 
 *Status: theoretical prediction, not yet tested in simulation.*
 
+## 9. Shifted Gamma construction: a clean one-parameter interpolation
+
+The original three profiles (smooth, stepwise, spike) are useful theoretical bookends but leave open the question of how to *interpolate* between the smooth and spike extremes with a single punctuation parameter, while preserving:
+
+1. $\int a_i(\tau)\,d\tau = R_0$ exactly for every individual,
+2. $E[a_i(\tau)] = A(\tau)$ exactly (population kernel recovered in expectation),
+3. $A(\tau)$ invariant as the punctuation parameter varies,
+4. All individual profiles having the same shape, height, and width (differing only in location).
+
+The shifted Gamma construction achieves all four simultaneously.
+
+### Setup
+
+Choose a population-level generation interval distribution
+
+$$A(\tau) = R_0 \cdot \text{Gamma}(\tau;\; \alpha_{\text{total}},\; r), \qquad r = \alpha_{\text{total}} / \mu,$$
+
+where $\mu$ is the mean generation time and $\alpha_{\text{total}}$ controls the shape (larger = more symmetric/bell-shaped). This does not need to match the SEIR kernel exactly; it is a modelling choice.
+
+### Decomposition
+
+Decompose each contact time as
+
+$$c_j = s_i + \varepsilon_j,$$
+
+where:
+
+- $s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa,\; r)$ is an individual-specific **onset shift** (drawn once per individual),
+- $\varepsilon_j \sim \text{Gamma}(\kappa,\; r)$ is a **jitter** around the onset (drawn independently per contact, same distribution for all individuals),
+- $\kappa \in (0, \alpha_{\text{total}})$ is the **punctuation parameter**.
+
+### Why it works
+
+The key identity is that Gamma distributions with the same rate are closed under convolution:
+
+$$\text{Gamma}(\alpha_{\text{total}} - \kappa,\; r) + \text{Gamma}(\kappa,\; r) = \text{Gamma}(\alpha_{\text{total}},\; r).$$
+
+So the marginal distribution of $c_j$ (integrating over $s_i$) is $\text{Gamma}(\alpha_{\text{total}}, r)$ regardless of $\kappa$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\kappa$ varies.
+
+### Individual profiles
+
+Each individual's infectiousness profile is
+
+$$a_i(\tau) = R_0 \cdot f_\kappa(\tau - s_i), \qquad f_\kappa = \text{Gamma}(\kappa, r),$$
+
+which is zero for $\tau < s_i$ and follows a $\text{Gamma}(\kappa, r)$ density thereafter. Since $f_\kappa$ is a proper density, $\int a_i(\tau)\,d\tau = R_0$ exactly. All individuals share the same $f_\kappa$ — the profiles are identical in shape, height, and width; only the onset time $s_i$ differs.
+
+### Limiting behaviour
+
+| $\kappa$ | Individual profile $f_\kappa$ | Shift distribution | Interpretation |
+|---|---|---|---|
+| $\kappa \to 0$ | $\delta$-function (infinitely narrow spike) | $\text{Gamma}(\alpha_{\text{total}}, r) = A/R_0$ | Maximally punctuated: all contacts at one instant |
+| Small $\kappa$ (e.g. 2) | Narrow unimodal bump | Wide shift distribution | Punctuated but not singular |
+| $\kappa \to \alpha_{\text{total}}$ | $\approx A(\tau)/R_0$ (broad, matches population kernel) | $\delta$-function at 0 (no shift) | Smooth: all individuals have the same profile $\approx A(\tau)$ |
+
+### Variance decomposition
+
+The total variance of contact times decomposes additively:
+
+$$\text{Var}(c_j) = \underbrace{\text{Var}(s_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha_{\text{total}} - \kappa}{r^2} + \frac{\kappa}{r^2} = \frac{\alpha_{\text{total}}}{r^2}.$$
+
+The fraction of total variance that is between-individual (i.e., due to punctuation) is
+
+$$\text{punctuation fraction} = \frac{\alpha_{\text{total}} - \kappa}{\alpha_{\text{total}}} = 1 - \frac{\kappa}{\alpha_{\text{total}}}.$$
+
+This gives a clean interpretation: $\kappa / \alpha_{\text{total}} \in (0, 1)$ is the fraction of generation-time variability that is within-individual.
+
+### Implementation
+
+The factory function `make_profile_gamma(mu, R0, alpha_total, kappa)` in `code/utils.R` returns a closure that can be passed directly to `sim_stochastic_fast` via the `gen_contacts` argument:
+
+```r
+profile <- make_profile_gamma(mu = 5, R0 = 2, alpha_total = 10, kappa = 4)
+result  <- sim_stochastic_fast(n = 1000, gen_contacts = profile)
+```
+
+Visualization: `code/visualize_profiles_gamma.R`.
+
+### Design choices
+
+- **$\alpha_{\text{total}}$**: Controls the shape of $A(\tau)$. Larger values give a more symmetric, bell-shaped kernel. The moment-matched value for SEIR parameters ($e\_dur = 2$, $i\_dur = 3$) is $\alpha_{\text{total}} = \mu^2 / (e\_dur^2 + i\_dur^2) \approx 1.92$, but this is too small for $f_\kappa$ to be unimodal at most $\kappa$ values (Gamma shape $< 1$ gives a monotone-decreasing density). We use $\alpha_{\text{total}} = 10$ as a default, which gives a well-shaped $A(\tau)$ and allows $\kappa$ to range from $\sim 2$ (punctuated, narrow unimodal bumps) to $\sim 9.5$ (smooth, profiles $\approx A$).
+
+- **$\mu$**: The mean generation time, equal to $\alpha_{\text{total}} / r$. Changing $\mu$ scales the time axis without affecting the shape of $A(\tau)$ or the punctuation structure.
+
 ---
 
 *Last updated: 2026-02-23*

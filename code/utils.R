@@ -169,6 +169,127 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 
 }
 
+# ==============================================================================
+# Profile factory functions
+# ==============================================================================
+# Each factory takes epidemiological parameters and returns a closure with
+# signature function(t_inf) -> numeric vector of contact event times.
+
+#' Factory: stepwise infectiousness profile
+#'
+#' Infectious at constant rate beta during a random window
+#' [onset, onset + duration], where onset ~ Exp(1/e_dur) and
+#' duration ~ Exp(1/i_dur).
+#'
+#' @param e_dur Mean latent period
+#' @param i_dur Mean infectious period
+#' @param R0   Basic reproduction number
+#' @return A function(t_inf) returning sorted contact times
+make_profile_stepwise <- function(e_dur, i_dur, R0) {
+	beta <- R0 / i_dur
+	function(t_inf) {
+		t1 <- rexp(1, 1/e_dur)
+		t2 <- t1 + rexp(1, 1/i_dur)
+		nattempts <- rpois(1, (t2 - t1) * beta)
+		if (nattempts == 0L) return(numeric(0))
+		t_inf + sort(runif(nattempts, min = t1, max = t2))
+	}
+}
+
+#' Factory: smooth infectiousness profile
+#'
+#' Poisson(R0) contacts, each independently timed from
+#' Exp(1/e_dur) + Exp(1/i_dur).
+#'
+#' @inheritParams make_profile_stepwise
+#' @return A function(t_inf) returning sorted contact times
+make_profile_smooth <- function(e_dur, i_dur, R0) {
+	function(t_inf) {
+		nattempts <- rpois(1, R0)
+		if (nattempts == 0L) return(numeric(0))
+		t_inf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
+	}
+}
+
+#' Factory: spike infectiousness profile
+#'
+#' Poisson(R0) contacts all at one random time drawn from
+#' Exp(1/e_dur) + Exp(1/i_dur).
+#'
+#' @inheritParams make_profile_stepwise
+#' @return A function(t_inf) returning sorted contact times
+make_profile_spike <- function(e_dur, i_dur, R0) {
+	function(t_inf) {
+		nattempts <- rpois(1, R0)
+		if (nattempts == 0L) return(numeric(0))
+		t_inf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
+	}
+}
+
+#' Factory: mixture infectiousness profile (smooth <-> spike interpolation)
+#'
+#' Each individual draws Poisson(R0) contacts. With probability w, all contacts
+#' share a single random time (spike); with probability 1-w, each contact gets
+#' an independent time (smooth). This interpolates between the smooth (w=0) and
+#' spike (w=1) profiles.
+#'
+#' @inheritParams make_profile_stepwise
+#' @param w Mixture weight in [0,1]. w=0 gives smooth, w=1 gives spike.
+#' @return A function(t_inf) returning sorted contact times
+make_profile_mixture <- function(e_dur, i_dur, R0, w) {
+	stopifnot(w >= 0, w <= 1)
+	function(t_inf) {
+		nattempts <- rpois(1, R0)
+		if (nattempts == 0L) return(numeric(0))
+		if (runif(1) < w) {
+			# Spike: all contacts at one random time
+			t_inf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
+		} else {
+			# Smooth: each contact gets independent timing
+			t_inf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
+		}
+	}
+}
+
+#' Factory: shifted Gamma infectiousness profile
+#'
+#' Decomposes each contact time into shift + jitter, exploiting the fact that
+#' Gamma(alpha, r) + Gamma(kappa, r) = Gamma(alpha + kappa, r). Every
+#' individual has the EXACT same profile shape Gamma(kappa, r), just shifted
+#' to a different onset time s_i ~ Gamma(alpha_total - kappa, r).
+#'
+#' The population kernel A(tau) = R0 * Gamma(tau; alpha_total, r) is invariant
+#' across kappa — changing punctuation does not change the population-level
+#' generation interval.
+#'
+#' Properties:
+#'   - All individual profiles have identical height, width, and shape
+#'   - Each a_i integrates to R0 exactly
+#'   - E[a_i(tau)] = A(tau) exactly, for all kappa
+#'   - A(tau) is the same for all kappa (invariant population kernel)
+#'
+#' Limits:
+#'   kappa -> 0:            a_i -> R0 * delta(tau - s_i)  (spike)
+#'   kappa -> alpha_total:  a_i -> A(tau) for all i        (smooth)
+#'
+#' @param mu          Mean generation time (default e_dur + i_dur = 5)
+#' @param R0          Basic reproduction number (default 2)
+#' @param alpha_total Shape of the population kernel Gamma (default 10)
+#' @param kappa       Profile shape in (0, alpha_total). Small = punctuated,
+#'                    large = smooth. Must be > 0 and < alpha_total.
+#' @return A function(t_inf) returning sorted contact times
+make_profile_gamma <- function(mu = 5, R0 = 2, alpha_total = 10, kappa) {
+	stopifnot(kappa > 0, kappa < alpha_total)
+	r <- alpha_total / mu
+	alpha_shift <- alpha_total - kappa
+	function(t_inf) {
+		nattempts <- rpois(1, R0)
+		if (nattempts == 0L) return(numeric(0))
+		s_i <- rgamma(1, shape = alpha_shift, rate = r)
+		t_inf + s_i + sort(rgamma(nattempts, shape = kappa, rate = r))
+	}
+}
+
 #' Faster implementation of sim_stochastic (identical model logic)
 #'
 #' Speed-ups over the reference implementation:
@@ -180,33 +301,38 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 #' - Early return when rpois draws zero contacts.
 #'
 #' @inheritParams sim_stochastic
+#' @param gen_contacts Optional contact generator function with signature
+#'   function(t_inf) -> numeric vector. If provided, overrides profiletype.
 #' @return Numeric vector of length n (same format as sim_stochastic).
-sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwise"){
+sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5,
+                                profiletype="stepwise", gen_contacts=NULL){
 
 	beta <- R0/i_dur
 	tinf <- rep(Inf, n)
 
 	# Define the contact generation function once at entry
-	gen_contacts <- switch(profiletype,
-		"stepwise" = function(t_inf) {
-			t1 <- rexp(1, 1/e_dur)
-			t2 <- t1 + rexp(1, 1/i_dur)
-			nattempts <- rpois(1, (t2 - t1) * beta)
-			if(nattempts == 0L) return(numeric(0))
-			t_inf + sort(runif(nattempts, min = t1, max = t2))
-		},
-		"smooth" = function(t_inf) {
-			nattempts <- rpois(1, R0)
-			if(nattempts == 0L) return(numeric(0))
-			t_inf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
-		},
-		"spike" = function(t_inf) {
-			nattempts <- rpois(1, R0)
-			if(nattempts == 0L) return(numeric(0))
-			t_inf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
-		},
-		stop("Unrecognized profiletype")
-	)
+	if (is.null(gen_contacts)) {
+		gen_contacts <- switch(profiletype,
+			"stepwise" = function(t_inf) {
+				t1 <- rexp(1, 1/e_dur)
+				t2 <- t1 + rexp(1, 1/i_dur)
+				nattempts <- rpois(1, (t2 - t1) * beta)
+				if(nattempts == 0L) return(numeric(0))
+				t_inf + sort(runif(nattempts, min = t1, max = t2))
+			},
+			"smooth" = function(t_inf) {
+				nattempts <- rpois(1, R0)
+				if(nattempts == 0L) return(numeric(0))
+				t_inf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
+			},
+			"spike" = function(t_inf) {
+				nattempts <- rpois(1, R0)
+				if(nattempts == 0L) return(numeric(0))
+				t_inf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
+			},
+			stop("Unrecognized profiletype")
+		)
+	}
 
 	# Seed infection
 	seed <- sample.int(n, 1)
