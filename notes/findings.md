@@ -166,6 +166,82 @@ Visualization: `code/visualize_profiles_gamma.R`.
 
 - **$\mu$**: The mean generation time, equal to $\alpha_{\text{total}} / r$. Changing $\mu$ scales the time axis without affecting the shape of $A(\tau)$ or the punctuation structure.
 
+## 10. Decomposing infectiousness into biological and contact components
+
+The individual infectiousness profile $a_i(\tau)$ conflates two distinct processes: the biological trajectory of infectiousness (viral load, shedding) and the rate at which the individual makes potentially transmissive contacts. Separating these gives a cleaner framework for studying how temporal structure in contact patterns interacts with punctuated biological infectiousness.
+
+### Definitions
+
+Decompose
+
+$$a_i(\tau) = b_i(\tau) \cdot c_i(t_i + \tau),$$
+
+where $t_i$ is the calendar time at which person $i$ was infected, and:
+
+- **$b_i(\tau)$** is the *biological infectiousness profile*: a probability density on $[0, \infty)$ satisfying $\int_0^\infty b_i(\tau)\,d\tau = 1$. It describes *when* the individual is capable of transmitting, relative to their time of infection. It contains no information about how many people they will infect — only the temporal shape.
+
+- **$c_i(t)$** is the *instantaneous transmission potential* at calendar time $t$: the expected number of secondary infections the individual would produce at time $t$ if all their biological infectiousness were concentrated at that instant (i.e., if $b_i$ were a delta function). This absorbs contact rate, transmission probability per contact, and susceptibility of contacts. When $c_i$ is constant in time, $c_i = \nu_i$ is exactly the individual reproduction number in the sense of Lloyd-Smith *et al.* (2005).
+
+The individual's realized reproduction number is then
+
+$$\tilde{\nu}_i = \int_0^\infty a_i(\tau)\,d\tau = \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau,$$
+
+a weighted average of their contact potential over the times they are biologically infectious.
+
+### Population-level factorization
+
+Define $B(\tau) = E[b_i(\tau)]$ and $C(t) = E[c_i(t)]$. Under the assumption that $b_i$ and $c_i$ are **independent** — that an individual's biological trajectory is independent of their contact pattern — the population-level infectiousness kernel factorizes:
+
+$$A_t(\tau) = E[a_i(\tau)] = B(\tau) \cdot C(t_i + \tau).$$
+
+In the renewal equation, all contributions to the force of infection at calendar time $t$ share the same calendar-time contact factor $C(t)$, so $C$ factors out:
+
+$$J(t) = S(t) \cdot C(t) \int_0^\infty J(t - \tau)\,B(\tau)\,d\tau.$$
+
+The time-varying contact function acts as a multiplicative modulator on the effective reproduction number. When $C(t) = C$ (constant), we recover the standard time-homogeneous renewal equation with $A(\tau) = C \cdot B(\tau)$.
+
+*(If $b_i$ and $c_i$ are not independent — for instance, if symptomatic individuals reduce contacts late in their infection — the factorization breaks and the joint distribution $E[b_i(\tau) \cdot c_i(t)]$ is needed. We assume independence throughout this project.)*
+
+### Connection to the shifted Gamma construction
+
+In the shifted Gamma framework (Section 9), with constant contacts:
+
+- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the Gamma$(\kappa, r)$ density shifted to onset time $s_i$
+- $c_i(t) = R_0$ for all $i, t$
+
+This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\tilde{\nu}_i = R_0$ for every individual.
+
+### Punctuated infectiousness as a source of superspreading
+
+The decomposition reveals a mechanism for generating overdispersion in the individual reproduction number $\tilde{\nu}_i$ that, to our knowledge, has not been previously described.
+
+**Setup.** Suppose:
+
+- Biological profiles are shifted Gammas: $b_i(\tau) = f_\kappa(\tau - s_i)$ with punctuation parameter $\kappa$
+- The contact function is the *same for everyone* and varies periodically in calendar time: $c_i(t) = c(t) = R_0 \cdot g(t)$, where $g(t)$ oscillates around 1 (e.g., weekday/weekend cycles, seasonal forcing)
+
+There is no individual-level variation in contact rates — the only heterogeneity is in the biological timing $s_i$. Yet the individual reproduction number becomes:
+
+$$\tilde{\nu}_i = R_0 \int_0^\infty f_\kappa(\tau - s_i) \cdot g(t_i + \tau)\,d\tau.$$
+
+The variance of $\tilde{\nu}_i$ depends on how much the biological profile "averages over" the oscillations in $g$:
+
+- **Smooth limit** ($\kappa \to \alpha_{\text{total}}$): $b_i \approx B$ for all $i$, so $\tilde{\nu}_i \approx R_0 \int B(\tau)\,g(t_i + \tau)\,d\tau$. The broad biological window averages over $g$, and $\tilde{\nu}_i \approx R_0$ for everyone. Minimal overdispersion.
+
+- **Delta limit** ($\kappa \to 0$): $b_i \to \delta(\tau - s_i)$, so $\tilde{\nu}_i \to R_0 \cdot g(t_i + s_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $g$ oscillates between 0.5 and 1.5, so does $\tilde{\nu}_i$. Maximal overdispersion.
+
+- **Intermediate $\kappa$**: the narrower $b_i$ is, the less it averages over $g$, and the more variable $\tilde{\nu}_i$ becomes. The punctuation parameter $\kappa$ continuously controls the degree of overdispersion.
+
+**The mechanism in words:** when biological infectiousness is concentrated in a narrow window, the individual's total transmission depends on *when* that window falls relative to the contact landscape. Some individuals' narrow windows align with high-contact periods (weekdays, social events, crowded settings); others align with low-contact periods (nights, weekends, holidays). This "sampling" of the contact function creates between-individual variation in $\tilde{\nu}_i$ — i.e., superspreading — even without any intrinsic heterogeneity in contact rates or biological susceptibility.
+
+This is distinct from the standard superspreading mechanisms (heterogeneous $\nu_i$ across individuals, heterogeneous susceptibility, stochastic contact networks). It requires only three ingredients:
+
+1. Punctuated biological infectiousness (narrow $b_i$)
+2. Stochastic variation in the timing of infectiousness (random $s_i$)
+3. Time-varying contact rates at the population level ($g(t) \neq \text{const}$)
+
+All three are empirically plausible for many infectious diseases. The shifted Gamma construction provides a single parameter ($\kappa$) that controls the strength of this effect.
+
 ---
 
 *Last updated: 2026-02-23*
