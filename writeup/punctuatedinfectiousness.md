@@ -27,15 +27,11 @@ Furthermore, various choices of $A(\tau)$ generate equivalent disease transmissi
 
 $$ 
 \begin{align}
-\frac{dS}{dt} &= -\beta S I \\
-\frac{dI}{dt} &= \beta S I - \alpha I  \\
-\frac{dR}{dt} &= \alpha I 
+&\frac{dS}{dt} = -\beta S I \\
+&\frac{dI}{dt} = \beta S I - \alpha I  \\
+&\frac{dR}{dt} = \alpha I 
 \end{align}
 $$ 
-
-$$ \frac{dS}{dt} = -\beta S I $$ 
-$$ \frac{dI}{dt} = \beta S I - \alpha I $$ 
-$$ \frac{dR}{dt} = \alpha I $$ 
 
 is obtained when 
 
