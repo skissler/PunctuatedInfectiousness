@@ -23,7 +23,7 @@ $$ R_0 = \int_0^\infty A(\tau) d\tau $$
 
 $$ g(\tau) = A(\tau) / R_0 $$ 
 
-Furthermore, various choices of $A(\tau)$ generate equivalent disease transmission dynamics as more familiar ordinary differential equation-based models. For example, the SIR model 
+Furthermore, various choices of $A(\tau)$ generate disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models. For example, the SIR model 
 
 $$ 
 \begin{align}
