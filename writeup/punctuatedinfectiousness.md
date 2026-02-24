@@ -15,7 +15,7 @@ Here, $S(t)$ is the density of susceptible individuals in the population at time
 
 $$ J(t) = -\dot{S}(t) = S(t) F(t) $$ 
 
-The infectiousness profile $A(\tau)$ is the fundamental object that determines how the epidemic unfolds. 
+The infectiousness profile $A(\tau)$ is thus the fundamental object that determines how the epidemic unfolds. 
 
 The infectiousness profile is related to two fundamental quantities, the basic reproduction number $R_0$ and the generation interval $g(\tau)$: 
 
