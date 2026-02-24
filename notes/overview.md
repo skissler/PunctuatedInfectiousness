@@ -67,7 +67,13 @@ In general, the relationship between viral load and (biological) infectiousness 
 
 This needs a bit more thought. In the fully smooth deterministic case of infectiousness, I think everybody needs the same viral load; as we move towards the delta case, I think we need some amount of variation in the viral load. 
 
+One way to maybe use Dylan's approach: in the fully deterministic/smooth case, this is accompanied by identical detection profiles. Everybody has the same profile, starting at the same time. This then varies as we change how infectiousness relates to the profile: the peak infectiousness always aligns with the peak of the viral load profile (maybe), but as we move towards the delta case, we get more variation in the timing of the viral load curve, too. That's necessary for our setup, I think, and makes sense. So, the idea would be to keep the shape of the viral kinetic curve fixed, but allow its timing to vary, so that it gives us the appropriate amount of variation we need in the infectiousness curves. So, the idea would be to (a) generate infectiousness profiles, (b) line up (identical) viral kinetic curves with the peak of those profiles, and (c) use those viral kinetic curves to describe detectability. I think this is nice, because it assumes that we have the same viral kinetic curves across all profiles -- all that varies is their timing, and so all we're really changing here is the relationship between infectiousness and viral kinetics, but not the kinetics themselves. 
 
+Then, we'll want to vary the kinetics curves, too, to see how narrower windows of detectability impact what happens as we also vary the length of the window of infectiousness. 
+
+Rather than having a triangle viral kinetics curve -- what if we say that the viral kinetics are identical to the infectiousness curve in the smooth case? It's not generally the case that the viral kinetic will equal the population-level generation interval, so this might be a stretch -- and it'll also impact how easy it is to vary the sharpness of the kinetics. We know what kinetics curves look like. We should just use them. So we can ignore this paragraph. 
+
+More concisely: how do different shapes of viral kinetics triangles (sharper, faster/slower up/down) interplay with different levels of punctuation in infectiousness? Let's imagine that peak VL aligns with peak infectiousness, and all that changes is the relationship between them. I need to think carefully about what the right parameterization is here of both the viral kinetics curves and the infectiousness profiles -- but of course the infectiousness profiles, for now, need to be parameterized in a way that they collapse into $A(\tau)$ in the limit. 
 
 
 
