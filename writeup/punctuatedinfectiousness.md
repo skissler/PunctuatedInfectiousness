@@ -5,7 +5,7 @@
 
 ## Methods
 
-### The individual-level infectiousness profile 
+### Population-level disease transmission as a renewal equation
 
 For a generic disease transmission process, the force of infection at time $t$ can be written in terms of a renewal equation: 
 
@@ -53,6 +53,28 @@ $$
 is obtained when 
 
 $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$
+
+### The individual-level infectiousness profile 
+
+The generation interval, $g(\tau)$, is the expected distribution of secondary infection times from an infected individual. Importantly, this is a population average -- the times at which an individual person is expected to transmit may differ significantly from this. Much like the individual reproduction number, $\nu_i$, gives an individual person's expected number of secondary infections (and $E_i[\nu_i] = R_0$), we can define an individual generation interval, $\xi_i(\tau)$, such that $E_i[\xi_i(\tau)] = g(\tau)$. By analog to the population-level model, we can define the *individual infectiousness profile*: 
+
+$$ a_i(\tau) = \nu_i \xi_i(\tau) $$ 
+
+where 
+
+$$ A(\tau) = E_i[a_i(\tau)] $$
+
+It is possible to obtain the same population-level infectiousness profile from vastly different individual infectiousness profiles. For example, we can obtain the same $A(\tau)$ for the SEIR using any of the following formulations: 
+
+$$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
+
+$$ a_i(\tau) = \begin{cases} 
+\beta & \tau \in [\tau_i^{\text{on}}, \tau_i^{\text{on}} + \tau_i^{\text{off}}] \\
+0 & \text{otherwise }
+\end{cases} \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
+
+$$ a_i(\tau) = R_0 \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the (normalized) generation interval density } A(\tau)/R_0$$ 
+
 
 
 
