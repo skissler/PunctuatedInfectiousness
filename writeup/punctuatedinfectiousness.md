@@ -33,7 +33,7 @@ $$ \begin{align}
 
 is obtained when 
 
-$$A(\tau) = \beta e^{-\alpha \tau}$$. 
+$$A(\tau) = \beta e^{-\alpha \tau}$$
 
 Likewise, the SEIR model 
 
