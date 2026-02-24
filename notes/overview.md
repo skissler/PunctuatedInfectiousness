@@ -76,6 +76,54 @@ Rather than having a triangle viral kinetics curve -- what if we say that the vi
 More concisely: how do different shapes of viral kinetics triangles (sharper, faster/slower up/down) interplay with different levels of punctuation in infectiousness? Let's imagine that peak VL aligns with peak infectiousness, and all that changes is the relationship between them. I need to think carefully about what the right parameterization is here of both the viral kinetics curves and the infectiousness profiles -- but of course the infectiousness profiles, for now, need to be parameterized in a way that they collapse into $A(\tau)$ in the limit. 
 
 
+### Task 2: separate the infectiousness profile into biological and contact-based components 
+
+A person's infectiousness is a function of both their biological propensity to spread and the rate/density of their contacts. Separating these cleanly may not be straightforward, but we'll try. 
+
+Let's imagine separating both the population-level infectiousness profile, $A(\tau)$, and the individual infectiousness profiles, $a_i(\tau)$, into biological and contact-based components. For example, 
+
+$$A(\tau) = B(\tau) \cdot C(t + \tau)$$
+
+$$a_i(\tau) = b_i(\tau) \cdot c_i(t + \tau)$$
+
+There are lots of pitfalls in how one describes these components, but I think I'm converging on a decent option. 
+
+For the sake of this model, we're assuming an *infinite* population (for the stochastic simulations, of course, we'll look at how finite populations impact the dynamics -- but for the theory, the infinite population assumption is critical). In this case, $c_i$ might represent something like a person's "reach" into that infinite population. Specifically: if a person were somehow "infinitely infectious" at time $t$, then $c_i(t)$ is the expected number of people that that person would (attempt to) infect at that moment. It's kind of nice that the contact function $c$ is defined with respect to the delta function biological infectiousness profile. 
+
+In this framework, we'd actually have $b_i$ integrate to 1 -- or, possibly, to the proportion of "effective contacts" that a person is expected to infect. That proportionality constant can be absorbed into either c or b without loss of generality I think; but given my intuition around epidemic models, I think it might actually make sense to define $c_i$ in terms of some baseline contact rate, and $b$ to integrate to some probability of infection per effective contact. There are various choices that could be made here though, and we might adjust this as we go. 
+
+Does this give us what we want? Let's imagine other biological infectiousness profiles -- all of which now integrate to 1. $b_i \cdot c_i$ should give us the right $a_i$ for the delta function case. For the continuous case, keeping that same $c_i$, we should still get a curve that integrates to the right $R_0$ -- right? 
+
+And then, we need to think about how the individual $c_i$ combine into the larger C. This, I think, is just another population-wide, point-by-point average. We need to confirm this, but that should be the case. This should allow us to account for people with different individual contact patterns, and for temporally varying population-wide mean contact patterns. Of course, there's some weirdness if we really try to account for the fact that peoples' contact patterns aren't independent, but I think in the limit of an infinte population, we can side-step this, and for the sake of a clean model and good theory, that seems worthwhile. 
+
+I think another way of thinking about it is that $c_i$ represents a person's individual $R_0$ ($\nu_i$, in the notation of Lloyd-Smith, I think) *at a given point in time*, i.e., if all their infectiousness were concentrated at a single point, then that's what the individual $R_0$ would be. That then absorbs the probability of transmission per contact into the contact function, which is fine; maybe that's what we want, for better consistency with Lloyd-Smith. 
+
+I thnk that all checks out. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
