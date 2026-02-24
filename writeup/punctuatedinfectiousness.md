@@ -13,7 +13,7 @@ $$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$
 
 Here, $S(t)$ is the density of susceptible individuals in the population at time $t$ and $A(\tau)$ is the "infectiousness profile", a curve describing the expected contribution to the force of infection that an individual makes who was infected $\tau$ time units ago. The incidence of disease is thus given by 
 
-$$ J(t) = -\dot(S)(t) = S(t) F(t) $$ 
+$$ J(t) = -\dot{S}(t) = S(t) F(t) $$ 
 
 The infectiousness profile $A(tau)$ is the fundamental object that determines how the epidemic unfolds. 
 
