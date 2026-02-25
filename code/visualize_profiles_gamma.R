@@ -4,13 +4,13 @@ library(tidyverse)
 # Visualize the shifted Gamma individual infectiousness profile
 #
 # Construction (from make_profile_gamma in utils.R):
-#   contact_time = s_i + epsilon_j
+#   infection_attempt_time = s_i + epsilon_j
 #   s_i     ~ Gamma(alpha_total - kappa, r)   individual onset shift
 #   eps_j   ~ Gamma(kappa, r)                  jitter (same for all individuals)
 #   r       = alpha_total / mu
 #
 # Since Gamma + Gamma = Gamma (same rate), the marginal distribution of
-# contact times is Gamma(alpha_total, r), i.e. the population kernel is
+# infection attempt times is Gamma(alpha_total, r), i.e. the population kernel is
 # A(tau) = R0 * dgamma(tau; alpha_total, r), INVARIANT across kappa.
 #
 # Each individual profile is:

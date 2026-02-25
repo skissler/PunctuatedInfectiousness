@@ -4,8 +4,8 @@ source("code/utils.R")
 # ==============================================================================
 # Overdispersion from punctuated infectiousness x periodic contacts
 #
-# Key idea: when g(t) = 1 + epsilon*sin(2*pi*t/T), the realized R0 for
-# individual i is nu_i = R0 * integral[b_i(tau) * g(t_i + tau) dtau].
+# Key idea: when z(t) = 1 + epsilon*sin(2*pi*t/T), the realized R0 for
+# individual i is nu_i = R0 * integral[b_i(tau) * z(t_i + tau) dtau].
 # With punctuated profiles (small kappa), b_i is a narrow spike, so nu_i
 # depends sensitively on whether the spike lands on a high- or low-contact
 # phase. With smooth profiles (large kappa), b_i averages over the cycle
@@ -28,7 +28,7 @@ T_period    <- 7       # contact cycle period (weekly)
 kappas  <- c(0.5, 1, 2, 4, 6, 8, 9.5)
 epsilons <- seq(0, 0.9, by = 0.1)
 
-# Contact function: g(t) = 1 + epsilon * sin(2*pi*t / T)
+# Contact function: z(t) = 1 + epsilon * sin(2*pi*t / T)
 make_contact_fn <- function(epsilon, T_period) {
 	function(t) 1 + epsilon * sin(2 * pi * t / T_period)
 }
@@ -55,7 +55,7 @@ for (idx in seq_len(nrow(results))) {
 	alpha_shift <- alpha_total - kappa
 
 	# Contact function for this epsilon
-	g <- make_contact_fn(epsilon, T_period)
+	z <- make_contact_fn(epsilon, T_period)
 
 	# Precompute quadrature grid (midpoint rule avoids dgamma(0) = Inf for kappa < 1)
 	u_max <- qgamma(0.9999, shape = kappa, rate = r)
@@ -71,9 +71,9 @@ for (idx in seq_len(nrow(results))) {
 		# Onset shift for this individual
 		s_i <- rgamma(1, shape = alpha_shift, rate = r)
 		# Compute realized R0 via numerical integration
-		# nu_i = R0 * integral[f_kappa(u) * g(t_i + s_i + u) du]
-		g_vals <- g(t_i + s_i + u_grid)
-		nu_i <- R0 * sum(f_kappa_vals * g_vals) * du
+		# nu_i = R0 * integral[f_kappa(u) * z(t_i + s_i + u) du]
+		z_vals <- z(t_i + s_i + u_grid)
+		nu_i <- R0 * sum(f_kappa_vals * z_vals) * du
 
 		# Draw offspring count
 		offspring[i] <- rpois(1, nu_i)
@@ -176,7 +176,7 @@ for (ex in example_pairs) {
 	kappa   <- ex$kappa
 	epsilon <- ex$epsilon
 	alpha_shift <- alpha_total - kappa
-	g <- make_contact_fn(epsilon, T_period)
+	z <- make_contact_fn(epsilon, T_period)
 
 	u_max <- qgamma(0.9999, shape = kappa, rate = r)
 	n_quad <- 500
@@ -188,8 +188,8 @@ for (ex in example_pairs) {
 	for (i in seq_len(N_rep)) {
 		t_i <- runif(1, 0, T_period)
 		s_i <- rgamma(1, shape = alpha_shift, rate = r)
-		g_vals <- g(t_i + s_i + u_grid)
-		nu_i <- R0 * sum(f_kappa_vals * g_vals) * du
+		z_vals <- z(t_i + s_i + u_grid)
+		nu_i <- R0 * sum(f_kappa_vals * z_vals) * du
 		offspring[i] <- rpois(1, nu_i)
 	}
 
@@ -267,16 +267,16 @@ for (sc in scenarios) {
 	cat(sprintf("  Running: %s (kappa=%.1f, epsilon=%.1f)\n",
 	            sc$label, sc$kappa, sc$epsilon))
 
-	g <- make_contact_fn(sc$epsilon, T_period)
-	g_max <- 1 + sc$epsilon  # supremum of 1 + epsilon*sin(...)
+	z <- make_contact_fn(sc$epsilon, T_period)
+	z_max <- 1 + sc$epsilon  # supremum of 1 + epsilon*sin(...)
 
 	gen <- make_profile_gamma_contacts(
 		mu = mu, R0 = R0, alpha_total = alpha_total,
-		kappa = sc$kappa, contact_fn = g, g_max = g_max
+		kappa = sc$kappa, contact_fn = z, z_max = z_max
 	)
 
 	for (sim in seq_len(nsim)) {
-		tinf <- sim_stochastic_fast(n = n_pop, gen_contacts = gen)
+		tinf <- sim_stochastic_fast(n = n_pop, gen_inf_attempts = gen)
 		n_infected <- sum(tinf < Inf)
 		epi_df <- bind_rows(epi_df, tibble(
 			sim = sim,

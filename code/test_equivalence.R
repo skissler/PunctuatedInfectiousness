@@ -35,7 +35,7 @@ test_equivalence <- function(nsim = 500, n = 500, e_dur = 2, i_dur = 3, R0 = 2) 
 }
 
 # Test that mixture profile with w=0 matches smooth and w=1 matches spike,
-# and that the gen_contacts interface produces results equivalent to profiletype.
+# and that the gen_inf_attempts interface produces results equivalent to profiletype.
 test_mixture <- function(nsim = 500, n = 500, e_dur = 2, i_dur = 3, R0 = 2) {
 
 	all_passed <- TRUE
@@ -54,7 +54,7 @@ test_mixture <- function(nsim = 500, n = 500, e_dur = 2, i_dur = 3, R0 = 2) {
 			r1 <- sim_stochastic_fast(n=n, e_dur=e_dur, i_dur=i_dur,
 			                          R0=R0, profiletype=ft$name)
 			fs_builtin[i] <- sum(r1 < Inf)
-			r2 <- sim_stochastic_fast(n=n, gen_contacts=ft$factory)
+			r2 <- sim_stochastic_fast(n=n, gen_inf_attempts=ft$factory)
 			fs_factory[i] <- sum(r2 < Inf)
 		}
 		ks <- ks.test(fs_builtin, fs_factory)
@@ -74,7 +74,7 @@ test_mixture <- function(nsim = 500, n = 500, e_dur = 2, i_dur = 3, R0 = 2) {
 		r1 <- sim_stochastic_fast(n=n, e_dur=e_dur, i_dur=i_dur,
 		                          R0=R0, profiletype="smooth")
 		fs_smooth[i] <- sum(r1 < Inf)
-		r2 <- sim_stochastic_fast(n=n, gen_contacts=mix_smooth)
+		r2 <- sim_stochastic_fast(n=n, gen_inf_attempts=mix_smooth)
 		fs_mix0[i] <- sum(r2 < Inf)
 	}
 	ks <- ks.test(fs_smooth, fs_mix0)
@@ -92,7 +92,7 @@ test_mixture <- function(nsim = 500, n = 500, e_dur = 2, i_dur = 3, R0 = 2) {
 		r1 <- sim_stochastic_fast(n=n, e_dur=e_dur, i_dur=i_dur,
 		                          R0=R0, profiletype="spike")
 		fs_spike[i] <- sum(r1 < Inf)
-		r2 <- sim_stochastic_fast(n=n, gen_contacts=mix_spike)
+		r2 <- sim_stochastic_fast(n=n, gen_inf_attempts=mix_spike)
 		fs_mix1[i] <- sum(r2 < Inf)
 	}
 	ks <- ks.test(fs_spike, fs_mix1)
@@ -104,7 +104,7 @@ test_mixture <- function(nsim = 500, n = 500, e_dur = 2, i_dur = 3, R0 = 2) {
 
 	# --- Smoke test: w=0.5 runs without error ---
 	mix_half <- make_profile_mixture(e_dur, i_dur, R0, w = 0.5)
-	r <- sim_stochastic_fast(n = n, gen_contacts = mix_half)
+	r <- sim_stochastic_fast(n = n, gen_inf_attempts = mix_half)
 	ninfected <- sum(r < Inf)
 	cat(sprintf("\n  Smoke test: mixture(w=0.5) — %d/%d infected\n", ninfected, n))
 

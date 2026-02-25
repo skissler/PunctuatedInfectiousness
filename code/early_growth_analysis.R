@@ -5,14 +5,16 @@ source("code/utils.R")
 # Analysis of early epidemic growth: smooth vs. spike
 #
 # The spike case takes off slower because of a "minimum of order statistics"
-# mechanism: in the smooth case, an infector's k contacts race independently
+# mechanism: in the smooth case, an infector's k infection attempts race independently
 # across the generation interval, so the first transmission happens earlier.
-# In the spike case, all k contacts occur at the same time.
+# In the spike case, all k infection attempts occur at the same time.
 # ==============================================================================
 
 set.seed(123)
 n_pop <- 1000
-e_dur <- 2; i_dur <- 3; R0 <- 2
+e_dur <- 2 
+i_dur <- 3
+R0 <- 2
 
 # ==============================================================================
 # 1. First-transmission time from a single infector (no epidemic needed)
@@ -20,7 +22,7 @@ e_dur <- 2; i_dur <- 3; R0 <- 2
 
 nrep <- 100000
 first_tx <- list()
-ncontacts <- list()
+nattempts <- list()
 
 for(profile in c("smooth", "spike")) {
 	ft <- numeric(nrep)
@@ -36,12 +38,12 @@ for(profile in c("smooth", "spike")) {
 		}
 	}
 	first_tx[[profile]] <- ft
-	ncontacts[[profile]] <- nc
+	nattempts[[profile]] <- nc
 }
 
-# Overall comparison (conditional on >= 1 contact)
+# Overall comparison (conditional on >= 1 infection attempt)
 cat("=== First transmission time from a single infector ===\n")
-cat("(conditional on >= 1 contact)\n\n")
+cat("(conditional on >= 1 infection attempt)\n\n")
 for(p in c("smooth", "spike")) {
 	vals <- first_tx[[p]][first_tx[[p]] < Inf]
 	cat(sprintf("  %s: mean=%.3f, median=%.3f, sd=%.3f (n=%d)\n",
@@ -51,12 +53,12 @@ cat(sprintf("\n  Difference in means: %.3f days\n",
             mean(first_tx[["spike"]][first_tx[["spike"]] < Inf]) -
             mean(first_tx[["smooth"]][first_tx[["smooth"]] < Inf])))
 
-# Stratified by number of contacts
-cat("\n=== First transmission time by number of contacts ===\n")
+# Stratified by number of infection attempts
+cat("\n=== First transmission time by number of infection attempts ===\n")
 cat(sprintf("  E[GenInterval] = e_dur + i_dur = %.1f days\n\n", e_dur + i_dur))
 for(k in 1:6) {
 	for(p in c("smooth", "spike")) {
-		vals <- first_tx[[p]][ncontacts[[p]] == k]
+		vals <- first_tx[[p]][nattempts[[p]] == k]
 		vals <- vals[vals < Inf]
 		if(length(vals) > 10)
 			cat(sprintf("  k=%d, %s: %.3f\n", k, p, mean(vals)))

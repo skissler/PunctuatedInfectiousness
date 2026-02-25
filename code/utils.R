@@ -73,8 +73,8 @@ seir <- odin({
 #' Simulate a stochastic epidemic under a specified individual infectiousness profile
 #'
 #' Runs an event-driven stochastic simulation of an SIR/SEIR-like epidemic.
-#' Each contact event targets a uniformly random individual; if the target is
-#' still susceptible it becomes infected, otherwise the contact is wasted.
+#' Each infection attempt targets a uniformly random individual; if the target is
+#' still susceptible it becomes infected, otherwise the infection attempt is wasted.
 #' This gives frequency-dependent (mass-action) transmission consistent with
 #' the ODE models above.
 #'
@@ -84,15 +84,15 @@ seir <- odin({
 #'
 #'   "stepwise" — infectious at constant rate beta during a random window
 #'     [onset, onset + duration], where onset ~ Exp(1/e_dur) and
-#'     duration ~ Exp(1/i_dur). Number of contacts is Poisson(beta * duration),
+#'     duration ~ Exp(1/i_dur). Number of infection attempts is Poisson(beta * duration),
 #'     so the secondary infection count is overdispersed relative to Poisson(R0).
 #'
-#'   "smooth" — Poisson(R0) contacts, each independently timed according to
+#'   "smooth" — Poisson(R0) infection attempts, each independently timed according to
 #'     the SEIR generation interval (Exp(1/e_dur) + Exp(1/i_dur)). Every
 #'     individual has the same expected infectiousness profile; the only
-#'     stochasticity is Poisson variation in the contact count.
+#'     stochasticity is Poisson variation in the infection attempt count.
 #'
-#'   "spike" — Poisson(R0) contacts all occurring at a single random time
+#'   "spike" — Poisson(R0) infection attempts all occurring at a single random time
 #'     drawn from the SEIR generation interval. Maximally punctuated:
 #'     individual infectiousness is a (scaled) delta function.
 #'
@@ -114,7 +114,7 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 	newinf <- ceiling(runif(1)*n)
 	tinf[newinf] <- t
 
-	# Generate the seed's contact events
+	# Generate the seed's infection attempts
 	queue <- c()
 	if(profiletype=="stepwise"){
 		t1 <- rexp(1,1/e_dur)
@@ -141,7 +141,7 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 		# Draw a uniformly random target
 		newinf <- ceiling(runif(1)*n)
 
-		# If the target is susceptible, infect and generate their contacts
+		# If the target is susceptible, infect and generate their infection attempts
 		if(tinf[newinf]==Inf){
 
 			tinf[newinf] <- t
@@ -173,7 +173,7 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 # Profile factory functions
 # ==============================================================================
 # Each factory takes epidemiological parameters and returns a closure with
-# signature function(t_inf) -> numeric vector of contact event times.
+# signature function(t_inf) -> numeric vector of infection attempt times.
 
 #' Factory: stepwise infectiousness profile
 #'
@@ -184,7 +184,7 @@ sim_stochastic <- function(n=1000, e_dur=0, i_dur=5, R0=2.5, profiletype="stepwi
 #' @param e_dur Mean latent period
 #' @param i_dur Mean infectious period
 #' @param R0   Basic reproduction number
-#' @return A function(t_inf) returning sorted contact times
+#' @return A function(t_inf) returning sorted infection attempt times
 make_profile_stepwise <- function(e_dur, i_dur, R0) {
 	beta <- R0 / i_dur
 	function(t_inf) {
@@ -198,11 +198,11 @@ make_profile_stepwise <- function(e_dur, i_dur, R0) {
 
 #' Factory: smooth infectiousness profile
 #'
-#' Poisson(R0) contacts, each independently timed from
+#' Poisson(R0) infection attempts, each independently timed from
 #' Exp(1/e_dur) + Exp(1/i_dur).
 #'
 #' @inheritParams make_profile_stepwise
-#' @return A function(t_inf) returning sorted contact times
+#' @return A function(t_inf) returning sorted infection attempt times
 make_profile_smooth <- function(e_dur, i_dur, R0) {
 	function(t_inf) {
 		nattempts <- rpois(1, R0)
@@ -213,11 +213,11 @@ make_profile_smooth <- function(e_dur, i_dur, R0) {
 
 #' Factory: spike infectiousness profile
 #'
-#' Poisson(R0) contacts all at one random time drawn from
+#' Poisson(R0) infection attempts all at one random time drawn from
 #' Exp(1/e_dur) + Exp(1/i_dur).
 #'
 #' @inheritParams make_profile_stepwise
-#' @return A function(t_inf) returning sorted contact times
+#' @return A function(t_inf) returning sorted infection attempt times
 make_profile_spike <- function(e_dur, i_dur, R0) {
 	function(t_inf) {
 		nattempts <- rpois(1, R0)
@@ -228,24 +228,24 @@ make_profile_spike <- function(e_dur, i_dur, R0) {
 
 #' Factory: mixture infectiousness profile (smooth <-> spike interpolation)
 #'
-#' Each individual draws Poisson(R0) contacts. With probability w, all contacts
-#' share a single random time (spike); with probability 1-w, each contact gets
+#' Each individual draws Poisson(R0) infection attempts. With probability w, all infection attempts
+#' share a single random time (spike); with probability 1-w, each infection attempt gets
 #' an independent time (smooth). This interpolates between the smooth (w=0) and
 #' spike (w=1) profiles.
 #'
 #' @inheritParams make_profile_stepwise
 #' @param w Mixture weight in [0,1]. w=0 gives smooth, w=1 gives spike.
-#' @return A function(t_inf) returning sorted contact times
+#' @return A function(t_inf) returning sorted infection attempt times
 make_profile_mixture <- function(e_dur, i_dur, R0, w) {
 	stopifnot(w >= 0, w <= 1)
 	function(t_inf) {
 		nattempts <- rpois(1, R0)
 		if (nattempts == 0L) return(numeric(0))
 		if (runif(1) < w) {
-			# Spike: all contacts at one random time
+			# Spike: all infection attempts at one random time
 			t_inf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
 		} else {
-			# Smooth: each contact gets independent timing
+			# Smooth: each infection attempt gets independent timing
 			t_inf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
 		}
 	}
@@ -253,7 +253,7 @@ make_profile_mixture <- function(e_dur, i_dur, R0, w) {
 
 #' Factory: shifted Gamma infectiousness profile
 #'
-#' Decomposes each contact time into shift + jitter, exploiting the fact that
+#' Decomposes each infection attempt time into shift + jitter, exploiting the fact that
 #' Gamma(alpha, r) + Gamma(kappa, r) = Gamma(alpha + kappa, r). Every
 #' individual has the EXACT same profile shape Gamma(kappa, r), just shifted
 #' to a different onset time s_i ~ Gamma(alpha_total - kappa, r).
@@ -277,7 +277,7 @@ make_profile_mixture <- function(e_dur, i_dur, R0, w) {
 #' @param alpha_total Shape of the population kernel Gamma (default 10)
 #' @param kappa       Profile shape in (0, alpha_total). Small = punctuated,
 #'                    large = smooth. Must be > 0 and < alpha_total.
-#' @return A function(t_inf) returning sorted contact times
+#' @return A function(t_inf) returning sorted infection attempt times
 make_profile_gamma <- function(mu = 5, R0 = 2, alpha_total = 10, kappa) {
 	stopifnot(kappa > 0, kappa < alpha_total)
 	r <- alpha_total / mu
@@ -293,17 +293,17 @@ make_profile_gamma <- function(mu = 5, R0 = 2, alpha_total = 10, kappa) {
 #' Factory: shifted Gamma profile with time-varying contacts
 #'
 #' Extends make_profile_gamma by multiplying the biological timing density
-#' b_i(tau) = f_kappa(tau - s_i) by a calendar-time contact function g(t).
+#' b_i(tau) = f_kappa(tau - s_i) by a calendar-time contact function z(t).
 #' The full individual infectiousness is:
-#'   a_i(tau) = R0 * b_i(tau) * g(t_i + tau)
+#'   a_i(tau) = R0 * b_i(tau) * z(t_i + tau)
 #'
 #' Implementation uses Poisson thinning:
-#' 1. Draw n_proposal ~ Poisson(R0 * g_max) candidate contacts
-#' 2. Draw biological timing for each (onset shift s_i shared, jitter per contact)
-#' 3. Accept contact j with probability g(t_inf + s_i + epsilon_j) / g_max
+#' 1. Draw n_proposal ~ Poisson(R0 * z_max) candidate infection attempts
+#' 2. Draw biological timing for each (onset shift s_i shared, jitter per infection attempt)
+#' 3. Accept infection attempt j with probability z(t_inf + s_i + epsilon_j) / z_max
 #'
-#' The expected number of accepted contacts for individual i is:
-#'   nu_i = R0 * integral[ b_i(tau) * g(t_i + tau) dtau ]
+#' The expected number of accepted infection attempts for individual i is:
+#'   nu_i = R0 * integral[ b_i(tau) * z(t_i + tau) dtau ]
 #' which varies across individuals — this is the superspreading mechanism.
 #'
 #' @param mu          Mean generation time (default 5)
@@ -311,28 +311,28 @@ make_profile_gamma <- function(mu = 5, R0 = 2, alpha_total = 10, kappa) {
 #' @param alpha_total Shape of the population kernel Gamma (default 10)
 #' @param kappa       Profile shape in (0, alpha_total). Small = punctuated,
 #'                    large = smooth.
-#' @param contact_fn  Function g(t) giving contact rate multiplier at calendar
+#' @param contact_fn  Function z(t) giving contact rate multiplier at calendar
 #'                    time t. Should average to ~1 over time.
-#' @param g_max       Supremum of contact_fn, needed for thinning.
-#' @return A function(t_inf) returning sorted contact times
+#' @param z_max       Supremum of contact_fn, needed for thinning.
+#' @return A function(t_inf) returning sorted infection attempt times
 make_profile_gamma_contacts <- function(mu = 5, R0 = 2, alpha_total = 10, kappa,
-                                        contact_fn, g_max) {
+                                        contact_fn, z_max) {
 	stopifnot(kappa > 0, kappa < alpha_total)
-	stopifnot(g_max > 0)
+	stopifnot(z_max > 0)
 	r <- alpha_total / mu
 	alpha_shift <- alpha_total - kappa
 	function(t_inf) {
-		# Oversample by factor g_max
-		n_proposal <- rpois(1, R0 * g_max)
+		# Oversample by factor z_max
+		n_proposal <- rpois(1, R0 * z_max)
 		if (n_proposal == 0L) return(numeric(0))
-		# Onset shift shared across all contacts for this individual
+		# Onset shift shared across all infection attempts for this individual
 		s_i <- rgamma(1, shape = alpha_shift, rate = r)
-		# Independent jitter for each candidate contact
+		# Independent jitter for each candidate infection attempt
 		eps <- rgamma(n_proposal, shape = kappa, rate = r)
-		# Calendar times of candidate contacts
+		# Calendar times of candidate infection attempts
 		t_contacts <- t_inf + s_i + eps
-		# Thinning: accept with probability g(t) / g_max
-		accept_prob <- contact_fn(t_contacts) / g_max
+		# Thinning: accept with probability z(t) / z_max
+		accept_prob <- contact_fn(t_contacts) / z_max
 		keep <- runif(n_proposal) < accept_prob
 		if (!any(keep)) return(numeric(0))
 		sort.int(t_contacts[keep])
@@ -342,26 +342,26 @@ make_profile_gamma_contacts <- function(mu = 5, R0 = 2, alpha_total = 10, kappa,
 #' Faster implementation of sim_stochastic (identical model logic)
 #'
 #' Speed-ups over the reference implementation:
-#' - Profile-specific contact generator resolved once via switch(), avoiding
+#' - Profile-specific infection attempt generator resolved once via switch(), avoiding
 #'   repeated if/else branching on every event.
-#' - Index-based queue consumption: failed contacts (target already infected)
+#' - Index-based queue consumption: failed infection attempts (target already infected)
 #'   advance a pointer in O(1) rather than copying the queue via queue[-1].
 #' - sort.int() instead of sort() to skip S3 method dispatch.
-#' - Early return when rpois draws zero contacts.
+#' - Early return when rpois draws zero infection attempts.
 #'
 #' @inheritParams sim_stochastic
-#' @param gen_contacts Optional contact generator function with signature
+#' @param gen_inf_attempts Optional infection attempt generator function with signature
 #'   function(t_inf) -> numeric vector. If provided, overrides profiletype.
 #' @return Numeric vector of length n (same format as sim_stochastic).
 sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5,
-                                profiletype="stepwise", gen_contacts=NULL){
+                                profiletype="stepwise", gen_inf_attempts=NULL){
 
 	beta <- R0/i_dur
 	tinf <- rep(Inf, n)
 
-	# Define the contact generation function once at entry
-	if (is.null(gen_contacts)) {
-		gen_contacts <- switch(profiletype,
+	# Define the infection attempt generation function once at entry
+	if (is.null(gen_inf_attempts)) {
+		gen_inf_attempts <- switch(profiletype,
 			"stepwise" = function(t_inf) {
 				t1 <- rexp(1, 1/e_dur)
 				t2 <- t1 + rexp(1, 1/i_dur)
@@ -386,7 +386,7 @@ sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5,
 	# Seed infection
 	seed <- sample.int(n, 1)
 	tinf[seed] <- 0
-	queue <- gen_contacts(0)
+	queue <- gen_inf_attempts(0)
 	qi <- 1L
 	qn <- length(queue)
 
@@ -398,7 +398,7 @@ sim_stochastic_fast <- function(n=1000, e_dur=0, i_dur=5, R0=2.5,
 		target <- sample.int(n, 1)
 		if(tinf[target] == Inf) {
 			tinf[target] <- t_event
-			new_events <- gen_contacts(t_event)
+			new_events <- gen_inf_attempts(t_event)
 			if(length(new_events) > 0L) {
 				# Merge new events with unprocessed remainder of queue
 				remaining <- if(qi <= qn) queue[qi:qn] else numeric(0)
