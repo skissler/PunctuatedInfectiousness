@@ -5,7 +5,7 @@
 
 ## Methods
 
-### Population-level disease transmission as a renewal equation
+### Epidemic dynamcis with renewal equations
 
 For a generic disease transmission process, the force of infection at time $t$ can be written in terms of a renewal equation: 
 
