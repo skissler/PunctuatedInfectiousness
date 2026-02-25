@@ -3,7 +3,8 @@
     "allow": [
       "Bash(find:*)",
       "Bash(Rscript:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(wc:*)"
     ]
   }
 }

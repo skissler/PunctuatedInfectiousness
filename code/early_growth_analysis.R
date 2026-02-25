@@ -145,3 +145,88 @@ for(profile in c("smooth", "spike")) {
 	bf <- bf[1:k]
 	cat(sprintf("  %s: mean=%.3f, sd=%.3f\n", profile, mean(bf), sd(bf)))
 }
+
+# ==============================================================================
+# 3. Time-to-threshold analysis across R0 values
+#
+# Sweep R0 = 1.2, 1.5, 2.0, 3.0, 5.0 and compare smooth vs spike profiles.
+# For each (R0, profile) pair, run many simulations, condition on epidemics
+# reaching >= 100 infections, and record time to 10 and time to 100 infections.
+# ==============================================================================
+
+set.seed(2024)
+
+R0_values <- c(1.2, 1.5, 2.0, 3.0, 5.0)
+nsim_r0   <- 3000  # simulations per (R0, profile) pair
+threshold_lo  <- 10
+threshold_hi  <- 100
+
+cat("\n=== Time-to-threshold analysis across R0 ===\n")
+cat(sprintf("  nsim=%d per (R0, profile), N=%d, e_dur=%g, i_dur=%g\n",
+            nsim_r0, n_pop, e_dur, i_dur))
+cat(sprintf("  Thresholds: %d and %d infections\n", threshold_lo, threshold_hi))
+cat(sprintf("  Conditioning on epidemics reaching >= %d infections\n\n",
+            threshold_hi))
+
+threshold_results <- list()
+
+for(R0_val in R0_values) {
+	for(profile in c("smooth", "spike")) {
+		t_lo <- numeric(nsim_r0)
+		t_hi <- numeric(nsim_r0)
+		reached <- logical(nsim_r0)
+
+		for(i in 1:nsim_r0) {
+			tinf <- sim_stochastic_fast(n = n_pop, e_dur = e_dur, i_dur = i_dur,
+			                            R0 = R0_val, profiletype = profile)
+			sorted <- sort(tinf[tinf < Inf])
+			if(length(sorted) >= threshold_hi) {
+				reached[i] <- TRUE
+				t_lo[i] <- sorted[threshold_lo]
+				t_hi[i] <- sorted[threshold_hi]
+			}
+		}
+
+		threshold_results[[paste(R0_val, profile)]] <- list(
+			R0 = R0_val, profile = profile,
+			n_established = sum(reached),
+			t_lo = t_lo[reached], t_hi = t_hi[reached]
+		)
+		cat(sprintf("  R0=%.1f, %s: %d/%d reached %d infections\n",
+		            R0_val, profile, sum(reached), nsim_r0, threshold_hi))
+	}
+}
+
+# -- Table 1: Mean time to 10 and 100 infections ------------------------------
+
+cat("\n=== Table: Time to threshold (established epidemics) ===\n\n")
+cat(sprintf("%5s | %12s %12s %11s | %13s %13s %12s\n",
+            "R0", "t10 smooth", "t10 spike", "delay(t10)",
+            "t100 smooth", "t100 spike", "delay(t100)"))
+cat(paste(rep("-", 95), collapse = ""), "\n")
+
+for(R0_val in R0_values) {
+	sm <- threshold_results[[paste(R0_val, "smooth")]]
+	sp <- threshold_results[[paste(R0_val, "spike")]]
+	t10_sm <- mean(sm$t_lo); t10_sp <- mean(sp$t_lo)
+	t100_sm <- mean(sm$t_hi); t100_sp <- mean(sp$t_hi)
+	delay10  <- (t10_sp - t10_sm) / t10_sm * 100
+	delay100 <- (t100_sp - t100_sm) / t100_sm * 100
+	cat(sprintf("%5.1f | %12.1f %12.1f %+10.1f%% | %13.1f %13.1f %+11.1f%%\n",
+	            R0_val, t10_sm, t10_sp, delay10, t100_sm, t100_sp, delay100))
+}
+
+# -- Table 2: Variability (SD) in time to 100 infections ----------------------
+
+cat("\n=== Table: Variability in time to 100 infections ===\n\n")
+cat(sprintf("%5s | %15s %15s | %18s\n",
+            "R0", "SD(t100) smooth", "SD(t100) spike", "spike/smooth ratio"))
+cat(paste(rep("-", 65), collapse = ""), "\n")
+
+for(R0_val in R0_values) {
+	sm <- threshold_results[[paste(R0_val, "smooth")]]
+	sp <- threshold_results[[paste(R0_val, "spike")]]
+	sd_sm <- sd(sm$t_hi); sd_sp <- sd(sp$t_hi)
+	cat(sprintf("%5.1f | %15.1f %15.1f | %18.2f\n",
+	            R0_val, sd_sm, sd_sp, sd_sp / sd_sm))
+}
