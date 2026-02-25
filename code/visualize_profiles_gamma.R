@@ -124,7 +124,7 @@ fig_pop_avg <- pop_avg_df %>%
 		labs(x = expression(tau ~ "(days since infection)"),
 		     y = expression(a[i](tau)),
 		     title = "Sample mean of individual profiles (red) vs. A(tau) (dashed black)",
-		     subtitle = sprintf("Average over %d individuals — A(tau) is the SAME target in every panel", n_individuals))
+		     subtitle = sprintf("Average over %d individuals -- A(tau) is the SAME target in every panel", n_individuals))
 
 ggsave("figures/fig_pop_avg_gamma.pdf", fig_pop_avg, width = 14, height = 8)
 cat("Saved figures/fig_pop_avg_gamma.pdf\n")

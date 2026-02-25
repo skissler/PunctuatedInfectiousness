@@ -6,16 +6,20 @@
 #
 # Scripts are ordered to match the writeup (writeup/punctuatedinfectiousness.md):
 #
-#   1. Setup              — load libraries, ensure output directories exist
+#   0. Setup              — ensure output directories exist
+#   1. Validation         — test_equivalence: verify sim_stochastic_fast and
+#                           factory profiles match reference implementations
 #   2. simulate_epidemics — uncontrolled epidemic dynamics under different
 #                           individual infectiousness profiles (Sections 3–4)
-#   3. visualize_profiles_gamma — Gamma convolutional model visualization
+#   3. early_growth_analysis — first-transmission times, burstiness, and
+#                           early growth rates (Sections 3–4 continued)
+#   4. visualize_profiles_gamma — Gamma convolutional model visualization
 #                           (Section 5)
-#   4. test_based_screening — impact of punctuated infectiousness on
+#   5. test_based_screening — impact of punctuated infectiousness on
 #                           test-based screening (Section 6)
-#   5. analyze_overdispersion — biological/contact decomposition and
+#   6. analyze_overdispersion — biological/contact decomposition and
 #                           overdispersion from periodic contacts (Sections 7–8)
-#   6. simulate_trials    — identifiability of kappa from household/contact-
+#   7. simulate_trials    — identifiability of kappa from household/contact-
 #                           tracing data (Section 9)
 # ==============================================================================
 
@@ -27,42 +31,56 @@ cat("==============================================================\n\n")
 # 0. Setup
 # ==============================================================================
 
-cat("--- Setup ---\n")
+cat("--- 0. Setup ---\n")
 if (!dir.exists("figures")) dir.create("figures")
 
 # ==============================================================================
-# 1. Uncontrolled epidemic simulations (Sections 3–4)
+# 1. Validation
 # ==============================================================================
 
-cat("\n--- 1. Simulating uncontrolled epidemics ---\n\n")
+cat("\n--- 1. Validating simulation infrastructure ---\n\n")
+source("code/test_equivalence.R")
+
+# ==============================================================================
+# 2. Uncontrolled epidemic simulations (Sections 3–4)
+# ==============================================================================
+
+cat("\n--- 2. Simulating uncontrolled epidemics ---\n\n")
 source("code/simulate_epidemics.R")
 
 # ==============================================================================
-# 2. Gamma profile visualization (Section 5)
+# 3. Early growth analysis (Sections 3–4 continued)
 # ==============================================================================
 
-cat("\n--- 2. Visualizing Gamma infectiousness profiles ---\n\n")
+cat("\n--- 3. Early growth analysis ---\n\n")
+source("code/early_growth_analysis.R")
+
+# ==============================================================================
+# 4. Gamma profile visualization (Section 5)
+# ==============================================================================
+
+cat("\n--- 4. Visualizing Gamma infectiousness profiles ---\n\n")
 source("code/visualize_profiles_gamma.R")
 
 # ==============================================================================
-# 3. Test-based screening (Section 6)
+# 5. Test-based screening (Section 6)
 # ==============================================================================
 
-cat("\n--- 3. Test-based screening analysis ---\n\n")
+cat("\n--- 5. Test-based screening analysis ---\n\n")
 source("code/test_based_screening.R")
 
 # ==============================================================================
-# 4. Overdispersion from periodic contacts (Sections 7–8)
+# 6. Overdispersion from periodic contacts (Sections 7–8)
 # ==============================================================================
 
-cat("\n--- 4. Overdispersion analysis ---\n\n")
+cat("\n--- 6. Overdispersion analysis ---\n\n")
 source("code/analyze_overdispersion.R")
 
 # ==============================================================================
-# 5. Identifiability / trial simulations (Section 9)
+# 7. Identifiability / trial simulations (Section 9)
 # ==============================================================================
 
-cat("\n--- 5. Trial simulations for identifiability ---\n\n")
+cat("\n--- 7. Trial simulations for identifiability ---\n\n")
 source("code/simulate_trials.R")
 
 # ==============================================================================

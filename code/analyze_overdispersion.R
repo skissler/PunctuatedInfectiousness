@@ -129,7 +129,8 @@ fig_heatmap <- results %>%
 	ggplot(aes(x = kappa, y = epsilon, fill = var_mean_ratio)) +
 	geom_tile() +
 	scale_fill_viridis_c(option = "inferno", name = "Var / Mean") +
-	geom_contour(aes(z = var_mean_ratio), col = "white", alpha = 0.5) +
+	geom_contour(aes(x = kappa, y = epsilon, z = var_mean_ratio),
+	             col = "white", alpha = 0.5, inherit.aes = FALSE) +
 	theme_classic() +
 	labs(x = expression(kappa ~ "(punctuation: small = spiky, large = smooth)"),
 	     y = expression(epsilon ~ "(contact amplitude)"),
@@ -238,7 +239,7 @@ fig_heatmap_k <- results %>%
 	labs(x = expression(kappa ~ "(punctuation: small = spiky, large = smooth)"),
 	     y = expression(epsilon ~ "(contact amplitude)"),
 	     title = "Negative binomial dispersion parameter k",
-	     subtitle = "Lower k = more overdispersed; k → Inf = Poisson")
+	     subtitle = "Lower k = more overdispersed; k -> Inf = Poisson")
 
 ggsave("figures/fig_overdispersion_nbk.pdf", fig_heatmap_k, width = 8, height = 6)
 cat("Saved figures/fig_overdispersion_nbk.pdf\n")
