@@ -58,7 +58,7 @@ $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma
 
 The generation interval distribution, $g(\tau)$, describes how secondary infections are distributed over time. Like $R_0$, $g(\tau)$ is a population-level object: it describes the temporal distribution of infection times for a "typical" infectious individual. As with the individual reproduction number, $\nu_i$, where $E_i[\nu_i] = R_0$, we can define an individual generation interval distribution, $\xi_i$, where $E_i[\xi_i(\tau)] = g_i(\tau)$. Furthermore, we can define an individual infectiousness profile, $a_i(\tau) = \nu_i \xi_i(\tau)$, such that $E_i[a_i(\tau)] = A(\tau)$. 
 
-An immediate observation is that it is possible to obtain the same population-level $A(\tau)$ from vastly different forms of $a_i(\tau)$. For example, the following $a_i(\tau)$ 
+An immediate observation is that it is possible to obtain the same population-level $A(\tau)$ from vastly different forms of $a_i(\tau)$. For example, the following $a_i(\tau)$ all yield the SEIR-equivalent $A(\tau)$: 
 
 $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
 
@@ -69,11 +69,23 @@ $$ a_i(\tau) = \begin{cases}
 
 $$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the generation interval density, } A(\tau)/R_0$$ 
 
+Eq XX is simply $A(\tau)$ replicated exactly for each person. Eq XX is the underlying individual-level model often conceptualized when using the SEIR model, where a person spends an exponentially-distributed amount of time in the latent/exposed state and another exponentially-distirbuted amount of time in the infectious state. Eq XX is an extreme case where a person's infectiousness is completely concentrated at a single moment. All three have the same expectation, and thus yield the same average population-level dynamics. 
+
 ### The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
+Despite yielding the same average population-level dynamics, epidemics that are governed by different forms of $a_i(\tau)$ may yield different stochastic dynamics. 
 
 ### A Gamma convolutional model for the individual infectiousness profile 
 
+To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equal, we introduce a one-parameter family of functions that allow us to reconstruct a Gamma-distributed $A(\tau)$ using Gamma-distributed $a_i(\tau)$ that are identical except for a time shift. 
+
+Let 
+
+$$
+A(\tau) = R_0 \text{Gamma}(\tau; \alpha, r), \qquad r = \alpha / \mu
+$$
+
+where $\mu$ is the mean generation interval and $\alpha$ controls the shape of the population-level infectiousness profile. 
 
 ### The impact of punctuated infectiousness on test-based screening and isolation countermeasures 
 
