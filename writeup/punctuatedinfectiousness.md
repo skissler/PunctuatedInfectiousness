@@ -56,15 +56,9 @@ $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma
 
 ### The individual-level infectiousness profile 
 
-The generation interval, $g(\tau)$, is the distribution that describes the secondary infection times from a typical infected individual. Importantly, this typical individual may differ fundamentally from an actual individual: the generation interval distribution describes a population average, but the times at which an individual person is expected to transmit may differ significantly from this. Much like the individual reproduction number, $\nu_i$, gives an individual person's expected number of secondary infections (and $E_i[\nu_i] = R_0$), we can define an individual generation interval, $\xi_i(\tau)$, such that $E_i[\xi_i(\tau)] = g(\tau)$. By analog to the population-level model, we can define the *individual infectiousness profile*: 
+The generation interval distribution, $g(\tau)$, describes how secondary infections are distributed over time. Like $R_0$, $g(\tau)$ is a population-level object: it describes the temporal distribution of infection times for a "typical" infectious individual. As with the individual reproduction number, $\nu_i$, where $E_i[\nu_i] = R_0$, we can define an individual generation interval distribution, $\xi_i$, where $E_i[\xi_i(\tau)] = g_i(\tau)$. Furthermore, we can define an individual infectiousness profile, $a_i(\tau) = \nu_i \xi_i(\tau)$, such that $E_i[a_i(\tau)] = A(\tau)$. 
 
-$$ a_i(\tau) = \nu_i \xi_i(\tau) $$ 
-
-where 
-
-$$ A(\tau) = E_i[a_i(\tau)] $$
-
-It is possible to obtain the same population-level infectiousness profile from vastly different individual infectiousness profiles. For example, we can obtain the same $A(\tau)$ for the SEIR using any of the following formulations: 
+An immediate observation is that it is possible to obtain the same population-level $A(\tau)$ from vastly different forms of $a_i(\tau)$. For example, the following $a_i(\tau)$ 
 
 $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
 
@@ -73,11 +67,7 @@ $$ a_i(\tau) = \begin{cases}
 0 & \qquad \text{otherwise }
 \end{cases} \qquad \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-$$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the (normalized) generation interval density, } A(\tau)/R_0$$ 
-
-
-
-
+$$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the generation interval density, } A(\tau)/R_0$$ 
 
 ### The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
