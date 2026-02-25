@@ -2,9 +2,6 @@
 
 ## Introduction
 
-
-## Methods
-
 ### Epidemic dynamics with renewal equations
 
 For a generic disease transmission process, the force of infection at time $t$ can be written in terms of a renewal equation: 
@@ -82,21 +79,75 @@ To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equ
 Let 
 
 $$
-A(\tau) = R_0 f(\tau) \qquad \text{ where } f(\tau) \sim \text{Gamma}(\alpha, r), \qquad r = \alpha / \mu
+A(\tau) = R_0 f_A(\tau) \qquad \text{ where } f_A(\tau) \sim \text{Gamma}(\alpha, r), \qquad r = \alpha / \mu
 $$
 
 where $\mu$ is the mean generation interval and $\alpha$ controls the shape of the population-level infectiousness profile. 
 
+Now, let 
+
+$$
+a_i(\tau) = R_0 f_a(\tau - s_i) \qquad \text{ where } f_a(\tau) \sim \text{Gamma}(\kappa, r) \qquad \text{ and } s_i \sim \text{Gamma}(\alpha - \kappa, r)
+$$
+
+Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile. Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
+
+
 ### The impact of punctuated infectiousness on test-based screening and isolation countermeasures 
+
+
+
 
 
 ### Splitting the infectiousness profile into biological infectiousness and contacts 
 
+Previously, we saw that we could decompose the individual infectiousness profile into the individual reproduction number and the individual generation interval (Eq XX). Here, we consider a more general, and more biologically-motivated, decomposition of $a_i(\tau)$ into "biological infectiousness" and "contacts". 
+
+Let 
+
+$$
+a_i(\tau) = b_i(\tau) \cdot c_i(t_i + \tau)
+$$
+
+Here, $b_i(\tau)$ represents a person's "biological infectiousness profile": a probability deensity on $[0, \infty)$ that describes when the individual is capable of transmitting, relative to their time of infection; and $c_i(t)$ is the instantaneous transmission potential at time $t$, i.e., the expected number of secondary infections that an individual would produce at time $t$ if all their biological infectiousness were concentrated at that instant (i.e., if $b_i$ were a delta function). Note that $c_i(t)$ absorbs the contact rate, the trasmission probability per ocntact, and the susceptibility of contacts. 
+
+This is a general case of Eq XX: when $c_i$ is constant in time, $c_i = \nu_i$ (the individual reproduction number in the sense of Lloyd-Smith *et al.* (2005)) and $b_i(\tau)$ is the individual generation interval distribution, $\xi_i(\tau)$. 
+
+This decomposition feeds back into the population-level model. If we assume that $b_i$ and $c_i$ are independent (*i.e.*, an individual's biological infectiousness is independent of their contact pattern), then 
+
+$$
+A_i(\tau) = E[a_i(\tau)] = B(\tau) \cdot C(t_i + \tau)
+$$
+
+where, like before, if C is contstant in time, this reduces to the familiar 
+
+$$
+A_i(\tau) = g(\tau) R_0
+$$
+
+Here, $B(\tau)$ is the population-average biological infectiousness over time and $C(t)$ is the population-average contact pattern, again absorbing contact rates and probability of infection per contacct so that the biological infectiousness profile is a density that integrates to 1. 
+
+In the Gamma construction, we have 
+
+$$ 
+b_i(\tau) = f_a(\tau - s_i)
+$$ 
+
+and 
+
+$$
+c_i(t) = R_0 \text{ for all } i,t
+$$
+
 
 ### Assessing overdispersion resulting from variable contact rates and punctuated biological infectiousness 
 
+Superspreading, or overdispersion in the secondary infection distribution, is normally thought to arise from overdispersion in individual infectiousness ($\nu_i$) or overdispersion on contacts ($c_i$). Here, we show that overdispersion can also arise from a third mechanism, the interaction of non-constant contacts and highly punctuated infectiousness profiles. 
 
-## Results
+### Identifiability of punctuated infectiousness 
+
+While the concentration of the individual infectiousness profile can impact how an epidemic unfolds, we lack frameworks for estimating it. Many approaches exist for estimating the generation interval, but there has not been a systematic approach developed to assess how individual infectiousness varies and to specify where on the continuum we sit -- i.e., how much of the variation in the generation interval distribution is attributable to variation between individuals, and how much to variation in infection timing within individuals. 
 
 
-## Conclusions
+
+# Conclusions
