@@ -5,7 +5,7 @@
 
 ## Methods
 
-### Epidemic dynamcis with renewal equations
+### Epidemic dynamics with renewal equations
 
 For a generic disease transmission process, the force of infection at time $t$ can be written in terms of a renewal equation: 
 
@@ -56,7 +56,7 @@ $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma
 
 ### The individual-level infectiousness profile 
 
-The generation interval, $g(\tau)$, is the expected distribution of secondary infection times from an infected individual. Importantly, this is a population average -- the times at which an individual person is expected to transmit may differ significantly from this. Much like the individual reproduction number, $\nu_i$, gives an individual person's expected number of secondary infections (and $E_i[\nu_i] = R_0$), we can define an individual generation interval, $\xi_i(\tau)$, such that $E_i[\xi_i(\tau)] = g(\tau)$. By analog to the population-level model, we can define the *individual infectiousness profile*: 
+The generation interval, $g(\tau)$, is the distribution that describes the secondary infection times from a typical infected individual. Importantly, this *typical* individual may differ fundamentally from an actual individual: the generation interval distribution describes a population average, but the times at which an individual person is expected to transmit may differ significantly from this. Much like the individual reproduction number, $\nu_i$, gives an individual person's expected number of secondary infections (and $E_i[\nu_i] = R_0$), we can define an individual generation interval, $\xi_i(\tau)$, such that $E_i[\xi_i(\tau)] = g(\tau)$. By analog to the population-level model, we can define the *individual infectiousness profile*: 
 
 $$ a_i(\tau) = \nu_i \xi_i(\tau) $$ 
 
