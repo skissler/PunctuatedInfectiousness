@@ -73,7 +73,7 @@ $$ a_i(\tau) = \begin{cases}
 0 & \qquad \text{otherwise }
 \end{cases} \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-$$ a_i(\tau) = R_0 \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the (normalized) generation interval density, } A(\tau)/R_0$$ 
+$$ a_i(\tau) = R_0 \cdot \delta_{t_i}(\tau) \qquad \text{ where } t_i \text{ is distributed according to the (normalized) generation interval density, } A(\tau)/R_0$$ 
 
 
 
