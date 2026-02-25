@@ -2,7 +2,8 @@
 
 ## Introduction
 
-### Epidemic dynamics with renewal equations
+
+## Epidemic dynamics with renewal equations
 
 For a generic disease transmission process, the force of infection at time $t$ can be written in terms of a renewal equation: 
 
@@ -51,7 +52,7 @@ is obtained when
 
 $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$
 
-### The individual-level infectiousness profile 
+## The individual-level infectiousness profile 
 
 The generation interval distribution, $g(\tau)$, describes how secondary infections are distributed over time. Like $R_0$, $g(\tau)$ is a population-level object: it describes the temporal distribution of infection times for a "typical" infectious individual. As with the individual reproduction number, $\nu_i$, where $E_i[\nu_i] = R_0$, we can define an individual generation interval distribution, $\xi_i$, where $E_i[\xi_i(\tau)] = g_i(\tau)$. Furthermore, we can define an individual infectiousness profile, $a_i(\tau) = \nu_i \xi_i(\tau)$, such that $E_i[a_i(\tau)] = A(\tau)$. 
 
@@ -68,11 +69,11 @@ $$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \text{ where } t_i 
 
 Eq XX is simply $A(\tau)$ replicated exactly for each person. Eq XX is the underlying individual-level model often conceptualized when using the SEIR model, where a person spends an exponentially-distributed amount of time in the latent/exposed state and another exponentially-distirbuted amount of time in the infectious state. Eq XX is an extreme case where a person's infectiousness is completely concentrated at a single moment. All three have the same expectation, and thus yield the same average population-level dynamics. 
 
-### The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
+## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
 Despite yielding the same average population-level dynamics, epidemics that are governed by different forms of $a_i(\tau)$ may yield different stochastic dynamics. 
 
-### A Gamma convolutional model for the individual infectiousness profile 
+## A Gamma convolutional model for the individual infectiousness profile 
 
 To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equal, we introduce a one-parameter family of functions that allow us to reconstruct a Gamma-distributed $A(\tau)$ using Gamma-distributed $a_i(\tau)$ that are identical except for a time shift. 
 
@@ -93,13 +94,13 @@ $$
 Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile. Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
 
 
-### The impact of punctuated infectiousness on test-based screening and isolation countermeasures 
+## The impact of punctuated infectiousness on test-based screening and isolation countermeasures 
 
 
 
 
 
-### Splitting the infectiousness profile into biological infectiousness and contacts 
+## Splitting the infectiousness profile into biological infectiousness and contacts 
 
 Previously, we saw that we could decompose the individual infectiousness profile into the individual reproduction number and the individual generation interval (Eq XX). Here, we consider a more general, and more biologically-motivated, decomposition of $a_i(\tau)$ into "biological infectiousness" and "contacts". 
 
@@ -140,11 +141,11 @@ c_i(t) = R_0 \text{ for all } i,t
 $$
 
 
-### Assessing overdispersion resulting from variable contact rates and punctuated biological infectiousness 
+## Assessing overdispersion resulting from variable contact rates and punctuated biological infectiousness 
 
 Superspreading, or overdispersion in the secondary infection distribution, is normally thought to arise from overdispersion in individual infectiousness ($\nu_i$) or overdispersion on contacts ($c_i$). Here, we show that overdispersion can also arise from a third mechanism, the interaction of non-constant contacts and highly punctuated infectiousness profiles. 
 
-### Identifiability of punctuated infectiousness 
+## Identifiability of punctuated infectiousness 
 
 While the concentration of the individual infectiousness profile can impact how an epidemic unfolds, we lack frameworks for estimating it. Many approaches exist for estimating the generation interval, but there has not been a systematic approach developed to assess how individual infectiousness varies and to specify where on the continuum we sit -- i.e., how much of the variation in the generation interval distribution is attributable to variation between individuals, and how much to variation in infection timing within individuals. 
 
