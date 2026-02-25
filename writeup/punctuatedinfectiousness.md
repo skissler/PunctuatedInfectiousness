@@ -82,7 +82,7 @@ To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equ
 Let 
 
 $$
-A(\tau) = R_0 \text{Gamma}(\tau; \alpha, r), \qquad r = \alpha / \mu
+A(\tau) = R_0 f(\tau) \qquad \text{ where } f(\tau) \sim \text{Gamma}(\alpha, r), \qquad r = \alpha / \mu
 $$
 
 where $\mu$ is the mean generation interval and $\alpha$ controls the shape of the population-level infectiousness profile. 
