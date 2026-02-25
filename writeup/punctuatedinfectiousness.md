@@ -56,7 +56,7 @@ $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma
 
 ### The individual-level infectiousness profile 
 
-The generation interval, $g(\tau)$, is the distribution that describes the secondary infection times from a typical infected individual. Importantly, this *typical* individual may differ fundamentally from an actual individual: the generation interval distribution describes a population average, but the times at which an individual person is expected to transmit may differ significantly from this. Much like the individual reproduction number, $\nu_i$, gives an individual person's expected number of secondary infections (and $E_i[\nu_i] = R_0$), we can define an individual generation interval, $\xi_i(\tau)$, such that $E_i[\xi_i(\tau)] = g(\tau)$. By analog to the population-level model, we can define the *individual infectiousness profile*: 
+The generation interval, $g(\tau)$, is the distribution that describes the secondary infection times from a typical infected individual. Importantly, this typical individual may differ fundamentally from an actual individual: the generation interval distribution describes a population average, but the times at which an individual person is expected to transmit may differ significantly from this. Much like the individual reproduction number, $\nu_i$, gives an individual person's expected number of secondary infections (and $E_i[\nu_i] = R_0$), we can define an individual generation interval, $\xi_i(\tau)$, such that $E_i[\xi_i(\tau)] = g(\tau)$. By analog to the population-level model, we can define the *individual infectiousness profile*: 
 
 $$ a_i(\tau) = \nu_i \xi_i(\tau) $$ 
 
@@ -69,8 +69,8 @@ It is possible to obtain the same population-level infectiousness profile from v
 $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
 
 $$ a_i(\tau) = \begin{cases} 
-\beta & \tau \in [\tau_i^{\text{on}}, \tau_i^{\text{on}} + \tau_i^{\text{off}}] \\
-0 & \text{otherwise }
+\beta & \qquad \tau \in [\tau_i^{\text{on}}, \tau_i^{\text{on}} + \tau_i^{\text{off}}] \\
+0 & \qquad \text{otherwise }
 \end{cases} \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
 $$ a_i(\tau) = R_0 \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the (normalized) generation interval density, } A(\tau)/R_0$$ 
