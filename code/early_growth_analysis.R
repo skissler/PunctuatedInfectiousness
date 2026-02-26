@@ -169,12 +169,15 @@ cat(sprintf("  Conditioning on epidemics reaching >= %d infections\n\n",
             threshold_hi))
 
 threshold_results <- list()
+trajectory_list <- list()  # collect early trajectories for plotting
+n_traj <- 30  # trajectories to store per (R0, profile) pair
 
 for(R0_val in R0_values) {
 	for(profile in c("smooth", "spike")) {
 		t_lo <- numeric(nsim_r0)
 		t_hi <- numeric(nsim_r0)
 		reached <- logical(nsim_r0)
+		traj_count <- 0
 
 		for(i in 1:nsim_r0) {
 			tinf <- sim_stochastic_fast(n = n_pop, e_dur = e_dur, i_dur = i_dur,
@@ -184,6 +187,16 @@ for(R0_val in R0_values) {
 				reached[i] <- TRUE
 				t_lo[i] <- sorted[threshold_lo]
 				t_hi[i] <- sorted[threshold_hi]
+				# Store trajectory for plotting (up to n_traj per combo)
+				if(traj_count < n_traj) {
+					traj_count <- traj_count + 1
+					trajectory_list[[length(trajectory_list) + 1]] <- data.frame(
+						R0 = R0_val, profile = profile,
+						traj_id = traj_count,
+						case_num = 1:threshold_hi,
+						time = sorted[1:threshold_hi]
+					)
+				}
 			}
 		}
 
@@ -196,6 +209,8 @@ for(R0_val in R0_values) {
 		            R0_val, profile, sum(reached), nsim_r0, threshold_hi))
 	}
 }
+
+trajectory_df <- do.call(rbind, trajectory_list)
 
 # -- Table 1: Mean time to 10 and 100 infections ------------------------------
 
@@ -230,3 +245,87 @@ for(R0_val in R0_values) {
 	cat(sprintf("%5.1f | %15.1f %15.1f | %18.2f\n",
 	            R0_val, sd_sm, sd_sp, sd_sp / sd_sm))
 }
+
+# -- Figure 1: Spaghetti plot of early epidemic trajectories -------------------
+
+trajectory_df$R0_label <- factor(
+	paste0("R0 = ", trajectory_df$R0),
+	levels = paste0("R0 = ", R0_values)
+)
+
+fig_trajectories <- ggplot(trajectory_df,
+                           aes(x = time, y = case_num,
+                               group = interaction(profile, traj_id),
+                               color = profile)) +
+	geom_line(alpha = 0.4, linewidth = 0.4) +
+	facet_wrap(~R0_label, nrow = 1, scales = "free_x") +
+	scale_color_manual(values = c(smooth = "blue", spike = "red"),
+	                   labels = c("Smooth", "Spike")) +
+	labs(x = "Time (days)", y = "Cumulative infections",
+	     color = "Profile") +
+	theme_classic() +
+	theme(legend.position = "bottom",
+	      strip.background = element_blank())
+
+ggsave("figures/fig_early_growth_trajectories.pdf", fig_trajectories,
+       width = 14, height = 4)
+
+# -- Figure 2: Mean +/- SD of time to 100 infections across R0 ----------------
+
+summary_df <- do.call(rbind, lapply(R0_values, function(R0_val) {
+	rbind(
+		data.frame(R0 = R0_val, profile = "smooth",
+		           mean = mean(threshold_results[[paste(R0_val, "smooth")]]$t_hi),
+		           sd   = sd(threshold_results[[paste(R0_val, "smooth")]]$t_hi)),
+		data.frame(R0 = R0_val, profile = "spike",
+		           mean = mean(threshold_results[[paste(R0_val, "spike")]]$t_hi),
+		           sd   = sd(threshold_results[[paste(R0_val, "spike")]]$t_hi))
+	)
+}))
+
+fig_summary <- ggplot(summary_df,
+                      aes(x = R0, y = mean, color = profile)) +
+	geom_line(linewidth = 0.8) +
+	geom_pointrange(aes(ymin = mean - sd, ymax = mean + sd), size = 0.5) +
+	scale_color_manual(values = c(smooth = "blue", spike = "red"),
+	                   labels = c("Smooth", "Spike")) +
+	labs(x = expression(R[0]), y = "Time to 100 infections (days)",
+	     color = "Profile") +
+	theme_classic() +
+	theme(legend.position = "bottom")
+
+ggsave("figures/fig_early_growth_summary.pdf", fig_summary,
+       width = 6, height = 5)
+
+# -- Figure 3: Percentage delay vs R0 -----------------------------------------
+
+delay_df <- do.call(rbind, lapply(R0_values, function(R0_val) {
+	sm <- threshold_results[[paste(R0_val, "smooth")]]
+	sp <- threshold_results[[paste(R0_val, "spike")]]
+	data.frame(
+		R0 = R0_val,
+		delay_t10  = (mean(sp$t_lo) - mean(sm$t_lo)) / mean(sm$t_lo) * 100,
+		delay_t100 = (mean(sp$t_hi) - mean(sm$t_hi)) / mean(sm$t_hi) * 100
+	)
+}))
+
+delay_long <- pivot_longer(delay_df, cols = c(delay_t10, delay_t100),
+                           names_to = "threshold", values_to = "delay_pct")
+delay_long$threshold <- ifelse(delay_long$threshold == "delay_t10",
+                               "Time to 10", "Time to 100")
+
+fig_delay <- ggplot(delay_long,
+                    aes(x = R0, y = delay_pct,
+                        linetype = threshold)) +
+	geom_line(linewidth = 0.8) +
+	geom_point(size = 2) +
+	scale_linetype_manual(values = c("Time to 10" = "dashed",
+	                                 "Time to 100" = "solid")) +
+	labs(x = expression(R[0]),
+	     y = "Delay of spike vs smooth (%)",
+	     linetype = "Threshold") +
+	theme_classic() +
+	theme(legend.position = "bottom")
+
+ggsave("figures/fig_early_growth_delay.pdf", fig_delay,
+       width = 6, height = 5)
