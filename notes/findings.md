@@ -481,6 +481,12 @@ Test-and-isolate interventions are more effective against punctuated (spike-like
 
 Analysis code: `code/reff_reduction_decomposition.R`.
 
+### Note on the positivity window at small $\tau$
+
+When $\kappa$ is small, some individuals have early peaks ($t_{\text{peak}} < w_-$), causing the positivity window $[t_{\text{peak}} - w_-, t_{\text{peak}} + w_+]$ to extend before $\tau = 0$ (infection time). This is biologically impossible — a person cannot test positive before they are infected. With $\kappa = 0.5$ and $w_- = 3$, roughly 13% of individuals have $t_{\text{peak}} < 3$.
+
+In practice this does not bias results against our conclusions: tests cannot fire before $\tau = 0$ (screening starts post-infection), so the only effect is that the first test at small positive $\tau$ may fall within the nominal window and register as a true positive. This is a generous assumption for the intervention at small $\kappa$, slightly overstating detection effectiveness for spike profiles. The true $\kappa$-dependence of $R_{\text{eff}}$ reduction is therefore at least as strong as reported — conservative in the direction that reinforces the findings.
+
 ---
 
 *Last updated: 2026-02-25*
