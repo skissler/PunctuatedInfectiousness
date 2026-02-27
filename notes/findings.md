@@ -438,6 +438,49 @@ This partial self-defeat is specific to interventions that truncate the infectio
 
 Analysis code: `code/generation_interval_distortion.R`.
 
+## 15. Why the same test-and-isolate intervention yields different $R_{\text{eff}}$ reductions depending on $\kappa$
+
+Section 14 showed that test-and-isolate distorts the generation interval differently for spike vs smooth profiles. But a more fundamental question precedes it: why does the $R_{\text{eff}}$ reduction itself depend on $\kappa$? The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\alpha_{\text{total}}, r)$ is invariant across $\kappa$, so the test positivity window catches the same fraction of population-level transmission mass regardless of punctuation. Yet spike profiles see a larger $R_{\text{eff}}$ reduction than smooth profiles.
+
+### The detection probability is not the driver
+
+Simulation shows that the probability of detection is approximately constant across $\kappa$ at $\sim$97.5% (with 3-day screening, sensitivity 0.85, and a 6-day positivity window). This makes sense: the positivity window is wide relative to the screening interval, so almost everyone gets tested while positive regardless of profile shape.
+
+### The conditional value of detection is the driver
+
+The key quantity is $E[\text{frac averted} \mid \text{detected}]$ — the expected fraction of an individual's transmission attempts that occur after detection, conditional on being detected. This drops from $\sim$0.88 for spike profiles ($\kappa = 0.5$) to $\sim$0.80 for smooth profiles ($\kappa = 9.5$).
+
+Since $R_{\text{eff}} = R_0 \cdot (1 - P(\text{det}) \cdot E[\text{frac averted} \mid \text{det}])$, and $P(\text{det})$ is nearly constant, the $R_{\text{eff}}$ variation across $\kappa$ is driven almost entirely by the conditional value of detection.
+
+### Mechanism 1: All-or-nothing vs partial aversion
+
+For spike profiles, all transmission attempts cluster at a single time point. If detection occurs before this spike, 100% of transmission is averted; if after, 0% is averted. The conditional expectation $E[\text{frac averted} \mid \text{detected}]$ is therefore a weighted average of 1 and 0, dominated by the large fraction detected before the spike.
+
+For smooth profiles, attempts are spread across the profile. Detection at any time point averts only the fraction of attempts that have not yet occurred. An individual detected near the peak of a broad profile may have already completed 30--50% of their transmission. Pre-peak detection averts only $\sim$88% (not 100%) because some transmission occurs in the early tail before any test can fire.
+
+The distribution of frac averted given detection is bimodal (clustered at 0 and 1) for spike profiles but unimodal and centered below 1 for smooth profiles.
+
+### Mechanism 2: Tail leakage
+
+A secondary effect: smooth profiles place a non-negligible fraction of transmission attempts outside the positivity window entirely. At $\kappa = 9.5$, approximately 7% of attempts fall before the window opens or after it closes, making them fundamentally uncatchable by any test-based intervention. Spike profiles, by concentrating transmission near the peak, keep nearly 100% of attempts within the catchable window.
+
+### Quantitative decomposition
+
+| $\kappa$ | $P(\text{det})$ | $E[\text{frac averted} \mid \text{det}]$ | $R_{\text{eff}}$ | Tail leakage |
+|----------|-----------------|------------------------------------------|-------------------|---------------|
+| 0.5      | 0.975           | 0.88                                     | 0.28              | 0%            |
+| 2        | 0.975           | 0.86                                     | 0.32              | 1%            |
+| 6        | 0.975           | 0.82                                     | 0.40              | 5%            |
+| 9.5      | 0.975           | 0.80                                     | 0.44              | 7%            |
+
+The $R_{\text{eff}}$ varies by a factor of $\sim$1.6 across $\kappa$ values despite identical detection probabilities. The primary driver (accounting for $\sim$75% of the variation) is the conditional value of detection; tail leakage accounts for the remaining $\sim$25%.
+
+### Implication
+
+Test-and-isolate interventions are more effective against punctuated (spike-like) infectiousness profiles not because they detect more cases, but because each detection is worth more. For spike profiles, catching someone is an all-or-nothing event — detection before the spike averts everything; detection after averts nothing, but the "before" cases dominate. For smooth profiles, every detection is a partial victory, with diminishing returns as more of the profile has already contributed to transmission.
+
+Analysis code: `code/reff_reduction_decomposition.R`.
+
 ---
 
 *Last updated: 2026-02-25*
