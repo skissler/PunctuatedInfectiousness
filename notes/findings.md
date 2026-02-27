@@ -396,6 +396,48 @@ At high $R_0$, smooth profiles benefit from a "fastest horse wins" dynamic — m
 
 6. **Punctuation slows early growth, amplified by $R_0$**: spike profiles reach 100 infections 3--18% slower than smooth profiles (at $R_0 = 2$--$5$), via a minimum-of-order-statistics mechanism. The effect grows with $R_0$ because more infection attempts per infector means a larger order-statistics advantage for smooth profiles. At $R_0 \leq 1.2$, the effect vanishes because most infectors only generate one attempt.
 
+## 14. Test-and-isolate distorts the generation interval — but only for smooth profiles
+
+Test-based screening with post-detection isolation reduces transmission by truncating each detected individual's infectiousness profile: $a_i^{\text{eff}}(\tau) = a_i(\tau) \cdot \mathbf{1}[\tau < \tau_{\text{detect}}]$. This truncation both reduces $R_{\text{eff}}$ and reshapes the generation interval distribution — but the degree of reshaping depends critically on how punctuated the individual profile is.
+
+### Setup
+
+Regular screening every $\Delta$ days (random phase), with a positivity window of $[t_{\text{peak}} - w_-, t_{\text{peak}} + w_+]$, sensitivity $\sigma$, and false positive rate $\phi$. If detected, the individual isolates immediately, zeroing out all subsequent transmission. We compare the distribution of generation intervals among **successful** transmissions (those occurring before detection) to the natural generation interval $g(\tau) = \text{Gamma}(\tau; \alpha_{\text{total}}, r)$.
+
+### Spike (delta) case: all-or-nothing filtering
+
+All of individual $i$'s infection attempts occur at a single time $s_i$. Detection at $\tau_{\text{detect}}$ either happens before $s_i$ (blocking everything) or after $s_i$ (blocking nothing). Since the testing phase is uniform and the positivity window spans the spike symmetrically, the blocking probability $p_{\text{block}}$ is approximately constant across $s_i$ values. The effective generation interval among successful transmissions is:
+
+$$g_{\text{eff}}(\tau) \propto f_S(\tau) \cdot (1 - p_{\text{block}}(\tau)) \approx f_S(\tau) \cdot \text{const}$$
+
+**The shape is unchanged.** Testing removes a random fraction of would-be transmitters without altering the timing of the remaining ones.
+
+### Smooth case: profile truncation
+
+Each individual's profile is broad ($\approx A(\tau)$). Detection near the peak truncates the right tail, so only the left side contributes to successful transmission:
+
+$$g_{\text{eff}}(\tau) \propto A(\tau) \cdot P(T_{\text{detect}} > \tau)$$
+
+Since $P(T_{\text{detect}} > \tau)$ is decreasing in $\tau$, the effective generation interval **shifts shorter** relative to the natural $g(\tau)$.
+
+### Epidemiological consequence: partially self-defeating intervention
+
+The Euler-Lotka equation for the epidemic growth rate $r$ is:
+
+$$1 = R_{\text{eff}} \int_0^\infty e^{-r\tau} g_{\text{eff}}(\tau) \, d\tau$$
+
+In the spike case, $g_{\text{eff}} = g$, so the growth rate decreases in direct proportion to the $R_{\text{eff}}$ reduction.
+
+In the smooth case, $g_{\text{eff}}$ shifts shorter. For a given $R_{\text{eff}}$, a shorter generation interval implies a **larger** growth rate (transmissions happen sooner $\Rightarrow$ faster epidemic). So the reduction in $r$ from lowering $R_{\text{eff}}$ is **partially offset** by the shortening of $g_{\text{eff}}$.
+
+Concretely: for the same fractional reduction in $R_{\text{eff}}$, the spike case achieves a bigger reduction in epidemic growth rate than the smooth case.
+
+### What is distinctive about test-and-isolate
+
+This partial self-defeat is specific to interventions that truncate the infectiousness profile at a time point (test-and-isolate, contact tracing with delayed isolation). It does not apply to interventions that reduce $R_{\text{eff}}$ without altering the generation interval shape (e.g., vaccination, uniform contact reduction). The coupling between $R$ reduction and $g$ distortion, and its dependence on $\kappa$, is a distinctive feature of temporal interventions operating on punctuated infectiousness.
+
+Analysis code: `code/generation_interval_distortion.R`.
+
 ---
 
 *Last updated: 2026-02-25*
