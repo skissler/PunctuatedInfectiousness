@@ -606,6 +606,138 @@ Gathering size caps reduce mean transmission identically regardless of profile s
 
 Analysis code: `code/gathering_size_restrictions.R`.
 
+## 17. Planned: Symptom-triggered self-isolation
+
+*Status: planned, not yet implemented.*
+
+### Motivation
+
+Test-based screening (Sections 14–15) showed strong $\kappa$-dependence in both $R_{\text{eff}}$ reduction and generation interval distortion. The triggering mechanism there was random periodic screening — detection time was essentially independent of the biological profile's timing. Symptom-triggered isolation replaces this with a biologically anchored trigger: the individual isolates at symptom onset, which is correlated with the peak of infectiousness.
+
+This should sharpen the $\kappa$-dependence because the trigger is no longer random with respect to the transmission window — it is mechanistically coupled to it.
+
+### Model
+
+Decompose each individual's timeline as:
+
+1. Infection at $t_i$
+2. Onset shift $s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa,\; r)$ — the start of the biological infectiousness window
+3. Infectiousness window $b_i(\tau) = f_\kappa(\tau - s_i)$, a $\text{Gamma}(\kappa, r)$ density
+4. Symptom onset at $\tau_{\text{sym}} = s_i + \delta_{\text{sym}}$, where $\delta_{\text{sym}}$ is the delay from infectiousness onset to symptom onset. This could be:
+   - Fixed: $\delta_{\text{sym}} = d$ (simplest case — symptoms appear $d$ days after the start of the infectiousness window)
+   - Random: $\delta_{\text{sym}} \sim \text{some distribution}$ anchored to the profile (e.g., at the peak, or at a fixed fraction of the profile's mass)
+5. Isolation occurs at $\tau_{\text{iso}} = \tau_{\text{sym}} + \delta_{\text{iso}}$, where $\delta_{\text{iso}}$ is the delay from symptom recognition to effective isolation (could be 0 for immediate self-isolation, or positive for delayed response)
+6. Probability of compliance $p_{\text{iso}}$ — fraction of individuals who actually isolate upon symptoms
+
+Only infection attempts at times $\tau < \tau_{\text{iso}}$ succeed. The effective profile becomes:
+
+$$a_i^{\text{eff}}(\tau) = a_i(\tau) \cdot \mathbf{1}[\tau < \tau_{\text{iso}}]$$
+
+with probability $p_{\text{iso}}$, and $a_i^{\text{eff}} = a_i$ otherwise.
+
+### Key predictions
+
+**Delta (small $\kappa$):** All transmission occurs at a single time $\tau^* \approx s_i + \varepsilon$ where $\varepsilon$ is small (narrow spike). Symptom onset at $\tau_{\text{sym}} = s_i + \delta_{\text{sym}}$. If $\delta_{\text{sym}} + \delta_{\text{iso}} > \varepsilon$ (symptoms + isolation delay exceeds the jitter), isolation occurs after the spike — all transmission has already happened, isolation averts nothing. If $\delta_{\text{sym}} + \delta_{\text{iso}} < \varepsilon$ (unlikely for very small $\kappa$), isolation precedes the spike and averts everything.
+
+The critical question: **where does symptom onset fall relative to the transmission spike?** If symptoms are triggered by viral load (which peaks at or near the transmission spike), then for spike profiles, symptoms and transmission are nearly simultaneous. Pre-symptomatic transmission fraction is small *per event* but binary — either the spike beat the symptoms or it didn't. This is the all-or-nothing structure from Section 15.
+
+**Smooth (large $\kappa$):** Transmission is spread over a broad window. Symptom onset truncates the right tail, but a substantial fraction of transmission occurs in the pre-symptomatic early phase. The fraction averted is continuous and depends on $\delta_{\text{sym}}$.
+
+**The key $\kappa$-dependent quantity:** the fraction of the biological profile's mass that falls before symptom onset, $F_\kappa(\delta_{\text{sym}}) = \int_0^{\delta_{\text{sym}}} f_\kappa(u)\,du$. For small $\kappa$ (narrow spike), this is a sharp step function — either almost 0 or almost 1 depending on whether $\delta_{\text{sym}}$ is before or after the spike's mode. For large $\kappa$ (broad profile), this is a smooth sigmoid with substantial mass on both sides.
+
+### What's new relative to test-based screening
+
+1. **Trigger is biologically anchored.** In Section 14, detection time was $\tau_{\text{detect}} = \text{(random screening phase)} \cap \text{(positivity window)}$ — partly random. Here, $\tau_{\text{iso}}$ is deterministically coupled to $s_i$, so the fraction of pre-isolation transmission depends directly on the shape of $f_\kappa$ rather than on the interaction between $f_\kappa$ and an independent random process.
+
+2. **Pre-symptomatic transmission is the key parameter.** The entire analysis reduces to: what fraction of transmission occurs before symptoms? This is a single number (as a function of $\kappa$ and the symptom-onset model), making the results cleaner and more interpretable than the screening case.
+
+3. **No false positives or sensitivity parameters.** The symptom trigger is deterministic (for compliant individuals), removing the test-performance parameters from the model. The only free parameters are $\delta_{\text{sym}}$, $\delta_{\text{iso}}$, and $p_{\text{iso}}$.
+
+### Design choices to resolve before implementation
+
+- **Symptom onset model.** Where does $\tau_{\text{sym}}$ fall relative to $b_i$? Options:
+  - At the mode of $f_\kappa$ (i.e., symptoms at peak infectiousness). Mode of $\text{Gamma}(\kappa, r)$ is $(\kappa - 1)/r$ for $\kappa \geq 1$. This means for $\kappa < 1$, the mode is at 0 — symptoms would coincide with onset. This is the most natural biological assumption.
+  - At a fixed fraction of the profile's CDF (e.g., symptoms when 30% of infectiousness mass has elapsed). This gives a $\kappa$-dependent delay that scales with the profile's width.
+  - At a fixed absolute delay $\delta_{\text{sym}}$ after $s_i$ (simplest, but least biologically motivated).
+
+- **Isolation delay $\delta_{\text{iso}}$.** Sweep over values (0, 0.5, 1, 2 days) to examine sensitivity. Immediate isolation ($\delta_{\text{iso}} = 0$) is the theoretical upper bound on effectiveness.
+
+- **Asymptomatic fraction.** Some individuals may never develop symptoms ($p_{\text{sym}} < 1$). This acts as a ceiling on effectiveness but doesn't interact with $\kappa$ in an interesting way, so it can be handled as a simple scaling factor.
+
+## 18. Planned: Contact tracing
+
+*Status: planned, not yet implemented.*
+
+### Motivation
+
+Contact tracing is the most natural timing-dependent intervention to study because its effectiveness depends on the temporal profiles of *both* the infector (index case) and the infectee (traced contact). The delay from infection of the index case to isolation of the traced contact passes through a chain of timing-dependent steps, each of which interacts with $\kappa$.
+
+### Model: a three-step cascade
+
+Contact tracing unfolds as a cascade of delays, each of which can be modelled using the components developed in Sections 14–17:
+
+**Step 1: Index case detection** ($\tau_{\text{det}}^A$)
+
+The index case (person A) is detected via one of:
+- (a) Symptom onset + testing (Section 17): $\tau_{\text{det}}^A = s_A + \delta_{\text{sym}} + \delta_{\text{test}}$
+- (b) Routine screening (Section 14): $\tau_{\text{det}}^A$ depends on the positivity window and screening phase
+
+In both cases, $\tau_{\text{det}}^A$ depends on person A's profile via $s_A$ and $f_\kappa$.
+
+**Step 2: Tracing delay** ($\delta_{\text{trace}}$)
+
+After detection, contacts are identified and notified. This introduces a further delay $\delta_{\text{trace}}$ that is approximately independent of $\kappa$ (it depends on public health infrastructure, not biology). We can model it as fixed or $\text{Exp}(\text{rate})$.
+
+**Step 3: Contact isolation** ($\tau_{\text{iso}}^B$)
+
+Person B (a contact of A) is isolated at calendar time:
+
+$$T_{\text{iso}}^B = t_A + \tau_{\text{det}}^A + \delta_{\text{trace}}$$
+
+Person B was infected by A at some time $t_B = t_A + \tau_{A \to B}$, where $\tau_{A \to B}$ is the generation interval from A to B. B's own infectiousness profile starts at $t_B + s_B$. The fraction of B's transmission that is averted depends on:
+
+$$\tau_{\text{iso}}^B - t_B = \tau_{\text{det}}^A + \delta_{\text{trace}} - \tau_{A \to B}$$
+
+This is the time from B's infection to B's isolation — and it depends on A's detection time (which depends on A's profile via $\kappa$) and the generation interval from A to B (which also depends on A's profile).
+
+### Why $\kappa$ enters twice
+
+The effectiveness of tracing person B depends on:
+
+1. **How quickly A is detected** — determines when the tracing clock starts. For spike A: detection is either very early (if the trigger precedes the spike) or very late (if the spike precedes the trigger). For smooth A: detection is at a predictable time near the profile's peak.
+
+2. **What generation interval connected A to B** — determines how much head start B has. For spike A: $\tau_{A \to B} \approx s_A + \varepsilon$ (all of A's transmissions cluster at one time, so all traced contacts have similar head starts). For smooth A: $\tau_{A \to B}$ is spread over a wide range, so some contacts were infected early (long head start, likely already transmitted) and others late (short head start, tracing is more useful).
+
+3. **How concentrated B's own transmission is** — determines whether the isolation catches B before or after B's transmission window. This depends on B's $\kappa$, introducing a second $\kappa$-dependence.
+
+### Key predictions
+
+**Spike infector, spike infectee (small $\kappa$ throughout):** A's transmission spike produces a cluster of contacts all infected at nearly the same time. If tracing is fast enough to reach them before their own spikes, all are fully averted. If not, none are averted. **High variance, all-or-nothing.**
+
+**Smooth infector, smooth infectee (large $\kappa$ throughout):** A is detected at a predictable time. Contacts infected early by A have a long head start and may have completed much of their own transmission before being traced; contacts infected late have a short head start and are effectively isolated. **Graded effectiveness, depending on the generation interval from A to B.**
+
+**Spike infector, smooth infectee (or vice versa):** The cross-$\kappa$ cases may reveal asymmetries. A spike infector produces clustered contacts (all with similar head starts), while a smooth infector produces dispersed contacts (variable head starts). The infectee's $\kappa$ then determines whether isolation catches their transmission window.
+
+### Connection to Sections 14–17
+
+The contact tracing model composes the components developed earlier:
+
+- Step 1 reuses the detection model from test-based screening (Section 14) or symptom-triggered isolation (Section 17)
+- Step 3 reuses the truncation analysis from Section 14 (effective profile under isolation), but now applied to person B with a delay that depends on person A's profile
+
+This modular structure means the contact tracing analysis can build directly on the existing codebase: the detection module determines $\tau_{\text{det}}^A$, and the truncation module determines the fraction of B's transmission averted given a known isolation time.
+
+### Parameters to explore
+
+- **Tracing delay** $\delta_{\text{trace}}$: 0, 1, 2, 3 days
+- **Index detection mechanism**: symptom-triggered (Section 17) vs. screening-triggered (Section 14)
+- **Tracing coverage** $p_{\text{trace}}$: fraction of contacts successfully identified (0.5, 0.75, 1.0)
+- **$\kappa$ for infector vs infectee**: can sweep independently if the population is heterogeneous, or assume a single $\kappa$ if all individuals share the same profile shape
+
+### What's new
+
+The key novelty relative to Sections 14–17 is the **two-generation dependence**: the intervention on person B depends on person A's temporal profile. This means the population-level effectiveness of contact tracing depends not just on the marginal distribution of $\kappa$ but on the joint dynamics of successive generations. This is the first analysis in the project where the interaction between the profiles of *different* individuals in a transmission chain matters.
+
 ---
 
 *Last updated: 2026-02-27*
