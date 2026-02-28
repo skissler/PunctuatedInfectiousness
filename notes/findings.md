@@ -738,6 +738,97 @@ This modular structure means the contact tracing analysis can build directly on 
 
 The key novelty relative to Sections 14–17 is the **two-generation dependence**: the intervention on person B depends on person A's temporal profile. This means the population-level effectiveness of contact tracing depends not just on the marginal distribution of $\kappa$ but on the joint dynamics of successive generations. This is the first analysis in the project where the interaction between the profiles of *different* individuals in a transmission chain matters.
 
+## 19. Planned: Post-exposure prophylaxis (PEP)
+
+*Status: planned, not yet implemented.*
+
+### Motivation
+
+Post-exposure prophylaxis acts on the *infectee* rather than the infector: a known or suspected contact receives treatment (antivirals, antibodies, vaccination) that modifies their subsequent infectiousness profile. Unlike isolation-based interventions (Sections 14–18), which truncate the profile at a time point, PEP *reshapes* the profile — reducing its height, delaying its onset, or both. This introduces a qualitatively different interaction with $\kappa$.
+
+### Model
+
+Person B is infected by person A at time $t_B = t_A + \tau_{A \to B}$. Through some detection pathway (contact tracing, ring vaccination, household prophylaxis), B receives PEP at time:
+
+$$T_{\text{PEP}}^B = t_B + \delta_{\text{PEP}}$$
+
+where $\delta_{\text{PEP}}$ is the delay from B's infection to PEP administration. This delay has the same upstream dependencies as contact tracing (Section 18): it passes through A's detection, a tracing/notification step, and a treatment delay.
+
+The PEP modifies B's biological infectiousness profile. Two mechanistically distinct effects:
+
+**Effect 1: Prophylactic reduction (pre-emptive).** If PEP is administered before B's infectiousness window opens ($\delta_{\text{PEP}} < s_B$), it reduces peak infectiousness by a factor $\eta \in [0, 1]$:
+
+$$b_B^{\text{eff}}(\tau) = \eta \cdot b_B(\tau)$$
+
+This scales down the entire profile uniformly. The effective reproduction number becomes $R_B^{\text{eff}} = \eta \cdot R_0$.
+
+**Effect 2: Truncation (too late for full prophylaxis).** If PEP arrives after B's infectiousness has already begun ($\delta_{\text{PEP}} > s_B$), the prophylactic effect is partial — transmission that has already occurred is not reversed, and the remaining profile is scaled down:
+
+$$b_B^{\text{eff}}(\tau) = \begin{cases} b_B(\tau) & \tau < \delta_{\text{PEP}} \\ \eta \cdot b_B(\tau) & \tau \geq \delta_{\text{PEP}} \end{cases}$$
+
+The fraction of transmission averted depends on how much of $f_\kappa$ falls after $\delta_{\text{PEP}} - s_B$.
+
+A simpler variant treats PEP as purely pre-emptive: it only works if administered before some critical time (e.g., before viral replication establishes), and has no effect otherwise. This gives a sharp threshold model:
+
+$$R_B^{\text{eff}} = \begin{cases} \eta \cdot R_0 & \text{if } \delta_{\text{PEP}} < s_B + \delta_{\text{crit}} \\ R_0 & \text{otherwise} \end{cases}$$
+
+### Why $\kappa$ matters
+
+The interaction with $\kappa$ operates through two channels:
+
+**Channel 1: The upstream delay $\delta_{\text{PEP}}$ depends on A's profile.** If PEP is delivered through contact tracing (Section 18), the delay from B's infection to PEP delivery depends on how quickly A was detected. This is the same mechanism as Section 18 — spike infectors produce clustered contacts with correlated head starts; smooth infectors produce dispersed contacts with variable head starts. The distribution of $\delta_{\text{PEP}}$ across B's therefore depends on A's $\kappa$.
+
+**Channel 2: The effectiveness of PEP depends on B's profile.** The critical question is whether PEP arrives before B's transmission window opens (full prophylactic effect) or after it has begun (partial or no effect). This depends on $s_B$, the onset shift, and on the width of $f_\kappa$:
+
+- **Spike B (small $\kappa$):** B's transmission is concentrated at $\approx s_B$. PEP arriving before $s_B$ averts everything; PEP arriving after $s_B$ averts nothing. Sharp threshold. The probability of success depends on $P(\delta_{\text{PEP}} < s_B)$.
+
+- **Smooth B (large $\kappa$):** B's transmission is spread over a broad window starting at $s_B$. PEP arriving at any point during this window provides partial benefit. There is no sharp threshold — effectiveness degrades gracefully with delay.
+
+- **The variance of $s_B$ also matters.** For small $\kappa$, $s_B \sim \text{Gamma}(\alpha_{\text{total}} - \kappa, r)$ has high variance — onset times are widely dispersed, so even a fixed $\delta_{\text{PEP}}$ will sometimes beat $s_B$ and sometimes not. For large $\kappa$, $s_B$ has low variance (concentrated near 0 for $\kappa \to \alpha_{\text{total}}$), so the race between PEP and onset is more deterministic.
+
+### Key predictions
+
+**For spike profiles ($\kappa$ small):**
+- Effectiveness is **high-variance**: PEP either fully prevents onward transmission (if it arrives before the spike) or has zero effect (if it arrives after). The population-level $R_{\text{eff}}$ reduction depends on $P(\delta_{\text{PEP}} < s_B + \varepsilon)$.
+- The wide distribution of $s_B$ (large shift variance) means that even with moderate delays, some fraction of contacts will have late enough onset to benefit from PEP.
+- But fast PEP (small $\delta_{\text{PEP}}$) is disproportionately rewarded: each day saved shifts a tranche of individuals from "spike already fired" to "spike averted."
+
+**For smooth profiles ($\kappa$ large):**
+- Effectiveness is **graded**: every treated individual benefits partially, with the fraction averted declining smoothly with $\delta_{\text{PEP}}$.
+- The narrow distribution of $s_B$ (concentrated near 0) means onset happens quickly and predictably — PEP must arrive very promptly to precede any transmission.
+- Marginal returns to faster PEP delivery are moderate and roughly constant.
+
+**The cross-over prediction:** At short PEP delays, smooth profiles may benefit more (everyone gets a partial reduction). At long PEP delays, spike profiles may benefit more (some individuals still have late onset shifts $s_B > \delta_{\text{PEP}}$ and are fully protected, while smooth profiles have already completed most of their broad transmission window). The $\kappa$-dependence of PEP effectiveness should therefore **reverse sign** as a function of $\delta_{\text{PEP}}$.
+
+### What's new relative to isolation-based interventions
+
+1. **Profile reshaping vs. truncation.** Isolation (Sections 14–18) sets $a_i(\tau) = 0$ for $\tau > \tau_{\text{iso}}$. PEP scales $a_i$ down by $\eta$ after treatment, potentially preserving some transmission. This is more realistic for antivirals/antibodies that reduce but don't eliminate infectiousness.
+
+2. **Pre-emptive effect.** Isolation can only avert future transmission; PEP administered before the infectiousness window opens can prevent the entire infectious episode. This creates a qualitatively different threshold — the race is between PEP delivery and onset, not between detection and the spike.
+
+3. **Dose-response structure.** The parameter $\eta$ (prophylactic efficacy) introduces a continuous effectiveness dimension absent from isolation models. The interaction between $\eta$, $\delta_{\text{PEP}}$, and $\kappa$ creates a three-way surface with potentially rich structure.
+
+### Parameters to explore
+
+- **PEP delay** $\delta_{\text{PEP}}$: 0, 1, 2, 3, 5 days post-infection of B
+- **Prophylactic efficacy** $\eta$: 0 (perfect), 0.2, 0.5, 0.8 (weak)
+- **Delivery mechanism**: immediate (known exposure time) vs. contact-tracing-dependent (delay depends on A's detection; Section 18)
+- **Threshold vs. graded model**: sharp cutoff (PEP only works if before onset) vs. continuous scaling (PEP reduces remaining infectiousness whenever administered)
+- **$\kappa$ for B** (and separately for A, if tracing-dependent delivery)
+
+### Connection to the broader framework
+
+PEP completes a natural taxonomy of timing-dependent interventions:
+
+| Intervention | Acts on | Mechanism | Profile interaction |
+|---|---|---|---|
+| Test-based screening (§14–15) | Infector | Truncation at random detection time | Sampling vs. averaging of positivity window |
+| Symptom isolation (§17) | Infector | Truncation at biologically anchored time | Pre-symptomatic fraction depends on $\kappa$ |
+| Contact tracing (§18) | Infectee | Truncation at traced isolation time | Two-generation: A's profile → delay → B's truncation |
+| **PEP (§19)** | **Infectee** | **Scaling/truncation at treatment time** | **Two-generation: A's profile → delay → race with B's onset** |
+
+The progression from Section 14 to Section 19 traces a path of increasing mechanistic coupling between the intervention and the temporal structure of infectiousness.
+
 ---
 
 *Last updated: 2026-02-27*
