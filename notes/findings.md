@@ -487,6 +487,125 @@ When $\kappa$ is small, some individuals have early peaks ($t_{\text{peak}} < w_
 
 In practice this does not bias results against our conclusions: tests cannot fire before $\tau = 0$ (screening starts post-infection), so the only effect is that the first test at small positive $\tau$ may fall within the nominal window and register as a true positive. This is a generous assumption for the intervention at small $\kappa$, slightly overstating detection effectiveness for spike profiles. The true $\kappa$-dependence of $R_{\text{eff}}$ reduction is therefore at least as strong as reported — conservative in the direction that reinforces the findings.
 
+## 16. Gathering size restrictions are more effective for smooth profiles
+
+We investigated how gathering size restrictions interact with the temporal shape of individual infectiousness profiles. The central question: are gathering size caps more effective at preventing outbreaks when infectiousness is punctuated (spiky) versus smooth?
+
+The answer turns out to be the opposite of the naive expectation. Caps are **more effective for smooth profiles**, because they reduce mean transmission without losing the overdispersion that was already suppressing outbreak probability for spiky profiles.
+
+### Model
+
+Each individual moves through a sequence of gatherings. The contact process $c_i(t)$ is piecewise-constant:
+
+- **Gathering sizes**: drawn iid from $\text{NegBin}(n = 10/9,\; p = 1/10)$, giving mean 10, variance 100 (SD = 10). After normalisation (dividing by 5), the contact rate has mean 2 and variance 4.
+- **Holding times**: $\text{Exp}(\text{rate} = 2)$, so individuals change gathering approximately every 0.5 days.
+- **Gathering size cap**: draws exceeding the cap are rejected (truncated NegBin).
+
+The individual reproduction number $R_i$ arises from the interaction of the biological profile and the contact process:
+
+- **Delta profile**: $R_i = c_i(t^*)$ at a single random time. This is one draw from the contact-value distribution, inheriting its full variance.
+- **Smooth profile**: $R_i = \int c_i(\tau) \cdot f(\tau)\,d\tau$, where $f$ is the $\text{Gamma}(10, 0.3)$ PDF spanning $\sim$33 days. This averages over $\sim$36 independent contact-process steps, dramatically reducing variance.
+
+Offspring are $\text{Poisson}(R_i)$ — the standard superspreading framework.
+
+### Finding 16a: Caps reduce mean $R_i$ identically for all profile shapes
+
+The contact process enters multiplicatively with the biological profile. Since every biological profile integrates to the same value (regardless of $\kappa$), the expected contact rate at any time point determines $E[R_i]$. Truncating the gathering size distribution reduces this expected contact rate equally for spiky and smooth profiles.
+
+| Scenario      | $E[R_i]$ |
+|---------------|----------|
+| Uncapped      | 2.00     |
+| Capped at 20  | 1.39     |
+
+This was confirmed analytically and in simulation (28 $\kappa \times$ cap scenarios, with $E[R_i]$ varying by $< 0.04$ across $\kappa$ for each cap level).
+
+**The mean effect of gathering restrictions is $\kappa$-independent.**
+
+### Finding 16b: Caps reduce variance identically in fractional terms
+
+The variance of $R_i$ decomposes cleanly:
+
+| Profile | Scenario   | $E[R_i]$ | $\text{Var}(R_i)$ | $\text{CV}(R_i)$ |
+|---------|------------|----------|--------------------|-------------------|
+| Delta   | Uncapped   | 2.00     | 4.00               | 1.00              |
+| Delta   | Capped@20  | 1.39     | 1.20               | 0.79              |
+| Smooth  | Uncapped   | 2.00     | 0.11               | 0.17              |
+| Smooth  | Capped@20  | 1.39     | 0.03               | 0.13              |
+
+The cap reduces variance by $\sim$70% for both profiles. This is because the variance reduction factor from averaging ($I_{\text{corr}} = 0.028$, corresponding to $\sim$36 effective independent samples) multiplies both the uncapped and capped contact-process variance identically:
+
+$$\text{Var}(R_i)_{\text{smooth}} = \text{Var}(c_i) \cdot I_{\text{corr}}$$
+
+So the fractional reduction in variance from capping is the same: $\text{Var}(\text{capped}) / \text{Var}(\text{uncapped}) = \text{Var}(X \mid X \leq 20) / \text{Var}(X)$, regardless of the biological profile.
+
+**The differential is not in the fractional variance reduction — it is in the absolute amount of superspreading removed.** The cap eliminates $\Delta\text{Var} = 2.8$ for the delta profile versus $\Delta\text{Var} = 0.08$ for the smooth profile (a 35$\times$ difference).
+
+### Finding 16c: Overdispersion increases extinction probability
+
+For a branching process with $\text{Poisson}(R_i)$ offspring, higher variance in $R_i$ (for fixed $E[R_i] > 1$) increases the probability of stochastic extinction. Superspreading creates many individuals with $R_i$ near zero, providing frequent opportunities for chains to die out.
+
+**Unmitigated ($R = 2$):**
+
+| Profile              | $P(\text{extinction})$ | $P(\text{outbreak})$ |
+|----------------------|------------------------|----------------------|
+| Poisson(2) reference | 0.20                   | 0.80                 |
+| Smooth               | 0.22                   | 0.78                 |
+| Delta                | 0.51                   | 0.49                 |
+
+Despite having the same mean $R = 2$, the delta profile produces outbreaks less than half the time, while the smooth profile produces outbreaks $\sim$80% of the time. The smooth profile's near-Poisson $R_i$ distribution means reliable, moderate transmission from every individual.
+
+### Finding 16d: Caps are more effective at preventing outbreaks for smooth profiles
+
+**Mitigated (cap at 20, $R$ drops to 1.39):**
+
+| Profile              | $P(\text{extinction})$ | $P(\text{outbreak})$ |
+|----------------------|------------------------|----------------------|
+| Poisson(1.39) ref    | 0.50                   | 0.50                 |
+| Smooth               | 0.50                   | 0.50                 |
+| Delta                | 0.67                   | 0.33                 |
+
+The change in outbreak probability from imposing the cap:
+
+| Profile | $P(\text{outbreak})$ uncapped | $P(\text{outbreak})$ capped | Reduction |
+|---------|-------------------------------|-----------------------------|-----------|
+| Smooth  | 0.78                          | 0.50                        | **$-29$ pp** |
+| Delta   | 0.49                          | 0.33                        | **$-17$ pp** |
+
+The cap reduces smooth-profile outbreak probability by 29 percentage points, but delta-profile outbreak probability by only 17 percentage points.
+
+#### Mechanism
+
+Two effects of the cap act in opposite directions for the delta profile:
+
+1. **Lower mean $R$** ($2 \to 1.39$): pushes extinction up (fewer infections on average)
+2. **Lower variance** ($4 \to 1.2$): pushes extinction *down* (fewer zero-offspring individuals, more consistent transmission)
+
+These partially cancel. The cap removes the large-gathering tail that was simultaneously (a) creating superspreaders and (b) creating dead ends. Eliminating both leaves the outbreak probability only modestly changed.
+
+For the smooth profile, variance was already near zero (0.11), so the variance reduction is negligible. The full force of the mean reduction translates directly into fewer outbreaks, matching the Poisson(1.39) reference almost exactly.
+
+### Finding 16e: Simulation results confirm the analytical predictions
+
+The large-scale simulation (`code/gathering_size_restrictions.R`) swept 7 values of $\kappa$ (0.5 to 9.5) across 4 cap levels (5, 10, 20, $\infty$), with 50,000 MC replicates per scenario for $R_i$ distributions and 200 epidemic simulations per scenario.
+
+Key confirmations:
+
+- **$E[R_i]$ is constant across $\kappa$** for each cap level (range $< 0.04$)
+- **$\text{CV}(R_i)$ decreases with $\kappa$** for uncapped scenarios (from 1.07 at $\kappa = 0.5$ to 0.82 at $\kappa = 9.5$), confirming that smooth profiles average out contact variation
+- **All capped epidemic scenarios showed zero establishment** in the full simulation (because with geometric gathering sizes of mean 30, even a cap at 20 reduces $E[R_i]$ to $\sim$0.58 — well below 1). This demonstrates that for heavy-tailed gathering size distributions, even moderate caps can collapse mean transmission, making the variance-level differential moot for epidemic outcomes.
+
+The analytical calculations (Finding 16d) used a different parameterisation ($\text{NegBin}/5$ with mean 2, cap at 20 giving $E[R_i] = 1.39 > 1$) to isolate the regime where the differential effect on outbreak probability is visible.
+
+### Summary
+
+The naive hypothesis — that gathering size restrictions are *more* effective against punctuated infectiousness because they selectively remove superspreading events — is incorrect, or at least incomplete.
+
+Gathering size caps reduce mean transmission identically regardless of profile shape. But they also reduce variance, and for spiky profiles, that variance was *already suppressing outbreaks* via stochastic extinction. The cap simultaneously removes the superspreading tail (which sustained rare large outbreaks) and the zero-transmission tail (which killed most chains). The net effect on outbreak probability is smaller than for smooth profiles, where there was no beneficial overdispersion to lose.
+
+**Gathering size restrictions are more effective at preventing outbreaks when infectiousness is smooth**, because smooth profiles have no overdispersion buffer to erode.
+
+Analysis code: `code/gathering_size_restrictions.R`.
+
 ---
 
-*Last updated: 2026-02-25*
+*Last updated: 2026-02-27*

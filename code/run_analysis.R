@@ -84,6 +84,13 @@ cat("\n--- 7. Trial simulations for identifiability ---\n\n")
 source("code/simulate_trials.R")
 
 # ==============================================================================
+# 8. Gathering size restrictions (Section 10)
+# ==============================================================================
+
+cat("\n--- 8. Gathering size restrictions analysis ---\n\n")
+source("code/gathering_size_restrictions.R")
+
+# ==============================================================================
 # Done
 # ==============================================================================
 
