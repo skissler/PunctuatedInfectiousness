@@ -144,9 +144,7 @@ Superspreading, or overdispersion in the secondary infection distribution, is no
 
 While the concentration of the individual infectiousness profile can impact how an epidemic unfolds, we lack frameworks for estimating it. Many approaches exist for estimating the generation interval, but there has not been a systematic approach developed to assess how individual infectiousness varies and to specify where on the continuum we sit -- i.e., how much of the variation in the generation interval distribution is attributable to variation between individuals, and how much to variation in infection timing within individuals. 
 
-
-# Conclusions
-
+# Discussion 
 
 # References 
 
