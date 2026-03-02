@@ -2,12 +2,15 @@
 
 ## Introduction
 
-The trajectory of an epidemic is governed by two key factors: the reproduction number, or the expected number of secondary infections that an infectious persion will produce; and the generation interval distribution, or the distribution of times at which those secondary infections are expected to occur, relative to the index case's infection. 
+The trajectory of an epidemic is governed by two key factors: the basic reproduction number $R_0$, or the expected number of secondary infections that an infectious persion will produce in an otherwise susceptible population; and the generation interval distribution $g(\tau)$, or the distribution of times at which those secondary infections are expected to occur, relative to the index case's infection ($\tau = 0$). 
 
 Both the reproduction number and the generation interval distribution are expected values, averaged over a large population. At the individual level, the individual reproduction number [[x](https://www.nature.com/articles/nature04153)] is the expected number of new infections that a single infectious person will produce, such that $R_0 = \sum_i \nu_i$. Similarly, the generation interval distribution is the average of the times a single person is expected to transmit disease, such that $g(\tau) = \sum_i a_i(\tau)$, where $a_i(\tau)$ is the "individual infectiousness kernel" [[x](https://pubmed.ncbi.nlm.nih.gov/26674948/), [x](https://www.sciencedirect.com/science/article/pii/S0025556406002094)]. 
 
+For many pathogens, the shape of the individual infectiousness kernel is poorly understood. Contact tracing to count infections is hard enough; measuring precisely the times of those infections is even harder. When it is done, it is usually averaged over many individuals, so that the "infectiousness period" assigned to a person in models reflects some average over multiple individuals -- either the generation interval itself, or some intermediate between the individual infectiousness kernel and the generation interval distribution. Some evidence suggests that the infectious period for SARS-CoV-2 and influenza, at the individual level, may be highly punctuated, such that opportuntiies for superspreading only exist over the course of a few hours. 
 
+The impact of the punctuatedness of the individual infectiousness kernel has been examined as a sensitivity anlaysis in various epidemiological studies. (Dan; others?). However, we lack a comprehensive understanding of how the sharpenss of the individual infectiousness kernel, independent of other features like the individual reproduction number, basic reproduction number, and generation interval distribution, impacts epidemic dynamics under both uncontrolled and controlled settings. Furthermore, we lack an understanding of how to measure the shape of the individual infectiousness kernel reliably, along with the settings when the kernel's shape is statistically identifiable. 
 
+Here, we address these gaps. 
 
 
 ## Epidemic dynamics with renewal equations
