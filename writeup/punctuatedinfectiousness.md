@@ -20,13 +20,13 @@ $$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$
 
 where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection and the susceptible density, $F(t) \cdot S(t)$; thus, the infectiousness profile $A(\tau)$ is thus the fundamental object that determines how an epidemic unfolds. 
 
-The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$: 
+The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$ [[x](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454)]: 
 
 $$ R_0 = \int_0^\infty A(\tau) d\tau $$ 
 
 $$ g(\tau) = \frac{A(\tau)}{R_0} $$ 
 
-Furthermore, particular choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models. For example, For example, the SEIR model 
+Furthermore, particular choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models [[x](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454)]. For example, For example, the SEIR model 
 
 $$
 \begin{align}
