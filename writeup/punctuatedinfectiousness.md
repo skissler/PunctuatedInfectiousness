@@ -54,7 +54,7 @@ $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gam
 
 where each person's infectiousness profile is a smooth curve that is identical to the population-level infectiousness profile, and 
 
-$$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the generation interval density, } A(\tau)/R_0$$ 
+$$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \qquad \text{ where } t_i \text{ is distributed according to the generation interval density, } A(\tau)/R_0$$ 
 
 where each person's infectiousness profile is a delta function, such that all their infectiousness is concentrated at a single moment. 
 
