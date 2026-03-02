@@ -12,17 +12,19 @@ In theory, a punctuated individual infectiousness kernel could impact epidemic d
 
 Here, we address these gaps. 
 
-## Epidemic dynamics with renewal equations
+## Expressing the Hudson-Kermack-McKendrick model in terms of individual infectiousness 
 
-For a generic disease transmission process, the force of infection at time $t$ can be written in terms of a renewal equation: 
+Early work by Hudson, and later by Kermack and McKendrick, modeled disease transmission in a population using an integral equation. In modern notation, the force of infection is 
 
 $$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$ 
 
-Here, $S(t)$ is the density of susceptible individuals in the population at time $t$ and $A(\tau)$ is the (population-level) "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is 
+where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is 
 
 $$ J(t) = -\dot{S}(t) = S(t) F(t) $$ 
 
 The infectiousness profile $A(\tau)$ is thus the fundamental object that determines how the epidemic unfolds. 
+
+## Epidemic dynamics with renewal equations
 
 The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$: 
 
