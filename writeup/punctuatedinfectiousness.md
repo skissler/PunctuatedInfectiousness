@@ -18,11 +18,9 @@ Early work by Hudson, and later by Kermack and McKendrick, modeled disease trans
 
 $$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$ 
 
-where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is 
+where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection $F(t)$ and the susceptible density $S(t)$; thus, the infectiousness profile $A(\tau)$ is thus the fundamental object that determines how the epidemic unfolds. 
 
-$$ J(t) = -\dot{S}(t) = S(t) F(t) $$ 
-
-The infectiousness profile $A(\tau)$ is thus the fundamental object that determines how the epidemic unfolds. This infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$: 
+The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$: 
 
 $$ R_0 = \int_0^\infty A(\tau) d\tau $$ 
 
@@ -42,6 +40,13 @@ $$
 is obtained when 
 
 $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$
+
+
+
+
+
+
+
 
 ## The individual-level infectiousness profile 
 
