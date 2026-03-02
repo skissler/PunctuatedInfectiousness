@@ -18,15 +18,15 @@ Early work by Hudson, and later by Kermack and McKendrick, modeled disease trans
 
 $$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$ 
 
-where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection and the susceptible density, $F(t) \cdot S(t)$; thus, the infectiousness profile $A(\tau)$ is thus the fundamental object that determines how the epidemic unfolds. 
+where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection and the susceptible density, $F(t) \cdot S(t)$; thus, the infectiousness profile $A(\tau)$ is thus the fundamental object that determines how an epidemic unfolds. 
 
 The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$: 
 
 $$ R_0 = \int_0^\infty A(\tau) d\tau $$ 
 
-$$ g(\tau) = A(\tau) / R_0 $$ 
+$$ g(\tau) = \frac{A(\tau)}{R_0} $$ 
 
-Furthermore, various choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models. For example, For example, the SEIR model 
+Furthermore, particular choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models. For example, For example, the SEIR model 
 
 $$
 \begin{align}
@@ -41,16 +41,13 @@ is obtained when
 
 $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$
 
+An individual person's infectiousness kernel $a_i(\tau)$ may differ substantially from $A(\tau)$, and multiple different $a_i(\tau)$ may yield the same $A(\tau)$. For example, the SEIR model is often conceptually motivated by considering an individual who undergoes a latent period of length $X \sim \text{Exp}(\gamma)$ in which they are not infectious, followed by an infectious period of length $Y \sim \text{Exp}(\alpha)$, during which they are infectious at level $\beta$ (Here, $X$ and $Y$ are exponentially-distributed random variables). 
 
 
 
 
 
-
-
-## The individual-level infectiousness profile 
-
-The generation interval distribution, $g(\tau)$, describes how secondary infections are distributed over time. Like $R_0$, $g(\tau)$ is a population-level object: it describes the temporal distribution of infection times for a "typical" infectious individual. As with the individual reproduction number, $\nu_i$, where $E_i[\nu_i] = R_0$, we can define an individual generation interval distribution, $\xi_i$, where $E_i[\xi_i(\tau)] = g_i(\tau)$. Furthermore, we can define an individual infectiousness profile, $a_i(\tau) = \nu_i \xi_i(\tau)$, such that $E_i[a_i(\tau)] = A(\tau)$. 
+As with the individual reproduction number, $\nu_i$, where $E_i[\nu_i] = R_0$, we can define an individual generation interval distribution, $\xi_i$, where $E_i[\xi_i(\tau)] = g_i(\tau)$. Furthermore, we can define an individual infectiousness profile, $a_i(\tau) = \nu_i \xi_i(\tau)$, such that $E_i[a_i(\tau)] = A(\tau)$. 
 
 An immediate observation is that it is possible to obtain the same population-level $A(\tau)$ from vastly different forms of $a_i(\tau)$. For example, the following $a_i(\tau)$ all yield the SEIR-equivalent $A(\tau)$: 
 
