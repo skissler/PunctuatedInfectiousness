@@ -48,7 +48,7 @@ $$ a_i(\tau) = \begin{cases}
 0 & \qquad \text{otherwise }
 \end{cases} \qquad \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-It can be shown that $E_i(\a_i(\tau)) = \lim_{n \rightarrow \infty} \sum_{i = 1}^n a_i(\tau) = A(\tau)$. 
+It can be shown that $E_i(a_i(\tau)) = \lim_{n \rightarrow \infty} \sum_{i = 1}^n a_i(\tau) = A(\tau)$. 
 
 
 
