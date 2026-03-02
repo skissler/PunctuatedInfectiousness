@@ -2,6 +2,14 @@
 
 ## Introduction
 
+The trajectory of an epidemic is governed by two key factors: the reproduction number, or the expected number of secondary infections that an infectious persion will produce; and the generation interval distribution, or the distribution of times at which those secondary infections are expected to occur, relative to the index case's infection. 
+
+Both the reproduction number and the generation interval distribution are expected values, averaged over a large population. At the individual level, the individual reproduction number [[x](https://www.nature.com/articles/nature04153)] 
+
+
+
+
+
 ## Epidemic dynamics with renewal equations
 
 For a generic disease transmission process, the force of infection at time $t$ can be written in terms of a renewal equation: 
