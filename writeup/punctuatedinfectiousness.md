@@ -14,7 +14,7 @@ Here, we address these gaps.
 
 ## Expressing the Hudson-Kermack-McKendrick model in terms of individual infectiousness 
 
-Early work by Hudson, and later by Kermack and McKendrick [[x](https://link.springer.com/article/10.1007/BF02464423)], modeled disease transmission in a population using an integral equation. In modern notation, the force of infection is 
+Early work by Hudson, and later by Kermack and McKendrick [[x](https://link.springer.com/article/10.1007/BF02464423)], modeled disease transmission in a population using an integral equation. In modern notation [[x](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454)], the force of infection is 
 
 $$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$ 
 
