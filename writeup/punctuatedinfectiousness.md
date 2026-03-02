@@ -48,24 +48,15 @@ $$ a_i(\tau) = \begin{cases}
 0 & \qquad \text{otherwise }
 \end{cases} \qquad \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$. 
-
-
-
-As with the individual reproduction number, $\nu_i$, where $E_i[\nu_i] = R_0$, we can define an individual generation interval distribution, $\xi_i$, where $E_i[\xi_i(\tau)] = g_i(\tau)$. Furthermore, we can define an individual infectiousness profile, $a_i(\tau) = \nu_i \xi_i(\tau)$, such that $E_i[a_i(\tau)] = A(\tau)$. 
-
-An immediate observation is that it is possible to obtain the same population-level $A(\tau)$ from vastly different forms of $a_i(\tau)$. For example, the following $a_i(\tau)$ all yield the SEIR-equivalent $A(\tau)$: 
+It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$. However, other $a_i(\tau)$ also yield the same $A_i(\tau)$, including 
 
 $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
 
-$$ a_i(\tau) = \begin{cases} 
-\beta & \qquad \tau \in [\tau_i^{\text{on}}, \tau_i^{\text{on}} + \tau_i^{\text{off}}] \\
-0 & \qquad \text{otherwise }
-\end{cases} \qquad \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
+where each person's infectiousness profile is a smooth curve that is identical to the population-level infectiousness profile, and 
 
 $$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \text{ where } t_i \text{ is distributed according to the generation interval density, } A(\tau)/R_0$$ 
 
-Eq XX is simply $A(\tau)$ replicated exactly for each person. Eq XX is the underlying individual-level model often conceptualized when using the SEIR model, where a person spends an exponentially-distributed amount of time in the latent/exposed state and another exponentially-distirbuted amount of time in the infectious state. Eq XX is an extreme case where a person's infectiousness is completely concentrated at a single moment. All three have the same expectation, and thus yield the same average population-level dynamics. 
+where each person's infectiousness profile is a delta function, such that all their infectiousness is concentrated at a single moment. 
 
 ## A Gamma convolutional model for the individual infectiousness profile 
 
