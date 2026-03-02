@@ -48,7 +48,7 @@ $$ a_i(\tau) = \begin{cases}
 0 & \qquad \text{otherwise }
 \end{cases} \qquad \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$. However, other $a_i(\tau)$ also yield the same $A_i(\tau)$, including 
+It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$ [[x](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454)]. However, other $a_i(\tau)$ also yield the same $A_i(\tau)$, including 
 
 $$ a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$ 
 
@@ -56,7 +56,11 @@ where each person's infectiousness profile is a smooth curve that is identical t
 
 $$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \qquad \text{ where } t_i \text{ is distributed according to the generation interval density, } A(\tau)/R_0$$ 
 
-where each person's infectiousness profile is a delta function, such that all their infectiousness is concentrated at a single moment. 
+where each person's infectiousness profile is a delta function, such that all their infectiousness is concentrated at a single moment (**Figure XX**). 
+
+
+
+
 
 ## A Gamma convolutional model for the individual infectiousness profile 
 
