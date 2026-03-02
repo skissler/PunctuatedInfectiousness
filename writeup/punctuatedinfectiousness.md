@@ -28,13 +28,7 @@ $$ R_0 = \int_0^\infty A(\tau) d\tau $$
 
 $$ g(\tau) = A(\tau) / R_0 $$ 
 
-Furthermore, various choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models. For example, 
-
-## Epidemic dynamics with renewal equations
-
-The infectiousness profile is 
-
-Furthermore, various choices of $A(\tau)$ generate disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models. For example, the SEIR model 
+Furthermore, various choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models. For example, For example, the SEIR model 
 
 $$
 \begin{align}
