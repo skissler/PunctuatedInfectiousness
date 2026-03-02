@@ -41,14 +41,14 @@ is obtained when
 
 $$ A(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau}) $$
 
-An individual person's infectiousness kernel $a_i(\tau)$ may differ substantially from $A(\tau)$, and multiple different $a_i(\tau)$ may yield the same $A(\tau)$. For example, the SEIR model is often conceptually motivated by considering an individual who undergoes a latent period of length $X \sim \text{Exp}(\gamma)$ in which they are not infectious, followed by an infectious period of length $Y \sim \text{Exp}(\alpha)$, during which they are infectious at level $\beta$ (Here, $X$ and $Y$ are exponentially-distributed random variables). Mathematically, 
+An individual person's infectiousness kernel $a_i(\tau)$ may differ substantially from $A(\tau)$, and multiple different $a_i(\tau)$ may yield the same $A(\tau)$. For example, the SEIR model is often conceptually motivated by considering an individual who undergoes a latent period of length $X \sim \text{Exp}(\gamma)$ during which they are not infectious, followed by an infectious period of length $Y \sim \text{Exp}(\alpha)$ during which they are infectious at level $\beta$. Mathematically, 
 
 $$ a_i(\tau) = \begin{cases} 
 \beta & \qquad \tau \in [\tau_i^{\text{on}}, \tau_i^{\text{on}} + \tau_i^{\text{off}}] \\
 0 & \qquad \text{otherwise }
 \end{cases} \qquad \text{ where } \tau_i^{\text{on}} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{\text{off}} \sim \text{Exp}(\alpha)$$ 
 
-
+It can be shown that $E_i(\a_i(\tau)) = \lim_{n \rightarrow \infty} \sum_{i = 1}^n a_i(\tau) = A(\tau)$. 
 
 
 
