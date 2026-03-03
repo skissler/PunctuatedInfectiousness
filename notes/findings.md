@@ -166,6 +166,52 @@ Visualization: `code/visualize_profiles_gamma.R`.
 
 - **$\mu$**: The mean generation time, equal to $\alpha_{\text{total}} / r$. Changing $\mu$ scales the time axis without affecting the shape of $A(\tau)$ or the punctuation structure.
 
+### Extension: heterogeneous $\kappa$ across individuals
+
+The shifted Gamma construction is remarkably robust to heterogeneity in the punctuation parameter. If different individuals draw different $\kappa_i$ values from some distribution $\kappa_i \sim F$ on $(0, \alpha_{\text{total}})$, the population-level kernel $A(\tau)$ is **exactly unchanged** — and this holds for *any* distribution $F$, with no moment conditions required.
+
+#### Why it works
+
+The argument is simple. For a given individual $i$ with punctuation parameter $\kappa_i$, their contact times decompose as:
+
+$$c_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa_i, r), \quad \varepsilon_j \sim \text{Gamma}(\kappa_i, r)$$
+
+By the Gamma additivity property, the marginal distribution of each contact time is:
+
+$$c_j \mid \kappa_i \sim \text{Gamma}(\alpha_{\text{total}}, r) \qquad \text{for every } \kappa_i \in (0, \alpha_{\text{total}})$$
+
+The crucial point: the right-hand side **does not depend on $\kappa_i$**. The identity $\text{Gamma}(\alpha - \kappa, r) + \text{Gamma}(\kappa, r) = \text{Gamma}(\alpha, r)$ is exact for every $\kappa$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r)$ regardless of their punctuation parameter.
+
+When we average over the population:
+
+$$A(\tau) = E_{\kappa_i}\left[E[a_i(\tau) \mid \kappa_i]\right] = E_{\kappa_i}\left[R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r)\right] = R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r)$$
+
+The expectation over $\kappa_i$ passes through because the integrand does not depend on $\kappa_i$. The distribution $F$ cancels entirely.
+
+#### Example distributions
+
+With $\alpha_{\text{total}} = 10$, we can define $\kappa_i = \alpha_{\text{total}} \cdot B_i$ where $B_i \sim \text{Beta}(a, b)$ on $(0, 1)$, giving $\kappa_i \in (0, 10)$.
+
+**Example 1: Homogeneous population (degenerate $F$).** $\kappa_i = 5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
+
+**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, r)$.
+
+**Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\kappa_i$ near $\alpha_{\text{total}}$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
+
+**Example 4: Left-skewed (mostly spiky).** $B_i \sim \text{Beta}(1, 5)$, concentrating $\kappa_i$ near 0. Most individuals have narrow spikes; a few are smooth. $A(\tau)$ is still unchanged.
+
+In all four cases — and in any other distribution on $(0, \alpha_{\text{total}})$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. The only observables that differ are individual-level statistics: the variance of $R_i$, the offspring overdispersion, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
+
+#### Implication for interventions
+
+This invariance property means that a population with heterogeneous $\kappa$ provides a clean setting for studying how interventions perform across a mixture of profile types, without any confounding from changes in $A(\tau)$. For instance, in a U-shaped population (Example 2):
+
+- Detect-and-isolate (Section 14) would be highly effective against the spiky subpopulation (all-or-nothing aversion, biased toward "all") but less effective against the smooth subpopulation (partial aversion, generation interval distortion).
+- Gathering size restrictions (Section 15) would primarily affect the spiky subpopulation in absolute variance terms, while having the same mean effect on everyone.
+- Contact tracing (Section 16) effectiveness would depend on the $\kappa$ of both infector and infectee, creating a $2 \times 2$ structure of spiky/smooth pairings within the same population.
+
+The population-level $R_{\text{eff}}$ under any intervention is a mixture over individual-level $\kappa_i$ values, and the mixture weights are set by $F$ — but the uncontrolled $A(\tau)$ is invariant, so any differences in epidemic outcomes under intervention are attributable purely to the $\kappa$ heterogeneity, not to differences in the baseline transmission kernel.
+
 ## 10. Decomposing infectiousness into biological and contact components
 
 The individual infectiousness profile $a_i(\tau)$ conflates two distinct processes: the biological trajectory of infectiousness (viral load, shedding) and the rate at which the individual makes potentially transmissive contacts. Separating these gives a cleaner framework for studying how temporal structure in contact patterns interacts with punctuated biological infectiousness.
