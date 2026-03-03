@@ -820,7 +820,7 @@ The resolution is that "same expected trajectory" does not imply "same expected 
 
 ### Setup: the Crump–Mode–Jagers branching process
 
-The early epidemic (before susceptible depletion matters) is a Crump–Mode–Jagers (CMJ) branching process. Each individual $i$, infected at time $t_i$, independently generates offspring according to a point process on $[0, \infty)$ with intensity measure $\mu(d\tau) = A(\tau)\,d\tau$.
+The early epidemic (before susceptible depletion matters) is a Crump–Mode–Jagers (CMJ) branching process. Let $Z(t)$ denote the total number of individuals infected by time $t$ (cumulative incidence), starting from a single index case at $t = 0$. Each individual $i$, infected at time $t_i$, independently generates offspring according to a point process on $[0, \infty)$ with intensity measure $\mu(d\tau) = A(\tau)\,d\tau$.
 
 For the **smooth** model, individual $i$ draws $k_i \sim \text{Poisson}(R_0)$ offspring at independent times $\tau_1, \ldots, \tau_{k_i} \sim g(\tau)$.
 
