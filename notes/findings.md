@@ -200,7 +200,7 @@ With $\alpha_{\text{total}} = 10$, we can define $\kappa_i = \alpha_{\text{total
 
 **Example 4: Left-skewed (mostly spiky).** $B_i \sim \text{Beta}(1, 5)$, concentrating $\kappa_i$ near 0. Most individuals have narrow spikes; a few are smooth. $A(\tau)$ is still unchanged.
 
-In all four cases — and in any other distribution on $(0, \alpha_{\text{total}})$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. The only observables that differ are individual-level statistics: the variance of $R_i$, the offspring overdispersion, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
+In all four cases — and in any other distribution on $(0, \alpha_{\text{total}})$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. Importantly, heterogeneous $\kappa$ alone does not introduce variation in $R_i$: each individual's profile integrates to exactly $R_0$ regardless of their $\kappa_i$, because $f_{\kappa_i}$ is a proper density for every $\kappa_i$. Variation in $R_i$ arises only when there is a time-varying contact process to interact with (Sections 10–11); what $\kappa$ heterogeneity does is create heterogeneous *sensitivity* to that contact variation. The observables that differ across $\kappa$ distributions are therefore conditional on the contact environment: the degree of offspring overdispersion given periodic contacts, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
 
 #### Implication for interventions
 
