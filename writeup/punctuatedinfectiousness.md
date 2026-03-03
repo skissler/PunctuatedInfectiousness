@@ -60,29 +60,32 @@ $$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \qquad \text{ where
 
 where each person's infectiousness profile is a delta function, such that all their infectiousness is concentrated at a single moment (**Figure XX**). 
 
-### A Gamma convolutional model for the individual infectiousness profile 
+Like $A(\tau)$, $a_i(\tau)$ is related to the individual reproduction number, $\nu_i$, and the individual generation interval distribution, $\xi_i(\tau)$: 
 
-To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equal, we introduce a one-parameter family of functions that allow us to reconstruct a Gamma-distributed $A(\tau)$ using Gamma-distributed $a_i(\tau)$ that are identical except for a time shift. 
+$$ \nu_i = \int_\tau=0^\infty a_i(\tau) $$ 
 
-Let 
+$$ \xi_i(\tau) = a_i(\tau) / \nu_i $$ 
 
-$$
-A(\tau) = R_0 f_A(\tau) \qquad \text{ where } f_A(\tau) \sim \text{Gamma}(\alpha, r), \qquad r = \alpha / \mu
-$$
-
-where $\mu$ is the mean generation interval and $\alpha$ controls the shape of the population-level infectiousness profile. 
-
-Now, let 
-
-$$
-a_i(\tau) = R_0 f_a(\tau - s_i) \qquad \text{ where } f_a(\tau) \sim \text{Gamma}(\kappa, r) \qquad \text{ and } s_i \sim \text{Gamma}(\alpha - \kappa, r)
-$$
-
-Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile. Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
 
 ### Splitting the infectiousness profile into biological infectiousness and contacts 
 
-Previously, we saw that we could decompose the individual infectiousness profile into the individual reproduction number and the individual generation interval (Eq XX). Here, we consider a more general, and more biologically-motivated, decomposition of $a_i(\tau)$ into "biological infectiousness" and "contacts". 
+From equations XX-XX, the individual infectiousness profile can be expressed in terms of the individual generation interval distribution and the individual reproduction number: 
+
+$$ a_i(\tau) = \xi_i(\tau) \nu_i $$ 
+
+A different and more general decomposition is also possible, into factors relating to a person's "biological infectiousness", b_i(\tau), and "contact potential", c_i(t): 
+
+$$ a_i(\tau) = b_i(\tau) c_i(t - \tau) $$ 
+
+The biological infectiousness, $b_i(\tau)$, is a nonnegative density function that integrates to 1 ($\int_0^\infty b_i(\tau) d\tau = 1$) that describes how a person's potential infectiousness is spread over time. The contact potential, $c_i(t)$, is a nonnegative time-varying function that describes the expected number of individuals person $i$ would infect if all their infectiousness were concentrated at the single moment $t$ (i.e., if $b_i(\tau)$ were a delta function). Thus, $c_i(t)$ incorporates both a person's contact rate and the probability of transmission given contact. It can immediately be seen that if $c_i(t)$ is constant, then we recover Eq XX where $b_i(\tau)$ is the individual generation interval distribution and $c_i(t) = \nu_i$. For time-varying $c_i(t)$, this form shows that the individual reproduction number and the individual generation interval distribution depends not just on the time since infection $\tau$, but also on clock time $t$. For infection time $t^*$, we obtain **these need attention** 
+
+$$ \nu_i(t*) = \int_{\tau = 0}^{\infty} c_i(t - \tau) d\tau $$ 
+
+$$ g_i(t*, \tau) = b_i(\tau) \int_{t = \tau}^\infty c_i(t - \tau) d\tau $$ 
+
+
+
+
 
 Let 
 
@@ -119,6 +122,27 @@ and
 $$
 c_i(t) = R_0 \text{ for all } i,t
 $$
+
+
+### A Gamma convolutional model for the individual infectiousness profile 
+
+To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equal, we introduce a one-parameter family of functions that allow us to reconstruct a Gamma-distributed $A(\tau)$ using Gamma-distributed $a_i(\tau)$ that are identical except for a time shift. 
+
+Let 
+
+$$
+A(\tau) = R_0 f_A(\tau) \qquad \text{ where } f_A(\tau) \sim \text{Gamma}(\alpha, r), \qquad r = \alpha / \mu
+$$
+
+where $\mu$ is the mean generation interval and $\alpha$ controls the shape of the population-level infectiousness profile. 
+
+Now, let 
+
+$$
+a_i(\tau) = R_0 f_a(\tau - s_i) \qquad \text{ where } f_a(\tau) \sim \text{Gamma}(\kappa, r) \qquad \text{ and } s_i \sim \text{Gamma}(\alpha - \kappa, r)
+$$
+
+Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile. Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
 
 ## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
