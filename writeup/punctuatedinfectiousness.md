@@ -73,7 +73,7 @@ From equations XX-XX, the individual infectiousness profile can be expressed in 
 
 $$ a_i(\tau) = \xi_i(\tau) \nu_i $$ 
 
-A different and more general decomposition is also possible, into factors relating to a person's "biological infectiousness", b_i(\tau), and "contact potential", c_i(t): 
+A different and more general decomposition is also possible, into factors relating to a person's "biological infectiousness", $b_i(\tau)$, and "contact potential", $c_i(t)$: 
 
 $$ a_i(\tau) = b_i(\tau) c_i(t - \tau) $$ 
 
