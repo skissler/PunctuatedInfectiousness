@@ -80,7 +80,7 @@ To achieve this, we seek a family of functions that allow us to model individual
 * Smooth, single-peaked distributions 
 * All have identical shape, except for a time shift (no mixtures of broad smooth distributions with narrow spiky distributions)
 
-A candidate set of functions that obeys this is the set of Gamma convolutional curves. Let $A_(\tau)$ be Gamma distributed (up to a scaling constant): 
+A candidate set of functions that obeys this is the set of Gamma convolutional curves. Let $A(\tau)$ be Gamma distributed (up to a scaling constant): 
 
 $$
 A(\tau) = R_0 f_A(\tau) \qquad \text{ where } f_A(\tau) \sim \text{Gamma}(\alpha, r), \qquad r = \alpha / \mu
