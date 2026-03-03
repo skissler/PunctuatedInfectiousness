@@ -94,7 +94,7 @@ $$
 a_i(\tau) = R_0 f_a(\tau - s_i) \qquad \text{ where } f_a(\tau) \sim \text{Gamma}(\kappa, r) \qquad \text{ and } s_i \sim \text{Gamma}(\alpha - \kappa, r)
 $$
 
-Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile (**Figure XX**). Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
+Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile (**Figure XX**). Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation (**Supplementary Methods**). Furthermore, the $k$-values may differ across individuals; regardless of the distribution they are drawn from, the Gamma sum property ensures that $E_i[a_i(\tau)] = A(\tau)$ (**Supplementary Methods**, **Figure XX**).
 
 ### Splitting the infectiousness profile into biological infectiousness and contacts 
 
