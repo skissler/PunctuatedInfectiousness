@@ -141,15 +141,27 @@ $$
 
 ## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
-Superspreading, or overdispersion in the secondary infection distribution, is normally thought to arise from overdispersion in individual infectiousness ($\nu_i$) or overdispersion on contacts ($c_i$). Here, we show that overdispersion can also arise from a third mechanism, the interaction of non-constant contacts and highly punctuated infectiousness profiles. 
+* Stepwise, smooth, and spike all yield the same mean dynamics 
+* Stepwise has higher extinction probability, explained by overdispersion
+* Spike has later and more variable establishment properties, including time-to-n-infected and exponential growth rate
+* Spike emphasizes variation in contacts, leading to overdispersion. 
 
-For the rest of our analysis, we focus on individual infectiousness profiles that can be expressed using the Gamma convolutional framework so that each person's total infectiousness is uniform across the population and the only thing that varies is the punctuation and timing of the individual infectiousness profile. [FOI](#eq_foi)
 
 ## The impact of punctuated infectiousness on outbeak interventions
 
-### Screening and isolation 
+For the rest of our analysis, we focus on individual infectiousness profiles that can be expressed using the Gamma convolutional framework so that each person's total infectiousness is uniform across the population and the only thing that varies is the punctuation and timing of the individual infectiousness profile.
+
+### Detection and isolation 
+
+* Detection and isolation is more effective for punctuated kernels 
+* Detect-and-isolate policies shift the overall generation interval distribution in a way that depends on $\kappa$ - leading to a partially self-defeating interventino. 
 
 ### Contact tracing 
+* Amidst all-same and kappa-variable scenarios, with tracing delays. 
+
+### Gathering size restrictions 
+
+* More effective for smooth profiles, since they reduce mean transmission without losing the overdispersion that was suppressing outbreak probability for spiky profiles. 
 
 ## Identifiability of punctuated infectiousness 
 
@@ -173,5 +185,51 @@ While the concentration of the individual infectiousness profile can impact how 
 ## Supplementary Figures 
 
 
-## Supplementary Tables 
+## Supplementary Tables
 
+
+<!--
+## Notes on writeup structure and uncontrolled dynamics section (Claude review, 2026-02-27)
+
+## Structure
+
+The overall flow is clean and logical: framework → uncontrolled dynamics → interventions → identifiability. A few observations:
+
+1. **The bio/contact decomposition** (Section "Splitting the infectiousness profile...") is introduced in the framework before it's needed. It's essential for the overdispersion story (sampling vs. averaging), which lives in the uncontrolled dynamics section. You could either (a) keep it as-is (all tools upfront) or (b) introduce it at the point where time-varying contacts enter the picture. Either is defensible, but (b) would give the reader a clearer motivation for why the decomposition matters.
+
+2. **The uncontrolled dynamics section** would benefit from two subsections that mirror the decomposition:
+   - **Constant contacts** (Findings 1–7): same mean-field dynamics, stepwise vs. smooth/spike extinction, min-of-order-statistics growth delay, burstiness, within-individual correlation structure
+   - **Time-varying contacts** (Findings 10–13): the sampling-vs-averaging mechanism, overdispersion from punctuated × periodic contacts, epidemic consequences
+
+   This makes the punchline of the first subsection ("with constant contacts, kappa doesn't affect extinction or overdispersion — only growth timing") a natural setup for the second subsection ("but introduce time-varying contacts and suddenly kappa controls overdispersion").
+
+3. **The interventions** have a nice progression from simpler to more complex. The unified detect-and-isolate framework (independent ↔ anchored triggers) followed by contact tracing (two-generation coupling) followed by gathering restrictions (variance mechanism) reads well.
+
+## Additions for uncontrolled dynamics
+
+Your current bullet points cover: mean dynamics, extinction probability, establishment timing/growth rate, and overdispersion from contacts. The user asked specifically about **peaks**. Here's my assessment:
+
+### Peaks — yes, worth adding
+
+**Peak timing distribution.** Since the establishment delay for spiky profiles is ~1 day (at R0=2) and grows with R0, this should shift peak timing later by a similar amount. More importantly, the *variance* in peak timing should be higher for spiky profiles (inheriting the higher variance in establishment timing from Finding 4). But once established, mean-field dynamics dominate, so **peak height should converge across kappa** — the difference is when, not how high.
+
+This would be a compact, satisfying result: "The epidemic peak occurs at approximately the same height regardless of kappa, but the timing of the peak is more variable for punctuated profiles, reflecting the delayed and more stochastic establishment phase."
+
+It's essentially a downstream consequence of Finding 4 (establishment timing variance), so it doesn't require much new machinery — just extending the epidemic simulations to track peak incidence timing and height.
+
+### Other potential additions
+
+**Epidemic duration / tail behavior.** Does the epidemic tail (the last 10% of infections) differ across kappa? In the smooth case, the tail should be more predictable; in the spike case, late stragglers whose onset shifts fall late could create more variable epidemic tails. This is minor but would round out the picture.
+
+**Serial interval ≠ generation interval.** If you later connect to observation models, it's worth noting that the *observed* serial interval distribution could differ from the generation interval even when A(tau) is the same, because serial intervals depend on the relationship between infectiousness timing and symptom timing. With biologically anchored symptoms (the rho=1 scenario from Section 14), spiky profiles would produce more clustered serial intervals (all transmissions from one infector have nearly identical serial intervals), while smooth profiles would produce more dispersed serial intervals. This is more of an identifiability-relevant observation, so it might fit better in the identifiability section.
+
+### What I'd skip
+
+**Network/spatial effects** — these are important in general but open a large can of worms that would dilute the paper's focus on the temporal structure of infectiousness.
+
+**Phylogenetic signatures** — Finding 7 (within-individual correlation structure) hints at this, but developing it fully would require a phylodynamic simulation framework that seems out of scope.
+
+### Summary recommendation for the uncontrolled section
+
+The four bullets you have, plus **peak timing/height** and the **two-subsection split** (constant contacts → time-varying contacts), would make this section complete. The peak result is the most natural addition — it's what a reader would expect to see and it falls out directly from existing simulations with minimal new analysis.
+-->
