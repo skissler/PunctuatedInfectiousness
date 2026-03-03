@@ -83,46 +83,17 @@ $$ \nu_i(t*) = \int_{\tau = 0}^{\infty} c_i(t - \tau) d\tau $$
 
 $$ g_i(t*, \tau) = b_i(\tau) \int_{t = \tau}^\infty c_i(t - \tau) d\tau $$ 
 
-
-
-
-
-Let 
-
-$$
-a_i(\tau) = b_i(\tau) \cdot c_i(t_i + \tau)
-$$
-
-Here, $b_i(\tau)$ represents a person's "biological infectiousness profile": a probability deensity on $[0, \infty)$ that describes when the individual is capable of transmitting, relative to their time of infection; and $c_i(t)$ is the instantaneous transmission potential at time $t$, i.e., the expected number of secondary infections that an individual would produce at time $t$ if all their biological infectiousness were concentrated at that instant (i.e., if $b_i$ were a delta function). Note that $c_i(t)$ absorbs the contact rate, the trasmission probability per ocntact, and the susceptibility of contacts. 
-
-This is a general case of Eq XX: when $c_i$ is constant in time, $c_i = \nu_i$ (the individual reproduction number in the sense of Lloyd-Smith *et al.* (2005)) and $b_i(\tau)$ is the individual generation interval distribution, $\xi_i(\tau)$. 
-
 This decomposition feeds back into the population-level model. If we assume that $b_i$ and $c_i$ are independent (*i.e.*, an individual's biological infectiousness is independent of their contact pattern), then 
 
 $$
 A_i(\tau) = E[a_i(\tau)] = B(\tau) \cdot C(t_i + \tau)
 $$
 
-where, like before, if C is contstant in time, this reduces to the familiar 
+where $B(\tau) = E_i[b_i(\tau)]$ and $C(t+i + \tau) = E_i[c_i(t + \tau)]$. Likewise, if C is contstant in time, this reduces to the familiar 
 
 $$
 A_i(\tau) = g(\tau) R_0
 $$
-
-Here, $B(\tau)$ is the population-average biological infectiousness over time and $C(t)$ is the population-average contact pattern, again absorbing contact rates and probability of infection per contacct so that the biological infectiousness profile is a density that integrates to 1. 
-
-In the Gamma construction, we have 
-
-$$ 
-b_i(\tau) = f_a(\tau - s_i)
-$$ 
-
-and 
-
-$$
-c_i(t) = R_0 \text{ for all } i,t
-$$
-
 
 ### A Gamma convolutional model for the individual infectiousness profile 
 
@@ -143,6 +114,19 @@ a_i(\tau) = R_0 f_a(\tau - s_i) \qquad \text{ where } f_a(\tau) \sim \text{Gamma
 $$
 
 Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile. Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
+
+Splitting into biological infectiousness and contact potential, we have 
+
+$$ 
+b_i(\tau) = f_a(\tau - s_i)
+$$ 
+
+and 
+
+$$
+c_i(t) = R_0 \text{ for all } i,t
+$$
+
 
 ## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
