@@ -126,9 +126,7 @@ Splitting $a_i(\tau)$ into biological infectiousness $b_i$ and contact potential
 For the gamma convolutional model, we have 
 
 $$
-\begin{equation}\ref{asdf}
 b_i(\tau) = f_a(\tau - s_i)
-\end{equation}
 $$
 
 and 
