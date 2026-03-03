@@ -69,9 +69,15 @@ $$ \xi_i(\tau) = a_i(\tau) / \nu_i $$
 
 ### A Gamma convolutional model for the individual infectiousness profile 
 
-To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equal, we introduce a one-parameter family of functions that allow us to reconstruct a Gamma-distributed $A(\tau)$ using Gamma-distributed $a_i(\tau)$ that are identical except for a time shift. 
+The "stepwise" expression for $a_i(\tau)$ in Eq XX differs from the "smooth" and "spike" expressions in Eqs XX-XX in a fundamental way: For Eq XX, $\nu_i$ differs across individuals ($\nu_i \sim  XX$), while for Eq XX - XX, $\nu_i$ is uniform across individuals ($\nu_i = R_0$). We will briefly compare how the unconstrained disease transmission dynamics differ for Eq XX - XX, but because of this fundamental dissimilarity -- and because the impact of variation in $\nu_i$ on epidemic dynamics has been discussed exstensively elsewhere [x] -- we will focus most of the manuscript on individual infectiousness profiles of the type in Eq XX - XX, where the individual infectiousness $\nu_i$ is uniform across the population. That way, the impact of the timing of infectiousness can be examined in isolation. 
 
-Let 
+To achieve this, we seek a family of functions that allow us to model individual infectiousness profiles with the following characteristics: 
+
+* All have uniform total infectiousness: $\int_0^\infty a_i(\tau) d\tau = R_0$ 
+* Smooth, single-peaked distributions 
+* All have identical shape, except for a time shift (no mixtures of broad smooth distributions with narrow spiky distributions)
+
+A candidate set of functions that obeys this is the set of Gamma convolutional curves. Let $A_(\tau)$ be Gamma distributed (up to a scaling constant): 
 
 $$
 A(\tau) = R_0 f_A(\tau) \qquad \text{ where } f_A(\tau) \sim \text{Gamma}(\alpha, r), \qquad r = \alpha / \mu
