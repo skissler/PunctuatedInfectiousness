@@ -14,6 +14,8 @@ Here, we address these gaps.
 
 ## Expressing the Hudson-Kermack-McKendrick model in terms of individual infectiousness 
 
+### The individual infectiousness profile 
+
 Early work by Hudson, and later by Kermack and McKendrick [[x](https://link.springer.com/article/10.1007/BF02464423)], modeled disease transmission in a population using an integral equation. In modern notation [[x](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454)], the force of infection is 
 
 $$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$ 
@@ -58,11 +60,7 @@ $$ a_i(\tau) = \frac{\beta}{\gamma} \cdot \delta_{t_i}(\tau) \qquad \text{ where
 
 where each person's infectiousness profile is a delta function, such that all their infectiousness is concentrated at a single moment (**Figure XX**). 
 
-
-
-
-
-## A Gamma convolutional model for the individual infectiousness profile 
+### A Gamma convolutional model for the individual infectiousness profile 
 
 To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equal, we introduce a one-parameter family of functions that allow us to reconstruct a Gamma-distributed $A(\tau)$ using Gamma-distributed $a_i(\tau)$ that are identical except for a time shift. 
 
@@ -82,7 +80,7 @@ $$
 
 Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile. Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
 
-## Splitting the infectiousness profile into biological infectiousness and contacts 
+### Splitting the infectiousness profile into biological infectiousness and contacts 
 
 Previously, we saw that we could decompose the individual infectiousness profile into the individual reproduction number and the individual generation interval (Eq XX). Here, we consider a more general, and more biologically-motivated, decomposition of $a_i(\tau)$ into "biological infectiousness" and "contacts". 
 
@@ -127,6 +125,8 @@ $$
 Despite yielding the same average population-level dynamics, epidemics that are governed by different forms of $a_i(\tau)$ may yield different stochastic dynamics. 
 
 Superspreading, or overdispersion in the secondary infection distribution, is normally thought to arise from overdispersion in individual infectiousness ($\nu_i$) or overdispersion on contacts ($c_i$). Here, we show that overdispersion can also arise from a third mechanism, the interaction of non-constant contacts and highly punctuated infectiousness profiles. 
+
+For the rest of our analysis, we focus on individual infectiousness profiles that can be expressed using the Gamma convolutional framework so that each person's total infectiousness is uniform across the population and the only thing that varies is the punctuation and timing of the individual infectiousness profile. 
 
 ## The impact of punctuated infectiousness on outbeak interventions
 
