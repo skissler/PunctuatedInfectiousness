@@ -67,34 +67,6 @@ $$ \nu_i = \int_\tau=0^\infty a_i(\tau) $$
 $$ \xi_i(\tau) = a_i(\tau) / \nu_i $$ 
 
 
-### Splitting the infectiousness profile into biological infectiousness and contacts 
-
-From equations XX-XX, the individual infectiousness profile can be expressed in terms of the individual generation interval distribution and the individual reproduction number: 
-
-$$ a_i(\tau) = \xi_i(\tau) \nu_i $$ 
-
-A different and more general decomposition is also possible, into factors relating to a person's "biological infectiousness", $b_i(\tau)$, and "contact potential", $c_i(t)$: 
-
-$$ a_i(\tau) = b_i(\tau) c_i(t - \tau) $$ 
-
-The biological infectiousness, $b_i(\tau)$, is a nonnegative density function that integrates to 1 ($\int_0^\infty b_i(\tau) d\tau = 1$) that describes how a person's potential infectiousness is spread over time. The contact potential, $c_i(t)$, is a nonnegative time-varying function that describes the expected number of individuals person $i$ would infect if all their infectiousness were concentrated at the single moment $t$ (i.e., if $b_i(\tau)$ were a delta function). Thus, $c_i(t)$ incorporates both a person's contact rate and the probability of transmission given contact. It can immediately be seen that if $c_i(t)$ is constant, then we recover Eq XX where $b_i(\tau)$ is the individual generation interval distribution and $c_i(t) = \nu_i$. For time-varying $c_i(t)$, this form shows that the individual reproduction number and the individual generation interval distribution depends not just on the time since infection $\tau$, but also on clock time $t$. For infection time $t^*$, we obtain **these need attention** 
-
-$$ \nu_i(t*) = \int_{\tau = 0}^{\infty} c_i(t - \tau) d\tau $$ 
-
-$$ g_i(t*, \tau) = b_i(\tau) \int_{t = \tau}^\infty c_i(t - \tau) d\tau $$ 
-
-This decomposition feeds back into the population-level model. If we assume that $b_i$ and $c_i$ are independent (*i.e.*, an individual's biological infectiousness is independent of their contact pattern), then 
-
-$$
-A_i(\tau) = E[a_i(\tau)] = B(\tau) \cdot C(t_i + \tau)
-$$
-
-where $B(\tau) = E_i[b_i(\tau)]$ and $C(t+i + \tau) = E_i[c_i(t + \tau)]$. Likewise, if C is contstant in time, this reduces to the familiar 
-
-$$
-A_i(\tau) = g(\tau) R_0
-$$
-
 ### A Gamma convolutional model for the individual infectiousness profile 
 
 To examine the impact of the punctuatedness of $a_i(\tau)$, holding all else equal, we introduce a one-parameter family of functions that allow us to reconstruct a Gamma-distributed $A(\tau)$ using Gamma-distributed $a_i(\tau)$ that are identical except for a time shift. 
@@ -126,6 +98,36 @@ and
 $$
 c_i(t) = R_0 \text{ for all } i,t
 $$
+
+### Splitting the infectiousness profile into biological infectiousness and contacts 
+
+From equations XX-XX, the individual infectiousness profile can be expressed in terms of the individual generation interval distribution and the individual reproduction number: 
+
+$$ a_i(\tau) = \xi_i(\tau) \nu_i $$ 
+
+A different and more general decomposition is also possible, into factors relating to a person's "biological infectiousness", $b_i(\tau)$, and "contact potential", $c_i(t)$: 
+
+$$ a_i(\tau) = b_i(\tau) c_i(t - \tau) $$ 
+
+The biological infectiousness, $b_i(\tau)$, is a nonnegative density function that integrates to 1 ($\int_0^\infty b_i(\tau) d\tau = 1$) that describes how a person's potential infectiousness is spread over time. The contact potential, $c_i(t)$, is a nonnegative time-varying function that describes the expected number of individuals person $i$ would infect if all their infectiousness were concentrated at the single moment $t$ (i.e., if $b_i(\tau)$ were a delta function). Thus, $c_i(t)$ incorporates both a person's contact rate and the probability of transmission given contact. It can immediately be seen that if $c_i(t)$ is constant, then we recover Eq XX where $b_i(\tau)$ is the individual generation interval distribution and $c_i(t) = \nu_i$. For time-varying $c_i(t)$, this form shows that the individual reproduction number and the individual generation interval distribution depends not just on the time since infection $\tau$, but also on clock time $t$. For infection time $t^*$, we obtain **these need attention** 
+
+$$ \nu_i(t*) = \int_{\tau = 0}^{\infty} c_i(t - \tau) d\tau $$ 
+
+$$ g_i(t*, \tau) = b_i(\tau) \int_{t = \tau}^\infty c_i(t - \tau) d\tau $$ 
+
+This decomposition feeds back into the population-level model. If we assume that $b_i$ and $c_i$ are independent (*i.e.*, an individual's biological infectiousness is independent of their contact pattern), then 
+
+$$
+A_i(\tau) = E[a_i(\tau)] = B(\tau) \cdot C(t_i + \tau)
+$$
+
+where $B(\tau) = E_i[b_i(\tau)]$ and $C(t+i + \tau) = E_i[c_i(t + \tau)]$. Likewise, if C is contstant in time, this reduces to the familiar 
+
+$$
+A_i(\tau) = g(\tau) R_0
+$$
+
+Splitting $a_i(\tau)$ into biological infectiousness $b_i$ and contact potential $c_i$ allows us to separately consider how the shape of a person's infectiousness, unconditional on their contact patterns, impacts transmission dynamics under various contact patterns. 
 
 
 ## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
