@@ -141,8 +141,6 @@ $$
 
 ## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
-Despite yielding the same average population-level dynamics, epidemics that are governed by different forms of $a_i(\tau)$ may yield different stochastic dynamics. 
-
 Superspreading, or overdispersion in the secondary infection distribution, is normally thought to arise from overdispersion in individual infectiousness ($\nu_i$) or overdispersion on contacts ($c_i$). Here, we show that overdispersion can also arise from a third mechanism, the interaction of non-constant contacts and highly punctuated infectiousness profiles. 
 
 For the rest of our analysis, we focus on individual infectiousness profiles that can be expressed using the Gamma convolutional framework so that each person's total infectiousness is uniform across the population and the only thing that varies is the punctuation and timing of the individual infectiousness profile. [FOI](#eq_foi)
