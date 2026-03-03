@@ -18,7 +18,7 @@ Here, we address these gaps.
 
 Early work by Hudson, and later by Kermack and McKendrick [[x](https://link.springer.com/article/10.1007/BF02464423)], modeled disease transmission in a population using an integral equation. In modern notation [[x](https://www.tandfonline.com/doi/pdf/10.1080/17513758.2012.716454)], the force of infection is 
 
-$$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau $$ 
+$$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau \tag{1} $$ 
 
 where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level "infectiousness profile", a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection and the susceptible density, $F(t) \cdot S(t)$; thus, the infectiousness profile $A(\tau)$ is thus the fundamental object that determines how an epidemic unfolds. 
 
