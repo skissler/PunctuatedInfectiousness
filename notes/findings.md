@@ -816,7 +816,11 @@ The progression from Section 14 to Section 16 traces a path of increasing mechan
 
 Findings 3, 4, 5, and 12 all show that spike (punctuated) profiles produce slower and more variable early epidemic growth than smooth profiles. Yet by construction, both profiles share the same population-level infectiousness kernel $A(\tau)$, and therefore the same deterministic renewal equation, the same Euler–Lotka growth rate $\alpha$, and the same mean-field epidemic trajectory. How can two models with identical $E[Z(t)]$ consistently differ in the time to reach epidemic milestones?
 
-The resolution is that "same expected trajectory" does not imply "same expected time to reach a milestone." The two quantities are related by a nonlinear transformation, and Jensen's inequality drives a wedge between them.
+The resolution involves two distinct insights:
+
+1. "Same expected trajectory" does not imply "same expected time to reach a milestone." The two quantities are related by a nonlinear transformation, and Jensen's inequality drives a wedge between them.
+
+2. More fundamentally: the **mean** trajectory is not the **typical** trajectory. The spike case's $Z(t)$ distribution is more right-skewed than the smooth case's — rare explosive realizations pull up $E[Z(t)]$ to match, even though the median and most individual realizations are slower.
 
 ### Setup: the Crump–Mode–Jagers branching process
 
@@ -839,6 +843,29 @@ The Malthusian growth rate $\alpha$, defined by the Euler–Lotka equation
 $$1 = \int_0^\infty e^{-\alpha \tau} A(\tau)\,d\tau,$$
 
 is the same. The mean-field dynamics are truly, provably, identical.
+
+**Importantly, this is not a large-numbers approximation.** The proof uses the Campbell theorem for point processes: $E[\sum_j f(\tau_j)] = \int f(s)\,\mu(ds)$ for any point process with intensity measure $\mu$, regardless of the dependence structure between the points $\tau_j$. It does not matter whether offspring times are independent (smooth) or perfectly correlated (spike). The renewal equation for $E[Z(t)]$ inherits this, giving an identical expected cumulative incidence curve at every $t$, even starting from a single case.
+
+### The mean trajectory is not the typical trajectory
+
+If this is true, why do simulations consistently show the spike case reaching milestones later? Because $E[Z(t)]$ — the average across many simulations at each fixed $t$ — is not what we see when we look at individual simulation curves. What we see is closer to the **median** of $Z(t)$, which differs between models even when the mean does not.
+
+The spike case's $Z(t)$ has a more right-skewed distribution than the smooth case's. A few explosive realizations — where early spikes all happen to fall at short generation intervals — produce very large $Z(t)$ values that pull up $E[Z(t)]$ to match the smooth case. But these are rare. The typical (median) realization is slower.
+
+**A concrete toy example.** Suppose at $t = 5$ days, five simulations of each model give:
+
+- Smooth: $Z(5) = 8, 9, 10, 11, 12$. Mean $= 10$. Median $= 10$. All near threshold.
+- Spike: $Z(5) = 3, 5, 6, 8, 28$. Mean $= 10$. Median $= 6$. Only 1 of 5 has crossed 10.
+
+Same $E[Z(5)]$. Very different $T_{10}$. The one explosive spike realization ($Z = 28$) does all the work of preserving the mean, while the majority of spike trajectories lag behind the smooth trajectories. This is the "skewness tax."
+
+**What you would see in simulation:** if you ran 10,000 simulations of each model and plotted:
+
+- The **mean curve** (average $Z(t)$ across simulations at each $t$): **identical** for both models, exactly.
+- The **median curve**: **shifted right** for the spike case.
+- Individual curves: more spread out for the spike case.
+
+The user's intuition that "the spike curves are shifted right" is correct for the typical/median trajectory, and this is what drives the difference in $E[T_n]$. The mean trajectory is unshifted, but $T_n$ is determined by where individual trajectories cross the threshold $n$, not by where the mean trajectory crosses.
 
 ### The CMJ limit theorem and the random variable $W$
 
@@ -930,9 +957,91 @@ The magnitude of the delay $\Delta T_n = E[T_n]_{\text{spike}} - E[T_n]_{\text{s
 
 **The expected growth rate is truly identical.** The Malthusian parameter $\alpha$ is the same. The delay is a *time offset*, not a rate reduction. Once $Z(t)$ is large enough for the law of large numbers to apply (roughly $Z(t) \gtrsim 50$–$100$), both models grow at rate $\alpha$ and the offset is frozen.
 
-**The expected population size at any fixed time is the same.** $E[Z(t)]$ is identical for both models. The delay in $E[T_n]$ arises from the nonlinear relationship between "population at time $t$" and "time to reach population $n$." Jensen's inequality on the concave function $\log$ converts higher variance in $W$ into a later expected milestone time.
+**$E[Z(t)]$ is identical — but the median of $Z(t)$ is not.** This is the core resolution of the apparent paradox. $E[Z(t)]$ is the same at every $t$, starting from a single case, with no approximations. This is an exact consequence of the Campbell theorem (the intensity measure determines $E[Z(t)]$, and the intensity measure is the same for both models). However, the **median** (and other quantiles) of $Z(t)$ differs: the spike case has a lower median at any given $t$ during the early epidemic, compensated by a heavier right tail. When we look at simulation curves, we see the median behavior, not the mean. The mean curve would overlay exactly; the median curve is shifted right for the spike case. The delay in $E[T_n]$ arises because $T_n$ is determined by where individual trajectories cross the threshold — a quantity sensitive to the median/distribution of $Z(t)$, not just its mean. Jensen's inequality on the concave function $\log$ formalises this: higher variance in $W$ (the stochastic head-start factor) produces a later expected milestone time.
 
-**Conditioning on establishment does not eliminate the effect.** Among epidemics that establish (avoid stochastic extinction), the spike case still reaches milestones later. Conditioning on $W > 0$ (survival) changes the distribution of $W$ but preserves the ordering $\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}$, so Jensen's inequality still applies.
+**Conditioning on establishment does not eliminate the effect.** Among epidemics that establish (avoid stochastic extinction), the spike case still reaches milestones later. Both models have the same extinction probability (both have Poisson($R_0$) offspring counts — the timing of offspring does not affect the offspring *distribution*). Conditioning on $W > 0$ (survival) changes the distribution of $W$ but preserves the ordering $\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}$, so Jensen's inequality still applies.
+
+---
+
+## 18. Connection to Morris, Maclean & Black (2024): computing the time-shift distribution
+
+**Reference:** Morris, Maclean & Black (2024), "Computation of random time-shift distributions for stochastic population models," *Journal of Mathematical Biology*.
+
+### The shared framework
+
+Morris et al. formalise exactly the object that drives the growth-delay phenomenon described in Section 17: the random variable $W$ from the branching-process limit theorem, and its associated **time-shift** $\tau$.
+
+Their starting point is the same CMJ/CT-MBP convergence:
+
+$$Z(t) \approx W \cdot v(t) \qquad \text{as } t \to \infty,$$
+
+where $v(t) = c \, e^{\alpha t}$ is the deterministic leading-order solution (with $\alpha$ the Malthusian parameter and $c$ a normalisation constant). Each stochastic trajectory is approximately a *time-shifted* copy of the deterministic trajectory:
+
+$$Z(t) \approx v(t + \tau), \qquad \tau = \frac{\log W - \log E[W]}{\alpha}.$$
+
+The random time-shift $\tau$ is what separates a fast-starting epidemic from a slow one. In our framework:
+
+- **Smooth model:** $\tau$ is tightly distributed (low $\text{Var}(W)$), so trajectories cluster near the deterministic solution.
+- **Spike model:** $\tau$ is broadly distributed (high $\text{Var}(W)$), producing a wide spread of trajectory timings.
+
+The growth delay discussed in Section 17 is precisely the statement that $E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}$ (i.e., the spike model's typical trajectory is shifted further *behind* the deterministic solution). This follows from Jensen's inequality on $\log W$: since $E[W]$ is the same for both models but $\text{Var}(W)$ is larger for the spike model, $E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}$, and hence $E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}$.
+
+### What they compute (and how)
+
+Morris et al. develop two numerical methods to compute the *full distribution* of $W$ (and hence $\tau$):
+
+1. **PE (Probability Estimation) method:** Numerically inverts the Laplace-Stieltjes transform (LST) of $W$. The LST satisfies a functional equation derived from the branching structure:
+
+   $$E[e^{-sW}] = g\!\left(\int_0^\infty e^{-s \, e^{\alpha u}} \, E[e^{-sW}]^{?} \, \mu(du)\right)$$
+
+   (where $g$ is the offspring probability generating function and $\mu$ is the intensity measure). They solve this iteratively and invert to obtain the density of $W$. This gives the exact distribution up to numerical precision.
+
+2. **MM (Moment Matching) method:** Computes the first few moments of $W$ analytically (from the branching process structure) and fits a **generalised gamma distribution** to match them. This is faster and gives a closed-form approximation that is typically very accurate.
+
+### What we do that they don't
+
+Morris et al. treat the offspring process as *given* and ask "what is the distribution of $W$?" Their paper does not consider the possibility of varying the offspring process while keeping the intensity measure (and hence the Malthusian parameter $\alpha$ and the deterministic trajectory $v(t)$) invariant.
+
+This is precisely our contribution. We construct a family of offspring processes — parametrised by $\kappa$ — that all share the same $A(\tau)$ (and hence the same $\alpha$, $R_0$, and generation-interval distribution) but differ in the within-individual correlation structure of offspring timing. This family traces a path through the space of branching processes that Morris et al.'s methods could be applied to, generating a *curve* of $W$-distributions indexed by $\kappa$.
+
+In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) \, d\tau$ fixed and vary the offspring point process (from independent arrival times at $\kappa = \alpha_{\text{total}}$ to perfectly synchronised arrivals at $\kappa \to 0$). The deterministic trajectory $v(t)$ is invariant across this family; only the stochastic fluctuation $W$ changes.
+
+### Their framework applied to our problem
+
+**Peak timing and planning.** Morris et al. motivate their work with the problem of predicting when an epidemic will reach its peak — a quantity that depends on $\tau$ and hence on $W$. Our results add a new source of uncertainty to this prediction: even if $R_0$, the generation-interval distribution, and $\alpha$ are perfectly known, uncertainty about $\kappa$ (how punctuated individual infectiousness is) translates into uncertainty about $\text{Var}(W)$ and hence about the spread of possible peak times.
+
+**A computational route to $\text{Var}(W)$ for our models.** Section 17 argues qualitatively that $\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}$, based on the within-individual covariance structure. Morris et al.'s PE or MM methods could be used to compute $\text{Var}(W)$ *exactly* for each $\kappa$ in our Gamma convolutional family. This would:
+
+- Quantify the growth delay $\Delta E[T_n]$ analytically (rather than relying on simulation).
+- Provide the full distribution of $\tau$, enabling probabilistic statements like "there is a 90% chance the spike epidemic reaches 100 cases between days $X$ and $Y$."
+- Validate the approximation $\Delta E[T_n] \approx \text{Var}(W) / (2 \alpha \, (E[W])^2)$ from the delta-method expansion in Section 17.
+
+**The moment-matching route.** Morris et al. show that $W$ is often well-approximated by a generalised gamma distribution. If this holds for our family, the entire effect of $\kappa$ on the time-shift distribution could be summarised by three parameters (shape, scale, power) as functions of $\kappa$, giving a parsimonious description of how punctuated infectiousness affects epidemic timing uncertainty.
+
+### Technical subtleties
+
+**CT-MBP vs. CMJ.** Morris et al.'s implementation focuses on continuous-time Markovian branching processes (CT-MBP), where each individual has an exponentially-distributed lifetime and gives birth at a constant rate while alive. Our models are age-dependent (CMJ): the infectiousness profile $a_i(\tau)$ is a non-trivial function of infection age $\tau$. The *theory* (convergence to $W$, functional equations for the LST) applies to both, but their specific numerical algorithms would need adaptation for the non-Markovian case. The Gamma convolutional model could potentially be embedded in a Markovian framework via phase-type distributions (the Gamma profile with integer shape parameter is a sum of exponentials), making it amenable to their methods.
+
+**The functional equation for $W$.** For a CMJ process with offspring point process $\xi$ (a random counting measure on $[0, \infty)$), the LST of $W$ satisfies:
+
+$$E[e^{-sW}] = E\!\left[\prod_{j=1}^{N} E[e^{-s \, e^{-\alpha \tau_j} W}]\right]$$
+
+where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birth times. For the smooth model ($\tau_j$ independent given $N$), the product factorises into a simpler form. For the spike model ($\tau_j = \tau^*$ for all $j$), the product collapses to $E[e^{-sW}]^N$ evaluated at a single random time. The difference in these functional equations is what drives the difference in $W$-distributions — and hence the growth delay.
+
+**Independence structure matters.** A key insight connecting our work to theirs: the functional equation for $W$ depends on the *joint* distribution of offspring times, not just their marginal distribution. Two models can have the same number-of-offspring distribution and the same marginal birth-time distribution (i.e., the same $A(\tau)$) but different $W$ distributions if the offspring times are correlated differently. This is exactly the mechanism our $\kappa$ parameter controls.
+
+### Summary of the relationship
+
+| Aspect | Morris et al. (2024) | Our framework |
+|--------|----------------------|---------------|
+| Core object | $W$ and time-shift $\tau$ | Same |
+| What varies | The epidemic/population model | The offspring correlation structure ($\kappa$), holding $A(\tau)$ fixed |
+| What's computed | Full distribution of $W$ | Currently: simulated $E[T_n]$; could use their methods for $W$ |
+| Key result | Computational methods (PE, MM) for $W$ | Qualitative ordering: $\text{Var}(W)$ increases as $\kappa \to 0$ |
+| Practical focus | Peak timing uncertainty | Growth delay, surveillance implications |
+| Process type | CT-MBP (Markovian) | CMJ (age-dependent) |
+
+Their computational machinery is complementary to our conceptual framework. We identify *why* $W$ varies across models with the same mean-field dynamics (offspring synchronisation), while they provide the tools to compute *how much* it varies. A natural collaboration or extension would apply their PE/MM methods to our Gamma convolutional family, producing exact $\text{Var}(W)$-vs-$\kappa$ curves and validated time-shift distributions.
 
 ---
 

@@ -146,6 +146,7 @@ $$
 * Spike has later and more variable establishment properties, including time-to-n-infected and exponential growth rate
 * Spike emphasizes variation in contacts, leading to overdispersion. 
 
+The time shift: Cite Dylan Morris' other paper [[x](https://link.springer.com/article/10.1007/s00285-024-02132-6)]
 
 ## The impact of punctuated infectiousness on outbeak interventions
 
