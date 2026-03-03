@@ -91,19 +91,7 @@ $$
 a_i(\tau) = R_0 f_a(\tau - s_i) \qquad \text{ where } f_a(\tau) \sim \text{Gamma}(\kappa, r) \qquad \text{ and } s_i \sim \text{Gamma}(\alpha - \kappa, r)
 $$
 
-Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile. Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
-
-Splitting into biological infectiousness and contact potential, we have 
-
-$$ 
-b_i(\tau) = f_a(\tau - s_i)
-$$ 
-
-and 
-
-$$
-c_i(t) = R_0 \text{ for all } i,t
-$$
+Here, $\kappa \in (0, \alpha)$ is a parameter governing the punctuatedness of $a_i(\tau)$, with smaller $\kappa$ yielding a more concentrated infectiousness profile (**Figure XX**). Since the sum of two Gamma-distributed random variables with the same rate is also Gamma distributed (with the same rate and with shape equal to the sum of the two component shapes), this formulation is guaranteed to converge to $A(\tau)$ in expectation. 
 
 ### Splitting the infectiousness profile into biological infectiousness and contacts 
 
@@ -134,6 +122,18 @@ A_i(\tau) = g(\tau) R_0
 $$
 
 Splitting $a_i(\tau)$ into biological infectiousness $b_i$ and contact potential $c_i$ allows us to separately consider how the shape of a person's infectiousness, unconditional on their contact patterns, impacts transmission dynamics under various contact patterns. 
+
+For the gamma convolutional model, we have 
+
+$$ 
+b_i(\tau) = f_a(\tau - s_i)
+$$ 
+
+and 
+
+$$
+c_i(t) = R_0 \text{ for all } i,t
+$$
 
 
 ## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
