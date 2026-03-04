@@ -6,8 +6,8 @@ source("code/0_utils.R")
 # Stochastic epidemic simulations: uncontrolled dynamics 
 # 
 # Corresponds to writeup sections: 
-#   - "The impact of individual infectiousness profile on uncontrolled epidemic
-#      dynamics"
+#   - "The impact of individual infectiousness profile on uncontrolled 
+#      epidemic dynamics"
 # 
 # Runs nsim stochastic epidemics for each individual infectiousness profile 
 # (stepwise, smooth, spike) and: 

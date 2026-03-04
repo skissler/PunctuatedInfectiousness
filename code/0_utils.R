@@ -62,7 +62,7 @@ gen_inf_attempts_stepwise <- function(e_dur, i_dur, R0){
 
 gen_inf_attempts_smooth <- function(e_dur, i_dur, R0){
 	function(tinf){
-		nattempts <- rpois(1, R0)
+		nattempts <- rpois(1,R0)
 		if(nattempts == 0L) return(numeric(0))
 		attempt_times <- tinf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
 		return(attempt_times)
@@ -71,13 +71,51 @@ gen_inf_attempts_smooth <- function(e_dur, i_dur, R0){
 
 gen_inf_attempts_spike <- function(e_dur, i_dur, R0){
 	function(tinf){
-		nattempts <- rpois(1, R0)
+		nattempts <- rpois(1,R0)
 		if(nattempts == 0L) return(numeric(0))
 		attempt_times <- tinf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
 		return(attempt_times)
 	}
 }
 
+#' Infection attempt generator for gamma profiles 
+#' 
+#' Generates attempted infection times for a single person, themselves infected
+#' at time tinf, using the Gamma-distributed individual infectiousness profile 
+#' with punctuation parameter kappa. 
+#' 
+#' @param T Mean generation interval 
+#' @param R0 Basic reproduction number 
+#' @param popshape Shape parameter for the Gamma-distributed population 
+#'   infectiousness profile (A(tau) ~ Gamma(popshape, popshape/T))
+#' @param kappa Parameter governing punctuation of the individual
+#'   infectiousness profile (kappa \in (0, popshape), with small kappa giving
+#'   sharp infectiousness profiles')
+#' @return A function(t_inf) that returns sorted infection attempt times
+gen_inf_attempts_gamma <- function(T, R0, popshape, kappa){
+	stopifnot(kappa>0, kappa<popshape)
+	r <- popshape/T
+	shiftshape <- popshape - kappa
+	function(tinf){
+		nattempts <- rpois(1,R0)
+		if(nattempts==0L) return(numeric(0))
+		shift <- rgamma(1, shape=shiftshape, rate=r)
+		attempt_times <- tinf + shift + sort(rgamma(nattempts, shape=kappa, rate=r))
+		return(attempt_times)
+	}
+}
+
+#' Stochastic epidemic simulation
+#' 
+#' Generates the infection times for a population (size n) given individual 
+#' infectiousness profiles specified by gen_inf_attempts
+#'
+#' @param n Population size (default 1000)
+#' @param gen_inf_attempts Infection attempt time generator function, 
+#'   capturing the individual infectiousness profile, with signature 
+#'   function(t_inf) -> numeric vector. 
+#' @return Numeric vector of length n containing infection times (Inf if the 
+#'   person remains uninfected at the end of the simulation)
 sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
 
 	# Initialize infection times 

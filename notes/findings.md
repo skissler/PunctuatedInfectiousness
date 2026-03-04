@@ -1160,4 +1160,62 @@ In `code/1_1_basicmetrics.R`, we overlay the ODE solution (blue) and the empiric
 
 ---
 
+## 21. Distribution of the individual reproduction number under time-varying contacts
+
+When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $R_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\kappa$), and (iii) the infection time. Here we derive the distribution of $R_i$ for sinusoidal contacts.
+
+### Setup
+
+Suppose contacts vary sinusoidally: $c(t) = \bar{c}(1 + \varepsilon \sin(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_0$ has individual reproduction number:
+
+$$R_i(t_0) = R_0 \int_0^\infty g_i(\tau) \cdot \frac{c(t_0 + \tau)}{\bar{c}} \, d\tau$$
+
+where $g_i(\tau)$ describes how person $i$'s infectiousness is distributed over time after infection.
+
+### Smoothing via the characteristic function
+
+Expanding the sinusoidal contact term and integrating against $g_i$:
+
+$$R_i(t_0) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \sin(\omega t_0 + \varphi)\right)$$
+
+where $\rho = |\varphi_g(\omega)|$ is the modulus of the characteristic function of the generation interval distribution $g$, and $\varphi$ is the corresponding phase shift. The quantity $\rho \in [0, 1]$ measures how much the infectiousness profile *smooths out* the contact variation: a more spread-out profile averages over more of the contact cycle, reducing $\rho$.
+
+### Dependence on $\kappa$ in the Gamma convolutional family
+
+In our model, each infection attempt has timing $\tau_j = s + \varepsilon_j$, where $s \sim \text{Gamma}(\alpha\_{\text{total}} - \kappa, r)$ is a shared component and $\varepsilon_j \sim \text{Gamma}(\kappa, r)$ is independent jitter. Only the jitter provides smoothing — the shared component shifts all attempts together without averaging. Therefore:
+
+$$\rho(\kappa) = |\varphi\_{\text{Gamma}(\kappa, r)}(\omega)| = \left(\frac{r}{\sqrt{r^2 + \omega^2}}\right)^\kappa$$
+
+- **Spike ($\kappa \to 0$):** $\rho = 1$. No jitter, no smoothing. The full contact amplitude $\varepsilon$ feeds through to $R_i$.
+- **Smooth ($\kappa = \alpha\_{\text{total}}$):** $\rho = (r / \sqrt{r^2 + \omega^2})^{\alpha\_{\text{total}}} < 1$. Maximum smoothing; the contact variation is strongly attenuated.
+- **Intermediate $\kappa$:** Smooth interpolation between these extremes.
+
+### Marginal distribution over uniform infection times
+
+If infection times are uniformly distributed over the contact cycle, then $\sin(\omega t_0 + \varphi)$ has the **arcsine distribution** on $[-1, 1]$, with density $f(x) = 1/(\pi \sqrt{1 - x^2})$. Therefore:
+
+$$R_i \sim R_0 (1 + \varepsilon \cdot \rho(\kappa) \cdot X), \qquad X \sim \text{Arcsine}[-1, 1]$$
+
+This gives:
+
+- $E[R_i] = R_0$ (same for all $\kappa$)
+- $\text{Var}(R_i) = R_0^2 \varepsilon^2 \rho(\kappa)^2 / 2$
+- Support: $[R_0(1 - \varepsilon \rho), \; R_0(1 + \varepsilon \rho)]$
+
+The overdispersion in $R_i$ is **monotonically decreasing in $\kappa$**: spike profiles produce the widest distribution of individual reproduction numbers, smooth profiles the narrowest.
+
+### Role of contact frequency
+
+The contact frequency $\omega$ interacts with $\kappa$ through $\rho(\kappa) = (r / \sqrt{r^2 + \omega^2})^\kappa$:
+
+- **Slow variation ($\omega \to 0$):** $\rho \to 1$ for all $\kappa$. Contact changes are slow relative to the generation interval, so all profiles "see" the same local contact rate. No differentiation between profiles.
+- **Fast variation ($\omega \to \infty$):** $\rho \to 0$ for all $\kappa > 0$. Contact changes are fast relative to the generation interval, so all profiles average over many cycles. No overdispersion from contacts.
+- **Intermediate $\omega$ (contact period comparable to generation interval):** Maximum differentiation between profiles. This is the regime where the punctuatedness $\kappa$ has the strongest effect on $R_i$ variability.
+
+### Extension to non-sinusoidal contacts
+
+For a general periodic contact pattern $c(t) = \bar{c}(1 + \sum_k \varepsilon_k \sin(k\omega t + \psi_k))$, each Fourier harmonic is smoothed independently by $\rho(\kappa)$ evaluated at frequency $k\omega$. The marginal distribution of $R_i$ is then the distribution of a sum of weighted arcsine random variables (which is no longer arcsine in general). For complex contact patterns, simulation is more practical than analytical computation.
+
+---
+
 *Last updated: 2026-03-03*
