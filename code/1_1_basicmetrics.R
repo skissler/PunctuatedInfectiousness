@@ -1,9 +1,5 @@
-# Simulate 1000 epidemics in populations of size 1000 
-# Grab: time to pass 10 infected, 50 infected, 100 infected; peak time; exponential growth rate. Extinction probability. Final size. 
-
 library(tidyverse) 
 library(odin) 
-
 source("code/0_utils.R") 
 
 # ==============================================================================
@@ -29,7 +25,7 @@ source("code/0_utils.R")
 popsize <- 1000
 e_dur   <- 2 
 i_dur   <- 3 
-R0      <- 5
+R0      <- 12
 nsim    <- 1000 
 
 # ==============================================================================
@@ -178,7 +174,7 @@ fig_inf_overlay <- dailyinf_df %>%
 		facet_wrap(~profiletype, nrow=1)
 
 # ==============================================================================
-# 6. Figure — "survival curve" for time to reach 100 cases
+# 6. Figure — KM curves for time to reach 100 cases
 # ==============================================================================
 
 # For each established epidemic, extract the time it first reaches 100 infections
@@ -196,7 +192,7 @@ time_to_threshold <- cuminf_df %>%
 # of epidemics that haven't yet reached the threshold
 t_grid <- seq(0, max(time_to_threshold$tinf), length.out = 500)
 
-survival_df <- time_to_threshold %>%
+survival_100_df <- time_to_threshold %>%
 	group_by(profiletype) %>%
 	summarise(
 		t = list(t_grid),
@@ -205,7 +201,7 @@ survival_df <- time_to_threshold %>%
 	unnest(cols = c(t, prop_below))
 
 breakvals = if(max(cuminf_df$tinf)>120){seq(0,365,by=15)}else{seq(0,365,by=7)}
-fig_survival_100 <- ggplot(survival_df, aes(x=t, y=prop_below, col=profiletype)) +
+fig_survival_100 <- ggplot(survival_100_df, aes(x=t, y=prop_below, col=profiletype)) +
 	geom_line(alpha=0.6, linewidth=0.8) +
 	scale_x_continuous(breaks=breakvals) + 
 	scale_color_manual(values=c("stepwise"="black", "smooth"="blue", "spike"="red")) + 
@@ -215,7 +211,7 @@ fig_survival_100 <- ggplot(survival_df, aes(x=t, y=prop_below, col=profiletype))
 	theme_classic()
 
 # ==============================================================================
-# 7. Figure — "survival curve" for time to reach peak daily incidence
+# 7. Figure — KM curves for time to reach peak daily incidence
 # ==============================================================================
 
 # For each established epidemic, find the day of peak daily incidence
@@ -246,4 +242,52 @@ fig_survival_peak <- ggplot(survival_peak_df, aes(x=t, y=prop_below, col=profile
 	     y = "Proportion not yet reaching peak daily incidence",
 	     col = "Profile") +
 	theme_classic()
+
+# ==============================================================================
+# 8. Epidemic growth rate (log-linear regression on first 10-100 cases)
+# ==============================================================================
+
+# Theoretical growth rate: solve R0 / ((1 + alpha*e_dur)*(1 + alpha*i_dur)) = 1
+alpha_theoretical <- uniroot(
+	function(a) R0 / ((1 + a*e_dur) * (1 + a*i_dur)) - 1,
+	interval = c(0, 10))$root
+
+# For each established epidemic, fit log(case_number) ~ time using the first
+# 100 infection times. The slope is the empirical exponential growth rate.
+growth_threshold <- 100
+min_threshold <- 10
+
+growthrate_df <- cuminf_df %>%
+	filter(established == 1, cuminf >= min_threshold, cuminf <= growth_threshold) %>%
+	group_by(sim, profiletype) %>%
+	summarise(
+		growthrate = coef(lm(log(cuminf) ~ tinf))[2],
+		.groups = "drop")
+
+growthrate_table <- growthrate_df %>%
+	group_by(profiletype) %>%
+	summarise(mean = mean(growthrate), sd = sd(growthrate), .groups = "drop")
+
+fig_growthrate_hists <- ggplot(growthrate_df, aes(x = growthrate)) +
+	geom_histogram(aes(y = after_stat(density)), bins = 40,
+	               fill = "white", col = "darkgrey") +
+	geom_density(adjust = 2) +
+	geom_vline(xintercept = alpha_theoretical, col = "blue", lty = "dashed", linewidth = 0.8) +
+	geom_vline(data = growthrate_table, aes(xintercept = mean), col = "red", linewidth = 0.8) +
+	theme_classic() +
+	facet_wrap(~profiletype, nrow = 1) +
+	labs(x = "Empirical growth rate (1/day)", y = "Density",
+	     title = paste0("Log-linear growth rate (first ", growth_threshold, " cases)"))
+
+fig_growthrate_lines <- cuminf_df %>%
+	filter(established == 1, cuminf <= growth_threshold, cuminf>=min_threshold) %>%
+	ggplot(aes(x = tinf, y = log(cuminf), group = factor(sim))) +
+		geom_point(alpha=0.1, size=0.2, col="grey") + 
+		geom_line(alpha=0.1, linewidth=0.2, col="grey") +
+		geom_line(stat="smooth", method = "lm", alpha = 0.1, linewidth = 0.3) +
+		geom_abline(intercept = 0, slope = alpha_theoretical,
+		            col = "blue", linewidth = 0.8, lty = "dashed") +
+		theme_classic() +
+		facet_wrap(~profiletype, nrow = 1) +
+		labs(x = "Time (days)", y = "log(cumulative infections)")
 
