@@ -41,33 +41,37 @@ seir <- odin({
 # Stochastic simulation model
 # ==============================================================================
 
-gen_inf_attempts_stepwise <- function(tinf, e_dur, i_dur, R0){
+gen_inf_attempts_stepwise <- function(e_dur, i_dur, R0){
 	beta <- R0/i_dur
-	t1 <- rexp(1, 1/e_dur)
-	t2 <- t1 + rexp(1, 1/i_dur)
-	nattempts <- rpois(1, (t2 - t1)*beta) 
-	if(nattempts == 0L) return(numeric(0))
-	attempt_times <- tinf + sort(runif(nattempts, min=t1, max=t2))
-	return(attempt_times)
+	function(tinf){
+		t1 <- rexp(1, 1/e_dur)
+		t2 <- t1 + rexp(1, 1/i_dur)
+		nattempts <- rpois(1, (t2 - t1)*beta) 
+		if(nattempts == 0L) return(numeric(0))
+		attempt_times <- tinf + sort(runif(nattempts, min=t1, max=t2))
+		return(attempt_times)
+	}
 }
 
-gen_inf_attempts_smooth <- function(tinf, e_dur, i_dur, R0){
-	nattempts <- rpois(1, R0)
-	if(nattempts == 0L) return(numeric(0))
-	attempt_times <- tinf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
-	return(attempt_times)
+gen_inf_attempts_smooth <- function(e_dur, i_dur, R0){
+	function(tinf){
+		nattempts <- rpois(1, R0)
+		if(nattempts == 0L) return(numeric(0))
+		attempt_times <- tinf + sort(rexp(nattempts, 1/e_dur) + rexp(nattempts, 1/i_dur))
+		return(attempt_times)
+	}
 }
 
-gen_inf_attempts_spike <- function(tinf, e_dur, i_dur, R0){
-	nattempts <- rpois(1, R0)
-	if(nattempts == 0L) return(numeric(0))
-	attempt_times <- tinf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
-	return(attempt_times)
+gen_inf_attempts_spike <- function(e_dur, i_dur, R0){
+	function(tinf){
+		nattempts <- rpois(1, R0)
+		if(nattempts == 0L) return(numeric(0))
+		attempt_times <- tinf + rep(rexp(1, 1/e_dur) + rexp(1, 1/i_dur), nattempts)
+		return(attempt_times)
+	}
 }
 
-
-sim_stochastic_fast <- function(n=1000, e_dur=2, i_dur=3, R0=2, 
-	                            gen_inf_attempts){
+sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
 
 	# Initialize infection times 
 	tinf_vec <- rep(Inf, n)
