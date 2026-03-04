@@ -29,7 +29,7 @@ source("code/0_utils.R")
 popsize <- 1000
 e_dur   <- 2 
 i_dur   <- 3 
-R0      <- 12
+R0      <- 5
 nsim    <- 1000 
 
 # ==============================================================================
@@ -107,7 +107,8 @@ dailyinf_df <- cuminf_df %>%
 	right_join(dayjoin, by = c("profiletype", "sim", "day")) %>%
 	replace_na(list(ninf = 0)) %>%
 	group_by(profiletype, sim) %>%
-	mutate(established = max(established, na.rm = TRUE)) %>% 
+	arrange(day, .by_group = TRUE) %>%
+	mutate(established = max(established, na.rm = TRUE)) %>%
 	mutate(cuminf=cumsum(ninf))
 
 weeklyinf_df <- cuminf_df %>%
@@ -117,13 +118,24 @@ weeklyinf_df <- cuminf_df %>%
 	right_join(weekjoin, by = c("profiletype", "sim", "week")) %>%
 	replace_na(list(ninf = 0)) %>%
 	group_by(profiletype, sim) %>%
-	mutate(established = max(established, na.rm = TRUE)) %>% 
+	arrange(week, .by_group = TRUE) %>%
+	mutate(established = max(established, na.rm = TRUE)) %>%
 	mutate(cuminf=cumsum(ninf))
 
 lastday <- ceiling(max(cuminf_df$tinf))
 
+dailyinf_means <- dailyinf_df %>%
+	filter(established == 1) %>%
+	group_by(profiletype, day) %>%
+	summarise(mean_ninf = mean(ninf), mean_cuminf = mean(cuminf), .groups = "drop")
+
+weeklyinf_means <- weeklyinf_df %>%
+	filter(established == 1) %>%
+	group_by(profiletype, week) %>%
+	summarise(mean_ninf = mean(ninf), mean_cuminf = mean(cuminf), .groups = "drop")
+
 # ==============================================================================
-# 4. Key metrics 
+# 4. Key metrics
 # ==============================================================================
 
 pest_table <- cuminf_df %>%
@@ -131,6 +143,13 @@ pest_table <- cuminf_df %>%
 	slice(1) %>%
 	group_by(profiletype) %>%
 	summarise(pestablished=sum(established)/nsim, .groups="drop")
+
+fs_table <- cuminf_df %>% 
+	group_by(sim, profiletype) %>% 
+	filter(established==1) %>% 
+	summarise(finalsize=max(cuminf), .groups="drop") %>% 
+	group_by(profiletype) %>% 
+	summarise(fs_mean=mean(finalsize), fs_sd=sd(finalsize), .groups="drop")
 
 # ==============================================================================
 # 5. Figures — epidemic trajectories
@@ -143,6 +162,7 @@ fig_cuminf_overlay <- cuminf_df %>%
 		geom_line(data=filter(ode_daily, day<=lastday),
 			aes(x=day, y=cuminf*popsize),
 			alpha=0.6, linewidth=1, col="blue") +
+		# geom_line(data=dailyinf_means, aes(x=day, y=mean_cuminf), col="black") +
 		theme_classic() +
 		facet_wrap(~profiletype, nrow=1)
 
@@ -153,6 +173,7 @@ fig_inf_overlay <- dailyinf_df %>%
 		geom_line(data=filter(ode_daily, day<=lastday), 
 			aes(x=day, y=newinf*popsize),
 			alpha=0.6, linewidth=1, col="blue") + 
+		# geom_line(data=dailyinf_means, aes(x=day, y=mean_ninf), col="black") +
 		theme_classic() + 
 		facet_wrap(~profiletype, nrow=1)
 
