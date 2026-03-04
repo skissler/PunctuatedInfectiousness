@@ -204,7 +204,7 @@ survival_df <- time_to_threshold %>%
 		.groups = "drop") %>%
 	unnest(cols = c(t, prop_below))
 
-breakvals = if(max(cuminf_df$tinf)>60){seq(0,365,by=15)}else{seq(0,365,by=7)}
+breakvals = if(max(cuminf_df$tinf)>120){seq(0,365,by=15)}else{seq(0,365,by=7)}
 fig_survival_100 <- ggplot(survival_df, aes(x=t, y=prop_below, col=profiletype)) +
 	geom_line(alpha=0.6, linewidth=0.8) +
 	scale_x_continuous(breaks=breakvals) + 
@@ -237,7 +237,7 @@ survival_peak_df <- time_to_peak %>%
 		.groups = "drop") %>%
 	unnest(cols = c(t, prop_below))
 
-breakvals = if(max(cuminf_df$tinf)>60){seq(0,365,by=15)}else{seq(0,365,by=7)}
+breakvals = if(max(cuminf_df$tinf)>120){seq(0,365,by=15)}else{seq(0,365,by=7)}
 fig_survival_peak <- ggplot(survival_peak_df, aes(x=t, y=prop_below, col=profiletype)) +
 	geom_line(alpha=0.6, linewidth=0.8) +
 	scale_x_continuous(breaks=breakvals) +

@@ -1125,4 +1125,39 @@ This section implements the "moment-matching route" discussed in Section 18. The
 
 ---
 
+## 20. Mean-field ODE vs stochastic expectation
+
+The ODE solution is often loosely described as "the expected epidemic trajectory," but this is not exactly correct. The mean-field ODE and the true expectation $E[Z(t)]$ of the stochastic process are related but distinct quantities, and the distinction matters in finite populations with nonlinear dynamics.
+
+### The general principle
+
+- **Mean-field (ODE):** Replace all random variables with their means *inside* the dynamical equations, then solve the resulting deterministic system. This answers: "what trajectory would the system follow if every quantity were always exactly at its expected value?"
+- **True expectation:** Solve the full stochastic process, then average over realisations. This gives $E[X(t)]$ — the quantity that converges as we average more and more simulations at each time point.
+
+These two operations commute for *linear* systems: if $dx/dt = Ax$, then $E[x(t)]$ satisfies the same ODE. But they diverge whenever the dynamics contain *nonlinearities*, because $E[f(X)] \neq f(E[X])$ for nonlinear $f$ when $X$ has variance (Jensen's inequality).
+
+### Application to SEIR
+
+The only nonlinearity in the SEIR system is the transmission term $\beta S I / N$. The true expected force of infection is:
+
+$$E\!\left[\frac{\beta S I}{N}\right] = \frac{\beta}{N}\bigl(E[S] \cdot E[I] + \text{Cov}(S, I)\bigr)$$
+
+The ODE sets $\text{Cov}(S, I) = 0$. But mechanistically, every new infection simultaneously decrements $S$ and increments $I$ (or $E$), so $\text{Cov}(S, I) < 0$ always. This means the true expected infection rate is *lower* than the ODE assumes:
+
+$$E[S \cdot I] < E[S] \cdot E[I]$$
+
+Consequently, the true $E[Z(t)]$ grows slower than the ODE solution at every time point, and this bias accumulates over the course of the epidemic. The mean-field ODE systematically *overestimates* the expected cumulative incidence trajectory.
+
+### When does the bias matter?
+
+- **Large $N$:** The covariance $\text{Cov}(S, I)$ is $O(N)$ while $E[S] \cdot E[I]$ is $O(N^2)$, so the relative bias is $O(1/N)$ and the ODE becomes exact as $N \to \infty$.
+- **Small $N$ or fast epidemics:** With $N = 1000$ and $R_0 \geq 5$, a substantial fraction of the population is infected rapidly, the $S$-$I$ correlation is non-negligible relative to $N$, and the ODE visibly overestimates the stochastic mean.
+- **Burstier profiles (spike) show larger bias:** The spike profile concentrates all secondary infections at a single moment, creating larger bursts that deplete susceptibles more abruptly. This amplifies the magnitude of $\text{Cov}(S, I)$ relative to smoother profiles where infections are spread over time.
+
+### Empirical confirmation
+
+In `code/1_1_basicmetrics.R`, we overlay the ODE solution (blue) and the empirical mean of established stochastic trajectories (black) on `fig_cuminf_overlay`. The black curve is consistently pulled below the blue curve, with the gap largest for the spike profile. This gap is *not* primarily a conditioning artefact (conditioning on establishment has a comparatively small effect when the establishment probability is high). It reflects the finite-population mean-field bias described above, and would shrink with increasing $N$.
+
+---
+
 *Last updated: 2026-03-03*
