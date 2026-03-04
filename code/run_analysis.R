@@ -91,6 +91,13 @@ cat("\n--- 8. Gathering size restrictions analysis ---\n\n")
 source("code/gathering_size_restrictions.R")
 
 # ==============================================================================
+# 9. Analytical W moments and generalized gamma matching (Section 19)
+# ==============================================================================
+
+cat("\n--- 9. Analytical W moments and generalized gamma matching ---\n\n")
+source("code/analytical_W_moments.R")
+
+# ==============================================================================
 # Done
 # ==============================================================================
 

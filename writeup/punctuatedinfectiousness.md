@@ -141,16 +141,25 @@ $$
 
 ## The impact of the individual infectiousness profile on uncontrolled epidemic dynamics 
 
+### Constant contacts 
+
 * Stepwise, smooth, and spike all yield the same mean dynamics 
 * Stepwise has higher extinction probability, explained by overdispersion
-* Spike has later and more variable establishment properties, including time-to-n-infected and exponential growth rate
-* Spike emphasizes variation in contacts, leading to overdispersion. 
+* Spike has later and more variable establishment properties, including time-to-n-infected and peak, and exponential growth rate is more variable. We can show this through simualtions and through analytic approaches, following Morris' time shift ideas [[x](https://link.springer.com/article/10.1007/s00285-024-02132-6)]
 
-The time shift: Cite Dylan Morris' other paper [[x](https://link.springer.com/article/10.1007/s00285-024-02132-6)]
+With constant contacts, kappa doesn't affect extinction or overdispersion — only growth timing
+
+### Time-varying contacts
+
+but introduce time-varying contacts and suddenly kappa controls overdispersion
+
+For the rest of our analysis, we focus on individual infectiousness profiles that can be expressed using the Gamma convolutional framework so that each person's total infectiousness is uniform across the population and the only thing that varies is the punctuation and timing of the individual infectiousness profile.
+
+* Spike emphasizes variation in contacts, leading to overdispersion. 
 
 ## The impact of punctuated infectiousness on outbeak interventions
 
-For the rest of our analysis, we focus on individual infectiousness profiles that can be expressed using the Gamma convolutional framework so that each person's total infectiousness is uniform across the population and the only thing that varies is the punctuation and timing of the individual infectiousness profile.
+
 
 ### Detection and isolation 
 
