@@ -89,21 +89,52 @@ gen_inf_attempts_spike <- function(e_dur, i_dur, R0){
 #' @param popshape Shape parameter for the Gamma-distributed population 
 #'   infectiousness profile (A(tau) ~ Gamma(popshape, popshape/T))
 #' @param kappa Parameter governing punctuation of the individual
-#'   infectiousness profile (kappa \in (0, popshape), with small kappa giving
-#'   sharp infectiousness profiles')
+#'   infectiousness profile (kappa \in (0, 1), with kappa -> 0 giving sharp
+#'   infectiousness profiles and kappa -> 1 giving smooth ones equivalent to 
+#'   the population generation interval distribution)
 #' @return A function(t_inf) that returns sorted infection attempt times
 gen_inf_attempts_gamma <- function(T, R0, popshape, kappa){
-	stopifnot(kappa>0, kappa<popshape)
+	stopifnot(kappa>0, kappa<1)
 	r <- popshape/T
-	shiftshape <- popshape - kappa
+	shiftshape <- (1-kappa)*popshape
 	function(tinf){
 		nattempts <- rpois(1,R0)
 		if(nattempts==0L) return(numeric(0))
 		shift <- rgamma(1, shape=shiftshape, rate=r)
-		attempt_times <- tinf + shift + sort(rgamma(nattempts, shape=kappa, rate=r))
-		return(attempt_times)
+		attempt_times <- tinf + shift + rgamma(nattempts, shape=kappa*popshape, rate=r)
+		return(sort(attempt_times))
 	}
 }
+
+
+
+gen_inf_attempts_gamma_contacts <- function(T, z, z_max, popshape, kappa){
+
+	stopifnot(kappa>0, kappa<1)
+	stopifnot(z_max>0) 
+
+	r <- popshape/T 
+	shiftshape <- (1-kappa)*popshape 
+
+	function(tinf){
+		nproposals <- rpois(1, z_max)
+		if(nproposals == 0L) return(numeric(0))
+		shift <- rgamma(1, shape=shiftshape, rate=r)
+		proposals <- tinf + shift + rgamma(nproposals, shape=kappa*popshape, rate=r)
+		accept_prob <- z(proposals)/z_max
+		keep <- runif(nproposals) < accept_prob
+		if(!any(keep)) return(numeric(0))
+		return(sort(proposals[keep]))
+	}
+
+}
+
+
+
+
+
+
+
 
 #' Stochastic epidemic simulation
 #' 
