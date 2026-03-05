@@ -19,7 +19,7 @@ set.seed(42)
 # ==============================================================================
 
 mu          <- 5       # mean generation time
-R0          <- 2       # basic reproduction number
+R0          <- 5       # basic reproduction number
 alpha_total <- 10      # population kernel shape
 r           <- alpha_total / mu
 T_period    <- 7       # contact cycle period (weekly)
