@@ -1,4 +1,5 @@
-library(tidyverse) 
+library(tidyverse)
+library(patchwork)
 source("code/0_utils.R")
 
 # ==============================================================================
@@ -28,10 +29,6 @@ popshape <- 10      # Shape parameter for pop. generation interval distribution
 r <- popshape/T     # Rate for generation interval distribution 
 z_per <- 1          # Contact function period 
 
-# Parameter grid (kappa values and contact function amplitudes)
-# kappa_vals <- seq(from=0.1, to=0.9, by=0.1)   # Punctuation
-# z_amp_vals <- seq(from=0, to=1.2, by=0.1)       # Contact function amplitude
-
 make_contact_fn <- function(z_mean, z_amp, z_per){
 	stopifnot(z_amp <= z_mean)
 	function(t) z_mean - z_amp*cos(2*pi*t/z_per)
@@ -46,8 +43,8 @@ n_index <- 1000     # number of index cases per simulation replicate
 n_reps  <- 10       # number of replicates per (kappa, z_mean) pair
 
 z_mean_vals <- c(2, 5, 12)
-kappa_vals <- seq(from=0.1, to=0.9, by=0.1)
-kappa_vals_fine <- seq(0.01, 0.99, length.out = 200)
+kappa_vals <- seq(from=0.01, to=0.2, by=0.01)
+kappa_vals_fine <- seq(0.01, 0.2, length.out = 200)
 
 theory_df <- expand_grid(kappa = kappa_vals_fine, z_mean = z_mean_vals) %>%
 	mutate(
@@ -66,16 +63,20 @@ sim_k_df <- expand_grid(
 ) %>% mutate(k_sim = NA_real_)
 
 for(idx in seq_len(nrow(sim_k_df))){
+
 	kappa   <- sim_k_df$kappa[idx]
-	z_mean    <- sim_k_df$z_mean_sim[idx]
-	z_amp    <- z_mean - 1
-	z  <- make_contact_fn(z_mean, z_amp, z_per)
-	gfun  <- gen_inf_attempts_gamma_contacts(T=T, z=z, z_max=z_mean + z_amp,
-	                                         popshape=popshape, kappa=kappa)
-	tinfs <- z_per * runif(n_index)
+	z_mean  <- sim_k_df$z_mean_sim[idx]
+	z_amp   <- z_mean - 1
+	z       <- make_contact_fn(z_mean, z_amp, z_per)
+	gfun    <- gen_inf_attempts_gamma_contacts(T=T, z=z, z_max=z_mean + z_amp,
+	                                           popshape=popshape, kappa=kappa)
+	
+	tinfs       <- z_per * runif(n_index)
 	noffspring  <- sapply(lapply(tinfs, gfun), length)
+
 	m_sim <- mean(noffspring)
 	v_sim <- var(noffspring)
+
 	sim_k_df$k_sim[idx] <- if(v_sim>m_sim){m_sim^2/(v_sim-m_sim)} else {Inf}
 	if(idx %% 20 == 0) cat(sprintf("  %d / %d\n", idx, nrow(sim_k_df)))
 }
@@ -116,7 +117,7 @@ fig_k_vs_kappa <- ggplot() +
 # ==============================================================================
 
 n_index_heat <- 10000
-kappa_vals_heat   <- seq(0.05, 0.95, by = 0.05)
+kappa_vals_heat   <- seq(0.01, 0.2, by = 0.01)
 
 heatmap_list <- list()
 sim_grid_all <- list()
@@ -149,7 +150,7 @@ for(z_mean in z_mean_vals){
 		mutate(z_mean = z_mean)
 
 	# --- Theoretical contours ---
-	theory_heat <- expand_grid(kappa = seq(0.01, 0.99, length.out = 100),
+	theory_heat <- expand_grid(kappa = seq(0.01, 0.2, length.out = 100),
 	                           z_amp = seq(0.01, z_amp_max, length.out = 100)) %>%
 		mutate(
 			eps = z_amp / z_mean,
@@ -187,7 +188,7 @@ for(z_mean in z_mean_vals){
 	sim_means <- sim_grid_all[[as.character(z_mean)]] %>%
 		mutate(k_capped = pmin(k_sim, 50), z_mean = z_mean)
 
-	theory_heat <- expand_grid(kappa = seq(0.01, 0.99, length.out = 500),
+	theory_heat <- expand_grid(kappa = seq(0.01, 0.2, length.out = 500),
 	                           z_amp = seq(0.01, z_amp_max, length.out = 500)) %>%
 		mutate(
 			eps = z_amp / z_mean,
@@ -219,16 +220,16 @@ fig_heatmaps_capped <- patchwork::wrap_plots(heatmap_capped_list, nrow = 1) +
 
 
 # ==============================================================================
-# Full epidemic simulations
+# 4. Full epidemic simulations
 # ==============================================================================
 
 popsize <- 1000
 nsim <- 200 
 
 scenarios <- list(
-	list(kappa=0.95, z_mean=5, z_amp=0, label="Smooth + constant"),
+	list(kappa=0.25, z_mean=5, z_amp=0, label="Smooth + constant"),
 	list(kappa=0.05, z_mean=5, z_amp=0, label="Punctuated + constant"),
-	list(kappa=0.95, z_mean=5, z_amp=4, label="Smooth + periodic"),
+	list(kappa=0.25, z_mean=5, z_amp=4, label="Smooth + periodic"),
 	list(kappa=0.05, z_mean=5, z_amp=4, label="Punctuated + periodic")
 	)
 
@@ -271,8 +272,8 @@ fig_final_size <- epi_df %>%
 	labs(x = "Final epidemic size",
 	     y = "Count",
 	     title = "Final size distributions across scenarios",
-	     subtitle = sprintf("N = %d, z_mean = %g, %d simulations per scenario",
-	                        popsize, z_mean, nsim))
+	     subtitle = sprintf("N = %d, z_mean = 5, %d simulations per scenario",
+	                        popsize, nsim))
 
 fs_table <- epi_df %>%
 	group_by(label) %>%
@@ -320,7 +321,7 @@ if (nrow(curve_df) > 0) {
 	fig_curves <- curve_df %>%
 		semi_join(plot_sims, by = c("label", "sim")) %>%
 		ggplot(aes(x = tinf, y = cuminf, group = interaction(label, sim))) +
-		geom_line(alpha = 0.5) +
+		geom_line(alpha = 0.2, linewidth=0.2) +
 		facet_wrap(~label, ncol = 2) +
 		theme_classic() +
 		labs(x = "Time (days)", y = "Cumulative infections",
