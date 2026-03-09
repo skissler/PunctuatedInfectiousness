@@ -26,7 +26,7 @@ Conditional on establishing, the spike case takes ~0.8–1 day longer to reach e
 
 **Single-infector level.** In the smooth case, an infector with $`k`$ contacts generates $`k`$ independent transmission times drawn from the generation interval distribution. The *first* onward transmission is $`\min(\tau_1, \ldots, \tau_k)`$, which is stochastically earlier than a single draw. In the spike case, all $`k`$ contacts occur at the same time $`\tau_i^*`$, so the first transmission time is just a single generation-interval draw regardless of $`k`$.
 
-First-transmission time from a single infector, stratified by number of contacts ($`10^5`$ replicates; $`E[\text{GenInterval}] = e\_dur + i\_dur = 5.0`$ days):
+First-transmission time from a single infector, stratified by number of contacts ($`10^5`$ replicates; $`E[\text{GenInterval}] = e_{dur} + i_{dur} = 5.0`$ days):
 
 | Contacts ($`k`$) | Smooth | Spike | Difference |
 |-----------------|--------|-------|------------|
@@ -78,7 +78,7 @@ This distinction should produce different phylogenetic tree structures (more syn
 
 ## 8. Intervention impact variance differs across profiles
 
-Consider a one-time intervention that removes a fraction of infectious individuals at time $`t`$ (e.g., a quarantine sweep). In the smooth case, each removed individual has a predictable amount of remaining infectiousness. In the spike case, a removed individual has either already transmitted all $`R_0`$ of their infections (if $`t > t_i + \tau_i^*`$) or has transmitted none of them (if $`t < t_i + \tau_i^\*`$). The expected impact of removal is similar across profiles, but the *variance* in impact is higher for the spike case — interventions are a higher-variance gamble when infectiousness is punctuated.
+Consider a one-time intervention that removes a fraction of infectious individuals at time $`t`$ (e.g., a quarantine sweep). In the smooth case, each removed individual has a predictable amount of remaining infectiousness. In the spike case, a removed individual has either already transmitted all $`R_0`$ of their infections (if $`t > t_i + \tau_i^*`$) or has transmitted none of them (if $`t < t_i + \tau_i^*`$). The expected impact of removal is similar across profiles, but the *variance* in impact is higher for the spike case — interventions are a higher-variance gamble when infectiousness is punctuated.
 
 *Status: theoretical prediction, not yet tested in simulation.*
 
