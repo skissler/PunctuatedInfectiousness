@@ -12,7 +12,8 @@
       "Bash(pdftotext:*)",
       "Bash(cd:*)",
       "Bash(make clean:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(python3:*)"
     ]
   }
 }
