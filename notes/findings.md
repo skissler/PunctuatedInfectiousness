@@ -420,7 +420,7 @@ At $R_0 = 5$, the spike case has nearly twice the standard deviation in time-to-
 
 ### R0 dependence
 
-The growth delay from punctuation **increases** with $R_0$, contrary to a naive expectation. The mechanism: the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $k = 1$ attempt (P(k=1) $\approx 0.36$, P(k=0) $\approx 0.30$), so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4$--$6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau$, giving smooth profiles a compounding head start at each generation.
+The growth delay from punctuation **increases** with $R_0$, contrary to a naive expectation. The mechanism: the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $k = 1$ attempt (P(k=1) $\approx 0.36$, P(k=0) $\approx 0.30$), so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau$, giving smooth profiles a compounding head start at each generation.
 
 The effect is strongest at the earliest milestones: the t10 delay at $R_0 = 5$ is 32%, attenuating to 18% by t100 as later generations compound and susceptible depletion begins to equalize growth rates.
 
