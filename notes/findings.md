@@ -1294,6 +1294,45 @@ The reversal occurs because:
 - **Symptoms:** the trigger is anchored to biological onset, so it is approximately fixed relative to $s_i$ regardless of $\kappa$. The fraction averted equals the tail of $f_\kappa$ beyond the symptom time. Smoother profiles spread more mass into this tail.
 - **Screening:** the trigger is anchored to peak infectiousness. Punctuated profiles concentrate their peak near onset, so the detectability window extends across nearly all transmission. Smooth profiles spread transmission well before and after the window centre.
 
+### General detection distributions: three principles
+
+The symptom and screening cases are instances of a fully general result. For any non-negative detection time $D$ (possibly depending on $\kappa$), testing effectiveness is:
+
+$$\text{TE}(\kappa) = E_D\!\left[S_{\kappa\alpha}(D)\right], \qquad S_{\kappa\alpha}(d) \equiv P(\varepsilon > d) = 1 - F_{\text{Gamma}(\kappa\alpha,\,r)}(d)$$
+
+The survival function $S_{\kappa\alpha}$ is the complete sufficient statistic for how *any* detection mechanism interacts with the profile. Three properties of $S$ govern the $\kappa$-dependence of TE.
+
+**Principle 1 (Stochastic ordering).** $\text{Gamma}(\kappa_1 \alpha, r) \leq_{\text{st}} \text{Gamma}(\kappa_2 \alpha, r)$ for $\kappa_1 < \kappa_2$. Therefore $S_{\kappa\alpha}(d)$ is pointwise increasing in $\kappa$ for every $d > 0$. Consequence: **for any detection distribution $D$ that is independent of $\kappa$, TE is monotonically increasing in $\kappa$.** Smooth profiles always benefit more from a $\kappa$-independent trigger. This is the default; any reversal requires the detection mechanism to "see" the profile shape.
+
+**Principle 2 (Mean-shift reversal).** When $D$ depends on $\kappa$, two effects compete:
+
+$$\frac{d\,\text{TE}}{d\kappa} = \underbrace{\alpha \cdot E\!\left[\frac{\partial S_a(D)}{\partial a}\bigg|_{a=\kappa\alpha}\right]}_{\text{profile spreading (always } > 0\text{)}} \;-\; \underbrace{\frac{dE[D]}{d\kappa} \cdot E\!\left[f_{\kappa\alpha}(D)\right]}_{\text{detection delay shift}}$$
+
+The first term is always positive: broadening $\varepsilon$ puts more mass beyond any fixed detection point. The second term is negative when $E[D]$ increases with $\kappa$. The reversal (TE decreasing in $\kappa$) requires $E[D]$ to grow with $\kappa$ fast enough to overcome the first term. The critical rate is approximately $dE[D]/d\kappa \approx \alpha / r = T$, the same rate at which $E[\varepsilon] = \kappa\alpha/r$ grows. When $D$ is deterministic, numerical verification confirms:
+
+| Growth of $E[D]$ | $\kappa$-effect on TE | Example |
+|---|---|---|
+| Constant | Increasing (smooth benefits) | Symptom-triggered isolation |
+| Proportional to $\kappa T$ | Approximately neutral | Symptoms tracking peak |
+| Faster than $\kappa T$ | Decreasing (punctuated benefits) | Screening with peak-anchored window |
+
+**Principle 3 (Variance–convexity interaction).** For $\kappa\alpha \leq 1$, the survival function $S_{\kappa\alpha}(d)$ is *globally convex* on $(0, \infty)$. By Jensen's inequality, for any random $D$ with a given mean, $E[S(D)] \geq S(E[D])$: variance in $D$ always increases TE. For $\kappa\alpha > 1$, $S$ is concave before the mode $(\kappa\alpha - 1)/r$ and convex after. The consequence:
+
+- When detection typically occurs *before* peak infectiousness (e.g., early screening), $D$ falls in the concave region: variance in $D$ *decreases* TE.
+- When detection typically occurs *after* peak infectiousness (e.g., delayed symptoms), $D$ falls in the convex region: variance in $D$ *increases* TE.
+
+Because punctuated profiles ($\kappa\alpha$ small) have globally convex $S$ while smooth profiles ($\kappa\alpha$ large) have a concave region, **noisy detection mechanisms disproportionately benefit punctuated profiles**. This is the formal generalisation of the all-or-nothing mechanism from §14: the bimodal distribution of fraction averted for punctuated profiles (either 0% or 100%) is precisely the convexity of $S$.
+
+**Summary.** The three principles organise the full design space of detection mechanisms:
+
+| Property of $S_{\kappa\alpha}$ | Small $\kappa\alpha$ | Large $\kappa\alpha$ | Consequence |
+|---|---|---|---|
+| Level at fixed $d$ | Low | High | Fixed $D$ → smooth benefits (Principle 1) |
+| Shift rate with $\kappa$ | $\alpha/r$ | $\alpha/r$ | $D$ must track to keep up (Principle 2) |
+| Curvature | Globally convex | Concave-then-convex | Variance in $D$ helps punctuated more (Principle 3) |
+
+Any detection strategy can be analysed by specifying two things: (i) how $E[D]$ scales with $\kappa$ (Principle 2), and (ii) where $D$ sits relative to the mode of $\varepsilon$ (Principle 3). Symptom-triggered isolation is a Principle-1 story (fixed $D$, smooth wins). Periodic screening is a Principle-2 story ($E[D]$ shifts with $\kappa$, punctuated wins). The all-or-nothing mechanism of §14 is a Principle-3 story (convexity favours punctuated).
+
 ### Numerical predictions for standard parameters
 
 Parameters: $T = 5$, `popshape` $\alpha = 10$, $r = \alpha/T = 2$.
