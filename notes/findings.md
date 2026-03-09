@@ -103,7 +103,7 @@ where $\mu$ is the mean generation time and $\alpha_{\text{total}}$ controls the
 
 ### Decomposition
 
-Decompose each contact time as
+Decompose each attempted infection time as
 
 $$c_j = s_i + \varepsilon_j,$$
 
@@ -139,7 +139,7 @@ which is zero for $\tau < s_i$ and follows a $\text{Gamma}(\kappa, r)$ density t
 
 ### Variance decomposition
 
-The total variance of contact times decomposes additively:
+The total variance of a person's attempted infection times decomposes additively:
 
 $$\text{Var}(c_j) = \underbrace{\text{Var}(s_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha_{\text{total}} - \kappa}{r^2} + \frac{\kappa}{r^2} = \frac{\alpha_{\text{total}}}{r^2}.$$
 
@@ -172,11 +172,11 @@ The shifted Gamma construction is remarkably robust to heterogeneity in the punc
 
 #### Why it works
 
-The argument is simple. For a given individual $i$ with punctuation parameter $\kappa_i$, their contact times decompose as:
+The argument is simple. For a given individual $i$ with punctuation parameter $\kappa_i$, their attempted infection times decompose as:
 
 $$c_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa_i, r), \quad \varepsilon_j \sim \text{Gamma}(\kappa_i, r)$$
 
-By the Gamma additivity property, the marginal distribution of each contact time is:
+By the Gamma additivity property, the marginal distribution of each attempted infection time is:
 
 $$c_j \mid \kappa_i \sim \text{Gamma}(\alpha_{\text{total}}, r) \qquad \text{for every } \kappa_i \in (0, \alpha_{\text{total}})$$
 
@@ -194,7 +194,7 @@ With $\alpha_{\text{total}} = 10$, we can define $\kappa_i = \alpha_{\text{total
 
 **Example 1: Homogeneous population (degenerate $F$).** $\kappa_i = 5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
 
-**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, r)$.
+**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $`A(\tau)`$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, r)$.
 
 **Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\kappa_i$ near $\alpha_{\text{total}}$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
 
