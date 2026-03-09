@@ -13,6 +13,13 @@
 \usepackage{lineno}
 \renewcommand\linenumberfont{\normalfont\footnotesize\ttfamily\color{gray}}
 
+% Dark mode: activated via \def\darkmode{} on the command line
+\ifdefined\darkmode
+  \pagecolor{black}
+  \color{white}
+  \hypersetup{colorlinks=true, linkcolor=cyan, citecolor=cyan, urlcolor=cyan}
+\fi
+
 % Uniform font size for title and sections
 \usepackage{titlesec}
 \titleformat{\section}{\normalsize\bfseries}{\thesection}{1em}{}

@@ -10,7 +10,9 @@
       "Bash(bibtex:*)",
       "Bash(brew list:*)",
       "Bash(pdftotext:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(make clean:*)",
+      "Bash(make:*)"
     ]
   }
 }
