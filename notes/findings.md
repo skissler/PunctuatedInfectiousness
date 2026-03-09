@@ -480,11 +480,11 @@ Simulation with 3-day screening, sensitivity 0.85, and a 6-day positivity window
 
 #### Detection probability is not the driver
 
-$P(\text{det})$ is approximately constant across $\kappa$ at $\sim$97.5%. The positivity window is wide relative to the screening interval, so almost everyone is detected regardless of profile shape.
+$P(\text{det})$ is approximately constant across $\kappa$ at $`\sim`$97.5%. The positivity window is wide relative to the screening interval, so almost everyone is detected regardless of profile shape.
 
 #### The conditional value of detection is the driver
 
-$E[\text{frac averted} \mid \text{detected}]$ drops from $\sim$0.88 for spike profiles ($\kappa = 0.5$) to $\sim$0.80 for smooth profiles ($\kappa = 9.5$):
+$E[\text{frac averted} \mid \text{detected}]$ drops from $`\sim`$0.88 for spike profiles ($\kappa = 0.5$) to $`\sim`$0.80 for smooth profiles ($`\kappa = 9.5`$):
 
 | $\kappa$ | $P(\text{det})$ | $E[\text{frac averted} \mid \text{det}]$ | $R_{\text{eff}}$ | Tail leakage |
 |----------|-----------------|------------------------------------------|-------------------|---------------|
@@ -493,7 +493,7 @@ $E[\text{frac averted} \mid \text{detected}]$ drops from $\sim$0.88 for spike pr
 | 6        | 0.975           | 0.82                                     | 0.40              | 5%            |
 | 9.5      | 0.975           | 0.80                                     | 0.44              | 7%            |
 
-$R_{\text{eff}}$ varies by a factor of $\sim$1.6 across $\kappa$ despite identical detection probabilities.
+$R_{\text{eff}}$ varies by a factor of $`\sim`$1.6 across $\kappa$ despite identical detection probabilities.
 
 #### Mechanism 1: All-or-nothing vs partial aversion
 
