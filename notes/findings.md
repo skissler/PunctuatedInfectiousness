@@ -325,11 +325,11 @@ The core finding: overdispersion arises from the *interaction* between punctuate
 | 8        | 1.00           | 1.01              | 1.06              | 1.12              | 1.16              |
 | 9.5      | 1.01           | 1.05              | 1.04              | 1.07              | 1.12              |
 
-The overdispersion is concentrated in the **low-$\kappa$, high-$\epsilon$ corner**: punctuated profiles ($\kappa \leq 2$) with strong contact oscillation ($\epsilon \geq 0.7$) yield variance/mean ratios of 1.4--1.7. Smooth profiles ($\kappa = 9.5$) show at most a ratio of 1.12 even at maximum contact amplitude.
+The overdispersion is concentrated in the low-$\kappa$, high-$\epsilon$ corner: punctuated profiles ($\kappa \leq 2$) with strong contact oscillation ($\epsilon \geq 0.7$) yield variance/mean ratios of 1.4--1.7. Smooth profiles ($\kappa = 9.5$) show at most a ratio of 1.12 even at maximum contact amplitude.
 
 #### Negative binomial dispersion parameter $k$
 
-Fitting $k$ via method of moments ($k = \mu^2 / (\text{Var} - \mu)$):
+Fitting $k$ via method of moments ($`k = \mu^2 / (\text{Var} - \mu)`$):
 
 | $\kappa$ | $\epsilon = 0$ | $\epsilon = 0.5$ | $\epsilon = 0.7$ | $\epsilon = 0.9$ |
 |----------|----------------|-------------------|-------------------|-------------------|
