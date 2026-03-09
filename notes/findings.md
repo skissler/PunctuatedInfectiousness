@@ -69,7 +69,7 @@ By construction, all three profiles share the same population-level $A(\tau)$ an
 
 ## 7. Within-individual correlation structure differs between smooth and spike
 
-In the smooth case, a single infector generates contacts at multiple different generation intervals (spanning the full generation interval distribution). An individual who transmits early also transmits late. In the spike case, all of a person's transmissions occur at the same generation interval $\tau_i^*$. This means:
+In the smooth case, a single infector attempts infections at multiple different generation intervals (spanning the full generation interval distribution). An individual who transmits early also transmits late. In the spike case, all of a person's transmissions occur at the same generation interval $\tau_i^*$. This means:
 
 - In the smooth case, generation intervals from a common infector are positively correlated (they are draws from the same profile, conditional on the infector existing).
 - In the spike case, generation intervals from a common infector are identical (all equal $\tau_i^*$), but generation intervals from *different* infectors are independent.
@@ -105,12 +105,12 @@ where $\mu$ is the mean generation time and $\alpha_{\text{total}}$ controls the
 
 Decompose each attempted infection time as
 
-$$c_j = s_i + \varepsilon_j,$$
+$$\xi_j = s_i + \varepsilon_j,$$
 
 where:
 
 - $s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa,\; r)$ is an individual-specific **onset shift** (drawn once per individual),
-- $\varepsilon_j \sim \text{Gamma}(\kappa,\; r)$ is a **jitter** around the onset (drawn independently per contact, same distribution for all individuals),
+- $\varepsilon_j \sim \text{Gamma}(\kappa,\; r)$ is a **jitter** around the onset (drawn independently per infection attempt, same distribution for all individuals),
 - $\kappa \in (0, \alpha_{\text{total}})$ is the **punctuation parameter**.
 
 ### Why it works
@@ -119,7 +119,7 @@ The key identity is that Gamma distributions with the same rate are closed under
 
 $$\text{Gamma}(\alpha_{\text{total}} - \kappa,\; r) + \text{Gamma}(\kappa,\; r) = \text{Gamma}(\alpha_{\text{total}},\; r).$$
 
-So the marginal distribution of $c_j$ (integrating over $s_i$) is $\text{Gamma}(\alpha_{\text{total}}, r)$ regardless of $\kappa$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\kappa$ varies.
+So the marginal distribution of $\xi_j$ (integrating over $s_i$) is $\text{Gamma}(\alpha_{\text{total}}, r)$ regardless of $\kappa$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\kappa$ varies.
 
 ### Individual profiles
 
@@ -133,7 +133,7 @@ which is zero for $\tau < s_i$ and follows a $\text{Gamma}(\kappa, r)$ density t
 
 | $\kappa$ | Individual profile $f_\kappa$ | Shift distribution | Interpretation |
 |---|---|---|---|
-| $\kappa \to 0$ | $\delta$-function (infinitely narrow spike) | $\text{Gamma}(\alpha_{\text{total}}, r) = A/R_0$ | Maximally punctuated: all contacts at one instant |
+| $\kappa \to 0$ | $\delta$-function (infinitely narrow spike) | $\text{Gamma}(\alpha_{\text{total}}, r) = A/R_0$ | Maximally punctuated: all infection attempts at one instant |
 | Small $\kappa$ (e.g. 2) | Narrow unimodal bump | Wide shift distribution | Punctuated but not singular |
 | $\kappa \to \alpha_{\text{total}}$ | $\approx A(\tau)/R_0$ (broad, matches population kernel) | $\delta$-function at 0 (no shift) | Smooth: all individuals have the same profile $\approx A(\tau)$ |
 
@@ -141,7 +141,7 @@ which is zero for $\tau < s_i$ and follows a $\text{Gamma}(\kappa, r)$ density t
 
 The total variance of a person's attempted infection times decomposes additively:
 
-$$\text{Var}(c_j) = \underbrace{\text{Var}(s_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha_{\text{total}} - \kappa}{r^2} + \frac{\kappa}{r^2} = \frac{\alpha_{\text{total}}}{r^2}.$$
+$$\text{Var}(\xi_j) = \underbrace{\text{Var}(s_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha_{\text{total}} - \kappa}{r^2} + \frac{\kappa}{r^2} = \frac{\alpha_{\text{total}}}{r^2}.$$
 
 The fraction of total variance that is between-individual (i.e., due to punctuation) is
 
@@ -174,11 +174,11 @@ The shifted Gamma construction is remarkably robust to heterogeneity in the punc
 
 The argument is simple. For a given individual $i$ with punctuation parameter $\kappa_i$, their attempted infection times decompose as:
 
-$$c_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa_i, r), \quad \varepsilon_j \sim \text{Gamma}(\kappa_i, r)$$
+$$\xi_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa_i, r), \quad \varepsilon_j \sim \text{Gamma}(\kappa_i, r)$$
 
 By the Gamma additivity property, the marginal distribution of each attempted infection time is:
 
-$$c_j \mid \kappa_i \sim \text{Gamma}(\alpha_{\text{total}}, r) \qquad \text{for every } \kappa_i \in (0, \alpha_{\text{total}})$$
+$$\xi_j \mid \kappa_i \sim \text{Gamma}(\alpha_{\text{total}}, r) \qquad \text{for every } \kappa_i \in (0, \alpha_{\text{total}})$$
 
 The crucial point: the right-hand side **does not depend on $\kappa_i$**. The identity $\text{Gamma}(\alpha - \kappa, r) + \text{Gamma}(\kappa, r) = \text{Gamma}(\alpha, r)$ is exact for every $\kappa$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r)$ regardless of their punctuation parameter.
 
@@ -246,7 +246,7 @@ $$J(t) = S(t) \cdot C(t) \int_0^\infty J(t - \tau)\,B(\tau)\,d\tau.$$
 
 The time-varying contact function acts as a multiplicative modulator on the effective reproduction number. When $C(t) = C$ (constant), we recover the standard time-homogeneous renewal equation with $A(\tau) = C \cdot B(\tau)$.
 
-*(If $b_i$ and $c_i$ are not independent — for instance, if symptomatic individuals reduce contacts late in their infection — the factorization breaks and the joint distribution $E[b_i(\tau) \cdot c_i(t)]$ is needed. We assume independence throughout this project.)*
+**Note:** If $b_i$ and $c_i$ are not independent — for instance, if symptomatic individuals reduce contacts late in their infection — the factorization breaks and the joint distribution $E[b_i(\tau) \cdot c_i(t)]$ is needed. We assume independence throughout this project.
 
 ### Connection to the shifted Gamma construction
 
