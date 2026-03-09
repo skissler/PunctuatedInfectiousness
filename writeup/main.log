@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  9 MAR 2026 06:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  9 MAR 2026 06:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -460,44 +460,44 @@ LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 3
 (/usr/local/texlive/2021/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-(./introduction.tex
-LaTeX Font Info:    Trying to load font information for U+msa on input line 3.
+(./introduction.tex [1
 
-(/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsa.fd
+{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+LaTeX Font Info:    Trying to load font information for U+msa on input line 4.
+ (/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 3.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 4.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
-
-{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]) (./mod
-el.tex
+)) (./model.tex
 LaTeX Font Info:    Font shape `T1/phv/b/it' in size <10.95> not available
 (Font)              Font shape `T1/phv/b/sl' tried instead on input line 3.
 
-[2]
+[2
+
+] [3]
 LaTeX Font Info:    Trying to load font information for TS1+phv on input line 7
 5.
  (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1phv.fd
 File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
-) [3]
-[4]) (./uncontrolled.tex) (./interventions.tex [5]) (./identifiability.tex)
+)
+[4] [5]) (./uncontrolled.tex) (./interventions.tex [6]) (./identifiability.tex)
 (./discussion.tex) (./main.bbl
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 12.
-) (./acknowledgements.tex [6]) [7]
-(./supplementary.tex) [8
+) (./acknowledgements.tex [7]) [8]
+(./supplementary.tex) [9
 
 ] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: EF38A5E53E3293BE79D78545567FC85C;3832.
  ) 
 Here is how much of TeX's memory you used:
- 11124 strings out of 478994
- 157155 string characters out of 5858184
- 478323 words of memory out of 5000000
+ 11125 strings out of 478994
+ 157161 string characters out of 5858184
+ 477323 words of memory out of 5000000
  28367 multiletter control sequences out of 15000+600000
  431793 words of font info for 63 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -518,10 +518,10 @@ st/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2021/texmf-dist/font
 s/type1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type
 1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/h
 elvetic/uhvro8a.pfb>
-Output written on main.pdf (8 pages, 177958 bytes).
+Output written on main.pdf (9 pages, 178230 bytes).
 PDF statistics:
- 232 PDF objects out of 1000 (max. 8388607)
- 205 compressed objects within 3 object streams
- 51 named destinations out of 1000 (max. 500000)
+ 236 PDF objects out of 1000 (max. 8388607)
+ 208 compressed objects within 3 object streams
+ 52 named destinations out of 1000 (max. 500000)
  113 words of extra memory for PDF output out of 10000 (max. 10000000)
 
