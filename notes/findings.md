@@ -1355,7 +1355,7 @@ where $`D = D_{\text{trigger}}`$. The mean effect is always negative (delay redu
 - If $` D + E[\delta] > \text{mode}_\kappa `$, then $`S`$ is convex and variance **increases** TE.
 - If $` \kappa\alpha \leq 1 `$, then $`S`$ is globally convex and variance **always increases** TE. 
 
-**$`\kappa`$-dependent effect of TAT variance.** For symptom-triggered isolation with a fixed symptom delay $`d_0`$ and TAT $`\delta \sim \text{Exp}(1)`$ ($`E[\delta] = 1`$ day), the decomposition at $`d_0 = 2`$, $`\alpha = 10`$, $`r = 2`$:
+<!--- **$`\kappa`$-dependent effect of TAT variance.** For symptom-triggered isolation with a fixed symptom delay $`d_0`$ and TAT $`\delta \sim \text{Exp}(1)`$ ($`E[\delta] = 1`$ day), the decomposition at $`d_0 = 2`$, $`\alpha = 10`$, $`r = 2`$: ---> 
 
 | $`\kappa`$ | $`\kappa\alpha`$ | mode | TE (no TAT) | mean effect | var effect | TE (with TAT) |
 |---|---|---|---|---|---|---|
