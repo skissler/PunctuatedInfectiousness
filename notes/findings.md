@@ -981,10 +981,10 @@ $$Z(t) \approx v(t + \tau), \qquad \tau = \frac{\log W - \log E[W]}{\alpha}.$$
 
 The random time-shift $\tau$ is what separates a fast-starting epidemic from a slow one. In our framework:
 
-- **Smooth model:** $\tau$ is tightly distributed (low $\text{Var}(W)$), so trajectories cluster near the deterministic solution.
-- **Spike model:** $\tau$ is broadly distributed (high $\text{Var}(W)$), producing a wide spread of trajectory timings.
+- **Smooth model:** $\tau$ is tightly distributed (low $`\text{Var}(W)`$), so trajectories cluster near the deterministic solution.
+- **Spike model:** $\tau$ is broadly distributed (high $`\text{Var}(W)`$), producing a wide spread of trajectory timings.
 
-The growth delay discussed in Section 17 is precisely the statement that $E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}$ (i.e., the spike model's typical trajectory is shifted further *behind* the deterministic solution). This follows from Jensen's inequality on $\log W$: since $E[W]$ is the same for both models but $\text{Var}(W)$ is larger for the spike model, $E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}$, and hence $E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}$.
+The growth delay discussed in Section 17 is precisely the statement that $`E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}`$ (i.e., the spike model's typical trajectory is shifted further *behind* the deterministic solution). This follows from Jensen's inequality on $\log W$: since $`E[W]`$ is the same for both models but $`\text{Var}(W)`$ is larger for the spike model, $`E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}`$, and hence $`E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}`$.
 
 ### What they compute (and how)
 
