@@ -1333,6 +1333,43 @@ Because punctuated profiles ($\kappa\alpha$ small) have globally convex $S$ whil
 
 Any detection strategy can be analysed by specifying two things: (i) how $E[D]$ scales with $\kappa$ (Principle 2), and (ii) where $D$ sits relative to the mode of $\varepsilon$ (Principle 3). Symptom-triggered isolation is a Principle-1 story (fixed $D$, smooth wins). Periodic screening is a Principle-2 story ($E[D]$ shifts with $\kappa$, punctuated wins). The all-or-nothing mechanism of §14 is a Principle-3 story (convexity favours punctuated).
 
+### Application: turnaround time and behavioral delays
+
+In practice, detection is not instantaneous. The effective detection time is a sum of components:
+
+$$D_{\text{eff}} = D_{\text{trigger}} + \delta_{\text{TAT}} + \delta_{\text{action}}$$
+
+where $D_{\text{trigger}}$ is the time of sample collection (symptoms, screening), $\delta_{\text{TAT}}$ is the turnaround time from sample to result, and $\delta_{\text{action}}$ is the delay from result to effective isolation. Each additive delay contributes both a mean shift and variance, and the three principles predict their $\kappa$-dependent effects.
+
+**Smoothing interpretation.** Adding an independent delay $\delta$ to $D$ replaces the survival function $S_{\kappa\alpha}$ with a smoothed version:
+
+$$\tilde{S}(d) \equiv E_\delta\!\left[S(d + \delta)\right]$$
+
+The effect on TE decomposes cleanly into a mean component and a variance component:
+
+$$\underbrace{E\!\left[\tilde{S}(D_{\text{trigger}})\right] - E\!\left[S(D_{\text{trigger}})\right]}_{\text{total effect of delay }\delta} = \underbrace{E\!\left[S(D_{\text{trigger}} + E[\delta])\right] - E\!\left[S(D_{\text{trigger}})\right]}_{\text{mean effect (always negative)}} + \underbrace{E\!\left[\tilde{S}(D_{\text{trigger}})\right] - E\!\left[S(D_{\text{trigger}} + E[\delta])\right]}_{\text{variance effect (sign from Principle 3)}}$$
+
+The mean effect is always negative: delay reduces TE for all profiles. The variance effect is governed by the curvature of $S$ at the effective detection point $D_{\text{trigger}} + E[\delta]$:
+
+- If $D_{\text{trigger}} + E[\delta] < \text{mode}_\kappa = (\kappa\alpha - 1)/r$: $S$ is concave → variance **decreases** TE.
+- If $D_{\text{trigger}} + E[\delta] > \text{mode}_\kappa$: $S$ is convex → variance **increases** TE.
+- If $\kappa\alpha \leq 1$: $S$ is globally convex → variance **always increases** TE.
+
+**$\kappa$-dependent effect of TAT variance.** For symptom-triggered isolation with a fixed symptom delay $d_0$ and TAT $\delta \sim \text{Exp}(1)$ ($E[\delta] = 1$ day), the decomposition at $d_0 = 2$, $\alpha = 10$, $r = 2$:
+
+| $\kappa$ | $\kappa\alpha$ | mode | TE (no TAT) | mean effect | var effect | TE (with TAT) |
+|---|---|---|---|---|---|---|
+| 0.05 | 0.5 | 0 | 0.005 | $-$0.004 | $+$0.001 | 0.002 |
+| 0.10 | 1.0 | 0 | 0.018 | $-$0.016 | $+$0.004 | 0.006 |
+| 0.50 | 5.0 | 2.0 | 0.629 | $-$0.344 | $+$0.066 | 0.351 |
+| 0.95 | 9.5 | 4.25 | 0.987 | $-$0.101 | $-$0.038 | 0.848 |
+
+The variance effect is positive for punctuated profiles (convex $S$) and negative for smooth profiles (concave $S$ when $d_0 + E[\delta] = 3 < \text{mode} = 4.25$). This means variable TAT **narrows the TE gap** between smooth and punctuated profiles relative to deterministic TAT of the same mean.
+
+The intuition: for punctuated profiles, transmission is all-or-nothing, so occasional lucky early results (from TAT variance) can catch entire spikes that a fixed delay would miss. For smooth profiles with early detection (before the mode), the fixed delay already captures most of the tail; TAT variance introduces a chance of late results that allow transmission to escape.
+
+**When does the crossover vanish?** If symptom onset is sufficiently delayed ($d_0 + E[\delta] > \text{mode}_\kappa$ for all $\kappa$), both profiles are in the convex region of their respective $S$, and variance helps everyone. The sign reversal requires that smooth profiles are detected *before* their mode — i.e., early detection. This is the regime where the gap between smooth and punctuated TE is largest, and where TAT variance has the strongest narrowing effect.
+
 ### Numerical predictions for standard parameters
 
 Parameters: $T = 5$, `popshape` $\alpha = 10$, $r = \alpha/T = 2$.
