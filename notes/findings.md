@@ -6,7 +6,7 @@ Running log of results for the manuscript. All simulations use SEIR parameters (
 
 ## 1. Offspring distribution differs across profiles despite identical $`R_0`$
 
-The smooth and spike cases both produce Poisson($`R_0`$) secondary infections per individual. The stepwise case produces a compound Poisson — Poisson($`\beta \cdot D`$) where $`D \sim \text{Exp}(1/i\_{dur})`$ — which is overdispersed relative to Poisson($`R_0`$). Concretely, $`\text{Var}[\text{offspring}] = R_0 + R_0^2`$ for the stepwise case (a negative binomial with $`k = 1`$), versus $`\text{Var}[\text{offspring}] = R_0`$ for the smooth and spike cases.
+The smooth and spike cases both produce Poisson($`R_0`$) secondary infections per individual. The stepwise case produces a compound Poisson — Poisson($`\beta \cdot D`$) where $`D \sim \text{Exp}(1/i_{dur})`$ — which is overdispersed relative to Poisson($`R_0`$). Concretely, $`\text{Var}[\text{offspring}] = R_0 + R_0^2`$ for the stepwise case (a negative binomial with $`k = 1`$), versus $`\text{Var}[\text{offspring}] = R_0`$ for the smooth and spike cases.
 
 This means the stepwise case — which is the implicit individual-level interpretation of the standard SEIR model — carries superspreading-like overdispersion even without any explicit heterogeneity in contact rates or susceptibility.
 
@@ -162,7 +162,7 @@ Visualization: `code/visualize_profiles_gamma.R`.
 
 ### Design choices
 
-- **$`\alpha_{\text{total}}`$**: Controls the shape of $`A(\tau)`$. Larger values give a more symmetric, bell-shaped kernel. The moment-matched value for SEIR parameters ($`e\_{dur} = 2`$, $`i\_{dur} = 3`$) is $`\alpha_{\text{total}} = \mu^2 / (e\_{dur}^2 + i\_{dur}^2) \approx 1.92`$, but this is too small for $`f_\kappa`$ to be unimodal at most $`\kappa`$ values (Gamma shape $`< 1`$ gives a monotone-decreasing density). We use $`\alpha_{\text{total}} = 10`$ as a default, which gives a well-shaped $`A(\tau)`$ and allows $`\kappa`$ to range from $`\sim 2`$ (punctuated, narrow unimodal bumps) to $`\sim 9.5`$ (smooth, profiles $`\approx A`$).
+- **$`\alpha_{\text{total}}`$**: Controls the shape of $`A(\tau)`$. Larger values give a more symmetric, bell-shaped kernel. The moment-matched value for SEIR parameters ($`e_{dur} = 2`$, $`i_{dur} = 3`$) is $`\alpha_{\text{total}} = \mu^2 / (e_{dur}^2 + i_{dur}^2) \approx 1.92`$, but this is too small for $`f_\kappa`$ to be unimodal at most $`\kappa`$ values (Gamma shape $`< 1`$ gives a monotone-decreasing density). We use $`\alpha_{\text{total}} = 10`$ as a default, which gives a well-shaped $`A(\tau)`$ and allows $`\kappa`$ to range from $`\sim 2`$ (punctuated, narrow unimodal bumps) to $`\sim 9.5`$ (smooth, profiles $`\approx A`$).
 
 - **$`\mu`$**: The mean generation time, equal to $`\alpha_{\text{total}} / r`$. Changing $`\mu`$ scales the time axis without affecting the shape of $`A(\tau)`$ or the punctuation structure.
 
