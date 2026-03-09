@@ -1347,9 +1347,9 @@ $$\tilde{S}(d) \equiv E_\delta\!\left[S(d + \delta)\right]$$
 
 The effect on TE decomposes cleanly into a mean component and a variance component:
 
-$$\underbrace{E\!\left[\tilde{S}(D_{\text{trigger}})\right] - E\!\left[S(D_{\text{trigger}})\right]}_{\text{total effect of delay }\delta} = \underbrace{E\!\left[S(D_{\text{trigger}} + E[\delta])\right] - E\!\left[S(D_{\text{trigger}})\right]}_{\text{mean effect (always negative)}} + \underbrace{E\!\left[\tilde{S}(D_{\text{trigger}})\right] - E\!\left[S(D_{\text{trigger}} + E[\delta])\right]}_{\text{variance effect (sign from Principle 3)}}$$
+$$\underbrace{E[\tilde{S}(D)] - E[S(D)]}_{\text{total effect}} = \underbrace{E[S(D{+}E[\delta])] - E[S(D)]}_{\text{mean effect}} + \underbrace{E[\tilde{S}(D)] - E[S(D{+}E[\delta])]}_{\text{variance effect}}$$
 
-The mean effect is always negative: delay reduces TE for all profiles. The variance effect is governed by the curvature of $`S`$ at the effective detection point $`D_{\text{trigger}} + E[\delta]`$:
+where $`D = D_{\text{trigger}}`$. The mean effect is always negative (delay reduces TE for all profiles). The variance effect is governed by the curvature of $`S`$ at the effective detection point $`D + E[\delta]`$:
 
 - If $`D_{\text{trigger}} + E[\delta] < \text{mode}_\kappa = (\kappa\alpha - 1)/r`$: $`S`$ is concave → variance **decreases** TE.
 - If $`D_{\text{trigger}} + E[\delta] > \text{mode}_\kappa`$: $`S`$ is convex → variance **increases** TE.
