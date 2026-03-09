@@ -910,7 +910,7 @@ $$\log E[W] - E[\log W] = \frac{\text{Var}(W)}{2\,(E[W])^2} + O(\text{higher cum
 
 (this is the second-order expansion via the delta method, exact for log-normal $*W*$).
 
-Since $`\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}`$ while $*E[W]*$ is the same:
+Since $* \text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}} *$ while $*E[W]*$ is the same:
 
 $$E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}$$
 
