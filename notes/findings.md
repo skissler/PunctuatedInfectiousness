@@ -992,7 +992,7 @@ Morris et al. develop two numerical methods to compute the *full distribution* o
 
 1. **PE (Probability Estimation) method:** Numerically inverts the Laplace-Stieltjes transform (LST) of $W$. The LST satisfies a functional equation derived from the branching structure:
 
-   $$E[e^{-sW}] = g\!\left(\int_0^\infty e^{-s \, e^{\alpha u}} \, E[e^{-sW}]^{?} \, \mu(du)\right)$$
+   $$E[e^{-sW}] = g\left(\frac{1}{R_0}\int_0^\infty E[e^{-s \, e^{-\alpha u} W}] \, \mu(du)\right)$$
 
    (where $g$ is the offspring probability generating function and $\mu$ is the intensity measure). They solve this iteratively and invert to obtain the density of $W$. This gives the exact distribution up to numerical precision.
 
@@ -1024,7 +1024,7 @@ In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) \, d\tau$
 
 **The functional equation for $W$.** For a CMJ process with offspring point process $\xi$ (a random counting measure on $[0, \infty)$), the LST of $W$ satisfies:
 
-$$E[e^{-sW}] = E\!\left[\prod_{j=1}^{N} E[e^{-s \, e^{-\alpha \tau_j} W}]\right]$$
+$$E[e^{-sW}] = E\left[\prod_{j=1}^{N} E[e^{-s \, e^{-\alpha \tau_j} W}]\right]$$
 
 where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birth times. For the smooth model ($\tau_j$ independent given $N$), the product factorises into a simpler form. For the spike model ($\tau_j = \tau^*$ for all $j$), the product collapses to $E[e^{-sW}]^N$ evaluated at a single random time. The difference in these functional equations is what drives the difference in $W$-distributions — and hence the growth delay.
 
@@ -1097,7 +1097,7 @@ Then: $E[W^3] = (3 \cdot m\_{21} \cdot E[W^2] \cdot E[W] + m\_{111} \cdot (E[W])
 
 Following Morris et al.'s moment-matching (MM) approach, we fit the first three moments of $W | W > 0$ to a **generalized gamma distribution** with parameters $(a, d, p)$:
 
-$$f(x; a, d, p) = \frac{p}{a} \left(\frac{x}{a}\right)^{d-1} \exp\!\left(-\left(\frac{x}{a}\right)^p\right) \Big/ \Gamma(d/p)$$
+$$f(x; a, d, p) = \frac{p}{a} \left(\frac{x}{a}\right)^{d-1} \exp\left(-\left(\frac{x}{a}\right)^p\right) \Big/ \Gamma(d/p)$$
 
 The generalized gamma moments $E[X^k] = a^k \cdot \Gamma((d+k)/p) / \Gamma(d/p)$ provide a system of equations solvable by numerical optimisation. This gives a parsimonious three-parameter description of the $W$-distribution for each $\kappa$.
 
@@ -1140,7 +1140,7 @@ These two operations commute for *linear* systems: if $dx/dt = Ax$, then $E[x(t)
 
 The only nonlinearity in the SEIR system is the transmission term $\beta S I / N$. The true expected force of infection is:
 
-$$E\!\left[\frac{\beta S I}{N}\right] = \frac{\beta}{N}\bigl(E[S] \cdot E[I] + \text{Cov}(S, I)\bigr)$$
+$$E\left[\frac{\beta S I}{N}\right] = \frac{\beta}{N}\bigl(E[S] \cdot E[I] + \text{Cov}(S, I)\bigr)$$
 
 The ODE sets $\text{Cov}(S, I) = 0$. But mechanistically, every new infection simultaneously decrements $S$ and increments $I$ (or $E$), so $\text{Cov}(S, I) < 0$ always. This means the true expected infection rate is *lower* than the ODE assumes:
 
@@ -1242,7 +1242,7 @@ $$\frac{\varepsilon}{\varepsilon + D} \sim \text{Beta}(\kappa\alpha,\; a_{\text{
 
 Testing effectiveness is the probability that diagnosis precedes the jittered transmission:
 
-$$\text{TE} = P(D < \varepsilon) = P\!\left(\frac{\varepsilon}{\varepsilon + D} > \frac{1}{2}\right) = I_{1/2}(a_{\text{sym}},\; \kappa\alpha)$$
+$$\text{TE} = P(D < \varepsilon) = P\left(\frac{\varepsilon}{\varepsilon + D} > \frac{1}{2}\right) = I_{1/2}(a_{\text{sym}},\; \kappa\alpha)$$
 
 where $I_x(a, b)$ is the regularised incomplete beta function. In R: `pbeta(0.5, kappa*popshape, a_sym, lower.tail = FALSE)`.
 
@@ -1257,13 +1257,13 @@ where $I_x(a, b)$ is the regularised incomplete beta function. In R: `pbeta(0.5,
 
 $$\frac{\varepsilon / (\kappa\alpha)}{D / a_{\text{sym}}} \sim F(2\kappa\alpha,\; 2a_{\text{sym}})$$
 
-so TE = $P(D < \varepsilon)$ = $P\!\big(F(2\kappa\alpha, 2a_{\text{sym}})$ > $\frac{r \cdot a_{\text{sym}}}{b_{\text{sym}} \cdot \kappa\alpha}\big)$, which is closed-form via the $F$-distribution CDF. The same-rate case is recovered when $b_{\text{sym}} = r$ (the threshold becomes $a_{\text{sym}} / (\kappa\alpha)$).
+so TE = $P(D < \varepsilon)$ = $P\big(F(2\kappa\alpha, 2a_{\text{sym}})$ > $\frac{r \cdot a_{\text{sym}}}{b_{\text{sym}} \cdot \kappa\alpha}\big)$, which is closed-form via the $F$-distribution CDF. The same-rate case is recovered when $b_{\text{sym}} = r$ (the threshold becomes $a_{\text{sym}} / (\kappa\alpha)$).
 
 ### Periodic screening: derived trigger distribution
 
 For regular screening every $\Delta$ days with random phase, the detection time depends on the intersection of the screening schedule with the detectability window. Parametrise the window as $[\text{mode}_\kappa - w_-,\; \text{mode}_\kappa + w_+]$, anchored to the mode of the infectiousness profile:
 
-$$\text{mode}_\kappa = \max\!\left(0,\; \frac{\kappa\alpha - 1}{r}\right)$$
+$$\text{mode}_\kappa = \max\left(0,\; \frac{\kappa\alpha - 1}{r}\right)$$
 
 The effective diagnosis time (relative to biological onset $s_i$) is approximately:
 
@@ -1298,7 +1298,7 @@ The reversal occurs because:
 
 The symptom and screening cases are instances of a fully general result. For any non-negative detection time $D$ (possibly depending on $\kappa$), testing effectiveness is:
 
-$$\text{TE}(\kappa) = E_D\!\left[S_{\kappa\alpha}(D)\right], \qquad S_{\kappa\alpha}(d) \equiv P(\varepsilon > d) = 1 - F_{\text{Gamma}(\kappa\alpha,\,r)}(d)$$
+$$\text{TE}(\kappa) = E_D\left[S_{\kappa\alpha}(D)\right], \qquad S_{\kappa\alpha}(d) \equiv P(\varepsilon > d) = 1 - F_{\text{Gamma}(\kappa\alpha,\,r)}(d)$$
 
 The survival function $S_{\kappa\alpha}$ is the complete sufficient statistic for how *any* detection mechanism interacts with the profile. Three properties of $S$ govern the $\kappa$-dependence of TE.
 
@@ -1306,7 +1306,7 @@ The survival function $S_{\kappa\alpha}$ is the complete sufficient statistic fo
 
 **Principle 2 (Mean-shift reversal).** When $D$ depends on $\kappa$, two effects compete:
 
-$$\frac{d\,\text{TE}}{d\kappa} = \underbrace{\alpha \cdot E\!\left[\frac{\partial S_a(D)}{\partial a}\bigg|_{a=\kappa\alpha}\right]}_{\text{profile spreading (always } > 0\text{)}} \;-\; \underbrace{\frac{dE[D]}{d\kappa} \cdot E\!\left[f_{\kappa\alpha}(D)\right]}_{\text{detection delay shift}}$$
+$$\frac{d\,\text{TE}}{d\kappa} = \underbrace{\alpha \cdot E\left[\frac{\partial S_a(D)}{\partial a}\bigg|_{a=\kappa\alpha}\right]}_{\text{profile spreading (always } > 0\text{)}} \;-\; \underbrace{\frac{dE[D]}{d\kappa} \cdot E\left[f_{\kappa\alpha}(D)\right]}_{\text{detection delay shift}}$$
 
 The first term is always positive: broadening $\varepsilon$ puts more mass beyond any fixed detection point. The second term is negative when $E[D]$ increases with $\kappa$. The reversal (TE decreasing in $\kappa$) requires $E[D]$ to grow with $\kappa$ fast enough to overcome the first term. The critical rate is approximately $dE[D]/d\kappa \approx \alpha / r = T$, the same rate at which $E[\varepsilon] = \kappa\alpha/r$ grows. When $D$ is deterministic, numerical verification confirms:
 
@@ -1343,7 +1343,7 @@ where $D_{\text{trigger}}$ is the time of sample collection (symptoms, screening
 
 **Smoothing interpretation.** Adding an independent delay $\delta$ to $D$ replaces the survival function $S_{\kappa\alpha}$ with a smoothed version:
 
-$$\tilde{S}(d) \equiv E_\delta\!\left[S(d + \delta)\right]$$
+$$\tilde{S}(d) \equiv E_\delta\left[S(d + \delta)\right]$$
 
 The effect on TE decomposes cleanly into a mean component and a variance component:
 
