@@ -1,6 +1,6 @@
 # Findings log
 
-Running log of results for the manuscript. All simulations use SEIR parameters ($`e\_{dur} = 2`$, $`i\_{dur} = 3`$, $`R_0 = 2`$, $`N = 1000`$) unless otherwise noted. The three individual infectiousness profiles — smooth (all-equal), stepwise, and spike (delta function) — all share the same population-level infectiousness kernel $`A(\tau)`$ and the same $`R_0`$.
+Running log of results for the manuscript. All simulations use SEIR parameters ($`e_{dur} = 2`$, $`i_{dur} = 3`$, $`R_0 = 2`$, $`N = 1000`$) unless otherwise noted. The three individual infectiousness profiles — smooth (all-equal), stepwise, and spike (delta function) — all share the same population-level infectiousness kernel $`A(\tau)`$ and the same $`R_0`$.
 
 ---
 
