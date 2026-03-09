@@ -910,7 +910,7 @@ $$\log E[W] - E[\log W] = \frac{\text{Var}(W)}{2\,(E[W])^2} + O(\text{higher cum
 
 (this is the second-order expansion via the delta method, exact for log-normal $*W*$).
 
-Since $* \text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}} *$ while $*E[W]*$ is the same:
+Since $*\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}*$ while $*E[W]*$ is the same:
 
 $$E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}$$
 
@@ -947,7 +947,7 @@ The magnitude of the delay $*\Delta T_n = E[T_n]_{\text{spike}} - E[T_n]_{\text{
 
 2. **$*n*$ (the threshold)**: The delay $*\Delta T_n*$ is approximately *constant* in $*n*$ (it's a time offset, not a rate difference). As a fraction of $*T_n*$, it decreases as $*\log n*$ grows. This explains the finding that percentage delays attenuate from $*t_{10}*$ to $*t_{100}*$ (Finding 12).
 
-3. **Initial number of cases**: If the epidemic is seeded with $*m*$ initial cases (rather than 1), the variance of $*W*$ decreases by a factor of ~$*m*$ (law of large numbers over independent branching processes), and $*\Delta T_n \to 0*$. The effect is purely a *small-number-of-cases* phenomenon.
+3. **Initial number of cases**: If the epidemic is seeded with $*m*$ initial cases (rather than 1), the variance of $*W*$ decreases by a factor of $*\sim m*$ (law of large numbers over independent branching processes), and $*\Delta T_n \to 0*$. The effect is purely a *small-number-of-cases* phenomenon.
 
 4. **$*\kappa*$ (for the Gamma convolutional model)**: At $*\kappa \to 0*$ (delta spike), $*\text{Var}(W)*$ is maximised. At $*\kappa \to \alpha_{\text{total}}*$ (smooth = $*A*$), $*\text{Var}(W)*$ is minimised. The delay interpolates continuously between these extremes.
 
