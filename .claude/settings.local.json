@@ -5,7 +5,12 @@
       "Bash(Rscript:*)",
       "Bash(ls:*)",
       "Bash(wc:*)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(pdflatex:*)",
+      "Bash(bibtex:*)",
+      "Bash(brew list:*)",
+      "Bash(pdftotext:*)",
+      "Bash(cd:*)"
     ]
   }
 }

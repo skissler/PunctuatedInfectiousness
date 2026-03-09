@@ -1,0 +1,49 @@
+\begin{thebibliography}{5}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Champredon and Dushoff(2015)]{champredon2015}
+D.~Champredon and J.~Dushoff.
+\newblock Intrinsic and realized generation intervals in infectious-disease
+  transmission.
+\newblock \emph{Journal of Biological Dynamics}, 9\penalty0 (sup1):\penalty0
+  456--467, 2015.
+\newblock \doi{10.1080/17513758.2012.716454}.
+\newblock Verify year and details.
+
+\bibitem[Fraser(2007)]{fraser2007}
+C.~Fraser.
+\newblock Estimating individual and household reproduction numbers in an
+  emerging epidemic.
+\newblock \emph{PLoS ONE}, 2\penalty0 (8):\penalty0 e758, 2007.
+\newblock \doi{10.1371/journal.pone.0000758}.
+\newblock PubMed ID: 26674948 --- verify correct reference for individual
+  infectiousness kernel.
+
+\bibitem[Kaplan et~al.(2006)Kaplan, Craft, and Wein]{kaplan2006}
+E.~H. Kaplan, D.~L. Craft, and L.~M. Wein.
+\newblock Analyzing bioterror response logistics: the case of smallpox.
+\newblock \emph{Mathematical Biosciences}, 202\penalty0 (2):\penalty0 305--317,
+  2006.
+\newblock \doi{10.1016/j.mbs.2006.04.002}.
+\newblock Verify correct reference from doi:10.1016/S0025-5564(06)00209-4.
+
+\bibitem[Kermack and McKendrick(1927)]{kermack1927}
+W.~O. Kermack and A.~G. McKendrick.
+\newblock A contribution to the mathematical theory of epidemics.
+\newblock \emph{Proceedings of the Royal Society of London. Series A},
+  115\penalty0 (772):\penalty0 700--721, 1927.
+\newblock \doi{10.1007/BF02464423}.
+
+\bibitem[Lloyd-Smith et~al.(2005)Lloyd-Smith, Schreiber, Kopp, and
+  Getz]{lloydsmith2005}
+J.~O. Lloyd-Smith, S.~J. Schreiber, P.~E. Kopp, and W.~M. Getz.
+\newblock Superspreading and the effect of individual variation on disease
+  emergence.
+\newblock \emph{Nature}, 438:\penalty0 355--359, 2005.
+\newblock \doi{10.1038/nature04153}.
+
+\end{thebibliography}

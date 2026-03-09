@@ -1218,4 +1218,112 @@ For a general periodic contact pattern $c(t) = \bar{c}(1 + \sum_k \varepsilon_k 
 
 ---
 
-*Last updated: 2026-03-03*
+## 22. Testing effectiveness and the punctuation parameter
+
+This section formalises the connection between the $\kappa$-dependent infectiousness model and the testing effectiveness (TE) framework of Middleton & Larremore (2024), deriving analytical predictions that the simulations in `code/2_1_isolation.R` will validate.
+
+### The TE framework adapted to our model
+
+Following Middleton & Larremore (M&L), define testing effectiveness as the fraction by which a detect-and-isolate intervention reduces cumulative transmission:
+
+$$\text{TE} = \frac{\int_0^\infty \beta(\tau)\,F_D(\tau)\,d\tau}{\int_0^\infty \beta(\tau)\,d\tau}$$
+
+where $\beta(\tau)$ is the infectiousness profile (relative to infection time) and $F_D(\tau) = P(D \leq \tau)$ is the CDF of the diagnosis time $D$ (also relative to infection time). Equivalently, TE is the probability that a randomly chosen transmission event occurs after diagnosis: $\text{TE} = E_\varepsilon[F_D(\varepsilon)]$, where $\varepsilon \sim \beta$ is the timing of a random transmission attempt.
+
+In our Gamma convolutional model, the jitter component of transmission timing is $\varepsilon \sim \text{Gamma}(\kappa\alpha, r)$, where $\alpha$ = `popshape` and $r = \alpha / T$ is the rate. (Recall that each individual's transmission attempts are at times $s_i + \varepsilon_j$, where $s_i$ is the shared onset shift. Because $s_i$ shifts both infectiousness and any biologically anchored trigger by the same amount, TE depends only on the jitter $\varepsilon$, not on $s_i$ directly.)
+
+### Symptom-triggered isolation: the Beta function result
+
+Model symptom onset as occurring at time $s_i + D$ after infection, where $D \sim \text{Gamma}(a_{\text{sym}}, b_{\text{sym}})$ is the delay from biological onset to symptoms.
+
+**Same-rate case ($b_{\text{sym}} = r$).** When symptoms and jitter share the same rate parameter, the ratio $\varepsilon / (\varepsilon + D)$ has a clean distribution. Since $\varepsilon \sim \text{Gamma}(\kappa\alpha, r)$ and $D \sim \text{Gamma}(a_{\text{sym}}, r)$ are independent with the same rate:
+
+$$\frac{\varepsilon}{\varepsilon + D} \sim \text{Beta}(\kappa\alpha,\; a_{\text{sym}})$$
+
+Testing effectiveness is the probability that diagnosis precedes the jittered transmission:
+
+$$\text{TE} = P(D < \varepsilon) = P\!\left(\frac{\varepsilon}{\varepsilon + D} > \frac{1}{2}\right) = I_{1/2}(a_{\text{sym}},\; \kappa\alpha)$$
+
+where $I_x(a, b)$ is the regularised incomplete beta function. In R: `pbeta(0.5, kappa*popshape, a_sym, lower.tail = FALSE)`.
+
+**Properties:**
+
+- *Monotonically increasing in $\kappa$:* smoother profiles (larger $\kappa\alpha$) spread transmission over a wider window, so a larger fraction falls after diagnosis. In the limit $\kappa\alpha \to \infty$, $\text{TE} \to 1$.
+- *Monotonically decreasing in $a_{\text{sym}}$:* larger $a_{\text{sym}}$ (with rate $r$ fixed) means later symptom onset on average ($E[D] = a_{\text{sym}}/r$), reducing the fraction averted. In the limit $a_{\text{sym}} \to \infty$, $\text{TE} \to 0$.
+- *For small $\kappa\alpha$:* transmission is concentrated near $\tau = 0$; almost all of it fires before symptoms. $\text{TE} \to 0$.
+- *Scaling invariance:* if $a_{\text{sym}} = c \cdot \kappa\alpha$ for some constant $c$ (symptoms scale with the profile width), then $\varepsilon / (\varepsilon + D) \sim \text{Beta}(\kappa\alpha, c \cdot \kappa\alpha)$, and $\text{TE} = I_{1/2}(c \cdot \kappa\alpha, \kappa\alpha)$. As $\kappa\alpha \to \infty$ with ratio $c$ fixed, this converges to $\mathbf{1}[c < 1]$ — a step function that depends only on whether mean symptom delay is shorter or longer than mean jitter.
+
+**Different-rate case ($b_{\text{sym}} \neq r$).** The ratio $\varepsilon / D$ follows a scaled $F$-distribution:
+
+$$\frac{\varepsilon / (\kappa\alpha)}{D / a_{\text{sym}}} \sim F(2\kappa\alpha,\; 2a_{\text{sym}})$$
+
+so $\text{TE} = P(D < \varepsilon) = P\!\left(F(2\kappa\alpha, 2a_{\text{sym}}) > \frac{r \cdot a_{\text{sym}}}{b_{\text{sym}} \cdot \kappa\alpha}\right)$, which is closed-form via the $F$-distribution CDF. The same-rate case is recovered when $b_{\text{sym}} = r$ (the threshold becomes $a_{\text{sym}} / (\kappa\alpha)$).
+
+### Periodic screening: derived trigger distribution
+
+For regular screening every $\Delta$ days with random phase, the detection time depends on the intersection of the screening schedule with the detectability window. Parametrise the window as $[\text{mode}_\kappa - w_-,\; \text{mode}_\kappa + w_+]$, anchored to the mode of the infectiousness profile:
+
+$$\text{mode}_\kappa = \max\!\left(0,\; \frac{\kappa\alpha - 1}{r}\right)$$
+
+The effective diagnosis time (relative to biological onset $s_i$) is approximately:
+
+$$D_{\text{screen}} \approx \max(0,\; \text{mode}_\kappa - w_-) + \text{Uniform}(0, \Delta)$$
+
+The offset $\max(0, \text{mode}_\kappa - w_-)$ is the earliest time post-onset at which a test can detect infection, and the uniform component represents the random phase of the screening clock within one period.
+
+TE requires integrating $P(\varepsilon > D_{\text{screen}})$ over the distribution of $D_{\text{screen}}$. Although this does not simplify to a single special function, the $\kappa$-dependence has transparent structure:
+
+- **Small $\kappa$ (punctuated):** $\text{mode}_\kappa \approx 0$, so the detectability window begins at or before onset. The offset is zero, and $D_{\text{screen}} \sim \text{Uniform}(0, \Delta)$. Meanwhile, transmission is concentrated near the mode. If $\Delta$ is short relative to $w_+$, detection likely precedes the spike: **TE is high**.
+- **Large $\kappa$ (smooth):** $\text{mode}_\kappa = (\kappa\alpha - 1)/r$ is large, but so is the spread of $\varepsilon$. The offset $\text{mode}_\kappa - w_-$ grows, pushing diagnosis later. A substantial fraction of transmission occurs before the first possible positive test: **TE is lower**.
+- **Direction of $\kappa$-effect: opposite to symptoms.** Punctuated profiles benefit *more* from screening, whereas smooth profiles benefit *more* from symptom-triggered isolation.
+
+The crucial mechanism is that the detectability window is anchored to peak infectiousness, whose position depends on $\kappa$. This $\kappa$-dependence in the trigger distribution reverses the direction compared to the symptom case (where the trigger is anchored to biological onset, independent of $\kappa$).
+
+### Comparison and the anchoring spectrum
+
+The reversal is best understood through the anchoring framework from §14:
+
+| Mechanism | Trigger distribution (rel. onset) | $\kappa$-dependence of trigger | $\kappa$-effect on TE |
+|---|---|---|---|
+| Symptoms (fixed delay) | $\text{Gamma}(a_{\text{sym}}, r)$, fixed | None | Smooth benefits more |
+| Symptoms (tracking peak) | $a_{\text{sym}} \propto \kappa\alpha$ | Full scaling | Can vanish (scaling invariance) |
+| Screening (wide window) | $\text{Uniform}(0,\Delta) + \text{offset}(\kappa)$ | Through window position | Punctuated benefits more |
+
+The reversal occurs because:
+
+- **Symptoms:** the trigger is anchored to biological onset, so it is approximately fixed relative to $s_i$ regardless of $\kappa$. The fraction averted equals the tail of $f_\kappa$ beyond the symptom time. Smoother profiles spread more mass into this tail.
+- **Screening:** the trigger is anchored to peak infectiousness. Punctuated profiles concentrate their peak near onset, so the detectability window extends across nearly all transmission. Smooth profiles spread transmission well before and after the window centre.
+
+### Numerical predictions for standard parameters
+
+Parameters: $T = 5$, `popshape` $\alpha = 10$, $r = \alpha/T = 2$.
+
+**Symptom-triggered isolation (same-rate case):**
+
+| $\kappa$ | $\kappa\alpha$ | $a_{\text{sym}}=1$ | $a_{\text{sym}}=3$ | $a_{\text{sym}}=5$ | $a_{\text{sym}}=8$ |
+|---|---|---|---|---|---|
+| 0.05 | 0.5 | 0.293 | 0.050 | 0.010 | 0.001 |
+| 0.10 | 1.0 | 0.500 | 0.125 | 0.031 | 0.004 |
+| 0.20 | 2.0 | 0.750 | 0.313 | 0.109 | 0.020 |
+| 0.50 | 5.0 | 0.969 | 0.773 | 0.500 | 0.194 |
+| 0.95 | 9.5 | 0.999 | 0.975 | 0.890 | 0.643 |
+
+Computed via `pbeta(0.5, kappa*popshape, a_sym, lower.tail = FALSE)`. Note the symmetry at $\kappa = 0.5$, $a_{\text{sym}} = 5$: $\text{Beta}(5, 5)$ is symmetric about $1/2$, giving $\text{TE} = 0.5$ exactly.
+
+The table confirms:
+- TE is monotonically increasing in $\kappa$ (reading down each column)
+- TE is monotonically decreasing in $a_{\text{sym}}$ (reading across each row)
+- At $\kappa = 0.05$ (highly punctuated), symptom-triggered isolation averts almost nothing unless symptoms are extremely early ($a_{\text{sym}} = 1$ gives TE = 0.29)
+- At $\kappa = 0.95$ (smooth), symptom-triggered isolation is highly effective unless symptoms are very delayed ($a_{\text{sym}} = 8$ gives TE = 0.64)
+
+**Periodic screening ($\Delta = 1, 3, 7$; $w_- = 3$, $w_+ = 4$):** requires numerical integration over the joint distribution of $\varepsilon$ and $D_{\text{screen}}$. The qualitative prediction is that TE decreases with $\kappa$ (opposite to the symptom table above), with the magnitude depending on $\Delta$.
+
+### Connection to §14 results
+
+The TE framework provides the analytical underpinning for the simulation results in §14. The 3-day screening results — where punctuated profiles ($\kappa = 0.5$) achieved $E[\text{frac averted}] \approx 0.88$ compared to $\approx 0.80$ for smooth profiles ($\kappa = 9.5$) — correspond to the screening case above, where TE decreases with $\kappa$ because the detection window is anchored to peak infectiousness.
+
+The Middleton & Larremore framework additionally accommodates compliance $c$, test failure probability $\varphi$, and turnaround time (TAT), which multiply TE by factors independent of $\kappa$. These can be incorporated when modelling realistic interventions but do not alter the $\kappa$-dependence story derived here.
+
+---
+
+*Last updated: 2026-03-08*
