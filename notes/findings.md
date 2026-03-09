@@ -252,7 +252,7 @@ The time-varying contact function acts as a multiplicative modulator on the effe
 
 In the shifted Gamma framework (Section 9), with constant contacts:
 
-- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the Gamma$(\kappa, r)$ density shifted to onset time $s_i$
+- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the Gamma$`(\kappa, r)`$ density shifted to onset time $s_i$
 - $c_i(t) = R_0$ for all $i, t$
 
 This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\tilde{\nu}_i = R_0$ for every individual.
