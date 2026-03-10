@@ -941,7 +941,7 @@ The connection: the per-infector first-transmission advantage compounds multipli
 
 ### When the effect is large vs. small
 
-The magnitude of the delay $\Delta T_n$ = $E[T_n]_{\text{spike}}$ - $E[T_n]_{\text{smooth}}$ depends on:
+The magnitude of the delay $`\Delta T_n`$ = $`E[T_n]_{\text{spike}}`$ - $`E[T_n]_{\text{smooth}}`$ depends on:
 
 1. **$R_0$**: The order-statistics advantage scales with the expected number of offspring $E[k] = R_0$. At $R_0 \leq 1.2$, most infectors produce 0 or 1 offspring, so $\min(\tau_1) = \tau_1$ — no advantage. At $R_0 = 5$, infectors typically produce 4–6 offspring, and $\min(\tau_1, \ldots, \tau_5)$ is much earlier than $\tau^*$. This explains the $R_0$-dependence in Finding 12 (delay grows from ~0% at $R_0 = 1.2$ to ~18% at $R_0 = 5$).
 
