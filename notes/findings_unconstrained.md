@@ -429,9 +429,7 @@ where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birt
 
 Their computational machinery is complementary to our conceptual framework. We identify *why* $W$ varies across models with the same mean-field dynamics (offspring synchronisation), while they provide the tools to compute *how much* it varies. A natural collaboration or extension would apply their PE/MM methods to our Gamma convolutional family, producing exact $\text{Var}(W)$-vs-$`\kappa`$ curves and validated time-shift distributions.
 
----
-
-## 19. Analytical computation of Var(W) and generalized gamma moment matching
+## Analytical computation of Var(W) and generalized gamma moment matching
 
 Section 17 argued qualitatively that the spike model has higher $\text{Var}(W)$ than the smooth model, and Section 18 noted that Morris et al. (2024) provide computational methods for the $W$ distribution. Here we derive **exact closed-form expressions** for $\text{Var}(W)$ as a function of $\kappa$ in our Gamma convolutional family and implement **generalized gamma moment matching** to approximate the full distribution of $W$ (and hence the time-shift $\tau$).
 

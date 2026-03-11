@@ -1,5 +1,5 @@
 
-## 14. Detect-and-isolate: a unified framework for screening and symptom-triggered interventions
+## Detect-and-isolate: a unified framework for screening and symptom-triggered interventions
 
 Detect-and-isolate interventions reduce transmission by truncating each detected individual's infectiousness profile at the detection time: $a_i^{\text{eff}}(\tau) = a_i(\tau) \cdot \mathbf{1}[\tau < \tau_{\text{det}}]$. This truncation both reduces $R_{\text{eff}}$ and reshapes the generation interval distribution — but the degree of both effects depends critically on $\kappa$.
 
@@ -115,7 +115,7 @@ With screening, $\tau_{\text{det}}$ is approximately independent of $s_i$, so de
 
 - **Asymptomatic fraction.** $p_{\text{sym}} < 1$ acts as a ceiling on effectiveness but doesn't interact with $\kappa$ in an interesting way.
 
-## 15. Gathering size restrictions are more effective for smooth profiles
+## Gathering size restrictions are more effective for smooth profiles
 
 We investigated how gathering size restrictions interact with the temporal shape of individual infectiousness profiles. The central question: are gathering size caps more effective at preventing outbreaks when infectiousness is punctuated (spiky) versus smooth?
 
@@ -136,7 +136,7 @@ The individual reproduction number $R_i$ arises from the interaction of the biol
 
 Offspring are $\text{Poisson}(R_i)$ — the standard superspreading framework.
 
-### Finding 16a: Caps reduce mean $R_i$ identically for all profile shapes
+### Caps reduce mean $R_i$ identically for all profile shapes
 
 The contact process enters multiplicatively with the biological profile. Since every biological profile integrates to the same value (regardless of $\kappa$), the expected contact rate at any time point determines $E[R_i]$. Truncating the gathering size distribution reduces this expected contact rate equally for spiky and smooth profiles.
 
@@ -149,7 +149,7 @@ This was confirmed analytically and in simulation (28 $\kappa \times$ cap scenar
 
 **The mean effect of gathering restrictions is $\kappa$-independent.**
 
-### Finding 16b: Caps reduce variance identically in fractional terms
+### Caps reduce variance identically in fractional terms
 
 The variance of $R_i$ decomposes cleanly:
 
@@ -168,7 +168,7 @@ So the fractional reduction in variance from capping is the same: $\text{Var}(\t
 
 **The differential is not in the fractional variance reduction — it is in the absolute amount of superspreading removed.** The cap eliminates $\Delta\text{Var} = 2.8$ for the delta profile versus $\Delta\text{Var} = 0.08$ for the smooth profile (a 35$`\times`$ difference).
 
-### Finding 16c: Overdispersion increases extinction probability
+### Overdispersion increases extinction probability
 
 For a branching process with $\text{Poisson}(R_i)$ offspring, higher variance in $R_i$ (for fixed $E[R_i] > 1$) increases the probability of stochastic extinction. Superspreading creates many individuals with $R_i$ near zero, providing frequent opportunities for chains to die out.
 
@@ -182,7 +182,7 @@ For a branching process with $\text{Poisson}(R_i)$ offspring, higher variance in
 
 Despite having the same mean $R = 2$, the delta profile produces outbreaks less than half the time, while the smooth profile produces outbreaks $`\sim`$80% of the time. The smooth profile's near-Poisson $R_i$ distribution means reliable, moderate transmission from every individual.
 
-### Finding 16d: Caps are more effective at preventing outbreaks for smooth profiles
+### Caps are more effective at preventing outbreaks for smooth profiles
 
 **Mitigated (cap at 20, $R$ drops to 1.39):**
 
@@ -212,7 +212,7 @@ These partially cancel. The cap removes the large-gathering tail that was simult
 
 For the smooth profile, variance was already near zero (0.11), so the variance reduction is negligible. The full force of the mean reduction translates directly into fewer outbreaks, matching the Poisson(1.39) reference almost exactly.
 
-### Finding 16e: Simulation results confirm the analytical predictions
+### Simulation results confirm the analytical predictions
 
 The large-scale simulation (`code/gathering_size_restrictions.R`) swept 7 values of $\kappa$ (0.5 to 9.5) across 4 cap levels (5, 10, 20, $\infty$), with 50,000 MC replicates per scenario for $R_i$ distributions and 200 epidemic simulations per scenario.
 
@@ -234,7 +234,7 @@ Gathering size caps reduce mean transmission identically regardless of profile s
 
 Analysis code: `code/gathering_size_restrictions.R`.
 
-## 16. Planned: Contact tracing with imperfect isolation / post-exposure prophylaxis
+## Planned: Contact tracing with imperfect isolation / post-exposure prophylaxis
 
 *Status: planned, not yet implemented.*
 
@@ -337,7 +337,7 @@ When $\eta$ is small but delay $\delta_B$ varies:
 
 The $\kappa$-dependence of effectiveness should therefore **reverse sign** as a function of $\delta_B$. The cross-over point depends on the relationship between the delay distribution and the onset-shift distribution $s_B \sim \text{Gamma}(\alpha_{\text{total}} - \kappa, r)$.
 
-### Connection to Section 14
+### Connection to detect-and-isolate framework
 
 The model composes the components from the detect-and-isolate framework:
 
