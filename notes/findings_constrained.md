@@ -37,11 +37,11 @@ Simulation with 3-day screening, sensitivity 0.85, and a 6-day positivity window
 
 #### Detection probability is not the driver
 
-$P(\text{det})$ is approximately constant across $\kappa$ at $\sim$97.5%. The positivity window is wide relative to the screening interval, so almost everyone is detected regardless of profile shape.
+$P(\text{det})$ is approximately constant across $\kappa$ at $`\sim`$97.5%. The positivity window is wide relative to the screening interval, so almost everyone is detected regardless of profile shape.
 
 #### The conditional value of detection is the driver
 
-$E[\text{frac averted} \mid \text{detected}]$ drops from $\sim$0.88 for spike profiles ($\kappa = 0.5$) to $\sim$0.80 for smooth profiles ($\kappa = 9.5$):
+$E[\text{frac averted} \mid \text{detected}]$ drops from $`\sim`$0.88 for spike profiles ($\kappa = 0.5$) to $`\sim`$0.80 for smooth profiles ($\kappa = 9.5$):
 
 | $\kappa$ | $P(\text{det})$ | $E[\text{frac averted} \mid \text{det}]$ | $R_{\text{eff}}$ | Tail leakage |
 |----------|-----------------|------------------------------------------|-------------------|---------------|
@@ -50,7 +50,7 @@ $E[\text{frac averted} \mid \text{detected}]$ drops from $\sim$0.88 for spike pr
 | 6        | 0.975           | 0.82                                     | 0.40              | 5%            |
 | 9.5      | 0.975           | 0.80                                     | 0.44              | 7%            |
 
-$R_{\text{eff}}$ varies by a factor of $\sim$1.6 across $\kappa$ despite identical detection probabilities.
+$R_{\text{eff}}$ varies by a factor of $`\sim`$1.6 across $\kappa$ despite identical detection probabilities.
 
 #### Mechanism 1: All-or-nothing vs partial aversion
 
@@ -132,7 +132,7 @@ Each individual moves through a sequence of gatherings. The contact process $c_i
 The individual reproduction number $R_i$ arises from the interaction of the biological profile and the contact process:
 
 - **Delta profile**: $R_i = c_i(t^*)$ at a single random time. This is one draw from the contact-value distribution, inheriting its full variance.
-- **Smooth profile**: $R_i = \int c_i(\tau) \cdot f(\tau)\,d\tau$, where $f$ is the $\text{Gamma}(10, 0.3)$ PDF spanning $\sim$33 days. This averages over $\sim$36 independent contact-process steps, dramatically reducing variance.
+- **Smooth profile**: $R_i = \int c_i(\tau) \cdot f(\tau)\,d\tau$, where $f$ is the $\text{Gamma}(10, 0.3)$ PDF spanning $`\sim`$33 days. This averages over $\sim$36 independent contact-process steps, dramatically reducing variance.
 
 Offspring are $\text{Poisson}(R_i)$ — the standard superspreading framework.
 
@@ -160,13 +160,13 @@ The variance of $R_i$ decomposes cleanly:
 | Smooth  | Uncapped   | 2.00     | 0.11               | 0.17              |
 | Smooth  | Capped@20  | 1.39     | 0.03               | 0.13              |
 
-The cap reduces variance by $\sim$70% for both profiles. This is because the variance reduction factor from averaging ($I_{\text{corr}} = 0.028$, corresponding to $\sim$36 effective independent samples) multiplies both the uncapped and capped contact-process variance identically:
+The cap reduces variance by $`\sim`$70% for both profiles. This is because the variance reduction factor from averaging ($I_{\text{corr}} = 0.028$, corresponding to $`\sim`$36 effective independent samples) multiplies both the uncapped and capped contact-process variance identically:
 
 $$\text{Var}(R_i)_{\text{smooth}} = \text{Var}(c_i) \cdot I_{\text{corr}}$$
 
 So the fractional reduction in variance from capping is the same: $\text{Var}(\text{capped}) / \text{Var}(\text{uncapped}) = \text{Var}(X \mid X \leq 20) / \text{Var}(X)$, regardless of the biological profile.
 
-**The differential is not in the fractional variance reduction — it is in the absolute amount of superspreading removed.** The cap eliminates $\Delta\text{Var} = 2.8$ for the delta profile versus $\Delta\text{Var} = 0.08$ for the smooth profile (a 35$\times$ difference).
+**The differential is not in the fractional variance reduction — it is in the absolute amount of superspreading removed.** The cap eliminates $\Delta\text{Var} = 2.8$ for the delta profile versus $\Delta\text{Var} = 0.08$ for the smooth profile (a 35$`\times`$ difference).
 
 ### Finding 16c: Overdispersion increases extinction probability
 
@@ -180,7 +180,7 @@ For a branching process with $\text{Poisson}(R_i)$ offspring, higher variance in
 | Smooth               | 0.22                   | 0.78                 |
 | Delta                | 0.51                   | 0.49                 |
 
-Despite having the same mean $R = 2$, the delta profile produces outbreaks less than half the time, while the smooth profile produces outbreaks $\sim$80% of the time. The smooth profile's near-Poisson $R_i$ distribution means reliable, moderate transmission from every individual.
+Despite having the same mean $R = 2$, the delta profile produces outbreaks less than half the time, while the smooth profile produces outbreaks $`\sim`$80% of the time. The smooth profile's near-Poisson $R_i$ distribution means reliable, moderate transmission from every individual.
 
 ### Finding 16d: Caps are more effective at preventing outbreaks for smooth profiles
 
@@ -307,7 +307,7 @@ The effectiveness of tracing person B depends on:
 
 2. **What generation interval connected A to B** ($\tau_{A \to B}$) — determines how much head start B has. For spike A: $\tau_{A \to B} \approx s_A + \varepsilon$ (all of A's transmissions cluster at one time, so all traced contacts have similar head starts). For smooth A: $\tau_{A \to B}$ is spread over a wide range, so some contacts were infected early (long head start, likely already transmitted) and others late (short head start, intervention is more useful).
 
-3. **How concentrated B's own transmission is** ($F_B(\delta_B)$) — determines how much of B's profile falls before vs. after the intervention. For spike B: $F_B$ is a sharp step function, making the outcome all-or-nothing. For smooth B: $F_B$ is a smooth sigmoid, giving graded partial benefit.
+3. **How concentrated B's own transmission is** ($`F_B(\delta_B)`$) — determines how much of B's profile falls before vs. after the intervention. For spike B: $F_B$ is a sharp step function, making the outcome all-or-nothing. For smooth B: $F_B$ is a smooth sigmoid, giving graded partial benefit.
 
 ### Key predictions
 
@@ -470,7 +470,7 @@ $$\log E[W] - E[\log W] = \frac{\text{Var}(W)}{2\,(E[W])^2} + O(\text{higher cum
 
 Since $`\text{Var}(W)_{\text{spike}}`$ > $`\text{Var}(W)_{\text{smooth}}`$ while $E[W]$ is the same:
 
-$$E[\log W]_{\text{spike}}$ < $E[\log W]_{\text{smooth}}$$
+$$E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}$$
 
 $$\implies E[T_n]_{\text{spike}} > E[T_n]_{\text{smooth}}$$
 
@@ -513,11 +513,11 @@ The magnitude of the delay $`\Delta T_n`$ = $`E[T_n]_{\text{spike}}`$ - $`E[T_n]
 
 **This is not a finite-population effect.** The branching process operates in an effectively infinite population (no susceptible depletion). The delay arises from starting with a small number of infected individuals, not from the total population being finite. An epidemic seeded into a population of $10^9$ with a single index case would show the same delay as one seeded into a population of $10^3$.
 
-**The expected growth rate is truly identical.** The Malthusian parameter $\alpha$ is the same. The delay is a *time offset*, not a rate reduction. Once $Z(t)$ is large enough for the law of large numbers to apply (roughly $Z(t) \gtrsim 50$–$100$), both models grow at rate $\alpha$ and the offset is frozen.
+**The expected growth rate is truly identical.** The Malthusian parameter $\alpha$ is the same. The delay is a *time offset*, not a rate reduction. Once $Z(t)$ is large enough for the law of large numbers to apply (roughly $`Z(t) \gtrsim 50 - 100`$), both models grow at rate $\alpha$ and the offset is frozen.
 
 **$E[Z(t)]$ is identical — but the median of $Z(t)$ is not.** This is the core resolution of the apparent paradox. $E[Z(t)]$ is the same at every $t$, starting from a single case, with no approximations. This is an exact consequence of the Campbell theorem (the intensity measure determines $E[Z(t)]$, and the intensity measure is the same for both models). However, the **median** (and other quantiles) of $Z(t)$ differs: the spike case has a lower median at any given $t$ during the early epidemic, compensated by a heavier right tail. When we look at simulation curves, we see the median behavior, not the mean. The mean curve would overlay exactly; the median curve is shifted right for the spike case. The delay in $E[T_n]$ arises because $T_n$ is determined by where individual trajectories cross the threshold — a quantity sensitive to the median/distribution of $Z(t)$, not just its mean. Jensen's inequality on the concave function $\log$ formalises this: higher variance in $W$ (the stochastic head-start factor) produces a later expected milestone time.
 
-**Conditioning on establishment does not eliminate the effect.** Among epidemics that establish (avoid stochastic extinction), the spike case still reaches milestones later. Both models have the same extinction probability (both have Poisson($R_0$) offspring counts — the timing of offspring does not affect the offspring *distribution*). Conditioning on $W > 0$ (survival) changes the distribution of $W$ but preserves the ordering $\text{Var}(W)_{\text{spike}}$ > $\text{Var}(W)_{\text{smooth}}$, so Jensen's inequality still applies.
+**Conditioning on establishment does not eliminate the effect.** Among epidemics that establish (avoid stochastic extinction), the spike case still reaches milestones later. Both models have the same extinction probability (both have Poisson($R_0$) offspring counts — the timing of offspring does not affect the offspring *distribution*). Conditioning on $W > 0$ (survival) changes the distribution of $W$ but preserves the ordering $`\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}`$, so Jensen's inequality still applies.
 
 ---
 
@@ -568,7 +568,7 @@ In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) \, d\tau$
 
 **Peak timing and planning.** Morris et al. motivate their work with the problem of predicting when an epidemic will reach its peak — a quantity that depends on $\tau$ and hence on $W$. Our results add a new source of uncertainty to this prediction: even if $R_0$, the generation-interval distribution, and $\alpha$ are perfectly known, uncertainty about $\kappa$ (how punctuated individual infectiousness is) translates into uncertainty about $\text{Var}(W)$ and hence about the spread of possible peak times.
 
-**A computational route to $\text{Var}(W)$ for our models.** Section 17 argues qualitatively that $\text{Var}(W)_{\text{spike}}$ > $\text{Var}(W)_{\text{smooth}}$, based on the within-individual covariance structure. Morris et al.'s PE or MM methods could be used to compute $\text{Var}(W)$ *exactly* for each $\kappa$ in our Gamma convolutional family. This would:
+**A computational route to $\text{Var}(W)$ for our models.** Section 17 argues qualitatively that $`\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}`$, based on the within-individual covariance structure. Morris et al.'s PE or MM methods could be used to compute $\text{Var}(W)$ *exactly* for each $\kappa$ in our Gamma convolutional family. This would:
 
 - Quantify the growth delay $\Delta E[T_n]$ analytically (rather than relying on simulation).
 - Provide the full distribution of $\tau$, enabling probabilistic statements like "there is a 90% chance the spike epidemic reaches 100 cases between days $X$ and $Y$."
@@ -599,7 +599,7 @@ where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birt
 | Practical focus | Peak timing uncertainty | Growth delay, surveillance implications |
 | Process type | CT-MBP (Markovian) | CMJ (age-dependent) |
 
-Their computational machinery is complementary to our conceptual framework. We identify *why* $W$ varies across models with the same mean-field dynamics (offspring synchronisation), while they provide the tools to compute *how much* it varies. A natural collaboration or extension would apply their PE/MM methods to our Gamma convolutional family, producing exact $\text{Var}(W)$-vs-$\kappa$ curves and validated time-shift distributions.
+Their computational machinery is complementary to our conceptual framework. We identify *why* $W$ varies across models with the same mean-field dynamics (offspring synchronisation), while they provide the tools to compute *how much* it varies. A natural collaboration or extension would apply their PE/MM methods to our Gamma convolutional family, producing exact $\text{Var}(W)$-vs-$`\kappa`$ curves and validated time-shift distributions.
 
 ---
 
@@ -831,8 +831,8 @@ The offset $\max(0, \text{mode}_\kappa - w_-)$ is the earliest time post-onset a
 
 TE requires integrating $P(\varepsilon > D_{\text{screen}})$ over the distribution of $D_{\text{screen}}$. Although this does not simplify to a single special function, the $\kappa$-dependence has transparent structure:
 
-- **Small $\kappa$ (punctuated):** $\text{mode}_\kappa \approx 0$, so the detectability window begins at or before onset. The offset is zero, and $D_{\text{screen}} \sim \text{Uniform}(0, \Delta)$. Meanwhile, transmission is concentrated near the mode. If $\Delta$ is short relative to $w_+$, detection likely precedes the spike: **TE is high**.
-- **Large $\kappa$ (smooth):** $\text{mode}_\kappa = (\kappa\alpha - 1)/r$ is large, but so is the spread of $\varepsilon$. The offset $\text{mode}_\kappa - w_-$ grows, pushing diagnosis later. A substantial fraction of transmission occurs before the first possible positive test: **TE is lower**.
+- **Small $\kappa$ (punctuated):** $`\text{mode}_\kappa \approx 0`$, so the detectability window begins at or before onset. The offset is zero, and $`D_{\text{screen}} \sim \text{Uniform}(0, \Delta)`$. Meanwhile, transmission is concentrated near the mode. If $`\Delta`$ is short relative to $w_+$, detection likely precedes the spike: **TE is high**.
+- **Large $\kappa$ (smooth):** $`\text{mode}_\kappa = (\kappa\alpha - 1)/r`$ is large, but so is the spread of $`\varepsilon`$. The offset $`\text{mode}_\kappa - w_-`$ grows, pushing diagnosis later. A substantial fraction of transmission occurs before the first possible positive test: **TE is lower**.
 - **Direction of $\kappa$-effect: opposite to symptoms.** Punctuated profiles benefit *more* from screening, whereas smooth profiles benefit *more* from symptom-triggered isolation.
 
 The crucial mechanism is that the detectability window is anchored to peak infectiousness, whose position depends on $\kappa$. This $\kappa$-dependence in the trigger distribution reverses the direction compared to the symptom case (where the trigger is anchored to biological onset, independent of $\kappa$).
