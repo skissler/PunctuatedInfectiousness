@@ -1392,7 +1392,9 @@ The table confirms:
 - At $\kappa = 0.05$ (highly punctuated), symptom-triggered isolation averts almost nothing unless symptoms are extremely early ($a_{\text{sym}} = 1$ gives TE = 0.29)
 - At $\kappa = 0.95$ (smooth), symptom-triggered isolation is highly effective unless symptoms are very delayed ($a_{\text{sym}} = 8$ gives TE = 0.64)
 
-**Periodic screening ($\Delta = 1, 3, 7$; $w_- = 3$, $w_+ = 4$):** requires numerical integration over the joint distribution of $\varepsilon$ and $D_{\text{screen}}$. The qualitative prediction is that TE decreases with $\kappa$ (opposite to the symptom table above), with the magnitude depending on $\Delta$.
+**Periodic screening ($\Delta = 1, 3, 7$; $w_- = 3$, $w_+ = 4$):** requires numerical integration over the joint distribution of $\varepsilon$ and $D_{\text{screen}}$. The qualitative prediction is that TE decreases with 
+
+<!--- $\kappa$ (opposite to the symptom table above), with the magnitude depending on $\Delta$. ---> 
 
 ### Connection to §14 results
 
