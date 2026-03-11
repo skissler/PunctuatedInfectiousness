@@ -1,12 +1,12 @@
 # Findings log
 
-Running log of results for the manuscript. All simulations use SEIR parameters ($e\_{dur} = 2$, $i\_{dur} = 3$, $R_0 = 2$, $N = 1000$) unless otherwise noted. The three individual infectiousness profiles — smooth (all-equal), stepwise, and spike (delta function) — all share the same population-level infectiousness kernel $A(\tau)$ and the same $R_0$.
+Running log of results for the manuscript. All simulations use SEIR parameters ($e_{dur} = 2$, $i_{dur} = 3$, $R_0 = 2$, $N = 1000$) unless otherwise noted. The three individual infectiousness profiles — smooth (all-equal), stepwise, and spike (delta function) — all share the same population-level infectiousness kernel $A(\tau)$ and the same $R_0$.
 
 ---
 
 ## 1. Offspring distribution differs across profiles despite identical $R_0$
 
-The smooth and spike cases both produce Poisson($R_0$) secondary infections per individual. The stepwise case produces a compound Poisson — Poisson($\beta \cdot D$) where $D \sim \text{Exp}(1/i\_{dur})$ — which is overdispersed relative to Poisson($R_0$). Concretely, $\text{Var}[\text{offspring}] = R_0 + R_0^2$ for the stepwise case (a negative binomial with $k = 1$), versus $\text{Var}[\text{offspring}] = R_0$ for the smooth and spike cases.
+The smooth and spike cases both produce Poisson($R_0$) secondary infections per individual. The stepwise case produces a compound Poisson — Poisson($\beta \cdot D$) where $D \sim \text{Exp}(1/i_{dur})$ — which is overdispersed relative to Poisson($R_0$). Concretely, $\text{Var}[\text{offspring}] = R_0 + R_0^2$ for the stepwise case (a negative binomial with $k = 1$), versus $\text{Var}[\text{offspring}] = R_0$ for the smooth and spike cases.
 
 This means the stepwise case — which is the implicit individual-level interpretation of the standard SEIR model — carries superspreading-like overdispersion even without any explicit heterogeneity in contact rates or susceptibility.
 
@@ -26,7 +26,7 @@ Conditional on establishing, the spike case takes ~0.8–1 day longer to reach e
 
 **Single-infector level.** In the smooth case, an infector with $k$ contacts generates $k$ independent transmission times drawn from the generation interval distribution. The *first* onward transmission is $\min(\tau_1, \ldots, \tau_k)$, which is stochastically earlier than a single draw. In the spike case, all $k$ contacts occur at the same time $\tau_i^*$, so the first transmission time is just a single generation-interval draw regardless of $k$.
 
-First-transmission time from a single infector, stratified by number of contacts ($10^5$ replicates; $E[\text{GenInterval}] = e\_dur + i\_dur = 5.0$ days):
+First-transmission time from a single infector, stratified by number of contacts ($10^5$ replicates; $E[\text{GenInterval}] = e_{dur} + i_{dur} = 5.0$ days):
 
 | Contacts ($k$) | Smooth | Spike | Difference |
 |-----------------|--------|-------|------------|
@@ -78,7 +78,7 @@ This distinction should produce different phylogenetic tree structures (more syn
 
 ## 8. Intervention impact variance differs across profiles
 
-Consider a one-time intervention that removes a fraction of infectious individuals at time $t$ (e.g., a quarantine sweep). In the smooth case, each removed individual has a predictable amount of remaining infectiousness. In the spike case, a removed individual has either already transmitted all $R_0$ of their infections (if $t > t_i + \tau_i^*$) or has transmitted none of them (if $t < t_i + \tau_i^\*$). The expected impact of removal is similar across profiles, but the *variance* in impact is higher for the spike case — interventions are a higher-variance gamble when infectiousness is punctuated.
+Consider a one-time intervention that removes a fraction of infectious individuals at time $t$ (e.g., a quarantine sweep). In the smooth case, each removed individual has a predictable amount of remaining infectiousness. In the spike case, a removed individual has either already transmitted all $R_0$ of their infections (if $t > t_i + \tau_i^*$) or has transmitted none of them (if $t < t_i + \tau_i^*$). The expected impact of removal is similar across profiles, but the *variance* in impact is higher for the spike case — interventions are a higher-variance gamble when infectiousness is punctuated.
 
 *Status: theoretical prediction, not yet tested in simulation.*
 
@@ -162,7 +162,7 @@ Visualization: `code/visualize_profiles_gamma.R`.
 
 ### Design choices
 
-- **$\alpha_{\text{total}}$**: Controls the shape of $A(\tau)$. Larger values give a more symmetric, bell-shaped kernel. The moment-matched value for SEIR parameters ($e\_{dur} = 2$, $i\_{dur} = 3$) is $\alpha_{\text{total}} = \mu^2 / (e\_{dur}^2 + i\_{dur}^2) \approx 1.92$, but this is too small for $f_\kappa$ to be unimodal at most $\kappa$ values (Gamma shape $< 1$ gives a monotone-decreasing density). We use $\alpha_{\text{total}} = 10$ as a default, which gives a well-shaped $A(\tau)$ and allows $\kappa$ to range from $\sim 2$ (punctuated, narrow unimodal bumps) to $\sim 9.5$ (smooth, profiles $\approx A$).
+- **$\alpha_{\text{total}}$**: Controls the shape of $A(\tau)$. Larger values give a more symmetric, bell-shaped kernel. The moment-matched value for SEIR parameters ($e_{dur} = 2$, $i_{dur} = 3$) is $\alpha_{\text{total}} = \mu^2 / (e_{dur}^2 + i_{dur}^2) \approx 1.92$, but this is too small for $f_\kappa$ to be unimodal at most $\kappa$ values (Gamma shape $< 1$ gives a monotone-decreasing density). We use $\alpha_{\text{total}} = 10$ as a default, which gives a well-shaped $A(\tau)$ and allows $\kappa$ to range from $\sim 2$ (punctuated, narrow unimodal bumps) to $\sim 9.5$ (smooth, profiles $\approx A$).
 
 - **$\mu$**: The mean generation time, equal to $\alpha_{\text{total}} / r$. Changing $\mu$ scales the time axis without affecting the shape of $A(\tau)$ or the punctuation structure.
 
@@ -194,7 +194,7 @@ With $\alpha_{\text{total}} = 10$, we can define $\kappa_i = \alpha_{\text{total
 
 **Example 1: Homogeneous population (degenerate $F$).** $\kappa_i = 5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
 
-**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $`A(\tau)`$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, r)$.
+**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, r)$.
 
 **Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\kappa_i$ near $\alpha_{\text{total}}$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
 
@@ -252,7 +252,7 @@ The time-varying contact function acts as a multiplicative modulator on the effe
 
 In the shifted Gamma framework (Section 9), with constant contacts:
 
-- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the $`\text{Gamma}(\kappa, r)`$ density shifted to onset time $s_i$
+- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the $\text{Gamma}(\kappa, r)$ density shifted to onset time $s_i$
 - $c_i(t) = R_0$ for all $i, t$
 
 This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\tilde{\nu}_i = R_0$ for every individual.
@@ -292,7 +292,7 @@ All three are empirically plausible for many infectious diseases. The shifted Ga
 
 We decompose individual infectiousness as $a_i(\tau) = R_0 \cdot b_i(\tau) \cdot z(t_i + \tau)$, where:
 
-- $b_i(\tau) = f_\kappa(\tau - s_i)$ is the biological timing density (a Gamma($\kappa$, $r$) density shifted by individual onset $`s_i \sim \text{Gamma}(\alpha - \kappa, r)`$)
+- $b_i(\tau) = f_\kappa(\tau - s_i)$ is the biological timing density (a Gamma($\kappa$, $r$) density shifted by individual onset $s_i \sim \text{Gamma}(\alpha - \kappa, r)$)
 - $z(t) = 1 + \epsilon \sin(2\pi t / T)$ is a periodic contact rate multiplier with period $T = 7$ days
 
 The parameter $\kappa$ controls punctuation: small $\kappa$ gives narrow, spike-like individual profiles; large $\kappa$ gives broad profiles that resemble the population average. The parameter $\epsilon$ controls the amplitude of contact variation ($\epsilon = 0$ is constant contacts, $\epsilon = 0.9$ is strong weekly oscillation).
@@ -325,11 +325,11 @@ The core finding: overdispersion arises from the *interaction* between punctuate
 | 8        | 1.00           | 1.01              | 1.06              | 1.12              | 1.16              |
 | 9.5      | 1.01           | 1.05              | 1.04              | 1.07              | 1.12              |
 
-The overdispersion is concentrated in the low-$`\kappa`$, high-$`\epsilon`$ corner: punctuated profiles ($\kappa \leq 2$) with strong contact oscillation ($\epsilon \geq 0.7$) yield variance/mean ratios of 1.4--1.7. Smooth profiles ($\kappa = 9.5$) show at most a ratio of 1.12 even at maximum contact amplitude.
+The overdispersion is concentrated in the low-$\kappa$, high-$\epsilon$ corner: punctuated profiles ($\kappa \leq 2$) with strong contact oscillation ($\epsilon \geq 0.7$) yield variance/mean ratios of 1.4--1.7. Smooth profiles ($\kappa = 9.5$) show at most a ratio of 1.12 even at maximum contact amplitude.
 
 #### Negative binomial dispersion parameter $k$
 
-Fitting $k$ via method of moments ($`k = \mu^2 / (\text{Var} - \mu)`$):
+Fitting $k$ via method of moments ($k = \mu^2 / (\text{Var} - \mu)$):
 
 | $\kappa$ | $\epsilon = 0$ | $\epsilon = 0.5$ | $\epsilon = 0.7$ | $\epsilon = 0.9$ |
 |----------|----------------|-------------------|-------------------|-------------------|
@@ -353,7 +353,7 @@ This is a sampling-vs-averaging effect: punctuated profiles *sample* the contact
 
 Generated in `figures/`:
 
-- **`fig_overdispersion_heatmap.pdf`**: Var/mean ratio across the ($\kappa$, $\epsilon$) grid. Overdispersion is concentrated in the low-$`\kappa`$, high-$`\epsilon`$ corner, confirming the interaction.
+- **`fig_overdispersion_heatmap.pdf`**: Var/mean ratio across the ($\kappa$, $\epsilon$) grid. Overdispersion is concentrated in the low-$\kappa$, high-$\epsilon$ corner, confirming the interaction.
 - **`fig_overdispersion_lines.pdf`**: Var/mean ratio vs $\kappa$ for selected $\epsilon$ values. All curves converge to $\approx 1$ at high $\kappa$, and fan out at low $\kappa$ proportional to $\epsilon$.
 - **`fig_overdispersion_histograms.pdf`**: Offspring distributions for four corner cases compared to Poisson($R_0$). The punctuated + periodic case has visibly heavier tails than the Poisson reference; the other three are nearly indistinguishable from Poisson.
 - **`fig_overdispersion_nbk.pdf`**: Negative binomial $k$ parameter across the grid (lower = more overdispersed).
@@ -458,7 +458,7 @@ Detection mechanisms sit on a spectrum of **biological anchoring** — the degre
 
 **Independent trigger ($\rho = 0$): regular screening.** Detection time is determined by an external process (periodic testing every $\Delta$ days, random phase) intersected with a positivity window. The screening clock runs independently of $s_i$, so $\tau_{\text{det}}$ is approximately uncorrelated with the profile. The $\kappa$-dependence comes purely from the *shape* of $F_\kappa$ — spike profiles have a step-function CDF (all-or-nothing), smooth profiles have a gradual sigmoid (partial aversion).
 
-**Anchored trigger ($\rho = 1$): symptom onset.** Detection time is deterministically coupled to the profile: $\tau_{\text{det}} = s_i + \delta_{\text{sym}} + \delta_{\text{iso}}$, where $\delta_{\text{sym}}$ is the delay from infectiousness onset to symptoms and $\delta_{\text{iso}}$ is the delay from symptoms to effective isolation. Individuals with early onset (small $s_i$) are both early transmitters and early detectors. The $\kappa$-dependence comes from both the shape of $F_\kappa$ and the correlation between $\tau_{\text{det}}$ and $s_i$.
+**Anchored trigger ($\rho = 1$): symptom onset.** Detection time is deterministically coupled to the profile: $\tau_{\text{det}}$ = $s_i$ + $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$, where $\delta_{\text{sym}}$ is the delay from infectiousness onset to symptoms and $\delta_{\text{iso}}$ is the delay from symptoms to effective isolation. Individuals with early onset (small $s_i$) are both early transmitters and early detectors. The $\kappa$-dependence comes from both the shape of $F_\kappa$ and the correlation between $\tau_{\text{det}}$ and $s_i$.
 
 **Intermediate anchoring ($0 < \rho < 1$):** Hybrid scenarios such as screening that targets symptomatic individuals, or symptoms that are a noisy indicator of infectiousness timing. These interpolate between the independent and anchored extremes.
 
@@ -480,11 +480,11 @@ Simulation with 3-day screening, sensitivity 0.85, and a 6-day positivity window
 
 #### Detection probability is not the driver
 
-$P(\text{det})$ is approximately constant across $\kappa$ at $`\sim`$97.5%. The positivity window is wide relative to the screening interval, so almost everyone is detected regardless of profile shape.
+$P(\text{det})$ is approximately constant across $\kappa$ at $\sim$97.5%. The positivity window is wide relative to the screening interval, so almost everyone is detected regardless of profile shape.
 
 #### The conditional value of detection is the driver
 
-$E[\text{frac averted} \mid \text{detected}]$ drops from $`\sim`$0.88 for spike profiles ($\kappa = 0.5$) to $`\sim`$0.80 for smooth profiles ($`\kappa = 9.5`$):
+$E[\text{frac averted} \mid \text{detected}]$ drops from $\sim$0.88 for spike profiles ($\kappa = 0.5$) to $\sim$0.80 for smooth profiles ($\kappa = 9.5$):
 
 | $\kappa$ | $P(\text{det})$ | $E[\text{frac averted} \mid \text{det}]$ | $R_{\text{eff}}$ | Tail leakage |
 |----------|-----------------|------------------------------------------|-------------------|---------------|
@@ -493,7 +493,7 @@ $E[\text{frac averted} \mid \text{detected}]$ drops from $`\sim`$0.88 for spike 
 | 6        | 0.975           | 0.82                                     | 0.40              | 5%            |
 | 9.5      | 0.975           | 0.80                                     | 0.44              | 7%            |
 
-$R_{\text{eff}}$ varies by a factor of $`\sim`$1.6 across $\kappa$ despite identical detection probabilities.
+$R_{\text{eff}}$ varies by a factor of $\sim$1.6 across $\kappa$ despite identical detection probabilities.
 
 #### Mechanism 1: All-or-nothing vs partial aversion
 
@@ -511,9 +511,9 @@ Detection also reshapes the effective generation interval $g_{\text{eff}}(\tau)$
 
 **Spike case:** $g_{\text{eff}} = g$ (unchanged). Testing removes a random fraction of transmitters without altering the timing of the remaining ones — the blocking probability is approximately constant across spike locations.
 
-**Smooth case:** $g_{\text{eff}}(\tau) \propto A(\tau) \cdot P(T_{\text{detect}} > \tau)$ shifts shorter. The right tail of the profile is truncated by detection, so surviving transmissions are biased early.
+**Smooth case:** $g_{\text{eff}}(\tau)$ $\propto A(\tau) \cdot P(T_{\text{detect}} > \tau)$ shifts shorter. The right tail of the profile is truncated by detection, so surviving transmissions are biased early.
 
-**Epidemiological consequence: partially self-defeating intervention.** Via the Euler-Lotka equation $1 = R_{\text{eff}} \int e^{-r\tau} g_{\text{eff}}(\tau)\,d\tau$, a shorter $g_{\text{eff}}$ implies a *larger* growth rate for a given $R_{\text{eff}}$. So for smooth profiles, the $R_{\text{eff}}$ reduction from detection is partially offset by the generation interval shortening. For spike profiles, $g_{\text{eff}} = g$, so the full $R_{\text{eff}}$ reduction translates to growth rate reduction. This partial self-defeat is specific to profile-truncating interventions and does not apply to interventions that reduce $R_{\text{eff}}$ without altering the generation interval (vaccination, uniform contact reduction).
+**Epidemiological consequence: partially self-defeating intervention.** Via the Euler-Lotka equation $1$ = $R_{\text{eff}}$ $\int e^{-r\tau} g_{\text{eff}}(\tau)\,d\tau$, a shorter $g_{\text{eff}}$ implies a *larger* growth rate for a given $R_{\text{eff}}$. So for smooth profiles, the $R_{\text{eff}}$ reduction from detection is partially offset by the generation interval shortening. For spike profiles, $g_{\text{eff}} = g$, so the full $R_{\text{eff}}$ reduction translates to growth rate reduction. This partial self-defeat is specific to profile-truncating interventions and does not apply to interventions that reduce $R_{\text{eff}}$ without altering the generation interval (vaccination, uniform contact reduction).
 
 Analysis code: `code/generation_interval_distortion.R`, `code/reff_reduction_decomposition.R`.
 
@@ -525,7 +525,7 @@ When $\kappa$ is small, some individuals have early peaks ($t_{\text{peak}} < w_
 
 *Status: not yet implemented.*
 
-Symptom-triggered isolation replaces the independent screening clock with a biologically anchored trigger: $\tau_{\text{det}} = s_i + \delta_{\text{sym}} + \delta_{\text{iso}}$, deterministically coupled to the onset shift $s_i$.
+Symptom-triggered isolation replaces the independent screening clock with a biologically anchored trigger: $\tau_{\text{det}}$ = $s_i$ + $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$, deterministically coupled to the onset shift $s_i$.
 
 #### Why anchoring should sharpen the $\kappa$-dependence
 
@@ -533,7 +533,7 @@ With screening, $\tau_{\text{det}}$ is approximately independent of $s_i$, so de
 
 #### Key predictions
 
-**Delta (small $\kappa$):** Transmission occurs at $\tau^* \approx s_i + \varepsilon$ where $\varepsilon$ is small. Symptom onset at $s_i + \delta_{\text{sym}}$. If $\delta_{\text{sym}} + \delta_{\text{iso}} > \varepsilon$ (symptoms + isolation delay exceeds the jitter), isolation arrives after the spike — nothing averted. If $\delta_{\text{sym}} + \delta_{\text{iso}} < \varepsilon$, everything averted. The all-or-nothing structure is sharper than for screening because the detection time tracks the profile.
+**Delta (small $\kappa$):** Transmission occurs at $\tau^* \approx s_i + \varepsilon$ where $\varepsilon$ is small. Symptom onset at $s_i + \delta_{\text{sym}}$. If $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$ > $\varepsilon$ (symptoms + isolation delay exceeds the jitter), isolation arrives after the spike — nothing averted. If $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$ < $\varepsilon$, everything averted. The all-or-nothing structure is sharper than for screening because the detection time tracks the profile.
 
 **Smooth (large $\kappa$):** Transmission is spread over a broad window. Symptom onset truncates the right tail. The fraction averted is $1 - F_\kappa(\delta_{\text{sym}})$, a smooth function of $\delta_{\text{sym}}$.
 
@@ -694,7 +694,7 @@ Contact tracing unfolds as a cascade of delays:
 **Step 1: Index case detection** ($\tau_{\text{det}}^A$)
 
 The index case (person A) is detected via one of:
-- (a) Symptom onset + testing (Section 14, anchored trigger): $\tau_{\text{det}}^A = s_A + \delta_{\text{sym}} + \delta_{\text{test}}$
+- (a) Symptom onset + testing (Section 14, anchored trigger): $\tau_{\text{det}}^A$ = $s_A$ + $\delta_{\text{sym}}$ + $\delta_{\text{test}}$
 - (b) Routine screening (Section 14, independent trigger): $\tau_{\text{det}}^A$ depends on the positivity window and screening phase
 
 In both cases, $\tau_{\text{det}}^A$ depends on person A's profile via $s_A$ and $f_\kappa$.
@@ -910,9 +910,9 @@ $$\log E[W] - E[\log W] = \frac{\text{Var}(W)}{2\,(E[W])^2} + O(\text{higher cum
 
 (this is the second-order expansion via the delta method, exact for log-normal $W$).
 
-Since $\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}$ while $E[W]$ is the same:
+Since $`\text{Var}(W)_{\text{spike}}`$ > $`\text{Var}(W)_{\text{smooth}}`$ while $E[W]$ is the same:
 
-$$E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}$$
+$$E[\log W]_{\text{spike}}$ < $E[\log W]_{\text{smooth}}$$
 
 $$\implies E[T_n]_{\text{spike}} > E[T_n]_{\text{smooth}}$$
 
@@ -941,13 +941,13 @@ The connection: the per-infector first-transmission advantage compounds multipli
 
 ### When the effect is large vs. small
 
-The magnitude of the delay $\Delta T_n = E[T_n]_{\text{spike}} - E[T_n]_{\text{smooth}}$ depends on:
+The magnitude of the delay $`\Delta T_n`$ = $`E[T_n]_{\text{spike}}`$ - $`E[T_n]_{\text{smooth}}`$ depends on:
 
 1. **$R_0$**: The order-statistics advantage scales with the expected number of offspring $E[k] = R_0$. At $R_0 \leq 1.2$, most infectors produce 0 or 1 offspring, so $\min(\tau_1) = \tau_1$ — no advantage. At $R_0 = 5$, infectors typically produce 4–6 offspring, and $\min(\tau_1, \ldots, \tau_5)$ is much earlier than $\tau^*$. This explains the $R_0$-dependence in Finding 12 (delay grows from ~0% at $R_0 = 1.2$ to ~18% at $R_0 = 5$).
 
 2. **$n$ (the threshold)**: The delay $\Delta T_n$ is approximately *constant* in $n$ (it's a time offset, not a rate difference). As a fraction of $T_n$, it decreases as $\log n$ grows. This explains the finding that percentage delays attenuate from $t_{10}$ to $t_{100}$ (Finding 12).
 
-3. **Initial number of cases**: If the epidemic is seeded with $m$ initial cases (rather than 1), the variance of $W$ decreases by a factor of ~$m$ (law of large numbers over independent branching processes), and $\Delta T_n \to 0$. The effect is purely a *small-number-of-cases* phenomenon.
+3. **Initial number of cases**: If the epidemic is seeded with $m$ initial cases (rather than 1), the variance of $W$ decreases by a factor of $\sim m$ (law of large numbers over independent branching processes), and $\Delta T_n \to 0$. The effect is purely a *small-number-of-cases* phenomenon.
 
 4. **$\kappa$ (for the Gamma convolutional model)**: At $\kappa \to 0$ (delta spike), $\text{Var}(W)$ is maximised. At $\kappa \to \alpha_{\text{total}}$ (smooth = $A$), $\text{Var}(W)$ is minimised. The delay interpolates continuously between these extremes.
 
@@ -959,7 +959,7 @@ The magnitude of the delay $\Delta T_n = E[T_n]_{\text{spike}} - E[T_n]_{\text{s
 
 **$E[Z(t)]$ is identical — but the median of $Z(t)$ is not.** This is the core resolution of the apparent paradox. $E[Z(t)]$ is the same at every $t$, starting from a single case, with no approximations. This is an exact consequence of the Campbell theorem (the intensity measure determines $E[Z(t)]$, and the intensity measure is the same for both models). However, the **median** (and other quantiles) of $Z(t)$ differs: the spike case has a lower median at any given $t$ during the early epidemic, compensated by a heavier right tail. When we look at simulation curves, we see the median behavior, not the mean. The mean curve would overlay exactly; the median curve is shifted right for the spike case. The delay in $E[T_n]$ arises because $T_n$ is determined by where individual trajectories cross the threshold — a quantity sensitive to the median/distribution of $Z(t)$, not just its mean. Jensen's inequality on the concave function $\log$ formalises this: higher variance in $W$ (the stochastic head-start factor) produces a later expected milestone time.
 
-**Conditioning on establishment does not eliminate the effect.** Among epidemics that establish (avoid stochastic extinction), the spike case still reaches milestones later. Both models have the same extinction probability (both have Poisson($R_0$) offspring counts — the timing of offspring does not affect the offspring *distribution*). Conditioning on $W > 0$ (survival) changes the distribution of $W$ but preserves the ordering $\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}$, so Jensen's inequality still applies.
+**Conditioning on establishment does not eliminate the effect.** Among epidemics that establish (avoid stochastic extinction), the spike case still reaches milestones later. Both models have the same extinction probability (both have Poisson($R_0$) offspring counts — the timing of offspring does not affect the offspring *distribution*). Conditioning on $W > 0$ (survival) changes the distribution of $W$ but preserves the ordering $\text{Var}(W)_{\text{spike}}$ > $\text{Var}(W)_{\text{smooth}}$, so Jensen's inequality still applies.
 
 ---
 
@@ -981,10 +981,10 @@ $$Z(t) \approx v(t + \tau), \qquad \tau = \frac{\log W - \log E[W]}{\alpha}.$$
 
 The random time-shift $\tau$ is what separates a fast-starting epidemic from a slow one. In our framework:
 
-- **Smooth model:** $\tau$ is tightly distributed (low $`\text{Var}(W)`$), so trajectories cluster near the deterministic solution.
-- **Spike model:** $\tau$ is broadly distributed (high $`\text{Var}(W)`$), producing a wide spread of trajectory timings.
+- **Smooth model:** $\tau$ is tightly distributed (low $\text{Var}(W)$), so trajectories cluster near the deterministic solution.
+- **Spike model:** $\tau$ is broadly distributed (high $\text{Var}(W)$), producing a wide spread of trajectory timings.
 
-The growth delay discussed in Section 17 is precisely the statement that $`E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}`$ (i.e., the spike model's typical trajectory is shifted further *behind* the deterministic solution). This follows from Jensen's inequality on $\log W$: since $`E[W]`$ is the same for both models but $`\text{Var}(W)`$ is larger for the spike model, $`E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}}`$, and hence $`E[\tau]_{\text{spike}} < E[\tau]_{\text{smooth}}`$.
+The growth delay discussed in Section 17 is precisely the statement that $E[\tau]_{\text{spike}}$ < $E[\tau]_{\text{smooth}}$ (i.e., the spike model's typical trajectory is shifted further *behind* the deterministic solution). This follows from Jensen's inequality on $\log W$: since $E[W]$ is the same for both models but $\text{Var}(W)$ is larger for the spike model, $E[\log W]_{\text{spike}}$ < $E[\log W]_{\text{smooth}}$, and hence $E[\tau]_{\text{spike}}$ < $E[\tau]_{\text{smooth}}$.
 
 ### What they compute (and how)
 
@@ -992,7 +992,7 @@ Morris et al. develop two numerical methods to compute the *full distribution* o
 
 1. **PE (Probability Estimation) method:** Numerically inverts the Laplace-Stieltjes transform (LST) of $W$. The LST satisfies a functional equation derived from the branching structure:
 
-   $$E[e^{-sW}] = g\!\left(\int_0^\infty e^{-s \, e^{\alpha u}} \, E[e^{-sW}]^{?} \, \mu(du)\right)$$
+   $$E[e^{-sW}] = g\left(\frac{1}{R_0}\int_0^\infty E[e^{-s \, e^{-\alpha u} W}] \, \mu(du)\right)$$
 
    (where $g$ is the offspring probability generating function and $\mu$ is the intensity measure). They solve this iteratively and invert to obtain the density of $W$. This gives the exact distribution up to numerical precision.
 
@@ -1010,7 +1010,7 @@ In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) \, d\tau$
 
 **Peak timing and planning.** Morris et al. motivate their work with the problem of predicting when an epidemic will reach its peak — a quantity that depends on $\tau$ and hence on $W$. Our results add a new source of uncertainty to this prediction: even if $R_0$, the generation-interval distribution, and $\alpha$ are perfectly known, uncertainty about $\kappa$ (how punctuated individual infectiousness is) translates into uncertainty about $\text{Var}(W)$ and hence about the spread of possible peak times.
 
-**A computational route to $\text{Var}(W)$ for our models.** Section 17 argues qualitatively that $\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}$, based on the within-individual covariance structure. Morris et al.'s PE or MM methods could be used to compute $\text{Var}(W)$ *exactly* for each $\kappa$ in our Gamma convolutional family. This would:
+**A computational route to $\text{Var}(W)$ for our models.** Section 17 argues qualitatively that $\text{Var}(W)_{\text{spike}}$ > $\text{Var}(W)_{\text{smooth}}$, based on the within-individual covariance structure. Morris et al.'s PE or MM methods could be used to compute $\text{Var}(W)$ *exactly* for each $\kappa$ in our Gamma convolutional family. This would:
 
 - Quantify the growth delay $\Delta E[T_n]$ analytically (rather than relying on simulation).
 - Provide the full distribution of $\tau$, enabling probabilistic statements like "there is a 90% chance the spike epidemic reaches 100 cases between days $X$ and $Y$."
@@ -1024,7 +1024,7 @@ In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) \, d\tau$
 
 **The functional equation for $W$.** For a CMJ process with offspring point process $\xi$ (a random counting measure on $[0, \infty)$), the LST of $W$ satisfies:
 
-$$E[e^{-sW}] = E\!\left[\prod_{j=1}^{N} E[e^{-s \, e^{-\alpha \tau_j} W}]\right]$$
+$$E[e^{-sW}] = E\left[\prod_{j=1}^{N} E[e^{-s \, e^{-\alpha \tau_j} W}]\right]$$
 
 where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birth times. For the smooth model ($\tau_j$ independent given $N$), the product factorises into a simpler form. For the spike model ($\tau_j = \tau^*$ for all $j$), the product collapses to $E[e^{-sW}]^N$ evaluated at a single random time. The difference in these functional equations is what drives the difference in $W$-distributions — and hence the growth delay.
 
@@ -1097,7 +1097,7 @@ Then: $E[W^3] = (3 \cdot m\_{21} \cdot E[W^2] \cdot E[W] + m\_{111} \cdot (E[W])
 
 Following Morris et al.'s moment-matching (MM) approach, we fit the first three moments of $W | W > 0$ to a **generalized gamma distribution** with parameters $(a, d, p)$:
 
-$$f(x; a, d, p) = \frac{p}{a} \left(\frac{x}{a}\right)^{d-1} \exp\!\left(-\left(\frac{x}{a}\right)^p\right) \Big/ \Gamma(d/p)$$
+$$f(x; a, d, p) = \frac{p}{a} \left(\frac{x}{a}\right)^{d-1} \exp\left(-\left(\frac{x}{a}\right)^p\right) \Big/ \Gamma(d/p)$$
 
 The generalized gamma moments $E[X^k] = a^k \cdot \Gamma((d+k)/p) / \Gamma(d/p)$ provide a system of equations solvable by numerical optimisation. This gives a parsimonious three-parameter description of the $W$-distribution for each $\kappa$.
 
@@ -1140,7 +1140,7 @@ These two operations commute for *linear* systems: if $dx/dt = Ax$, then $E[x(t)
 
 The only nonlinearity in the SEIR system is the transmission term $\beta S I / N$. The true expected force of infection is:
 
-$$E\!\left[\frac{\beta S I}{N}\right] = \frac{\beta}{N}\bigl(E[S] \cdot E[I] + \text{Cov}(S, I)\bigr)$$
+$$E\left[\frac{\beta S I}{N}\right] = \frac{\beta}{N}\bigl(E[S] \cdot E[I] + \text{Cov}(S, I)\bigr)$$
 
 The ODE sets $\text{Cov}(S, I) = 0$. But mechanistically, every new infection simultaneously decrements $S$ and increments $I$ (or $E$), so $\text{Cov}(S, I) < 0$ always. This means the true expected infection rate is *lower* than the ODE assumes:
 
@@ -1234,7 +1234,7 @@ In our Gamma convolutional model, the jitter component of transmission timing is
 
 ### Symptom-triggered isolation: the Beta function result
 
-Model symptom onset as occurring at time $s_i + D$ after infection, where $D \sim \text{Gamma}(a_{\text{sym}}, b_{\text{sym}})$ is the delay from biological onset to symptoms.
+Model symptom onset as occurring at time $s_i + D$ after infection, where $D$ ~ Gamma($a_{\text{sym}}$, $b_{\text{sym}}$) is the delay from biological onset to symptoms.
 
 **Same-rate case ($b_{\text{sym}} = r$).** When symptoms and jitter share the same rate parameter, the ratio $\varepsilon / (\varepsilon + D)$ has a clean distribution. Since $\varepsilon \sim \text{Gamma}(\kappa\alpha, r)$ and $D \sim \text{Gamma}(a_{\text{sym}}, r)$ are independent with the same rate:
 
@@ -1242,7 +1242,7 @@ $$\frac{\varepsilon}{\varepsilon + D} \sim \text{Beta}(\kappa\alpha,\; a_{\text{
 
 Testing effectiveness is the probability that diagnosis precedes the jittered transmission:
 
-$$\text{TE} = P(D < \varepsilon) = P\!\left(\frac{\varepsilon}{\varepsilon + D} > \frac{1}{2}\right) = I_{1/2}(a_{\text{sym}},\; \kappa\alpha)$$
+$$\text{TE} = P(D < \varepsilon) = P\left(\frac{\varepsilon}{\varepsilon + D} > \frac{1}{2}\right) = I_{1/2}(a_{\text{sym}},\; \kappa\alpha)$$
 
 where $I_x(a, b)$ is the regularised incomplete beta function. In R: `pbeta(0.5, kappa*popshape, a_sym, lower.tail = FALSE)`.
 
@@ -1257,13 +1257,13 @@ where $I_x(a, b)$ is the regularised incomplete beta function. In R: `pbeta(0.5,
 
 $$\frac{\varepsilon / (\kappa\alpha)}{D / a_{\text{sym}}} \sim F(2\kappa\alpha,\; 2a_{\text{sym}})$$
 
-so $\text{TE} = P(D < \varepsilon) = P\!\left(F(2\kappa\alpha, 2a_{\text{sym}}) > \frac{r \cdot a_{\text{sym}}}{b_{\text{sym}} \cdot \kappa\alpha}\right)$, which is closed-form via the $F$-distribution CDF. The same-rate case is recovered when $b_{\text{sym}} = r$ (the threshold becomes $a_{\text{sym}} / (\kappa\alpha)$).
+so TE = $P(D < \varepsilon)$ = $P\big(F(2\kappa\alpha, 2a_{\text{sym}})$ > $\frac{r \cdot a_{\text{sym}}}{b_{\text{sym}} \cdot \kappa\alpha}\big)$, which is closed-form via the $F$-distribution CDF. The same-rate case is recovered when $b_{\text{sym}} = r$ (the threshold becomes $a_{\text{sym}} / (\kappa\alpha)$).
 
 ### Periodic screening: derived trigger distribution
 
 For regular screening every $\Delta$ days with random phase, the detection time depends on the intersection of the screening schedule with the detectability window. Parametrise the window as $[\text{mode}_\kappa - w_-,\; \text{mode}_\kappa + w_+]$, anchored to the mode of the infectiousness profile:
 
-$$\text{mode}_\kappa = \max\!\left(0,\; \frac{\kappa\alpha - 1}{r}\right)$$
+$$\text{mode}_\kappa = \max\left(0,\; \frac{\kappa\alpha - 1}{r}\right)$$
 
 The effective diagnosis time (relative to biological onset $s_i$) is approximately:
 
@@ -1298,7 +1298,7 @@ The reversal occurs because:
 
 The symptom and screening cases are instances of a fully general result. For any non-negative detection time $D$ (possibly depending on $\kappa$), testing effectiveness is:
 
-$$\text{TE}(\kappa) = E_D\!\left[S_{\kappa\alpha}(D)\right], \qquad S_{\kappa\alpha}(d) \equiv P(\varepsilon > d) = 1 - F_{\text{Gamma}(\kappa\alpha,\,r)}(d)$$
+$$\text{TE}(\kappa) = E_D\left[S_{\kappa\alpha}(D)\right], \qquad S_{\kappa\alpha}(d) \equiv P(\varepsilon > d) = 1 - F_{\text{Gamma}(\kappa\alpha,\,r)}(d)$$
 
 The survival function $S_{\kappa\alpha}$ is the complete sufficient statistic for how *any* detection mechanism interacts with the profile. Three properties of $S$ govern the $\kappa$-dependence of TE.
 
@@ -1306,7 +1306,7 @@ The survival function $S_{\kappa\alpha}$ is the complete sufficient statistic fo
 
 **Principle 2 (Mean-shift reversal).** When $D$ depends on $\kappa$, two effects compete:
 
-$$\frac{d\,\text{TE}}{d\kappa} = \underbrace{\alpha \cdot E\!\left[\frac{\partial S_a(D)}{\partial a}\bigg|_{a=\kappa\alpha}\right]}_{\text{profile spreading (always } > 0\text{)}} \;-\; \underbrace{\frac{dE[D]}{d\kappa} \cdot E\!\left[f_{\kappa\alpha}(D)\right]}_{\text{detection delay shift}}$$
+$$\frac{d\,\text{TE}}{d\kappa} = \underbrace{\alpha \cdot E\left[\frac{\partial S_a(D)}{\partial a}\bigg|_{a=\kappa\alpha}\right]}_{\text{profile spreading (always } > 0\text{)}} \;-\; \underbrace{\frac{dE[D]}{d\kappa} \cdot E\left[f_{\kappa\alpha}(D)\right]}_{\text{detection delay shift}}$$
 
 The first term is always positive: broadening $\varepsilon$ puts more mass beyond any fixed detection point. The second term is negative when $E[D]$ increases with $\kappa$. The reversal (TE decreasing in $\kappa$) requires $E[D]$ to grow with $\kappa$ fast enough to overcome the first term. The critical rate is approximately $dE[D]/d\kappa \approx \alpha / r = T$, the same rate at which $E[\varepsilon] = \kappa\alpha/r$ grows. When $D$ is deterministic, numerical verification confirms:
 
@@ -1343,17 +1343,17 @@ where $D_{\text{trigger}}$ is the time of sample collection (symptoms, screening
 
 **Smoothing interpretation.** Adding an independent delay $\delta$ to $D$ replaces the survival function $S_{\kappa\alpha}$ with a smoothed version:
 
-$$\tilde{S}(d) \equiv E_\delta\!\left[S(d + \delta)\right]$$
+$$\tilde{S}(d) \equiv E_\delta\left[S(d + \delta)\right]$$
 
 The effect on TE decomposes cleanly into a mean component and a variance component:
 
-$$\underbrace{E\!\left[\tilde{S}(D_{\text{trigger}})\right] - E\!\left[S(D_{\text{trigger}})\right]}_{\text{total effect of delay }\delta} = \underbrace{E\!\left[S(D_{\text{trigger}} + E[\delta])\right] - E\!\left[S(D_{\text{trigger}})\right]}_{\text{mean effect (always negative)}} + \underbrace{E\!\left[\tilde{S}(D_{\text{trigger}})\right] - E\!\left[S(D_{\text{trigger}} + E[\delta])\right]}_{\text{variance effect (sign from Principle 3)}}$$
+$$\underbrace{E[\tilde{S}(D)] - E[S(D)]}_{\text{total effect}} = \underbrace{E[S(D{+}E[\delta])] - E[S(D)]}_{\text{mean effect}} + \underbrace{E[\tilde{S}(D)] - E[S(D{+}E[\delta])]}_{\text{variance effect}}$$
 
-The mean effect is always negative: delay reduces TE for all profiles. The variance effect is governed by the curvature of $S$ at the effective detection point $D_{\text{trigger}} + E[\delta]$:
+where $D = D_{\text{trigger}}$. The mean effect is always negative (delay reduces TE for all profiles). The variance effect is governed by the curvature of $S$ at the effective detection point $D + E[\delta]$.
 
-- If $D_{\text{trigger}} + E[\delta] < \text{mode}_\kappa = (\kappa\alpha - 1)/r$: $S$ is concave → variance **decreases** TE.
-- If $D_{\text{trigger}} + E[\delta] > \text{mode}_\kappa$: $S$ is convex → variance **increases** TE.
-- If $\kappa\alpha \leq 1$: $S$ is globally convex → variance **always increases** TE.
+- If $ D + E[\delta] < \text{mode}_\kappa = (\kappa\alpha - 1)/r $, then $S$ is concave and variance **decreases** TE.
+- If $ D + E[\delta] > \text{mode}_\kappa $, then $S$ is convex and variance **increases** TE.
+- If $ \kappa\alpha \leq 1 $, then $S$ is globally convex and variance **always increases** TE. 
 
 **$\kappa$-dependent effect of TAT variance.** For symptom-triggered isolation with a fixed symptom delay $d_0$ and TAT $\delta \sim \text{Exp}(1)$ ($E[\delta] = 1$ day), the decomposition at $d_0 = 2$, $\alpha = 10$, $r = 2$:
 
