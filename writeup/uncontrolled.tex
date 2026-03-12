@@ -8,31 +8,23 @@ Even in large, well-mixed populations, stochasticity can durably impact the traj
 
 Let $I_b(t)$ be the (stochastic) number of infections at time $t$ for a single epidemic realization, where the subscript ``b'' marks that it is a branching process. Let $I_d(t)$ be its mean-field deterministic counterpart. Then, we can approximate $I_b(t)$ as $I_d(t+\varsigma)$, {\it i.e.,} the branching process is approximately equal to the deterministic process with a random time shift. 
 
+The time shift is 
+
+\[ \varsigma = \frac{\log W - \log E[W]}{r}\]
+
+where $r$ is the epidemic's exponential growth rate and $W = \lim_{t \rightarrow \infty} W(t)$ is the limiting value of the rescaled branching process $W(t) = e^{-r t I_b(t)}$. The process $W(t)$ is well studied, and knowing its distribution fully determines the distribution of the time shift $\varsigma$. 
+
+The expectation of $W$ is equal to the initial condition ($E[W] = I_0$). For simplicity, we will assume $I_0 = 1$ throughout this section, though the fnindings can be easily extended to general initial conditions. Here, we assess the impact of the individual infectiousness profile's breadth, $\phi$, on (a) the variance of $W$ and (b) the mode of a Gamma approximation to W obtained via moment matching. 
+
 It can be shown that 
 
-\[ \text{Var}(\tau) \approx A + B (\sigma^{(1-\kappa)\alpha_{\text{total}}} - 1) \]
+\[ \text{Var}(W) = \frac{c^\alpha + \sigma^{(1-\psi) \alpha} - 1}{1 - c^\alpha} \]
 
-where $A$ depends on \dots, and $B$ depends on \dots. Thus, broad profiles ($\psi \rightarrow 1$) minimize $\text{Var}(W)$ and narrow profiles ($\psi \rightarrow 0$) maximize it. 
+\noindent where $c$ depends on $R_0$ and $\alpha$ but not $\psi$. Thus, broad profiles ($\psi \rightarrow 1$) minimize $\text{Var}(W)$ and narrow profiles ($\psi \rightarrow 0$) maximize it. 
 
+We can approximate the distribution of $W$ using moment matching to a generalized Gamma distribution. With the Gamma-shaped individual infectiousness profiles, the moments have closed-form expressions. Using two-moment matching to a Gamma distribution, we find that 
 
-
-
-
-% The time shift is 
-
-% \[ \varsigma = \frac{\log W - \log E[W]}{r}\]
-
-% where $r$ is the epidemic's exponential growth rate and $W = \lim_{t \rightarrow \infty} W(t)$ is the limiting value of the rescaled branching process $W(t) = e^{-r t I_b(t)}$. The process $W(t)$ is well studied, and knowing its distribution fully determines the distribution of the time shift $\varsigma$. 
-
-% The expectation of $W$ is equal to the initial condition ($E[W] = I_0$). For simplicity, we will assume $I_0 = 1$ throughout this section, though the fnindings can be easily extended to general initial conditions. Here, we assess the impact of the individual infectiousness profile's breadth, $\phi$, on (a) the variance of $W$ and (b) the mode of a Gamma approximation to W obtained via moment matching. 
-
-% It can be shown that 
-
-% \[ \text{Var}(W) = \frac{c^\alpha + \sigma^{(1-\psi) \alpha} - 1}{1 - c^\alpha} \]
-
-% \noindent where $c$ depends on $R_0$ and $\alpha$ but not $\psi$. Thus, broad profiles ($\psi \rightarrow 1$) minimize $\text{Var}(W)$ and narrow profiles ($\psi \rightarrow 0$) maximize it. 
-
-
+\[ \text{mode}_\varsigma = \frac{1}{r} \log(1 - \text{CV}^2_\text{cond})]
 
 
 
