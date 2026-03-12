@@ -19,7 +19,7 @@ g(\tau) = \frac{A(\tau)}{R_0}
 \label{eq:gi}
 \end{equation}
 
-Furthermore, particular choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models \citep{champredon2015}. For example, the SEIR model
+\noindent Furthermore, particular choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models \citep{champredon2015}. For example, the SEIR model
 \begin{align}
 \frac{dS}{dt} &= -\beta S I \label{eq:seir_s} \\
 \frac{dE}{dt} &= \beta S I - \gamma E \label{eq:seir_e} \\
@@ -42,7 +42,7 @@ a_i(\tau) = \begin{cases}
 \label{eq:a_stepwise}
 \end{equation}
 
-It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$ \citep{champredon2015}. However, other $a_i(\tau)$ also yield the same $A(\tau)$, including
+\noindent It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$ \citep{champredon2015}. However, other $a_i(\tau)$ also yield the same $A(\tau)$, including
 \begin{equation}
 a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} \left(e^{-\alpha \tau} - e^{-\gamma \tau}\right)
 \label{eq:a_smooth}
@@ -64,11 +64,10 @@ Like $A(\tau)$, $a_i(\tau)$ is related to the individual reproduction number, $\
 \label{eq:xi_i}
 \end{equation}
 
-
 \subsection{A Gamma convolutional model for the individual infectiousness profile}
 \label{sec:gamma_conv}
 
-The ``stepwise'' expression for $a_i(\tau)$ in Eq.~\eqref{eq:a_stepwise} differs from the ``smooth'' and ``spike'' expressions in Eqs.~\eqref{eq:a_smooth}--\eqref{eq:a_spike} in a fundamental way: For Eq.~\eqref{eq:a_stepwise}, $\nu_i$ differs across individuals ($\nu_i \sim \text{XX}$), while for Eqs.~\eqref{eq:a_smooth}--\eqref{eq:a_spike}, $\nu_i$ is uniform across individuals ($\nu_i = R_0$). We will briefly compare how the unconstrained disease transmission dynamics differ for Eqs.~\eqref{eq:a_stepwise}--\eqref{eq:a_spike}, but because of this fundamental dissimilarity---and because the impact of variation in $\nu_i$ on epidemic dynamics has been discussed extensively elsewhere \citep{lloydsmith2005}---we will focus most of the manuscript on individual infectiousness profiles of the type in Eqs.~\eqref{eq:a_smooth}--\eqref{eq:a_spike}, where the individual infectiousness $\nu_i$ is uniform across the population. That way, the impact of the timing of infectiousness can be examined in isolation.
+The ``stepwise'' expression for $a_i(\tau)$ in Eq.~\eqref{eq:a_stepwise} differs from the ``smooth'' and ``spike'' expressions in Eqs.~\eqref{eq:a_smooth}--\eqref{eq:a_spike} in a fundamental way: For Eq.~\eqref{eq:a_stepwise}, $\nu_i$ differs across individuals ($\nu_i \sim \text{XX}$), while for Eqs.~\eqref{eq:a_smooth}--\eqref{eq:a_spike}, $\nu_i$ is uniform across individuals ($\nu_i = R_0$). As a result, the probability of epidemic extinction differs for the stepwise profile relative to both the smooth and spike profiles -- but this is due to an inherent difference in the distribution of the individual reproduction number, not to the timing of the infections. Because of this fundamental dissimilarity---and because the impact of variation in $\nu_i$ on epidemic dynamics has been discussed extensively elsewhere \citep{lloydsmith2005}---we will focus most of the manuscript on individual infectiousness profiles of the type in Eqs.~\eqref{eq:a_smooth}--\eqref{eq:a_spike}, where the individual infectiousness $\nu_i$ is uniform across the population. That way, the impact of the timing of infectiousness can be examined in isolation.
 
 To achieve this, we seek a family of functions that allow us to model individual infectiousness profiles with the following characteristics:
 \begin{itemize}
@@ -140,3 +139,8 @@ and
 c_i(t) = R_0 \quad \text{for all } i, t
 \label{eq:c_gamma}
 \end{equation}
+
+
+\subsection{Stochastic simulations}
+
+To simulate the infections produced by a single person, we generate the number of infections using a $\Poisson(\nu_i)$ distribution and distribute them according to $a_i(\tau) / \nu_i$. For the Gamma convolutional model, the timing distribution has closed form and is easy to sample from using built-in packages. For more arbitrary individual infectiousness profiles (e.g., obtained by convolving a Gamma-distributed $b_i(\tau)$ with a periodic contact function $c_i(t)$, we use Poisson thinning: 

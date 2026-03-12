@@ -1,0 +1,1 @@
+When answering mathematical questions, write the response to /tmp/math_output.html using KaTeX, and print open /tmp/math_output.html to the terminal. The responses should be concatenated, rather than replacing anything that's already in /tmp/math_output.html. 

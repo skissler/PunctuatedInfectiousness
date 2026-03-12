@@ -474,8 +474,8 @@ This is independent of $n$ (the case threshold), consistent with the branching-p
 $E[W^3]$ requires three auxiliary quantities (all closed-form for the Gamma convolutional model):
 
 - $m_3 = R_0 \cdot \rho_3^{\alpha\_{\text{total}}}$ where $\rho_3 = r/(r + 3\alpha)$
-- $m\_{21} = R_0(R_0 - 1) \cdot \rho_2^\kappa \cdot \rho^\kappa \cdot \rho_3^{\alpha\_{\text{total}} - \kappa}$
-- $m\_{111} = R_0(R_0-1)(R_0-2) \cdot \rho^{3\kappa} \cdot \rho_3^{\alpha\_{\text{total}} - \kappa}$
+- $m\_{21} = R_0^2 \cdot \rho_2^\kappa \cdot \rho^\kappa \cdot \rho_3^{\alpha\_{\text{total}} - \kappa}$
+- $m\_{111} = R_0^3 \cdot \rho^{3\kappa} \cdot \rho_3^{\alpha\_{\text{total}} - \kappa}$
 
 Then: $E[W^3] = (3 \cdot m\_{21} \cdot E[W^2] \cdot E[W] + m\_{111} \cdot (E[W])^3) / (1 - m_3)$.
 

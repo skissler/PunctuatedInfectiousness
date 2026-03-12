@@ -13,7 +13,8 @@
       "Bash(cd:*)",
       "Bash(make clean:*)",
       "Bash(make:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(open:*)"
     ]
   }
 }
