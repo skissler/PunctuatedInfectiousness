@@ -469,6 +469,35 @@ $$\Delta E[T_n] \approx \frac{\text{CV}^2(W)\_\kappa - \text{CV}^2(W)\_{\text{sm
 
 This is independent of $n$ (the case threshold), consistent with the branching-process limit theorem: the time shift is established during the initial stochastic phase and persists unchanged as the epidemic grows.
 
+### Variance of the time shift
+
+The time shift relative to the smooth limit is $\tau = (\log W - \log E_c)/\alpha$, so $\text{Var}(\tau) = \text{Var}(\log W)/\alpha^2$. Since $\text{Var}(\log W)$ has no exact closed form from moments alone, we use two approaches.
+
+**Delta method (first-order approximation).** Taylor-expanding $\log W$ around $E[W]$ gives $\text{Var}(\log W) \approx \text{CV}^2(W)$, so:
+
+$$\text{Var}(\tau) \approx \frac{\text{CV}^2_{\text{cond}}}{\alpha^2}$$
+
+This separates into a $\kappa$-independent baseline plus a $\kappa$-dependent penalty:
+
+$$\text{Var}(\tau) \approx A + B\bigl(\sigma^{(1-\kappa)\alpha\_{\text{total}}} - 1\bigr)$$
+
+where the constants are:
+
+- $A = V_0 = \dfrac{m_2 - q}{\alpha^2(1 - m_2)}$ — the variance in the smooth limit ($\kappa = 1$), arising from random offspring count and independent jitter alone.
+- $B = \dfrac{1 - q}{\alpha^2(1 - m_2)}$ — the coefficient of the synchronisation penalty.
+- $\sigma = \dfrac{\eta^2}{2\eta - 1}$ where $\eta = R_0^{1/\alpha\_{\text{total}}}$ — the per-stage discount variability ratio $\rho_2/\rho^2$.
+- $m_2 = R_0 \cdot \rho_2^{\alpha\_{\text{total}}}$ — the second-moment discount (defined in the Var(S) derivation above).
+- $q$ = extinction probability of the Poisson($R_0$) branching process.
+- $\alpha = r(\eta - 1)$ = Malthusian growth rate.
+
+Since $\alpha = \alpha\_{\text{total}}(\eta - 1)/T$, we have $\text{Var}(\tau) \propto T^2$: the variance of the time shift scales with the square of the mean generation interval.
+
+**Exact under the Gamma approximation.** If $W \mid \text{surv} \sim \text{Gamma}(k, \lambda)$ (the 2-moment approximation from below), then $\text{Var}(\log W) = \psi_1(k)$, where $\psi_1$ is the trigamma function. This gives:
+
+$$\text{Var}(\tau) = \frac{\psi_1(k)}{\alpha^2}, \qquad k = \frac{1}{\text{CV}^2\_{\text{cond}}}$$
+
+For large $k$, $\psi_1(k) \approx 1/k = \text{CV}^2_{\text{cond}}$, recovering the delta method. For small $k$ (small $\kappa$, highly skewed $W$), the trigamma gives a more accurate answer — the relative error of the delta method is roughly $1/(2k)$.
+
 ### Third moment and generalized gamma matching
 
 $E[W^3]$ requires three auxiliary quantities (all closed-form for the Gamma convolutional model):

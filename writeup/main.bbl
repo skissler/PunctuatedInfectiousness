@@ -1,4 +1,4 @@
-\begin{thebibliography}{5}
+\begin{thebibliography}{6}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -45,5 +45,12 @@ J.~O. Lloyd-Smith, S.~J. Schreiber, P.~E. Kopp, and W.~M. Getz.
   emergence.
 \newblock \emph{Nature}, 438:\penalty0 355--359, 2005.
 \newblock \doi{10.1038/nature04153}.
+
+\bibitem[Morris et~al.(2024)]{morris2024}
+S.~E. Morris et~al.
+\newblock Time-shift ideas for generation intervals.
+\newblock \emph{Journal of Mathematical Biology}, 2024.
+\newblock \doi{10.1007/s00285-024-02132-6}.
+\newblock Verify full author list and title.
 
 \end{thebibliography}

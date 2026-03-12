@@ -1,3 +1,5 @@
+\clearpage
+
 \section{Expressing the Hudson--Kermack--McKendrick model in terms of individual infectiousness}
 
 \subsection{The individual infectiousness profile}
@@ -143,4 +145,4 @@ c_i(t) = R_0 \quad \text{for all } i, t
 
 \subsection{Stochastic simulations}
 
-To simulate the infections produced by a single person, we generate the number of infections using a $\Poisson(\nu_i)$ distribution and distribute them according to $a_i(\tau) / \nu_i$. For the Gamma convolutional model, the timing distribution has closed form and is easy to sample from using built-in packages. For more arbitrary individual infectiousness profiles (e.g., obtained by convolving a Gamma-distributed $b_i(\tau)$ with a periodic contact function $c_i(t)$, we use Poisson thinning: 
+To simulate the infections produced by a single person, we generate the number of infections using a $\text{Poisson}(\nu_i)$ distribution and distribute them according to $a_i(\tau) / \nu_i$. For the Gamma convolutional model, the timing distribution has closed form and is easy to sample from using built-in packages. For more arbitrary individual infectiousness profiles (e.g., obtained by convolving a Gamma-distributed $b_i(\tau)$ with a periodic contact function $c_i(t)$, we use Poisson thinning: 
