@@ -220,6 +220,113 @@ fig_heatmaps_capped <- patchwork::wrap_plots(heatmap_capped_list, nrow = 1) +
 
 
 # ==============================================================================
+# 3b. Heatmaps of k over (kappa, z_per) for z_mean = 2, 5, 12
+# ==============================================================================
+
+z_per_vals <- seq(0.5, 20, length.out = 20)
+
+heatmap_period_list <- list()
+heatmap_period_capped_list <- list()
+sim_grid_period_all <- list()
+
+for(z_mean in z_mean_vals){
+
+	z_amp   <- z_mean - 1
+	eps     <- z_amp / z_mean
+
+	# --- Simulation grid ---
+	sim_grid <- expand_grid(kappa = kappa_vals_heat, z_per = z_per_vals) %>%
+		mutate(k_sim = NA_real_)
+
+	for(idx in seq_len(nrow(sim_grid))){
+		kp     <- sim_grid$kappa[idx]
+		zp     <- sim_grid$z_per[idx]
+		z      <- make_contact_fn(z_mean, z_amp, zp)
+		gfun   <- gen_inf_attempts_gamma_contacts(T=T, z=z, z_max=z_mean + z_amp,
+		                                          popshape=popshape, kappa=kp)
+		tinfs      <- zp * runif(n_index_heat)
+		noffspring <- sapply(lapply(tinfs, gfun), length)
+		m_s <- mean(noffspring)
+		v_s <- var(noffspring)
+		sim_grid$k_sim[idx] <- if(v_s > m_s){ m_s^2 / (v_s - m_s) } else { Inf }
+	}
+	cat(sprintf("  Done period simulations for z_mean = %g\n", z_mean))
+	sim_grid_period_all[[as.character(z_mean)]] <- sim_grid
+
+	sim_means <- sim_grid %>% mutate(z_mean = z_mean)
+
+	# --- Theoretical contours ---
+	theory_heat <- expand_grid(kappa = seq(0.01, 0.2, length.out = 100),
+	                           z_per = seq(0.5, 20, length.out = 100)) %>%
+		mutate(
+			omega    = 2 * pi / z_per,
+			rho      = (r / sqrt(r^2 + omega^2))^(kappa * popshape),
+			var_nu   = z_mean^2 * eps^2 * rho^2 / 2,
+			k_theory = z_mean^2 / var_nu
+		)
+
+	# --- Log-scale heatmap ---
+	heatmap_period_list[[as.character(z_mean)]] <- ggplot() +
+		geom_tile(data = sim_means, aes(x = kappa, y = z_per, fill = k_sim)) +
+		geom_contour(data = theory_heat,
+			aes(x = kappa, y = z_per, z = k_theory),
+			col = "white", alpha = 0.6, breaks = c(1, 2, 5, 10, 20, 50, 100)) +
+		scale_fill_viridis_c(option = "viridis", name = "k",
+		                     trans = "log10", limits = c(1, NA)) +
+		theme_classic() +
+		labs(x = expression(kappa),
+		     y = "Contact period (days)",
+		     title = bquote(bar(z) == .(z_mean)))
+
+	# --- Capped linear heatmap ---
+	theory_heat_capped <- expand_grid(kappa = seq(0.01, 0.2, length.out = 500),
+	                                  z_per = seq(0.5, 20, length.out = 500)) %>%
+		mutate(
+			omega    = 2 * pi / z_per,
+			rho      = (r / sqrt(r^2 + omega^2))^(kappa * popshape),
+			var_nu   = z_mean^2 * eps^2 * rho^2 / 2,
+			k_theory = pmin(z_mean^2 / var_nu, 50)
+		)
+
+	sim_means_capped <- sim_grid %>%
+		mutate(k_capped = pmin(k_sim, 50), z_mean = z_mean)
+
+	heatmap_period_capped_list[[as.character(z_mean)]] <- ggplot() +
+		geom_tile(data = sim_means_capped, aes(x = kappa, y = z_per, fill = k_capped)) +
+		geom_contour(data = theory_heat_capped,
+			aes(x = kappa, y = z_per, z = k_theory),
+			col = "black", linewidth = 1.0, breaks = c(1, 2, 5, 10, 20, 50)) +
+		geom_contour(data = theory_heat_capped,
+			aes(x = kappa, y = z_per, z = k_theory),
+			col = "white", linewidth = 0.4, breaks = c(1, 2, 5, 10, 20, 50)) +
+		scale_fill_viridis_c(option = "inferno", name = "k\n(capped\nat 50)",
+		                     limits = c(0, 50)) +
+		theme_classic() +
+		labs(x = expression(kappa),
+		     y = "Contact period (days)",
+		     title = bquote(bar(z) == .(z_mean)))
+}
+
+fig_heatmaps_period <- patchwork::wrap_plots(heatmap_period_list, nrow = 1) +
+	patchwork::plot_annotation(
+		title = "Offspring overdispersion (NB k) across punctuation and contact period"
+	)
+
+fig_heatmaps_period_capped <- patchwork::wrap_plots(heatmap_period_capped_list, nrow = 1) +
+	patchwork::plot_annotation(
+		title = "Offspring overdispersion (NB k, capped at 50) across punctuation and contact period"
+	)
+
+ggsave("figures/fig_overdispersion_heatmap_period.pdf",
+       fig_heatmaps_period, width = 14, height = 5)
+cat("Saved figures/fig_overdispersion_heatmap_period.pdf\n")
+
+ggsave("figures/fig_overdispersion_heatmap_period_capped.pdf",
+       fig_heatmaps_period_capped, width = 14, height = 5)
+cat("Saved figures/fig_overdispersion_heatmap_period_capped.pdf\n")
+
+
+# ==============================================================================
 # 4. Full epidemic simulations
 # ==============================================================================
 

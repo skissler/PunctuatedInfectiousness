@@ -4,7 +4,7 @@
 
 \subsection{Narrower individual infectiousness profiles produce later and more variably-timed epidemics.}
 
-Even in large, well-mixed populations, stochasticity can durably impact the trajectory of an epidemic. One way this stochasticity enters is via a stochastic time shift, where epidemics take a variable amount of time to reach the exponential growth phase \citep{morris2024}. Here, we address the question of whether the shape of the individual infectiousness profile impacts this time shift distribution, holding all else equal. 
+Even in large, well-mixed populations, stochasticity can durably impact the trajectory of an epidemic. One way this stochasticity enters is via a stochastic time shift, where epidemics take a variable amount of time to reach the exponential growth phase \citep{morris_computation_2024}. Here, we address the question of whether the shape of the individual infectiousness profile impacts this time shift distribution, holding all else equal. 
 
 Let $I_b(t)$ be the (stochastic) number of infections at time $t$ for a single epidemic realization, where the subscript ``b'' marks that it is a branching process. Let $I_d(t)$ be its mean-field deterministic counterpart. Then, we can approximate $I_b(t)$ as $I_d(t+\varsigma)$, {\it i.e.,} the branching process is approximately equal to the deterministic process with a random time shift. 
 
@@ -24,15 +24,21 @@ It can be shown that
 
 We can approximate the distribution of $W$ using moment matching to a generalized Gamma distribution. With the Gamma-shaped individual infectiousness profiles, the moments have closed-form expressions. Using two-moment matching to a Gamma distribution, we find that 
 
-\[ \text{mode}_\varsigma = \frac{1}{r} \log(1 - \text{CV}^2_\text{cond})]
-
-
+\[ \text{mode}_\varsigma = \frac{1}{r} \log(1 - \text{CV}^2_\text{cond})] \]
 
 
 \subsection{Narrower individual infectiousness profiles yield greater uncertainty in epidemic growth rate estimates.}
 
+Based on simulations. 
 
 \subsection{Narrower biological infectiousness profiles interact with periodic contact patterns to generate overdispersion in secondary infections.}
+
+Closed-form solution: 
+
+\[ k = \frac{2}{\bar{c}^2}{A^2} \Bigl(1 + \frac{\omega^2}{r^2}\Bigr)^{\psi \alpha} = \frac{2}{\bar{c}^2}{A^2} \Bigl(1 + (\frac{z^*_{per}}{z_{per}})^2\Bigr)^{\psi \alpha} \]
+
+
+
 
 % Stepwise, smooth, and spike all yield the same mean dynamics
 % Stepwise has higher extinction probability, explained by overdispersion

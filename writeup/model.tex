@@ -4,14 +4,14 @@
 
 \subsection{The individual infectiousness profile}
 
-Early work by Hudson, and later by Kermack and McKendrick \citep{kermack1927}, modeled disease transmission in a population using an integral equation. In modern notation \citep{champredon2015}, the force of infection is
+Early work by Hudson, and later by Kermack and McKendrick \citep{kermack_contribution_1927}, modeled disease transmission in a population using an integral equation. In modern notation \citep{breda_formulation_2012}, the force of infection is
 \begin{equation}
 F(t) = \int_0^\infty F(t-\tau)\, S(t-\tau)\, A(\tau)\, d\tau
 \label{eq:foi}
 \end{equation}
 where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level ``infectiousness profile'', a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection and the susceptible density, $F(t) \cdot S(t)$; thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds.
 
-The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$ \citep{champredon2015}:
+The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$ \citep{breda_formulation_2012}:
 \begin{equation}
 R_0 = \int_0^\infty A(\tau)\, d\tau
 \label{eq:R0}
@@ -21,7 +21,7 @@ g(\tau) = \frac{A(\tau)}{R_0}
 \label{eq:gi}
 \end{equation}
 
-\noindent Furthermore, particular choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models \citep{champredon2015}. For example, the SEIR model
+\noindent Furthermore, particular choices of $A(\tau)$ yield disease transmission dynamics that are equivalent to more familiar ordinary differential equation-based models \citep{breda_formulation_2012}. For example, the SEIR model
 \begin{align}
 \frac{dS}{dt} &= -\beta S I \label{eq:seir_s} \\
 \frac{dE}{dt} &= \beta S I - \gamma E \label{eq:seir_e} \\
@@ -44,7 +44,7 @@ a_i(\tau) = \begin{cases}
 \label{eq:a_stepwise}
 \end{equation}
 
-\noindent It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$ \citep{champredon2015}. However, other $a_i(\tau)$ also yield the same $A(\tau)$, including
+\noindent It can be shown that $E_i [a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i = 1}^n a_i(\tau) = A(\tau)$ \citep{breda_formulation_2012}. However, other $a_i(\tau)$ also yield the same $A(\tau)$, including
 \begin{equation}
 a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} \left(e^{-\alpha \tau} - e^{-\gamma \tau}\right)
 \label{eq:a_smooth}
