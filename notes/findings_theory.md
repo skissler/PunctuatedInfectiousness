@@ -83,13 +83,13 @@ The shifted Gamma construction is remarkably robust to heterogeneity in the punc
 
 The argument is simple. For a given individual $i$ with punctuation parameter $\psi_i$, their attempted infection times decompose as:
 
-$$\xi_j = l_i + \varepsilon_j, \qquad l_i \sim \text{Gamma}(\alpha - \psi_i, \beta), \quad \varepsilon_j \sim \text{Gamma}(\psi_i, \beta)$$
+$$\xi_j = l_i + \varepsilon_j, \qquad l_i \sim \text{Gamma}(\alpha (1 - \psi_i), \beta), \quad \varepsilon_j \sim \text{Gamma}(\alpha \psi_i, \beta)$$
 
 By the Gamma additivity property, the marginal distribution of each attempted infection time is:
 
-$$\xi_j \mid \psi_i \sim \text{Gamma}(\alpha, \beta) \qquad \text{for every } \psi_i \in (0, \alpha)$$
+$$\xi_j \mid \psi_i \sim \text{Gamma}(\alpha, \beta) \qquad \text{for every } \psi_i \in (0, 1)$$
 
-The crucial point: the right-hand side **does not depend on $\psi_i$**. The identity $\text{Gamma}(\alpha - \psi, \beta) + \text{Gamma}(\psi, \beta) = \text{Gamma}(\alpha, \beta)$ is exact for every $\psi$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ regardless of their punctuation parameter.
+The crucial point: the right-hand side **does not depend on $\psi_i$**. The identity $\text{Gamma}(\alpha(1 - \psi), \beta) + \text{Gamma}(\alpha \psi, \beta) = \text{Gamma}(\alpha, \beta)$ is exact for every $\psi$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ regardless of their punctuation parameter.
 
 When we average over the population:
 
@@ -99,17 +99,17 @@ The expectation over $\psi_i$ passes through because the integrand does not depe
 
 #### Example distributions
 
-With $\alpha = 10$, we can define $\psi_i = \alpha \cdot B_i$ where $B_i \sim \text{Beta}(a, b)$ on $(0, 1)$, giving $\psi_i \in (0, 10)$.
+With $\alpha = 10$, we can define $\psi_i = B_i$ where $B_i \sim \text{Beta}(a, b)$ on $(0, 1)$.
 
-**Example 1: Homogeneous population (degenerate $F$).** $\psi_i = 5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
+**Example 1: Homogeneous population (degenerate $F$).** $\psi_i = 0.5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
 
-**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\psi_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\psi_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, \beta)$.
+**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\psi_i \approx 0.05$, narrow spikes) and highly smooth individuals ($\psi_i \approx 0.95$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, \beta)$.
 
-**Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\psi_i$ near $\alpha$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
+**Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\psi_i$ near 1. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
 
 **Example 4: Left-skewed (mostly spiky).** $B_i \sim \text{Beta}(1, 5)$, concentrating $\psi_i$ near 0. Most individuals have narrow spikes; a few are smooth. $A(\tau)$ is still unchanged.
 
-In all four cases — and in any other distribution on $(0, \alpha)$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. Importantly, heterogeneous $\psi$ alone does not introduce variation in $R_i$: each individual's profile integrates to exactly $R_0$ regardless of their $\psi_i$, because $f_{\psi_i}$ is a proper density for every $\psi_i$. Variation in $R_i$ arises only when there is a time-varying contact process to interact with (Sections 10–11); what $\psi$ heterogeneity does is create heterogeneous *sensitivity* to that contact variation. The observables that differ across $\psi$ distributions are therefore conditional on the contact environment: the degree of offspring overdispersion given periodic contacts, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
+In all four cases — and in any other distribution on $(0, 1)$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. Importantly, heterogeneous $\psi$ alone does not introduce variation in $R_i$: each individual's profile integrates to exactly $R_0$ regardless of their $\psi_i$, because $f_{\psi_i}$ is a proper density for every $\psi_i$. Variation in $R_i$ arises only when there is a time-varying contact process to interact with; what $\psi$ heterogeneity does is create heterogeneous *sensitivity* to that contact variation. The observables that differ across $\psi$ distributions are therefore conditional on the contact environment: the degree of offspring overdispersion given periodic contacts, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
 
 #### Implication for interventions
 
