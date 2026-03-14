@@ -39,7 +39,7 @@ The key identity is that Gamma distributions with the same rate are closed under
 
 $$\text{Gamma}((1-\psi) \alpha, \beta) + \text{Gamma}(\psi, \beta) = \text{Gamma}(\alpha, \beta).$$
 
-So the marginal distribution of $\xi_j$ (integrating over $s_i$) is $\text{Gamma}(\alpha, \beta)$ regardless of $\psi$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\psi$ varies.
+So the marginal distribution of $\xi_j$ (integrating over $l_i$) is $\text{Gamma}(\alpha, \beta)$ regardless of $\psi$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\psi$ varies.
 
 ### Individual profiles
 
@@ -47,15 +47,15 @@ Each individual's infectiousness profile is
 
 $$a_i(\tau) = R_0 \cdot f_\psi(\tau - l_i), \qquad f_\psi = \text{Gamma}(\psi, \beta),$$
 
-which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\psi, \beta)$ density thereafter. Since $f_\psi$ is a proper density, $\int a_i(\tau)\,d\tau = R_0$ exactly. All individuals share the same $f_\psi$ — the profiles are identical in shape, height, and width; only the onset time $s_i$ differs.
+which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\psi, \beta)$ density thereafter. Since $f_\psi$ is a proper density, $\int a_i(\tau)\,d\tau = R_0$ exactly. All individuals share the same $f_\psi$ — the profiles are identical in shape, height, and width; only the onset time $l_i$ differs (though, in later sections, we relax this assumption).
 
 ### Limiting behaviour
 
-| $\psi$ | Individual profile $f_\psi$ | Shift distribution | Interpretation |
+| $\psi$ | Individual profile $f_\psi$ | Shift distribution $l_i$ | Interpretation |
 |---|---|---|---|
-| $\psi \to 0$ | $\delta$-function (infinitely narrow spike) | $\text{Gamma}(\alpha, \beta) = A/R_0$ | Maximally punctuated: all infection attempts at one instant |
-| Small $\psi$ (e.g. 2) | Narrow unimodal bump | Wide shift distribution | Punctuated but not singular |
-| $\psi \to \alpha$ | $\approx A(\tau)/R_0$ (broad, matches population kernel) | $\delta$-function at 0 (no shift) | Smooth: all individuals have the same profile $\approx A(\tau)$ |
+| $\psi \to 0$ | $\delta$-function (infinitely narrow spike) | \approx $\text{Gamma}(\alpha, \beta) = A(\tau)/R_0$ | Maximally punctuated: all infection attempts at one instant |
+| Small $\psi$ (e.g. 0.25) | Narrow unimodal bump | Wide shift distribution | Punctuated but not singular |
+| $\psi \to 1$ | $\approx \text{Gamma}(\alpha, \beta) = A(\tau)/R_0$ (broad, matches population kernel) | $\delta$-function at 0 (no shift) | Smooth: all individuals have the same profile $\approx A(\tau)$ |
 
 ### Variance decomposition
 
