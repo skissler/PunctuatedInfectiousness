@@ -29,8 +29,8 @@ $$\xi_j = l_i + \varepsilon_j,$$
 
 where:
 
-- $l_i \sim \text{Gamma}(\alpha (1-\psi), r)$ is an individual-specific **latent period,** (drawn once per individual), during which the person is not infectious,
-- $\varepsilon_j \sim \text{Gamma}(\psi \alpha, r)$ is an **additional lag until infection attempt $j$ occurs,** after the end of the latent period (drawn independently per infection attempt: $j \in \\{1, 2, \dots, \chi_i\\}\$),
+- $l_i \sim \text{Gamma}(\alpha (1-\psi), \beta)$ is an individual-specific **latent period,** (drawn once per individual), during which the person is not infectious,
+- $\varepsilon_j \sim \text{Gamma}(\psi \alpha, \beta)$ is an **additional lag until infection attempt $j$ occurs,** after the end of the latent period (drawn independently per infection attempt: $j \in \\{1, 2, \dots, \chi_i\\}\$),
 - $\psi \in (0, 1)$ is the **punctuation parameter**, where $\psi \rightarrow 1$ is a smooth profile identical to the population-level generation interval distribution, and $\psi \rightarrow 0$ is a delta function. 
 
 ### Why it works
@@ -71,45 +71,45 @@ This gives a clean interpretation: $\psi \in (0, 1)$ is the fraction of generati
 
 ### Design choices
 
-- **$\alpha_{\text{total}}$**: Controls the shape of $A(\tau)$. Larger values give a more symmetric, bell-shaped kernel. The moment-matched value for SEIR parameters ($e_{dur} = 2$, $i_{dur} = 3$) is $\alpha_{\text{total}} = \mu^2 / (e_{dur}^2 + i_{dur}^2) \approx 1.92$, but this is too small for $f_\kappa$ to be unimodal at most $\kappa$ values (Gamma shape $< 1$ gives a monotone-decreasing density). We use $\alpha_{\text{total}} = 10$ as a default, which gives a well-shaped $A(\tau)$ and allows $\kappa$ to range from $\sim 2$ (punctuated, narrow unimodal bumps) to $\sim 9.5$ (smooth, profiles $\approx A$).
+- **$\alpha$**: Controls the shape of $A(\tau)$. Larger values give a more symmetric, bell-shaped kernel.
 
-- **$\mu$**: The mean generation time, equal to $\alpha_{\text{total}} / r$. Changing $\mu$ scales the time axis without affecting the shape of $A(\tau)$ or the punctuation structure.
+- **$\mu$**: The mean generation time, equal to $\alpha / \beta$. Changing $\mu$ scales the time axis without affecting the shape of $A(\tau)$ or the punctuation structure.
 
-### Extension: heterogeneous $\kappa$ across individuals
+### Extension: heterogeneous $\psi$ across individuals
 
-The shifted Gamma construction is remarkably robust to heterogeneity in the punctuation parameter. If different individuals draw different $\kappa_i$ values from some distribution $\kappa_i \sim F$ on $(0, \alpha_{\text{total}})$, the population-level kernel $A(\tau)$ is **exactly unchanged** — and this holds for *any* distribution $F$, with no moment conditions required.
+The shifted Gamma construction is remarkably robust to heterogeneity in the punctuation parameter. If different individuals draw different $\psi_i$ values from some distribution $\psi_i \sim F$ on $(0, \alpha)$, the population-level kernel $A(\tau)$ is **exactly unchanged** — and this holds for *any* distribution $F$, with no moment conditions required.
 
 #### Why it works
 
-The argument is simple. For a given individual $i$ with punctuation parameter $\kappa_i$, their attempted infection times decompose as:
+The argument is simple. For a given individual $i$ with punctuation parameter $\psi_i$, their attempted infection times decompose as:
 
-$$\xi_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa_i, r), \quad \varepsilon_j \sim \text{Gamma}(\kappa_i, r)$$
+$$\xi_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha - \psi_i, \beta), \quad \varepsilon_j \sim \text{Gamma}(\psi_i, \beta)$$
 
 By the Gamma additivity property, the marginal distribution of each attempted infection time is:
 
-$$\xi_j \mid \kappa_i \sim \text{Gamma}(\alpha_{\text{total}}, r) \qquad \text{for every } \kappa_i \in (0, \alpha_{\text{total}})$$
+$$\xi_j \mid \kappa_i \sim \text{Gamma}(\alpha, \beta) \qquad \text{for every } \kappa_i \in (0, \alpha)$$
 
-The crucial point: the right-hand side **does not depend on $\kappa_i$**. The identity $\text{Gamma}(\alpha - \kappa, r) + \text{Gamma}(\kappa, r) = \text{Gamma}(\alpha, r)$ is exact for every $\kappa$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r)$ regardless of their punctuation parameter.
+The crucial point: the right-hand side **does not depend on $\kappa_i$**. The identity $\text{Gamma}(\alpha - \kappa, \beta) + \text{Gamma}(\kappa, \beta) = \text{Gamma}(\alpha, \beta)$ is exact for every $\kappa$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ regardless of their punctuation parameter.
 
 When we average over the population:
 
-$$A(\tau) = E_{\kappa_i}\left[E[a_i(\tau) \mid \kappa_i]\right] = E_{\kappa_i}\left[R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r)\right] = R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r)$$
+$$A(\tau) = E_{\kappa_i}\left[E[a_i(\tau) \mid \kappa_i]\right] = E_{\kappa_i}\left[R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)\right] = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$$
 
 The expectation over $\kappa_i$ passes through because the integrand does not depend on $\kappa_i$. The distribution $F$ cancels entirely.
 
 #### Example distributions
 
-With $\alpha_{\text{total}} = 10$, we can define $\kappa_i = \alpha_{\text{total}} \cdot B_i$ where $B_i \sim \text{Beta}(a, b)$ on $(0, 1)$, giving $\kappa_i \in (0, 10)$.
+With $\alpha = 10$, we can define $\kappa_i = \alpha \cdot B_i$ where $B_i \sim \text{Beta}(a, b)$ on $(0, 1)$, giving $\kappa_i \in (0, 10)$.
 
 **Example 1: Homogeneous population (degenerate $F$).** $\kappa_i = 5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
 
-**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, r)$.
+**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, \beta)$.
 
-**Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\kappa_i$ near $\alpha_{\text{total}}$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
+**Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\kappa_i$ near $\alpha$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
 
 **Example 4: Left-skewed (mostly spiky).** $B_i \sim \text{Beta}(1, 5)$, concentrating $\kappa_i$ near 0. Most individuals have narrow spikes; a few are smooth. $A(\tau)$ is still unchanged.
 
-In all four cases — and in any other distribution on $(0, \alpha_{\text{total}})$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. Importantly, heterogeneous $\kappa$ alone does not introduce variation in $R_i$: each individual's profile integrates to exactly $R_0$ regardless of their $\kappa_i$, because $f_{\kappa_i}$ is a proper density for every $\kappa_i$. Variation in $R_i$ arises only when there is a time-varying contact process to interact with (Sections 10–11); what $\kappa$ heterogeneity does is create heterogeneous *sensitivity* to that contact variation. The observables that differ across $\kappa$ distributions are therefore conditional on the contact environment: the degree of offspring overdispersion given periodic contacts, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
+In all four cases — and in any other distribution on $(0, \alpha)$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. Importantly, heterogeneous $\kappa$ alone does not introduce variation in $R_i$: each individual's profile integrates to exactly $R_0$ regardless of their $\kappa_i$, because $f_{\kappa_i}$ is a proper density for every $\kappa_i$. Variation in $R_i$ arises only when there is a time-varying contact process to interact with (Sections 10–11); what $\kappa$ heterogeneity does is create heterogeneous *sensitivity* to that contact variation. The observables that differ across $\kappa$ distributions are therefore conditional on the contact environment: the degree of offspring overdispersion given periodic contacts, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
 
 #### Implication for interventions
 
@@ -161,7 +161,7 @@ The time-varying contact function acts as a multiplicative modulator on the effe
 
 In the shifted Gamma framework (Section 9), with constant contacts:
 
-- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the $\text{Gamma}(\kappa, r)$ density shifted to onset time $s_i$
+- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the $\text{Gamma}(\kappa, \beta)$ density shifted to onset time $s_i$
 - $c_i(t) = R_0$ for all $i, t$
 
 This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\tilde{\nu}_i = R_0$ for every individual.
@@ -181,7 +181,7 @@ $$\tilde{\nu}_i = R_0 \int_0^\infty f_\kappa(\tau - s_i) \cdot z(t_i + \tau)\,d\
 
 The variance of $\tilde{\nu}_i$ depends on how much the biological profile "averages over" the oscillations in $z$:
 
-- **Smooth limit** ($\kappa \to \alpha_{\text{total}}$): $b_i \approx B$ for all $i$, so $\tilde{\nu}_i \approx R_0 \int B(\tau)\,z(t_i + \tau)\,d\tau$. The broad biological window averages over $z$, and $\tilde{\nu}_i \approx R_0$ for everyone. Minimal overdispersion.
+- **Smooth limit** ($\kappa \to \alpha$): $b_i \approx B$ for all $i$, so $\tilde{\nu}_i \approx R_0 \int B(\tau)\,z(t_i + \tau)\,d\tau$. The broad biological window averages over $z$, and $\tilde{\nu}_i \approx R_0$ for everyone. Minimal overdispersion.
 
 - **Delta limit** ($\kappa \to 0$): $b_i \to \delta(\tau - s_i)$, so $\tilde{\nu}_i \to R_0 \cdot z(t_i + s_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $z$ oscillates between 0.5 and 1.5, so does $\tilde{\nu}_i$. Maximal overdispersion.
 
