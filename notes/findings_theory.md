@@ -19,10 +19,7 @@ where $\mu$ is the mean generation time and $\alpha$ controls the shape (larger 
 
 ### Decomposition
 
-For each person, draw the number of attempted infections: 
-
-
-$$ \nu_i = \int a_i(\tau) d\tau, \qquad asdf \sim \text{Poisson}(R_0)$$ 
+$$ \xi_i \sim \text{Poisson}(R_0)$$ 
 
 Decompose each attempted infection time as
 
