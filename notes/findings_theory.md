@@ -1,3 +1,17 @@
+## Three canonical individual infectiousness profiles 
+
+In the renewal equation framework for infectious disease modeling, the force of infection is 
+
+$$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau)$$ 
+
+where $F(t)$ is the force of infection at time $t$, $S$ is the density of susceptible individuals, and $A(\tau)$ is the "infectiousness profile", capturing the contribution to the force of infection from an individual who was infected $\tau$ time units ago. $A(\tau)$ is thus the central object that defines the epidemic's deterministic trajectory. 
+
+The infectiousness profile $A(\tau)$ is related to other key epidemiological parameters, like the reproduction number, $R_0$, and the generation interval distribution, $g(\tau)$: 
+
+$$R_0 = \int_0^\infty A(\tau) d\tau$$ 
+
+$$g(\tau) = \frac{A(\tau)}{R_0} $$ 
+
 ## Shifted Gamma construction: a clean one-parameter interpolation
 
 The original three profiles (smooth, stepwise, spike) are useful theoretical bookends but leave open the question of how to *interpolate* between the smooth and spike extremes with a single punctuation parameter, while preserving:
