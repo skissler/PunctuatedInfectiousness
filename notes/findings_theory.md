@@ -30,7 +30,7 @@ $$\xi_j = l_i + \varepsilon_j,$$
 where:
 
 - $l_i \sim \text{Gamma}(\alpha (1-\psi), r)$ is an individual-specific **latent period,** (drawn once per individual), during which the person is not infectious,
-- $\varepsilon_j \sim \text{Gamma}(\psi \alpha, r)$ is an **additional lag until infection attempt $j$ occurs,** after the end of the latent period (drawn independently per infection attempt: $\j \in \{1, 2, \dots, \chi_i\}\$),
+- $\varepsilon_j \sim \text{Gamma}(\psi \alpha, r)$ is an **additional lag until infection attempt $j$ occurs,** after the end of the latent period (drawn independently per infection attempt: $j \in \{1, 2, \dots, \chi_i\}\$),
 - $\psi \in (0, 1)$ is the **punctuation parameter**, where $\psi \rightarrow 1$ is a smooth profile identical to the population-level generation interval distribution, and $\psi \rightarrow 0$ is a delta function. 
 
 ### Why it works
