@@ -13,21 +13,21 @@ The shifted Gamma construction achieves all four simultaneously.
 
 Choose a population-level generation interval distribution
 
-$$A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha_{\text{total}}, r), \qquad r = \alpha_{\text{total}} / \mu,$$
+$$A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta), \qquad \beta = \alpha / \mu,$$
 
-where $\mu$ is the mean generation time and $\alpha_{\text{total}}$ controls the shape (larger = more symmetric/bell-shaped). This does not need to match the SEIR kernel exactly.
+where $\mu$ is the mean generation time and $\alpha$ controls the shape (larger = more symmetric/bell-shaped). This does not need to match the SEIR kernel exactly.
 
 ### Decomposition
 
 Decompose each attempted infection time as
 
-$$\xi_j = s_i + \varepsilon_j,$$
+$$\xi_j = l_i + \varepsilon_j,$$
 
 where:
 
-- $s_i \sim \text{Gamma}(\alpha_{\text{total}} - \kappa,\; r)$ is an individual-specific **onset shift** (drawn once per individual),
-- $\varepsilon_j \sim \text{Gamma}(\kappa,\; r)$ is a **jitter** around the onset (drawn independently per infection attempt, same distribution for all individuals),
-- $\kappa \in (0, \alpha_{\text{total}})$ is the **punctuation parameter**.
+- $l_i \sim \text{Gamma}(\alpha (1-\psi), r)$ is an individual-specific **latent period,** or onset shift(drawn once per individual), during which the person is not infectious,
+- $\varepsilon_j \sim \text{Gamma}(\psi \alpha, r)$ is the **additional lag until infection attempt j occurs,** after the end of the latent period (drawn independently per infection attempt),
+- $\psi \in (0, 1)$ is the **punctuation parameter**, where $\psi \rightarrow 1$ is a smooth profile identical to the population-level generation interval distribution, and $\psi \rightarrow 0$ is a delta function. 
 
 ### Why it works
 
