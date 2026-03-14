@@ -19,9 +19,11 @@ where $\mu$ is the mean generation time and $\alpha$ controls the shape (larger 
 
 ### Decomposition
 
-$$ \xi_i \sim \text{Poisson}(R_0)$$ 
+For each person $i$, draw the number of infection attempts: 
 
-Decompose each attempted infection time as
+$$ \chi_i \sim \text{Poisson}(R_0)$$ 
+
+Now, we need to identify the timing of each infection event. Decompose each attempted infection time as
 
 $$\xi_j = l_i + \varepsilon_j,$$
 
