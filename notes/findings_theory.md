@@ -37,7 +37,7 @@ where:
 
 The key identity is that Gamma distributions with the same rate are closed under convolution:
 
-$$\text{Gamma}((1-\psi) \alpha, \beta) + \text{Gamma}(\psi, \beta) = \text{Gamma}(\alpha, \beta).$$
+$$\text{Gamma}(\alpha (1-\psi), \beta) + \text{Gamma}(\alpha \psi, \beta) = \text{Gamma}(\alpha, \beta).$$
 
 So the marginal distribution of $\xi_j$ (integrating over $l_i$) is $\text{Gamma}(\alpha, \beta)$ regardless of $\psi$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\psi$ varies.
 
@@ -45,9 +45,9 @@ So the marginal distribution of $\xi_j$ (integrating over $l_i$) is $\text{Gamma
 
 Each individual's infectiousness profile is
 
-$$a_i(\tau) = R_0 \cdot f_\psi(\tau - l_i), \qquad f_\psi = \text{Gamma}(\psi, \beta),$$
+$$a_i(\tau) = R_0 \cdot f_\psi(\tau - l_i), \qquad f_\psi = \text{Gamma}(\alpha \psi, \beta),$$
 
-which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\psi, \beta)$ density thereafter. Since $f_\psi$ is a proper density, $\int a_i(\tau)\,d\tau = R_0$ exactly. All individuals share the same $f_\psi$ — the profiles are identical in shape, height, and width; only the onset time $l_i$ differs (though, in later sections, we relax this assumption).
+which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\alpha \psi, \beta)$ density thereafter. Since $f_\psi$ is a proper density, $\int a_i(\tau)\,d\tau = R_0$ exactly. All individuals share the same $f_\psi$ — the profiles are identical in shape, height, and width; only the onset time $l_i$ differs (though, in later sections, we relax this assumption).
 
 ### Limiting behaviour
 
@@ -65,7 +65,7 @@ $$\text{Var}(\xi_j) = \underbrace{\text{Var}(l_i)}_{\text{between-individual}} +
 
 The fraction of total variance that is between-individual (i.e., due to punctuation) is
 
-$$\text{punctuation fraction} = \frac{\alpha (1- - \psi)}{\alpha} = 1 - \frac{\psi}{\alpha}.$$
+$$\text{punctuation fraction} = \frac{\alpha (1- \psi)}{\alpha} = 1 - \psi.$$
 
 This gives a clean interpretation: $\psi \in (0, 1)$ is the fraction of generation-time variability that is within-individual.
 
