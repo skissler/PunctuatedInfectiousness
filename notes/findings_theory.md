@@ -61,7 +61,7 @@ which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\psi, \beta)$ density
 
 The total variance of a person's attempted infection times decomposes additively:
 
-$$\text{Var}(\xi_j) = \underbrace{\text{Var}(l_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha}(1-\psi)}{\beta^2} + \frac{\alpha \psi}{\beta^2} = \frac{\alpha}{\beta^2}.$$
+$$\text{Var}(\xi_j) = \underbrace{\text{Var}(l_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha(1-\psi)}{\beta^2} + \frac{\alpha \psi}{\beta^2} = \frac{\alpha}{\beta^2}.$$
 
 The fraction of total variance that is between-individual (i.e., due to punctuation) is
 
