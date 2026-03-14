@@ -1,1 +1,3 @@
-When answering mathematical questions, write the response to /tmp/math_output.html using KaTeX, and print open /tmp/math_output.html to the terminal. The responses should be concatenated, rather than replacing anything that's already in /tmp/math_output.html. 
+When answering mathematical questions, write the response to notes/math_output.html using KaTeX, and print open notes/math_output.html to the terminal. The responses should be concatenated, rather than replacing anything that's already in notes/math_output.html.
+
+IMPORTANT: Subagents (Task tool) must NEVER write to or overwrite notes/math_output.html. If a subagent needs to produce HTML output, it should write to a separate file (e.g. notes/literature_review.html) and the main agent will handle any merging.

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Literature Review: Punctuated Infectiousness</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
+<style>
+body { font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #222; }
+h1 { font-size: 1.8em; border-bottom: 2px solid #333; padding-bottom: 10px; }
+h2 { font-size: 1.4em; color: #444; margin-top: 2em; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+h3 { font-size: 1.15em; color: #555; margin-top: 1.5em; }
+.paper { background: #f9f9f9; border-left: 4px solid #4a90d9; padding: 12px 16px; margin: 12px 0; }
+.paper .title { font-weight: bold; color: #2a5db0; }
+.paper .cite { font-size: 0.9em; color: #666; }
+.relevance { color: #c0392b; font-weight: bold; }
+.verdict { background: #fff3cd; padding: 10px 14px; border-left: 4px solid #ffc107; margin: 10px 0; }
+.redundancy { background: #f8d7da; padding: 10px 14px; border-left: 4px solid #dc3545; margin: 10px 0; }
+.novelty { background: #d4edda; padding: 10px 14px; border-left: 4px solid #28a745; margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<h1>Deep Literature Review: Punctuated Infectiousness</h1>
+<p><em>Compiled 2026-03-13. Based on training knowledge through May 2025.</em></p>
+
+<hr>
+
+<h2>1. Individual vs. Population Infectiousness Profiles</h2>
+
+<div class="paper">
+<div class="title">Fraser, C. (2007). "Estimating Individual and Household Reproduction Numbers in an Emerging Epidemic."</div>
+<div class="cite">PLoS ONE, 2(8), e758. doi:10.1371/journal.pone.0000758</div>
+<p><strong>Relevance:</strong> Defines the individual infectiousness kernel $\beta(s, t)$, essentially the $a_i(\tau)$ concept. Focuses on estimating $R_i$ (the individual reproduction <em>number</em>), not on the <em>shape</em> of the individual kernel or how variation in kernel shape affects dynamics. Does not parameterize a family of individual kernels that interpolate between smooth and spiked while preserving the population average.</p>
+<p><strong>Relation to project:</strong> Closest prior work to the individual-level kernel concept. Your $a_i(\tau)$ and $E[a_i(\tau)] = A(\tau)$ formalize ideas implicit here. But Fraser never isolates temporal concentration as a parameter of interest.</p>
+</div>
+
+<div class="paper">
+<div class="title">Svensson, A. (2007). "A note on generation times in epidemic models."</div>
+<div class="cite">Mathematical Biosciences, 208(1), 300-311. doi:10.1016/j.mbs.2006.10.010</div>
+<p><strong>Relevance:</strong> Carefully distinguishes generation time from latency/infectious period. Notes that the generation time distribution emerges from the interplay of individual-level disease dynamics. Does not explicitly parameterize individual-level vs. population-level generation intervals as distinct objects.</p>
+</div>
+
+<div class="paper">
+<div class="title">Champredon, D. &amp; Dushoff, J. (2015). "Intrinsic and realized generation intervals in infectious-disease transmission."</div>
+<div class="cite">Proc. R. Soc. B, 282(1821), 20152026. doi:10.1098/rspb.2015.2026</div>
+<p><strong>Relevance:</strong> Distinguishes <em>intrinsic</em> GI (in fully susceptible population) from <em>realized</em> (forward/backward) GI. Discusses $\beta(\tau)$ as the individual infectiousness profile. Focus is on how epidemic dynamics <em>filter</em> the intrinsic distribution, not on how the shape of individual profiles generates the population kernel. Does not consider multiple $a_i(\tau)$ averaging to the same $A(\tau)$.</p>
+</div>
+
+<div class="paper">
+<div class="title">Scalia Tomba, G., Svensson, A., Asikainen, T. &amp; Giesecke, J. (2010). "Some model based considerations on observing generation times for communicable diseases."</div>
+<div class="cite">Mathematical Biosciences, 223(1), 24-31. doi:10.1016/j.mbs.2009.10.004</div>
+<p><strong>Relevance:</strong> Discusses how observed generation times depend on individual infectiousness model. Notes generation time = convolution of latent period and relative infectivity. Comes close to noting that different individual-level models can produce the same population GI, but does not parameterize this non-identifiability.</p>
+</div>
+
+<div class="paper">
+<div class="title">Svensson, A. (2015). "The influence of assumptions on generation time distributions in epidemic models."</div>
+<div class="cite">Mathematical Biosciences, 270, 81-89. doi:10.1016/j.mbs.2015.10.006</div>
+<p><strong>Relevance:</strong> Directly relevant. Shows that different assumptions about the individual infectious period (constant vs. exponential vs. other) lead to different generation time distributions. Closest prior work to the observation that multiple $a_i(\tau)$ can yield the same $A(\tau)$, though framed as an inference problem rather than examining dynamical consequences.</p>
+</div>
+
+<div class="paper">
+<div class="title">Breda, D., Diekmann, O., de Graaf, W.F., Pugliese, A. &amp; Vermiglio, R. (2012). "On the formulation of epidemic models (an appraisal of Kermack and McKendrick)."</div>
+<div class="cite">J. Biological Dynamics, 6(sup2), 103-117. doi:10.1080/17513758.2012.716454</div>
+<p><strong>Relevance:</strong> Mathematical foundation connecting renewal equation to ODE compartmental models via $A(\tau)$. Establishes SEIR = specific $A(\tau)$. Does not discuss individual-level variation in the kernel.</p>
+</div>
+
+<div class="novelty">
+<strong>Novelty assessment for Angle 1:</strong> The concept that different individual profiles can yield the same population $A(\tau)$ is implicit in several papers, but no one has (a) explicitly parameterized a one-parameter family interpolating between smooth and spike while preserving $A(\tau)$, (b) used the Gamma convolution property to achieve this, or (c) studied the dynamical consequences. This is genuinely novel.
+</div>
+
+<hr>
+
+<h2>2. Linear Chain Trick, Erlang Models, and Narrow Infectious Periods</h2>
+
+<div class="paper">
+<div class="title">Lloyd, A.L. (2001a). "Realistic Distributions of Infectious Periods in Epidemic Models: Changing Patterns of Persistence and Dynamics."</div>
+<div class="cite">Theoretical Population Biology, 60(1), 59-71. doi:10.1006/tpbi.2001.1525</div>
+<p><strong>Relevance:</strong> <span class="relevance">Highly relevant.</span> Studies replacing exponential with Erlang infectious/latent periods. Narrower infectious period distributions destabilize deterministic dynamics. Uses linear chain trick. Lloyd's "many I stages" ~ large $\kappa$; "few I stages" ~ small $\kappa$.</p>
+<p><strong>Key differences:</strong> (1) Lloyd varies the <em>population-level</em> $A(\tau)$, you hold it fixed. (2) Deterministic focus, not stochastic. (3) No shared-shift + jitter decomposition.</p>
+</div>
+
+<div class="paper">
+<div class="title">Lloyd, A.L. (2001b). "Destabilization of epidemic models with the inclusion of realistic distributions of infectious periods."</div>
+<div class="cite">Proc. R. Soc. B, 268(1470), 985-993. doi:10.1098/rspb.2001.1599</div>
+<p><strong>Relevance:</strong> Companion paper. Erlang infectious periods with same mean but lower variance destabilize endemic equilibrium. Mechanism operates through changing $A(\tau)$ itself.</p>
+</div>
+
+<div class="paper">
+<div class="title">Wearing, H.J., Rohani, P. &amp; Keeling, M.J. (2005). "Appropriate Models for the Management of Infectious Diseases."</div>
+<div class="cite">PLoS Medicine, 2(7), e174. doi:10.1371/journal.pmed.0020174</div>
+<p><strong>Relevance:</strong> <span class="relevance">Highly relevant.</span> Distribution choice for infectious period substantially affects $R_0$ estimates, peak size, optimal intervention timing. Advocates non-exponential distributions. Varies population-level profile. Their finding that "distribution shape matters" motivates asking whether the individual-level decomposition matters too.</p>
+</div>
+
+<div class="paper">
+<div class="title">Yan, P. (2008). "Separate roles of the latent and infectious periods in shaping the relation between the basic reproduction number and the intrinsic growth rate."</div>
+<div class="cite">J. Theoretical Biology, 251(2), 238-252. doi:10.1016/j.jtbi.2007.11.027</div>
+<p><strong>Relevance:</strong> <span class="relevance">Highly relevant.</span> Decomposes generation interval into latent + infectious periods. Structurally similar to your shared-shift + jitter: latent ~ shared shift $s_i$, infectious ~ jitter. But Yan varies $A(\tau)$; you fix it. Yan is deterministic; you are stochastic. Yan shows: for given mean GI, more latent (vs. infectious) time increases growth rate.</p>
+</div>
+
+<div class="paper">
+<div class="title">Anderson, D. &amp; Watson, R. (1980). "On the spread of a disease with gamma distributed latent and infectious periods."</div>
+<div class="cite">Biometrika, 67(1), 191-198. doi:10.1093/biomet/67.1.191</div>
+<p><strong>Relevance:</strong> Early work on Gamma-distributed stages. Shows shape parameter affects dynamics.</p>
+</div>
+
+<div class="verdict">
+<strong>Connection to $\kappa$:</strong> Your shared shift $s_i \sim \text{Gamma}(\alpha - \kappa, r)$ plays the role of latent period; jitter $\varepsilon_j \sim \text{Gamma}(\kappa, r)$ plays the role of infectious period. Small $\kappa$ = long latent + short infectious = punctuated. The linear chain trick literature has studied varying this split, but always at the population level (changing $A(\tau)$). Your key insight: varying the split while <em>preserving</em> $A(\tau)$ is possible and has distinct stochastic consequences.
+</div>
+
+<hr>
+
+<h2>3. Generation Interval Shape and Stochastic Epidemic Dynamics</h2>
+
+<div class="paper">
+<div class="title">Wallinga, J. &amp; Lipsitch, M. (2007). "How generation intervals shape the relationship between growth rates and reproductive numbers."</div>
+<div class="cite">Proc. R. Soc. B, 274(1609), 599-604. doi:10.1098/rspb.2006.3754</div>
+<p><strong>Relevance:</strong> <span class="relevance">Foundational.</span> GI shape determines $r \to R_0$ mapping via Euler-Lotka. Your project shows $r$ and $R_0$ invariant to $\kappa$ while stochastic variability of epidemic timing depends on $\kappa$.</p>
+</div>
+
+<div class="paper">
+<div class="title">Park, S.W., Champredon, D., Weitz, J.S. &amp; Dushoff, J. (2019). "A practical generation-interval-based approach to inferring the strength of epidemics from their speed."</div>
+<div class="cite">Epidemics, 27, 12-18. doi:10.1016/j.epidem.2018.12.002</div>
+<p><strong>Relevance:</strong> Extends Wallinga-Lipsitch with practical methods. Establishes Gamma GI / Euler-Lotka machinery. Does not consider individual-level decompositions.</p>
+</div>
+
+<div class="paper">
+<div class="title">Park, S.W., Champredon, D. &amp; Dushoff, J. (2020). "Inferring generation-interval distributions from contact-tracing data."</div>
+<div class="cite">J. R. Soc. Interface, 17(167), 20190719. doi:10.1098/rsif.2019.0719</div>
+<p><strong>Relevance:</strong> How realized GIs differ from intrinsic. Does not parameterize individual-level variation in infectiousness shape.</p>
+</div>
+
+<div class="paper">
+<div class="title">Britton, T. &amp; Scalia Tomba, G. (2019). "Estimation in emerging epidemics: biases and remedies."</div>
+<div class="cite">J. R. Soc. Interface, 16(150), 20180670. doi:10.1098/rsif.2018.0670</div>
+<p><strong>Relevance:</strong> Estimation biases for GI and $R_0$. Relevant to identifiability section but does not address individual-level decomposition.</p>
+</div>
+
+<hr>
+
+<h2>4. Superspreading in Time / Temporal Heterogeneity</h2>
+
+<p>This angle has the least prior literature. "Superspreading" has been used almost exclusively for variation in the <em>number</em> of offspring.</p>
+
+<div class="paper">
+<div class="title">Lloyd-Smith, J.O., Schreiber, S.J., Kopp, P.E. &amp; Getz, W.M. (2005). "Superspreading and the effect of individual variation on disease emergence."</div>
+<div class="cite">Nature, 438, 355-359. doi:10.1038/nature04153</div>
+<p><strong>Relevance:</strong> <span class="relevance">Foundational for "number" dimension.</span> Models $\nu_i$ as Gamma-distributed, yielding NegBin offspring with dispersion $k$. Does not consider temporal variation. Your overdispersion result (punctuated infectiousness + periodic contacts generates overdispersion without $\nu_i$ variation) is a new complementary mechanism.</p>
+</div>
+
+<div class="paper">
+<div class="title">Endo, A., Abbott, S., Kucharski, A.J. &amp; Funk, S. (2020). "Estimating the overdispersion in COVID-19 transmission using outbreak sizes outside China."</div>
+<div class="cite">Wellcome Open Research, 5, 67. doi:10.12688/wellcomeopenres.15842.3</div>
+<p><strong>Relevance:</strong> Estimates $k \approx 0.1$ for SARS-CoV-2. Attributes to individual transmissibility variation. Your framework offers an additional/alternative mechanism.</p>
+</div>
+
+<div class="paper">
+<div class="title">Goyal, A. et al. (2021). "Viral load and contact heterogeneity predict SARS-CoV-2 transmission and super-spreading events."</div>
+<div class="cite">eLife, 10, e63537. doi:10.7554/eLife.63537</div>
+<p><strong>Relevance:</strong> <span class="relevance">Closest prior work to your contact-periodicity mechanism.</span> Concentrated viral load + contact variation drives superspreading. But simulation-only, no analytical decomposition, no closed-form $k(\kappa)$.</p>
+</div>
+
+<div class="paper">
+<div class="title">Althouse, B.M. et al. (2020). "Superspreading events in the transmission dynamics of SARS-CoV-2."</div>
+<div class="cite">PLoS Biology, 18(11), e3000897. doi:10.1371/journal.pbio.3000897</div>
+<p><strong>Relevance:</strong> Superspreading at gatherings. Transmission in "bursts." Related to your mechanism but framed as contact-setting heterogeneity, not formalized.</p>
+</div>
+
+<div class="novelty">
+<strong>Novelty assessment for Angle 4:</strong> "Temporal superspreading" -- concentrated infectiousness interacting with variable contacts to generate overdispersed offspring -- appears genuinely novel as a formal mathematical result. Prior work focuses on $\nu_i$ heterogeneity. Your closed-form $k(\kappa, \text{contact parameters})$ is new.
+</div>
+
+<hr>
+
+<h2>5. The $W$/Time-Shift Framework</h2>
+
+<div class="paper">
+<div class="title">Morris, D., Maclean, J. &amp; Black, A.J. (2024). "Computation of random time-shift distributions for stochastic population models."</div>
+<div class="cite">J. Mathematical Biology, 89(3), 33. doi:10.1007/s00285-024-02132-6</div>
+<p><strong>Relevance:</strong> <span class="relevance">Directly relevant -- already cited.</span> Efficient numerical methods for $W$. Does not study $W$'s dependence on individual-level kernel decomposition or parameterize by anything like $\kappa$.</p>
+</div>
+
+<div class="paper">
+<div class="title">Barbour, A.D. (1975). "The duration of the closed stochastic epidemic."</div>
+<div class="cite">Biometrika, 62(2), 477-482. doi:10.1093/biomet/62.2.477</div>
+<p><strong>Relevance:</strong> Origin of the time-shift idea for stochastic epidemics.</p>
+</div>
+
+<div class="paper">
+<div class="title">Ball, F. (1983). "The threshold behaviour of epidemic models."</div>
+<div class="cite">J. Applied Probability, 20(2), 227-241. doi:10.2307/3213797</div>
+<p><strong>Relevance:</strong> Establishes CMJ branching process approximation for early epidemic phase with general generation intervals.</p>
+</div>
+
+<div class="paper">
+<div class="title">Jagers, P. (1975). <em>Branching Processes with Biological Applications.</em></div>
+<div class="cite">Wiley. ISBN: 978-0471436525</div>
+<p><strong>Relevance:</strong> Foundational on CMJ processes. Defines $W = \lim_{t \to \infty} e^{-\alpha t} Z(t)$. Moments of $W$ depend on offspring point process.</p>
+</div>
+
+<div class="paper">
+<div class="title">Nerman, O. (1981). "On the convergence of supercritical general (C.M.J.) branching processes."</div>
+<div class="cite">Z. Wahrscheinlichkeitstheorie verw. Gebiete, 57, 365-395.</div>
+<p><strong>Relevance:</strong> Convergence conditions for $W(t) \to W$. Technical foundation for $\text{Var}(W)$.</p>
+</div>
+
+<div class="paper">
+<div class="title">Jagers, P. &amp; Nerman, O. (1984). "The growth and composition of branching populations."</div>
+<div class="cite">Advances in Applied Probability, 16(2), 221-259.</div>
+<p><strong>Relevance:</strong> Formulas for $E[W^2]$ in terms of MGF of offspring point process. Your $\text{Var}(W)$ formula likely derives from these for the specific $\kappa$-parameterized family.</p>
+</div>
+
+<div class="verdict">
+<strong>Assessment:</strong> Your closed-form $\text{Var}(W)$ as a function of $\kappa$ (preserving $A(\tau)$ and $R_0$) is a new result. The general CMJ theory provides tools, and Morris et al. (2024) provide computational methods, but the specific application to a $\kappa$-parameterized family preserving population-level statistics has not been done.
+</div>
+
+<hr>
+
+<h2>6. Interventions and Individual Infectiousness</h2>
+
+<div class="paper">
+<div class="title">Fraser, C., Riley, S., Anderson, R.M. &amp; Ferguson, N.M. (2004). "Factors that make an infectious disease outbreak controllable."</div>
+<div class="cite">PNAS, 101(16), 6146-6151. doi:10.1073/pnas.0307506101</div>
+<p><strong>Relevance:</strong> <span class="relevance">Highly relevant.</span> Controllability depends on fraction of transmission before symptom onset ($\theta$). Your $F_\kappa(\delta_{\text{sym}})$ is their $\theta$ but parameterized by $\kappa$. Fraser et al. treat $\theta$ as fixed; you show it depends on $\kappa$.</p>
+</div>
+
+<div class="paper">
+<div class="title">Larremore, D.B. et al. (2021). "Test sensitivity is secondary to frequency and turnaround time for COVID-19 screening."</div>
+<div class="cite">Science Advances, 7(1), eabd5393. doi:10.1126/sciadv.abd5393</div>
+<p><strong>Relevance:</strong> Screening frequency > sensitivity. Assumes smooth profile. Your work suggests the tradeoff is $\kappa$-dependent.</p>
+</div>
+
+<div class="paper">
+<div class="title">Middleton, C. &amp; Larremore, D.B. (2024). "Modeling the transmission mitigation impact of testing for infectious diseases."</div>
+<div class="cite">Science Advances, 10(24), eadk5108. doi:10.1126/sciadv.adk5108</div>
+<p><strong>Relevance:</strong> Testing effectiveness framework. Assumes smooth profile. Your work shows TE depends on $\kappa$.</p>
+</div>
+
+<div class="paper">
+<div class="title">Ferretti, L. et al. (2020). "Quantifying SARS-CoV-2 transmission suggests epidemic control with digital contact tracing."</div>
+<div class="cite">Science, 368(6491), eabb6936. doi:10.1126/science.abb6936</div>
+<p><strong>Relevance:</strong> Decomposes transmission into timing components. Their $\beta(s)$ = your $a_i(\tau)$ averaged. Does not consider heterogeneity in profile shape.</p>
+</div>
+
+<div class="paper">
+<div class="title">Dushoff, J. &amp; Park, S.W. (2021). "Speed and strength of an epidemic intervention."</div>
+<div class="cite">Proc. R. Soc. B, 288(1947), 20201556. doi:10.1098/rspb.2020.1556</div>
+<p><strong>Relevance:</strong> Framework for comparing intervention effects on $R_{\text{eff}}$ ("strength") vs. growth rate ("speed"). Directly relevant to your "partially self-defeating intervention" result for smooth profiles under screening.</p>
+</div>
+
+<div class="paper">
+<div class="title">Cevik, M. et al. (2021). "SARS-CoV-2, SARS-CoV, and MERS-CoV viral load dynamics."</div>
+<div class="cite">Lancet Microbe, 2(1), e13-e22.</div>
+<p><strong>Relevance:</strong> Viral shedding duration >> likely infectious period. Empirical support for punctuated infectiousness hypothesis.</p>
+</div>
+
+<div class="novelty">
+<strong>Novelty for Angle 6:</strong> No paper systematically examines how individual-level concentration ($\kappa$) affects intervention effectiveness while holding $A(\tau)$ fixed. Your findings are novel.
+</div>
+
+<hr>
+
+<h2>7. Redundancy Assessment</h2>
+
+<div class="redundancy">
+<strong>No paper makes the core results redundant.</strong> Closest:
+<ul>
+<li><strong>Yan (2008):</strong> Similar decomposition but changes $A(\tau)$; deterministic. <em>Not redundant.</em></li>
+<li><strong>Lloyd (2001):</strong> Distribution shape matters but at population level. <em>Not redundant.</em></li>
+<li><strong>Morris et al. (2024):</strong> Provides $W$ framework, does not study $W(\kappa)$. <em>Not redundant.</em></li>
+<li><strong>Goyal et al. (2021):</strong> Similar mechanism, simulation-only. <em>Not redundant.</em></li>
+<li><strong>Fraser (2007):</strong> Individual kernel concept but $\nu_i$ focus. <em>Not redundant.</em></li>
+<li><strong>Svensson (2015):</strong> Notes model non-uniqueness, inference framing only. <em>Not redundant.</em></li>
+</ul>
+</div>
+
+<hr>
+
+<h2>8. Summary of Novelty</h2>
+
+<div class="novelty">
+<strong>Genuinely novel aspects:</strong>
+<ol>
+<li><strong>Gamma convolutional framework:</strong> One-parameter family ($\kappa$) preserving $A(\tau)$ exactly via Gamma additivity.</li>
+<li><strong>Stochastic dynamics:</strong> Closed-form $\text{Var}(W)$ as a function of $\kappa$. Mean-field invariance + stochastic $\kappa$-dependence.</li>
+<li><strong>Temporal superspreading:</strong> Punctuated infectiousness + periodic contacts generates offspring overdispersion. Closed-form $k(\kappa)$.</li>
+<li><strong>Intervention $\kappa$-dependence:</strong> $R_{\text{eff}}$ varies 1.6x across $\kappa$; all-or-nothing vs. partial detection; self-defeating intervention effect.</li>
+<li><strong>$b_i \cdot c_i$ decomposition:</strong> Systematic analysis of how biological/contact split interacts with $\kappa$.</li>
+<li><strong>Identifiability of $\kappa$:</strong> Entirely new question.</li>
+</ol>
+</div>
+
+<hr>
+
+<h2>9. Recommended Additional Searches</h2>
+
+<p>Given my training cutoff (May 2025), recommend checking for 2025-2026 papers by:</p>
+<ul>
+<li>Dylan Morris's group (follow-ups to Morris et al. 2024; viral dynamics arxiv:2507.02884)</li>
+<li>Park &amp; Dushoff (GI decomposition, speed-strength)</li>
+<li>Britton, Ball, Trapman (stochastic epidemic theory with non-Markovian GIs)</li>
+<li>Kucharski (superspreading mechanisms)</li>
+</ul>
+<p><strong>Search terms:</strong> "clustered transmission events epidemic", "correlated infection times branching process", "individual infectiousness kernel shape", "offspring point process variance epidemic", "burstiness transmission", "temporal heterogeneity transmission timing", "generation interval decomposition within between individual"</p>
+
+<hr>
+
+<div class="prompt">Why does κ=0.25 look so similar to the spike (κ=0)?</div>
+
+<h1>Var(W) is highly convex in κ</h1>
+
+<p>Your thinking is right that \(\kappa = 0.25\) makes the individual infectiousness profile's SD equal to half the population GI's SD (\(\sqrt{\kappa} = 0.5\)). But the <strong>effect on Var(\(W\)) is highly nonlinear</strong> — the extra variance beyond the smooth baseline drops like \(R_0^{-2\kappa}\), which is convex and front-loaded.</p>
+
+<h2>The key formula</h2>
+
+<p>The extra variance beyond the smooth limit decomposes as:</p>
+
+$$\Delta(\kappa) \;=\; \text{Var}(W)\big|_\kappa - \text{Var}(W)\big|_{\kappa=1} \;=\; \frac{R_0^2}{1 - m_2}\;\underbrace{\rho^{2\kappa\alpha_{\text{pop}}}}_{\text{prefactor}} \cdot \underbrace{\left(\rho_2^{(1-\kappa)\alpha_{\text{pop}}} - \rho^{2(1-\kappa)\alpha_{\text{pop}}}\right)}_{\text{bracket}}$$
+
+<p>Since \(\rho^{\alpha_{\text{pop}}} = 1/R_0\), the prefactor simplifies to:</p>
+
+$$\rho^{2\kappa\alpha_{\text{pop}}} = R_0^{-2\kappa}$$
+
+<p>This factor is <strong>exponential in \(\kappa\)</strong> and drops very steeply near \(\kappa = 0\):</p>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;"><th style="padding: 4px 12px;">\(\kappa\)</th><th style="padding: 4px 12px;">\(R_0^{-2\kappa}\)</th><th style="padding: 4px 12px;">Var(\(W\))</th><th style="padding: 4px 12px;">% of spike extra var</th></tr>
+<tr><td style="padding: 4px 12px;">0</td><td style="padding: 4px 12px;">1.000</td><td style="padding: 4px 12px;">0.798</td><td style="padding: 4px 12px;"><strong>100%</strong></td></tr>
+<tr><td style="padding: 4px 12px;">0.10</td><td style="padding: 4px 12px;">0.608</td><td style="padding: 4px 12px;">0.720</td><td style="padding: 4px 12px;">88%</td></tr>
+<tr><td style="padding: 4px 12px;">0.25</td><td style="padding: 4px 12px;">0.289</td><td style="padding: 4px 12px;">0.608</td><td style="padding: 4px 12px;"><strong>71%</strong></td></tr>
+<tr><td style="padding: 4px 12px;">0.50</td><td style="padding: 4px 12px;">0.083</td><td style="padding: 4px 12px;">0.438</td><td style="padding: 4px 12px;">44%</td></tr>
+<tr><td style="padding: 4px 12px;">0.75</td><td style="padding: 4px 12px;">0.024</td><td style="padding: 4px 12px;">0.286</td><td style="padding: 4px 12px;">21%</td></tr>
+<tr><td style="padding: 4px 12px;">1</td><td style="padding: 4px 12px;">0.007</td><td style="padding: 4px 12px;">0.150</td><td style="padding: 4px 12px;"><strong>0%</strong></td></tr>
+</table>
+
+<p>At \(\kappa = 0.25\), the individual profile has half the SD of the population GI — but <strong>71% of the spike's extra variance in \(W\) is retained</strong>. You'd need roughly \(\kappa \approx 0.5\) for a halfway effect.</p>
+
+<h2>Intuition</h2>
+
+<p>The \(R_0^{-2\kappa}\) prefactor comes from the Laplace transform of the jitter component evaluated at \(2\alpha\). The jitter's shape is \(\kappa \alpha_{\text{pop}}\), and even a small shape parameter produces substantial "diversification" — reducing variance by spreading offspring times apart. But the marginal diversification benefit <strong>diminishes rapidly</strong>: the first 25% of jitter variance eliminates only 29% of the extra W-variance, while the last 25% eliminates 21%.</p>
+
+<p>The effect is stronger at higher \(R_0\) because \(R_0^{-2\kappa}\) drops faster. For \(R_0 = 2\) (influenza), \(R_0^{-0.5} = 0.71\) — a modest drop. For \(R_0 = 12\) (measles), \(R_0^{-0.5} = 0.29\) — a steep drop but still leaving most of the extra variance. The net effect is that \(\kappa = 0.25\) stays close to the spike across all realistic \(R_0\).</p>
+
+<script>
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\(", right: "\\)", display: false}
+    ]
+  });
+</script>
+</body>
+</html>

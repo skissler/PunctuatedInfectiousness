@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Math Discussion</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+  body { font-family: 'Georgia', serif; max-width: 760px; margin: 40px auto; padding: 0 20px; line-height: 1.7; color: #d4d4d4; background: #1e1e1e; }
+  h1 { font-size: 1.5em; border-bottom: 1px solid #444; padding-bottom: 8px; color: #e0e0e0; }
+  h2 { font-size: 1.2em; margin-top: 2em; color: #ccc; }
+  h3 { color: #bbb; }
+  .highlight { background: #2a2d2e; border-left: 3px solid #888; padding: 12px 16px; margin: 1.2em 0; }
+  .katex-display { margin: 1em 0; }
+  .katex { color: #e8e8e8; }
+  .prompt { background: #1a2733; border-left: 3px solid #4285f4; padding: 10px 16px; margin: 2.5em 0 1.5em 0; font-style: italic; color: #aac8e8; }
+  hr { border: none; border-top: 2px solid #444; margin: 3em 0; }
+  a { color: #6bb3f0; }
+  strong { color: #e0e0e0; }
+  code { background: #2a2d2e; padding: 2px 5px; border-radius: 3px; font-size: 0.95em; }
+  pre code { display: block; padding: 12px 16px; overflow-x: auto; }
+  table { color: #d4d4d4; }
+  th, td { text-align: left; }
+</style>
+</head>
+<body>
+
+<p><em>Note: Content prior to 2026-03-12 was lost when a subagent overwrote this file. The literature review is preserved separately at <code>/tmp/literature_review.html</code>. Content below was reconstructed from the 2026-03-12/13 session.</em></p>
+
+<hr>
+
+<div class="prompt">Deterministic epidemic trajectory for a Gamma-distributed generation interval</div>
+
+<h1>Renewal equation for arbitrary generation intervals</h1>
+
+<p>With a general generation interval distribution \(g(\tau)\), the deterministic epidemic is governed by the <strong>renewal equation</strong>, not an ODE:</p>
+
+$$j(t) = S(t) \cdot \int_0^t R_0 \, g(\tau) \, j(t - \tau) \, d\tau$$
+
+<p>where \(j(t) = dC/dt\) is the incidence rate, \(S(t) = 1 - C(t)/N\) is the susceptible fraction, and \(g(\tau)\) is the generation interval density — here \(\text{Gamma}(\alpha_{\text{pop}},\, r)\) with \(r = \alpha_{\text{pop}}/T\).</p>
+
+<p>This is a <strong>Volterra integral equation of the second kind</strong>. There are two natural approaches for Gamma generation intervals:</p>
+
+<h2>Option 1: Discretised renewal equation</h2>
+
+<p>Discretise time with step \(\Delta t\). Then at each time step \(i\):</p>
+
+$$j_i = S_i \cdot R_0 \sum_{k=1}^{i} g(k \Delta t) \, j_{i-k} \, \Delta t, \qquad C_i = C_{i-1} + j_i \, \Delta t, \qquad S_i = 1 - C_i/N$$
+
+<p>where \(g(k\Delta t) = f_{\text{Gamma}}(k\Delta t;\, \alpha_{\text{pop}},\, r)\). Seed with \(j_0 = 1/N\). This is:</p>
+<ul>
+  <li><strong>General</strong>: works for any \(\alpha_{\text{pop}}\) (integer or not), and indeed any \(g\)</li>
+  <li><strong>Simple</strong>: a single <code>for</code> loop in R, ~10 lines</li>
+  <li><strong>Accurate</strong>: with \(\Delta t = 0.01\) it's essentially exact</li>
+  <li>Requires \(O(n^2)\) work (convolution at each step), but for \(N = 1000\) and \(T_{\max} \sim 100\) this is instant</li>
+</ul>
+
+<h2>Option 2: Linear chain trick (ODE, integer \(\alpha_{\text{pop}}\) only)</h2>
+
+<p>When \(\alpha_{\text{pop}} = n\) is a positive integer, the Gamma distribution is an Erlang, and we can convert the integral equation to an ODE system. The key observation is that for \(n\) sequential stages each with rate \(r\):</p>
+
+$$P(\text{in stage } n \text{ at time } \tau) = \frac{e^{-r\tau}(r\tau)^{n-1}}{(n-1)!}$$
+
+<p>and the Gamma density satisfies \(g(\tau) = r \cdot P(\text{in stage } n \text{ at } \tau)\). So if an individual transmits <strong>only while in the last stage</strong>, at rate \(\beta = R_0 \cdot r\), the generation interval is exactly \(\text{Gamma}(n, r)\).</p>
+
+<p>The ODE system has \(n\) sequential stages \(I_1, \ldots, I_n\), with transmission from \(I_n\) only:</p>
+
+$$\frac{dS}{dt} = -\beta \, I_n \, S$$
+$$\frac{dI_1}{dt} = \beta \, I_n \, S - r \, I_1$$
+$$\frac{dI_k}{dt} = r \, I_{k-1} - r \, I_k, \qquad k = 2, \ldots, n$$
+$$\frac{dR}{dt} = r \, I_n$$
+
+<p>with \(\beta = R_0 \cdot r\), initial conditions \(I_1(0) = 1/N\), all others zero. This is equivalent to: stages 1 through \(n-1\) are "latent" (transitioning at rate \(r\) each), and stage \(n\) is "infectious" (transmitting at rate \(\beta\) and recovering at rate \(r\)). The generation interval is \(\text{Gamma}(n-1, r) + \text{Exp}(r) = \text{Gamma}(n, r)\). ✓</p>
+
+<p>For \(\alpha_{\text{pop}} = 10\), this gives a 10-compartment ODE — perfectly tractable with <code>odin</code>.</p>
+
+<h2>Recommendation</h2>
+
+<p>The <strong>discretised renewal equation</strong> is the better choice here because:</p>
+<ol>
+  <li>It works for any \(\alpha_{\text{pop}}\) (you may want non-integer values later)</li>
+  <li>It's trivial to implement — no ODE solver or <code>odin</code> compilation needed</li>
+  <li>It's transparent: the generation interval \(g(\tau)\) appears explicitly</li>
+  <li>It generalises immediately if you change the generation interval distribution</li>
+</ol>
+
+<p>A minimal R implementation:</p>
+
+<div class="highlight"><pre><code>renewal_epidemic &lt;- function(R0, popshape, T_gen, N, dt = 0.01, tmax = 100) {
+  r &lt;- popshape / T_gen
+  times &lt;- seq(0, tmax, by = dt)
+  nt &lt;- length(times)
+
+  j &lt;- numeric(nt)       # incidence rate
+  C &lt;- numeric(nt)       # cumulative infections
+  j[1] &lt;- 1 / N          # seed
+  C[1] &lt;- 1 / N
+
+  # Pre-compute generation interval weights
+  g &lt;- dgamma(times, shape = popshape, rate = r) * dt
+
+  for (i in 2:nt) {
+    S &lt;- 1 - C[i-1]
+    # Convolution: sum over past incidence weighted by g
+    j[i] &lt;- S * R0 * sum(g[2:i] * j[(i-1):1])
+    C[i] &lt;- C[i-1] + j[i] * dt
+  }
+
+  tibble(t = times, j = j, cuminf = C, S = 1 - C)
+}</code></pre></div>
+
+<hr>
+
+<div class="prompt">Initial conditions for the renewal equation: matching "one person infected at t=0"</div>
+
+<h1>The delta-function seed</h1>
+
+<p>The renewal equation for the incidence rate \(j(t)\) (as a fraction of the population) seeded by a single index case at \(t = 0\) is:</p>
+
+$$j(t) = S(t) \cdot R_0 \left[\frac{g(t)}{N} + \int_0^t g(\tau)\, j(t - \tau)\, d\tau \right]$$
+
+<p>The two terms have different origins:</p>
+<ul>
+  <li><strong>Index case</strong>: \(g(t)/N\) — one person (fraction \(1/N\)) infected at \(t = 0\) produces offspring at rate \(R_0 g(\tau)\) at time \(\tau\). No \(d\tau\) here because it's a single discrete person, not a continuous flow.</li>
+  <li><strong>All subsequent cases</strong>: \(\int g(\tau)\, j(t-\tau)\, d\tau\) — the \(j(t-\tau)\,d\tau\) fraction infected during \([t-\tau, t-\tau+d\tau]\) produces offspring via the same kernel.</li>
+</ul>
+
+<h2>What went wrong</h2>
+
+<p>The current code sets <code>j[1] = 1/N</code> and lets the convolution handle everything:</p>
+
+$$j_i = S_i \cdot R_0 \sum_{k} \underbrace{g(k\Delta t) \cdot \Delta t}_{= \texttt{g[k]}} \cdot\; j_{i-k}$$
+
+<p>When the index case enters this sum at lag \(k = i\), its contribution is:</p>
+
+$$g(i\Delta t) \cdot \Delta t \cdot \frac{1}{N} = \frac{g(i\Delta t)}{N} \cdot \Delta t$$
+
+<p>But the correct contribution is \(g(i\Delta t)/N\) — <strong>without</strong> the extra \(\Delta t\). The index case is a delta function \(\delta(t)/N\) in incidence, not a continuous rate \(1/N\). By treating it as a rate, the seed is effectively \(\Delta t = 0.01\) times too weak. Each subsequent generation inherits this factor, so the entire trajectory is delayed by roughly \(\log(1/\Delta t)/\alpha \approx 4.6\) days.</p>
+
+<h2>The fix</h2>
+
+<p>Separate the index case from the convolution explicitly:</p>
+
+<div class="highlight"><pre><code>renewal_epidemic &lt;- function(R0, popshape, T_gen, N, dt = 0.01, tmax = 100) {
+  r &lt;- popshape / T_gen
+  times &lt;- seq(0, tmax, by = dt)
+  nt &lt;- length(times)
+
+  j &lt;- numeric(nt)
+  C &lt;- numeric(nt)
+  C[1] &lt;- 1 / N
+
+  # Generation interval weights (with dt baked in for the convolution)
+  g &lt;- dgamma(times, shape = popshape, rate = r) * dt
+  # Index case kernel (no dt — it's a single person, not a rate)
+  g_index &lt;- dgamma(times, shape = popshape, rate = r) / N
+
+  for (i in 2:nt) {
+    S &lt;- 1 - C[i-1]
+    # Index case + renewal convolution
+    j[i] &lt;- S * R0 * (g_index[i] + sum(g[2:i] * j[(i-1):1]))
+    C[i] &lt;- C[i-1] + j[i] * dt
+  }
+
+  tibble(t = times, j = j, cuminf = C, S = 1 - C)
+}</code></pre></div>
+
+<p>This is equivalent to setting <code>j[1] = 1/(N*dt)</code> (the discretised delta function), but makes the reasoning explicit.</p>
+
+<hr>
+
+<div class="prompt">Why does κ=0.25 appear to be the slowest to reach 100 cases?</div>
+
+<h1>The survival curves cross, but κ=0 is still slowest overall</h1>
+
+<p>For the Gamma model (\(\alpha_{\text{pop}} = 10,\ T = 5,\ R_0 = 12\)), the \(W\) distribution at each \(\kappa\) is approximately Gamma with shape \(k = 1/\text{Var}(W)\), rate \(k\), mean 1:</p>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;"><th style="padding: 4px 12px;">\(\kappa\)</th><th style="padding: 4px 12px;">Var(\(W\))</th><th style="padding: 4px 12px;">Gamma shape</th><th style="padding: 4px 12px;">Median \(W\)</th><th style="padding: 4px 12px;">Median \(T_{100}\)</th><th style="padding: 4px 12px;">Mean \(T_{100}\)</th></tr>
+<tr><td style="padding: 4px 12px;">0</td><td style="padding: 4px 12px;">0.90</td><td style="padding: 4px 12px;">1.11</td><td style="padding: 4px 12px;">0.72</td><td style="padding: 4px 12px;">8.74</td><td style="padding: 4px 12px;">9.07</td></tr>
+<tr><td style="padding: 4px 12px;">0.25</td><td style="padding: 4px 12px;">0.68</td><td style="padding: 4px 12px;">1.47</td><td style="padding: 4px 12px;">0.78</td><td style="padding: 4px 12px;">8.59</td><td style="padding: 4px 12px;">8.83</td></tr>
+<tr><td style="padding: 4px 12px;">1</td><td style="padding: 4px 12px;">0.16</td><td style="padding: 4px 12px;">6.31</td><td style="padding: 4px 12px;">0.95</td><td style="padding: 4px 12px;">8.26</td><td style="padding: 4px 12px;">8.31</td></tr>
+</table>
+
+<p>The ordering is monotonic: \(\kappa = 0\) (spike) has the latest median and mean milestone time, as expected. <strong>But the difference between \(\kappa = 0\) and \(\kappa = 0.25\) is tiny — only ~0.15 days in the median.</strong></p>
+
+<h2>Why it looks reversed with 100 simulations</h2>
+
+<p>The milestone time has substantial stochastic spread. For a Gamma\((k, k)\) distribution of \(W\), the variance of \(\log W\) is \(\psi_1(k)\) (the trigamma function), so:</p>
+
+$$\text{SD}(T_{100}) \;\approx\; \frac{\sqrt{\psi_1(k)}}{\alpha}$$
+
+<p>This gives SD \(\approx 2.2\) days for \(\kappa = 0\) and \(\approx 1.8\) days for \(\kappa = 0.25\). With \(n_{\text{sim}} = 100\), the standard error of the median is:</p>
+
+$$\text{SE}_{\text{median}} \approx \frac{\sqrt{\pi/2}}{\sqrt{n}} \cdot \text{SD} \;\approx\; 0.25 \text{ days}$$
+
+<p>So the SE of the <em>difference</em> in medians is \(\approx 0.35\) days. The true difference (0.15 days) is only <strong>0.4 standard errors</strong> — well within noise. The apparent reversal between \(\kappa = 0\) and \(\kappa = 0.25\) is a simulation artefact that will disappear with more runs.</p>
+
+<h2>The crossing mechanism is real, though</h2>
+
+<p>Your intuition about the variance effect is correct — the \(\kappa=0\) and \(\kappa=0.25\) survival curves genuinely <strong>cross</strong> (at \(t \approx 3.5\) and \(t \approx 7.8\)). In the window between these crossings, \(\kappa=0\) has <em>lower</em> survival (appears faster) because its heavy right tail of \(W\) produces a handful of very fast epidemics. But this crossing isn't strong enough to make \(\kappa=0.25\) the slowest overall — it just means the two curves interleave.</p>
+
+<p>The underlying reason the differences are so small: \(\alpha_{\text{pop}} = 10\) makes the generation interval quite tightly concentrated (CV = 0.32), which limits how much the punctuation parameter \(\kappa\) can spread out \(W\). With a less concentrated generation interval (smaller \(\alpha_{\text{pop}}\)), the separation between \(\kappa\) values would be much more dramatic.</p>
+
+<hr>
+
+<div class="prompt">Gamma approximation to the SEIR generation interval (e_dur=2, i_dur=3)</div>
+
+<h1>Moment-matching the SEIR generation interval</h1>
+
+<p>In the SEIR ODE, a person infected at time 0 spends \(\text{Exp}(\nu)\) time latent, then transmits at constant rate \(\beta\) for an \(\text{Exp}(\gamma)\) infectious period. The population-level infectiousness profile is:</p>
+
+$$A(\tau) = \beta \cdot P(\text{in } I \text{ at time } \tau) = \beta \cdot \frac{\nu}{\nu - \gamma}\left(e^{-\gamma\tau} - e^{-\nu\tau}\right)$$
+
+<p>with \(\nu = 1/2,\ \gamma = 1/3\). Since \(\int_0^\infty A(\tau)\,d\tau = R_0\), the generation interval density is:</p>
+
+$$g(\tau) = \frac{A(\tau)}{R_0} = e^{-\tau/3} - e^{-\tau/2}$$
+
+<p>This is a <strong>hypoexponential</strong> density — the distribution of \(T_E + T_I\) where \(T_E \sim \text{Exp}(1/2)\) and \(T_I \sim \text{Exp}(1/3)\) are independent. Its moments:</p>
+
+$$E[\tau] = 2 + 3 = 5, \qquad \text{Var}(\tau) = 4 + 9 = 13, \qquad \text{CV} = \frac{\sqrt{13}}{5} \approx 0.72$$
+
+<h2>Gamma moment-match</h2>
+
+<p>Matching \(\text{Gamma}(\alpha_{\text{pop}},\, r)\) to these two moments: mean \(= \alpha_{\text{pop}}/r = 5\), variance \(= \alpha_{\text{pop}}/r^2 = 13\). Solving:</p>
+
+$$\alpha_{\text{pop}} = \frac{(\text{mean})^2}{\text{var}} = \frac{25}{13} \approx 1.92, \qquad r = \frac{\text{mean}}{\text{var}} = \frac{5}{13} \approx 0.385$$
+
+<h2>Comparison</h2>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;"><th style="padding: 4px 16px;">Model</th><th style="padding: 4px 16px;">\(\alpha_{\text{pop}}\)</th><th style="padding: 4px 16px;">\(r\)</th><th style="padding: 4px 16px;">Mean</th><th style="padding: 4px 16px;">Variance</th><th style="padding: 4px 16px;">CV</th></tr>
+<tr><td style="padding: 4px 16px;">SEIR (hypoexp)</td><td style="padding: 4px 16px;">—</td><td style="padding: 4px 16px;">—</td><td style="padding: 4px 16px;">5</td><td style="padding: 4px 16px;">13</td><td style="padding: 4px 16px;">0.72</td></tr>
+<tr><td style="padding: 4px 16px;">Gamma match</td><td style="padding: 4px 16px;">1.92</td><td style="padding: 4px 16px;">0.385</td><td style="padding: 4px 16px;">5</td><td style="padding: 4px 16px;">13</td><td style="padding: 4px 16px;">0.72</td></tr>
+<tr><td style="padding: 4px 16px;">Current model</td><td style="padding: 4px 16px;">10</td><td style="padding: 4px 16px;">2</td><td style="padding: 4px 16px;">5</td><td style="padding: 4px 16px;">2.5</td><td style="padding: 4px 16px;">0.32</td></tr>
+</table>
+
+<p>The SEIR generation interval is <strong>much wider</strong> than Gamma(10, 2) — over 5× the variance. The moment-matched Gamma has shape \(\alpha_{\text{pop}} \approx 1.92\), which is nowhere near 10. The SEIR model's exponentially-distributed E and I periods create a very dispersed generation interval.</p>
+
+<p>This explains why punctuation effects (\(\kappa\)) were so dramatic in the original <code>1_1_basicmetrics.R</code> simulations (spike vs smooth vs stepwise) but so muted with \(\alpha_{\text{pop}} = 10\): a wider generation interval gives \(\kappa\) more room to redistribute variance between the shared and individual components of the offspring timing.</p>
+
+<hr>
+
+<div class="prompt">Why does κ=0.25 look so similar to the spike (κ=0)? [Measles parameters]</div>
+
+<h1>Var(W) is highly convex in κ</h1>
+
+<p>Your thinking is right that \(\kappa = 0.25\) makes the individual infectiousness profile's SD equal to half the population GI's SD (\(\sqrt{\kappa} = 0.5\)). But the <strong>effect on Var(\(W\)) is highly nonlinear</strong> — the extra variance beyond the smooth baseline drops like \(R_0^{-2\kappa}\), which is convex and front-loaded.</p>
+
+<h2>The key formula</h2>
+
+<p>The extra variance beyond the smooth limit decomposes as:</p>
+
+$$\Delta(\kappa) \;=\; \text{Var}(W)\big|_\kappa - \text{Var}(W)\big|_{\kappa=1} \;=\; \frac{R_0^2}{1 - m_2}\;\underbrace{\rho^{2\kappa\alpha_{\text{pop}}}}_{\text{prefactor}} \cdot \underbrace{\left(\rho_2^{(1-\kappa)\alpha_{\text{pop}}} - \rho^{2(1-\kappa)\alpha_{\text{pop}}}\right)}_{\text{bracket}}$$
+
+<p>Since \(\rho^{\alpha_{\text{pop}}} = 1/R_0\), the prefactor simplifies to:</p>
+
+$$\rho^{2\kappa\alpha_{\text{pop}}} = R_0^{-2\kappa}$$
+
+<p>This factor is <strong>exponential in \(\kappa\)</strong> and drops very steeply near \(\kappa = 0\):</p>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;"><th style="padding: 4px 12px;">\(\kappa\)</th><th style="padding: 4px 12px;">\(R_0^{-2\kappa}\)</th><th style="padding: 4px 12px;">Var(\(W\))</th><th style="padding: 4px 12px;">% of spike extra var</th></tr>
+<tr><td style="padding: 4px 12px;">0</td><td style="padding: 4px 12px;">1.000</td><td style="padding: 4px 12px;">0.798</td><td style="padding: 4px 12px;"><strong>100%</strong></td></tr>
+<tr><td style="padding: 4px 12px;">0.10</td><td style="padding: 4px 12px;">0.608</td><td style="padding: 4px 12px;">0.720</td><td style="padding: 4px 12px;">88%</td></tr>
+<tr><td style="padding: 4px 12px;">0.25</td><td style="padding: 4px 12px;">0.289</td><td style="padding: 4px 12px;">0.608</td><td style="padding: 4px 12px;"><strong>71%</strong></td></tr>
+<tr><td style="padding: 4px 12px;">0.50</td><td style="padding: 4px 12px;">0.083</td><td style="padding: 4px 12px;">0.438</td><td style="padding: 4px 12px;">44%</td></tr>
+<tr><td style="padding: 4px 12px;">0.75</td><td style="padding: 4px 12px;">0.024</td><td style="padding: 4px 12px;">0.286</td><td style="padding: 4px 12px;">21%</td></tr>
+<tr><td style="padding: 4px 12px;">1</td><td style="padding: 4px 12px;">0.007</td><td style="padding: 4px 12px;">0.150</td><td style="padding: 4px 12px;"><strong>0%</strong></td></tr>
+</table>
+
+<p>At \(\kappa = 0.25\), the individual profile has half the SD of the population GI — but <strong>71% of the spike's extra variance in \(W\) is retained</strong>. You'd need roughly \(\kappa \approx 0.5\) for a halfway effect.</p>
+
+<h2>Intuition</h2>
+
+<p>The \(R_0^{-2\kappa}\) prefactor comes from the Laplace transform of the jitter component evaluated at \(2\alpha\). The jitter's shape is \(\kappa \alpha_{\text{pop}}\), and even a small shape parameter produces substantial "diversification" — reducing variance by spreading offspring times apart. But the marginal diversification benefit <strong>diminishes rapidly</strong>: the first 25% of jitter variance eliminates only 29% of the extra W-variance, while the last 25% eliminates 21%.</p>
+
+<p>The effect is stronger at higher \(R_0\) because \(R_0^{-2\kappa}\) drops faster. For \(R_0 = 2\) (influenza), \(R_0^{-0.5} = 0.71\) — a modest drop. For \(R_0 = 12\) (measles), \(R_0^{-0.5} = 0.29\) — a steep drop but still leaving most of the extra variance. The net effect is that \(\kappa = 0.25\) stays close to the spike across all realistic \(R_0\).</p>
+
+<hr>
+
+<div class="prompt">Derivation of Var(W) = (c<sup>α</sup> + σ<sup>(1−ψ)α</sup> − 1) / (1 − c<sup>α</sup>)</div>
+
+<h1>Deriving the variance of the CMJ limit W</h1>
+
+<h2>Setup</h2>
+
+<p>Each infector produces \(N \sim \text{Poisson}(R_0)\) offspring. Offspring \(j\) is infected at time \(\tau_j = s + \varepsilon_j\), where:</p>
+<ul>
+  <li>\(s \sim \text{Gamma}((1-\psi)\alpha,\, r)\) — <strong>shared shift</strong>, common to all offspring of this infector</li>
+  <li>\(\varepsilon_j \sim \text{Gamma}(\psi\alpha,\, r)\) — <strong>independent jitter</strong>, iid across offspring</li>
+</ul>
+<p>Marginally, \(\tau_j \sim \text{Gamma}(\alpha, r)\) (by the additivity of Gamma distributions with the same rate).</p>
+
+<p>The Malthusian parameter \(\alpha_M\) satisfies the <strong>Euler–Lotka equation</strong>:</p>
+$$R_0 \cdot E[e^{-\alpha_M \tau}] = 1$$
+
+<p>Define \(\rho = \frac{r}{r + \alpha_M}\), so \(E[e^{-\alpha_M \tau}] = \rho^\alpha\) and the Euler–Lotka equation becomes \(R_0 \rho^\alpha = 1\), i.e. \(\rho^\alpha = 1/R_0\).</p>
+
+<h2>Step 1: The branching recursion for W</h2>
+
+<p>The CMJ limit \(W = \lim_{t \to \infty} e^{-\alpha_M t} I_b(t)\) satisfies the distributional fixed-point equation:</p>
+
+$$W \stackrel{d}{=} \sum_{j=1}^{N} e^{-\alpha_M \tau_j} W_j$$
+
+<p>where the \(W_j\) are iid copies of \(W\), independent of \((N, s, \varepsilon_1, \ldots)\). Define the <strong>discounted offspring sum</strong>:</p>
+
+$$S = \sum_{j=1}^{N} e^{-\alpha_M \tau_j}$$
+
+<p>By the Euler–Lotka equation, \(E[S] = R_0 \cdot E[e^{-\alpha_M \tau}] = 1\), and from the fixed point, \(E[W] = E[S] \cdot E[W] = 1\) (starting from \(I_0 = 1\)).</p>
+
+<h2>Step 2: Var(W) in terms of Var(S)</h2>
+
+<p>From the fixed-point equation, compute \(E[W^2]\) by conditioning on \((N, s, \varepsilon_1, \ldots, \varepsilon_N)\):</p>
+
+$$E[W^2 \mid N, s, \boldsymbol{\varepsilon}] = \sum_j e^{-2\alpha_M \tau_j} E[W^2] + \sum_{j \ne k} e^{-\alpha_M(\tau_j + \tau_k)}$$
+
+<p>Recognising that \(S^2 = \sum_j e^{-2\alpha_M \tau_j} + \sum_{j \ne k} e^{-\alpha_M(\tau_j + \tau_k)}\), this becomes:</p>
+
+$$E[W^2 \mid N, s, \boldsymbol{\varepsilon}] = (E[W^2] - 1) \sum_j e^{-2\alpha_M \tau_j} + S^2$$
+
+<p>Taking expectations and defining \(m_2 = E\!\left[\sum_j e^{-2\alpha_M \tau_j}\right] = R_0 \rho_2^\alpha\) where \(\rho_2 = \frac{r}{r + 2\alpha_M}\):</p>
+
+$$E[W^2] = (E[W^2] - 1)\, m_2 + E[S^2]$$
+
+<p>Rearranging, and using \(E[W] = E[S] = 1\):</p>
+
+<div class="highlight">
+$$\boxed{\text{Var}(W) = \frac{\text{Var}(S)}{1 - m_2}}$$
+</div>
+
+<p>This is valid whenever \(m_2 < 1\), which holds in the supercritical regime.</p>
+
+<h2>Step 3: Computing E[S²] by conditioning on (N, s)</h2>
+
+<p>Factor the offspring times as \(\tau_j = s + \varepsilon_j\):</p>
+
+$$S = e^{-\alpha_M s} \sum_{j=1}^{N} e^{-\alpha_M \varepsilon_j}$$
+
+$$S^2 = e^{-2\alpha_M s} \left(\sum_{j=1}^{N} e^{-\alpha_M \varepsilon_j}\right)^2$$
+
+<p><strong>Condition on \(N\) and \(s\)</strong>. The \(\varepsilon_j\) are iid \(\text{Gamma}(\psi\alpha, r)\), so:</p>
+
+\begin{align}
+E[e^{-\alpha_M \varepsilon}] &= \rho^{\psi\alpha} \\
+E[e^{-2\alpha_M \varepsilon}] &= \rho_2^{\psi\alpha}
+\end{align}
+
+<p>Expanding the square:</p>
+
+$$E\!\left[\left(\sum_j e^{-\alpha_M \varepsilon_j}\right)^2 \,\middle|\, N\right] = N\, \rho_2^{\psi\alpha} + N(N-1)\, \rho^{2\psi\alpha}$$
+
+<p>Taking expectation over \(N \sim \text{Poisson}(R_0)\) (using \(E[N] = R_0\), \(E[N(N-1)] = R_0^2\)):</p>
+
+$$E\!\left[\left(\sum_j e^{-\alpha_M \varepsilon_j}\right)^2\right] = R_0\, \rho_2^{\psi\alpha} + R_0^2\, \rho^{2\psi\alpha}$$
+
+<p>Now take expectation over \(s \sim \text{Gamma}((1-\psi)\alpha, r)\), using \(E[e^{-2\alpha_M s}] = \rho_2^{(1-\psi)\alpha}\):</p>
+
+$$E[S^2] = \rho_2^{(1-\psi)\alpha}\!\left[R_0\, \rho_2^{\psi\alpha} + R_0^2\, \rho^{2\psi\alpha}\right] = R_0\, \rho_2^\alpha + R_0^2\, \rho^{2\psi\alpha}\, \rho_2^{(1-\psi)\alpha}$$
+
+<p>Since \(E[S] = 1\):</p>
+
+$$\text{Var}(S) = R_0\, \rho_2^\alpha + R_0^2\, \rho^{2\psi\alpha}\, \rho_2^{(1-\psi)\alpha} - 1$$
+
+<h2>Step 4: Introducing c and σ</h2>
+
+<p>Define \(\mu = R_0^{1/\alpha}\), the <strong>per-stage growth factor</strong>. From \(\rho^\alpha = 1/R_0\), we get \(\rho = 1/\mu\), so \(\alpha_M = (\mu - 1)r\). Then:</p>
+
+$$\rho_2 = \frac{r}{r + 2\alpha_M} = \frac{r}{(2\mu - 1)r} = \frac{1}{2\mu - 1}$$
+
+<p>Define two key ratios:</p>
+
+<div class="highlight">
+$$c = \frac{\rho_2}{\rho} = \frac{\mu}{2\mu - 1}, \qquad \sigma = \frac{\rho_2}{\rho^2} = \frac{\mu^2}{2\mu - 1} = \mu \cdot c$$
+</div>
+
+<p>Both depend only on \(\mu = R_0^{1/\alpha}\), not on \(\psi\).</p>
+
+<p><strong>Express the terms:</strong></p>
+
+<p><em>First term:</em> \(m_2 = R_0\, \rho_2^\alpha = \rho_2^\alpha / \rho^\alpha = (\rho_2/\rho)^\alpha = c^\alpha\).</p>
+
+<p><em>Second term:</em> Using \(\rho^{2\psi\alpha} = (\rho^\alpha)^{2\psi} = R_0^{-2\psi}\):</p>
+
+$$R_0^2\, \rho^{2\psi\alpha}\, \rho_2^{(1-\psi)\alpha} = R_0^{2(1-\psi)}\, \rho_2^{(1-\psi)\alpha} = \left(\frac{\rho_2}{\rho^2}\right)^{(1-\psi)\alpha} = \sigma^{(1-\psi)\alpha}$$
+
+<p>where we used \(\rho^{2(1-\psi)\alpha} = R_0^{-2(1-\psi)}\) to write \(R_0^{2(1-\psi)} \rho_2^{(1-\psi)\alpha} = (\rho_2/\rho^2)^{(1-\psi)\alpha}\).</p>
+
+<h2>Step 5: Final result</h2>
+
+<p>Substituting into \(\text{Var}(W) = \text{Var}(S)/(1 - m_2)\):</p>
+
+<div class="highlight">
+$$\boxed{\text{Var}(W) = \frac{c^\alpha + \sigma^{(1-\psi)\alpha} - 1}{1 - c^\alpha}}$$
+</div>
+
+<p>where \(c = \frac{\mu}{2\mu - 1}\), \(\sigma = \frac{\mu^2}{2\mu - 1}\), \(\mu = R_0^{1/\alpha}\).</p>
+
+<h2>Key observations</h2>
+
+<ul>
+  <li><strong>Smooth limit</strong> (\(\psi = 1\)): \(\sigma^0 = 1\), so \(\text{Var}(W) = c^\alpha/(1 - c^\alpha) = m_2/(1 - m_2)\). This is the <strong>minimum</strong> variance — each offspring time is fully independent.</li>
+  <li><strong>Spike limit</strong> (\(\psi = 0\)): \(\sigma^\alpha = R_0^2 \rho_2^\alpha\), giving \(\text{Var}(W) = (c^\alpha + \sigma^\alpha - 1)/(1 - c^\alpha)\). This is the <strong>maximum</strong> — all offspring share the same timing.</li>
+  <li>\(\psi\) only enters through \(\sigma^{(1-\psi)\alpha}\), confirming that narrower profiles (smaller \(\psi\)) always increase Var(\(W\)).</li>
+  <li>Since \(E[W] = 1\), we have \(\text{CV}^2(W) = \text{Var}(W)\).</li>
+</ul>
+
+<hr>
+
+<div class="prompt">Conditional moments, Gamma approximation, and time-shift mode</div>
+
+<h1>From Var(W) to the mode of the time shift</h1>
+
+<h2>Conditional moments of W</h2>
+
+<p>The random variable \(W\) has a point mass at 0 (extinction, probability \(q\)) and a continuous part on \((0, \infty)\) (survival, probability \(1 - q\)). Since all unconditional moments of \(W\) come entirely from the continuous part:</p>
+
+$$E[W^n] = (1 - q)\, E[W^n \mid W > 0]$$
+
+<p>so the conditional (on survival) raw moments are simply:</p>
+
+$$E[W^n \mid \text{surv}] = \frac{E[W^n]}{1 - q}$$
+
+<p>For the extinction probability, \(q\) is the smallest root of \(q = e^{R_0(q - 1)}\) (Poisson offspring). For \(R_0 \gg 1\), \(q \approx 0\).</p>
+
+<h3>First two unconditional moments</h3>
+
+<p>We already derived \(E[W] = 1\) and:</p>
+
+$$E[W^2] = 1 + \text{Var}(W) = 1 + \frac{c^\alpha + \sigma^{(1-\psi)\alpha} - 1}{1 - c^\alpha} = \frac{\sigma^{(1-\psi)\alpha}}{1 - c^\alpha}$$
+
+<p>where we combined terms: \(1 + (c^\alpha + \sigma^{(1-\psi)\alpha} - 1)/(1 - c^\alpha) = (1 - c^\alpha + c^\alpha + \sigma^{(1-\psi)\alpha} - 1)/(1 - c^\alpha)\).</p>
+
+<h3>Conditional CV²</h3>
+
+<p>The conditional coefficient of variation squared is:</p>
+
+\begin{align}
+\text{CV}^2_{\text{cond}} &= \frac{\text{Var}(W \mid \text{surv})}{(E[W \mid \text{surv}])^2} \\[6pt]
+&= \frac{E[W^2 \mid \text{surv}]}{(E[W \mid \text{surv}])^2} - 1 \\[6pt]
+&= \frac{E[W^2]/(1-q)}{1/(1-q)^2} - 1 \\[6pt]
+&= (1 - q)\, E[W^2] - 1
+\end{align}
+
+<p>Substituting \(E[W^2] = \sigma^{(1-\psi)\alpha}/(1 - c^\alpha)\):</p>
+
+<div class="highlight">
+$$\text{CV}^2_{\text{cond}} = \frac{(1 - q)\, \sigma^{(1-\psi)\alpha}}{1 - c^\alpha} - 1$$
+</div>
+
+<p>When \(q \approx 0\): \(\text{CV}^2_{\text{cond}} \approx \text{Var}(W)\), since \(E[W] = 1\) makes \(\text{CV}^2 = \text{Var}\) unconditionally.</p>
+
+<h2>Two-moment Gamma approximation</h2>
+
+<p>Approximate \(W \mid \text{surv}\) by \(\text{Gamma}(k, \lambda)\), matching the first two moments. Write \(V = \text{CV}^2_{\text{cond}}\) and \(p = 1 - q\) for brevity.</p>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;">
+  <th style="padding: 4px 16px;">Quantity</th>
+  <th style="padding: 4px 16px;">In terms of \(k, \lambda\)</th>
+  <th style="padding: 4px 16px;">Solved</th>
+</tr>
+<tr>
+  <td style="padding: 4px 16px;">Mean</td>
+  <td style="padding: 4px 16px;">\(k/\lambda = 1/p\)</td>
+  <td style="padding: 4px 16px;">\(k = 1/V\)</td>
+</tr>
+<tr>
+  <td style="padding: 4px 16px;">CV²</td>
+  <td style="padding: 4px 16px;">\(1/k = V\)</td>
+  <td style="padding: 4px 16px;">\(\lambda = p/V\)</td>
+</tr>
+</table>
+
+<h3>First three moments of the Gamma approximation</h3>
+
+<p>For \(\text{Gamma}(k, \lambda)\), the \(n\)-th raw moment is \(\prod_{j=0}^{n-1}(k+j)/\lambda^n\). Using \(k = 1/V\) and \(\lambda = p/V\):</p>
+
+<div class="highlight">
+\begin{align}
+E[W \mid \text{surv}] &= \frac{1}{p} \\[8pt]
+E[W^2 \mid \text{surv}] &= \frac{1 + V}{p^2} \\[8pt]
+E[W^3 \mid \text{surv}] &= \frac{(1 + V)(1 + 2V)}{p^3}
+\end{align}
+</div>
+
+<p>The first two are exact (matched by construction). The third is a <strong>prediction</strong> of the Gamma approximation — it will differ from the true \(E[W^3 \mid \text{surv}]\) unless \(W \mid \text{surv}\) happens to be exactly Gamma.</p>
+
+<p>Expanding \(V\) gives the fully explicit forms. For instance:</p>
+
+$$E[W^2 \mid \text{surv}] = \frac{1}{p^2}\left(1 + \frac{p\, \sigma^{(1-\psi)\alpha}}{1 - c^\alpha} - 1\right) + \frac{1}{p^2} = \frac{\sigma^{(1-\psi)\alpha}}{p(1 - c^\alpha)}$$
+
+<p>which matches the exact value \(E[W^2]/(1-q) = \sigma^{(1-\psi)\alpha}/[p(1 - c^\alpha)]\). ✓</p>
+
+<h2>Mode of the time shift</h2>
+
+<p>The time shift is \(\varsigma = \log(W)/\alpha_M\) (written as \(\log(W)/r\) in the writeup, where \(r\) denotes the growth rate \(\alpha_M\)). Its mode is determined by the mode of \(W \mid \text{surv}\).</p>
+
+<p>The mode of a \(\text{Gamma}(k, \lambda)\) is \((k-1)/\lambda\) (for \(k \geq 1\)). Substituting:</p>
+
+$$\text{mode}(W \mid \text{surv}) = \frac{k - 1}{\lambda} = \frac{1/V - 1}{p/V} = \frac{1 - V}{p}$$
+
+<p>Taking the log and dividing by \(\alpha_M\):</p>
+
+$$\text{mode}_\varsigma = \frac{1}{\alpha_M}\left[\log(1 - V) - \log p\right] = \frac{1}{\alpha_M}\left[\log(1 - \text{CV}^2_{\text{cond}}) - \log(1 - q)\right]$$
+
+<p>When extinction is negligible (\(q \approx 0\), so \(p \approx 1\)):</p>
+
+<div class="highlight">
+$$\boxed{\text{mode}_\varsigma \approx \frac{1}{\alpha_M}\log\!\left(1 - \text{CV}^2_{\text{cond}}\right)}$$
+</div>
+
+<p>which is exactly the expression in the writeup (with the identification \(r \equiv \alpha_M\)).</p>
+
+<h2>Interpretation</h2>
+
+<ul>
+  <li><strong>Sign:</strong> Since \(V = \text{CV}^2_{\text{cond}} > 0\), the mode is \(\log(1 - V) < 0\), hence \(\text{mode}_\varsigma < 0\). The most likely epidemic is <strong>delayed</strong> relative to the deterministic trajectory — the mode of \(W\) is less than its mean.</li>
+  <li><strong>Magnitude:</strong> Larger \(V\) (more punctuated profile, smaller \(\psi\)) pushes the mode further negative — the typical epidemic starts later. In the extreme, \(V \to 1\) makes \(\text{mode}_\varsigma \to -\infty\).</li>
+  <li><strong>ψ-dependence:</strong> Substituting \(V \approx \text{Var}(W) = (c^\alpha + \sigma^{(1-\psi)\alpha} - 1)/(1 - c^\alpha)\), the mode depends on \(\psi\) solely through \(\sigma^{(1-\psi)\alpha}\). The \(\psi = 1\) (smooth) limit gives the least negative mode; \(\psi = 0\) (spike) gives the most negative.</li>
+  <li><strong>Skewness:</strong> The Gamma approximation has skewness \(2/\sqrt{k} = 2\sqrt{V}\). More punctuated profiles increase \(V\), making \(W\) more right-skewed: a few epidemics start very early, but the bulk are delayed.</li>
+</ul>
+
+<h2>Validity constraint</h2>
+
+<p>The mode formula requires \(k \geq 1\), i.e. \(V \leq 1\), i.e. \(\text{CV}^2_{\text{cond}} \leq 1\). When \(V > 1\), the Gamma density is monotonically decreasing (mode at 0), and the mode of the time shift is \(-\infty\) — the most likely outcome becomes extinction or near-extinction. This occurs for very punctuated profiles with moderate \(R_0\). For the spike limit (\(\psi = 0\)) with \(q \approx 0\):</p>
+
+$$V_{\text{spike}} = \frac{c^\alpha + \sigma^\alpha - 1}{1 - c^\alpha} = \frac{c^\alpha + R_0^2 \rho_2^\alpha - 1}{1 - c^\alpha}$$
+
+<p>This exceeds 1 when \(\sigma^\alpha > 2(1 - c^\alpha)\), which can happen for small \(R_0\) or small \(\alpha\).</p>
+
+<hr>
+
+<div class="prompt">Overdispersion from periodic contacts × punctuated infectiousness</div>
+
+<h1>Deriving the dispersion parameter k</h1>
+
+<h2>Setup</h2>
+
+<p>Consider a population with <strong>periodic contact rate</strong>:</p>
+
+$$c(t) = \bar{c} + A\sin(\omega t)$$
+
+<p>where \(\bar{c}\) is the mean contact rate, \(A < \bar{c}\) is the amplitude, and \(\omega = 2\pi/P\) is the angular frequency (period \(P\)). An individual infected at calendar time \(t_0\) has a biological infectiousness profile \(a_i(\tau)\) — a density over time-since-infection \(\tau\). Their individual reproduction number is:</p>
+
+$$\mathcal{R}_i = R_0 \int_0^\infty a_i(\tau)\,\frac{c(t_0 + \tau)}{\bar{c}}\, d\tau$$
+
+<p>In the punctuated model, \(a_i(\tau)\) is the density of \(s_i + \varepsilon\) where \(\varepsilon \sim \text{Gamma}(\psi\alpha, r)\), centred on the individual's shared shift \(s_i\). The jitter \(\varepsilon\) spreads the profile, while \(s_i\) locates it in time.</p>
+
+<h2>Step 1: Characteristic function argument</h2>
+
+<p>Substitute \(c(t_0 + \tau)/\bar{c} = 1 + (A/\bar{c})\sin(\omega(t_0 + \tau))\):</p>
+
+$$\mathcal{R}_i = R_0\!\left[1 + \frac{A}{\bar{c}}\int_0^\infty a_i(\tau)\sin(\omega(t_0 + \tau))\,d\tau\right]$$
+
+<p>The integral is the imaginary part of the characteristic function of \(a_i\) at frequency \(\omega\). Since \(a_i\) is the density of \(s_i + \varepsilon\):</p>
+
+$$\int a_i(\tau)\, e^{i\omega\tau}\, d\tau = e^{i\omega s_i} \cdot \underbrace{\left(\frac{r}{r - i\omega}\right)^{\psi\alpha}}_{\text{char. fn. of } \varepsilon}$$
+
+<p>Write the Gamma characteristic function in polar form:</p>
+
+$$\left(\frac{r}{r - i\omega}\right)^{\psi\alpha} = D\, e^{i\varphi}$$
+
+<p>where the <strong>damping factor</strong> is:</p>
+
+<div class="highlight">
+$$D = \left|\frac{r}{r - i\omega}\right|^{\psi\alpha} = \left(1 + \frac{\omega^2}{r^2}\right)^{-\psi\alpha/2}$$
+</div>
+
+<p>and \(\varphi = \psi\alpha\cdot\arctan(\omega/r)\) is a phase shift. Then:</p>
+
+$$\int a_i(\tau)\sin(\omega(t_0 + \tau))\,d\tau = D\cdot\sin(\omega(t_0 + s_i) + \varphi)$$
+
+<p>So each individual's reproduction number is:</p>
+
+$$\mathcal{R}_i = R_0\!\left[1 + \frac{A}{\bar{c}}\, D\,\sin\!\big(\omega(t_0 + s_i) + \varphi\big)\right]$$
+
+<h2>Step 2: Variance of \(\mathcal{R}_i\)</h2>
+
+<p>The phase \(\omega(t_0 + s_i) + \varphi\) varies across individuals (through both infection time \(t_0\) and shared shift \(s_i\)). Averaging over the population — either because \(t_0\) is uniformly distributed over the cycle, or because \(s_i\) has enough spread — \(\sin^2\) averages to 1/2:</p>
+
+$$E[\mathcal{R}_i] = R_0, \qquad \text{Var}(\mathcal{R}_i) = R_0^2 \cdot \frac{A^2}{\bar{c}^2} \cdot D^2 \cdot \frac{1}{2}$$
+
+<h2>Step 3: The dispersion parameter</h2>
+
+<p>Each individual produces \(N_i \sim \text{Poisson}(\mathcal{R}_i)\) offspring, so:</p>
+
+$$\text{Var}(N_i) = E[\mathcal{R}_i] + \text{Var}(\mathcal{R}_i) = R_0 + \frac{R_0^2 A^2 D^2}{2\bar{c}^2}$$
+
+<p>Matching to the negative binomial mean-variance relation \(\text{Var} = \mu + \mu^2/k\):</p>
+
+$$k = \frac{R_0^2}{\text{Var}(\mathcal{R}_i)} = \frac{2\bar{c}^2}{A^2 D^2}$$
+
+<p>Substituting \(D^2 = (1 + \omega^2/r^2)^{-\psi\alpha}\):</p>
+
+<div class="highlight">
+$$\boxed{k = \frac{2\bar{c}^2}{A^2}\left(1 + \frac{\omega^2}{r^2}\right)^{\psi\alpha}}$$
+</div>
+
+<p>Here \(r = \alpha/T\) is the <strong>Gamma rate parameter</strong> of the generation interval (not the epidemic growth rate).</p>
+
+<p><em>Note:</em> The expression in <code>uncontrolled.tex</code> line 37 has a LaTeX typo: <code>\frac{2}{\bar{c}^2}{A^2}</code> renders as \(2A^2/\bar{c}^2\), but the correct coefficient is \(2\bar{c}^2/A^2\). (Sanity check: \(k \to \infty\) as \(A \to 0\), recovering Poisson.)</p>
+
+<h2>Step 4: The critical period</h2>
+
+<p>Define the <strong>critical period</strong>:</p>
+
+$$z^*_{\text{per}} = \frac{2\pi}{r} = \frac{2\pi T}{\alpha}$$
+
+<p>This is the period of a contact cycle whose angular frequency matches the Gamma rate \(r\). Since \(\omega = 2\pi/z_{\text{per}}\) where \(z_{\text{per}} = P\) is the contact period:</p>
+
+$$\frac{\omega}{r} = \frac{z^*_{\text{per}}}{z_{\text{per}}}$$
+
+<p>and the formula becomes:</p>
+
+<div class="highlight">
+$$k = \frac{2\bar{c}^2}{A^2}\left(1 + \left(\frac{z^*_{\text{per}}}{z_{\text{per}}}\right)^{\!2}\;\right)^{\psi\alpha}$$
+</div>
+
+<h2>Three regimes</h2>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;">
+  <th style="padding: 6px 14px;">Regime</th>
+  <th style="padding: 6px 14px;">Condition</th>
+  <th style="padding: 6px 14px;">\(k\)</th>
+  <th style="padding: 6px 14px;">Interpretation</th>
+</tr>
+<tr>
+  <td style="padding: 6px 14px;">Slow cycle</td>
+  <td style="padding: 6px 14px;">\(z_{\text{per}} \gg z^*_{\text{per}}\)</td>
+  <td style="padding: 6px 14px;">\(\approx 2\bar{c}^2/A^2\)</td>
+  <td style="padding: 6px 14px;">Contact cycle so slow that even jittered offspring see a nearly constant \(c\). Overdispersion maximal, <strong>independent of \(\psi\)</strong>.</td>
+</tr>
+<tr>
+  <td style="padding: 6px 14px;">Critical</td>
+  <td style="padding: 6px 14px;">\(z_{\text{per}} \approx z^*_{\text{per}}\)</td>
+  <td style="padding: 6px 14px;">\(\approx (2\bar{c}^2/A^2)\cdot 2^{\psi\alpha}\)</td>
+  <td style="padding: 6px 14px;">Maximum sensitivity to \(\psi\): smooth profiles average out fluctuations, punctuated profiles don't.</td>
+</tr>
+<tr>
+  <td style="padding: 6px 14px;">Fast cycle</td>
+  <td style="padding: 6px 14px;">\(z_{\text{per}} \ll z^*_{\text{per}}\)</td>
+  <td style="padding: 6px 14px;">\(\sim (z^*_{\text{per}}/z_{\text{per}})^{2\psi\alpha} \to \infty\)</td>
+  <td style="padding: 6px 14px;">Offspring average over many cycles → Poisson. <strong>Unless \(\psi = 0\)</strong> (spike), where \(k = 2\bar{c}^2/A^2\) always.</td>
+</tr>
+</table>
+
+<h2>Physical intuition</h2>
+
+<p>The key insight is that the <strong>shared shift \(s\) does not reduce overdispersion</strong> — it merely relocates the burst to a different phase of the contact cycle, but all offspring still see the same contact rate. Only the <strong>jitter \(\varepsilon\)</strong> (controlled by \(\psi\)) averages over the contact fluctuations, because it spreads offspring across different phases.</p>
+
+<ul>
+  <li><strong>Spike</strong> (\(\psi = 0\)): No jitter, \(D = 1\). All offspring hit the contact cycle at the same phase. \(k = 2\bar{c}^2/A^2\), maximal overdispersion regardless of period.</li>
+  <li><strong>Smooth</strong> (\(\psi = 1\)): Full jitter with shape \(\alpha\). \(D = (1 + \omega^2/r^2)^{-\alpha/2}\), strong damping of contact fluctuations. \(k\) grows as \((z^*_{\text{per}}/z_{\text{per}})^{2\alpha}\) for fast cycles.</li>
+  <li><strong>Intermediate \(\psi\)</strong>: Jitter shape is \(\psi\alpha\), giving partial damping. The exponent \(\psi\alpha\) interpolates between the two limits.</li>
+</ul>
+
+<h2>Numerical examples</h2>
+
+<p>For measles (\(\alpha = 11.36\), \(T = 12.2\) days): \(z^*_{\text{per}} = 2\pi \cdot 12.2/11.36 \approx 6.7\) days.</p>
+
+<p>For influenza (\(\alpha = 2.32\), \(T = 3.2\) days): \(z^*_{\text{per}} = 2\pi \cdot 3.2/2.32 \approx 8.7\) days.</p>
+
+<p>Both are near one week — so <strong>weekly contact patterns</strong> sit squarely in the critical regime where the punctuation parameter \(\psi\) has maximal effect on overdispersion.</p>
+
+<script>
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\begin{align}", right: "\\end{align}", display: true}
+    ]
+  });
+</script>
+</body>
+</html>
