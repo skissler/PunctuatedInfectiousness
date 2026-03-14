@@ -10,3 +10,66 @@ For many pathogens, the shape of the individual infectiousness kernel is poorly 
 At the individual level, communicating about the likely timing of a person's infectiousness is important: it is good to know if you will be very infectious for a short time, or mildly infectious for a long time, so that you can shape your behavior accordingly. Additionally, a punctuated individual infectiousness kernel could impact epidemic dynamics. Even if the epidemic has the same mean-field behavior, it could impact the stochastic dynamics via highly synchronized transmission events, especially when an outbreak is small. It could interplay with control measures, especially those designed to intervene on infectiousness at the individual level like test- or symptom-based screening and isolation. Indeed, the impact of the punctuatedness of the individual infectiousness kernel has been examined as a sensitivity analysis in various epidemiological studies. {\bf Dan; others?} Stochastic effects are known to cascade through macroscopic features of an epidemic {\bf Morris2025}. However, we lack a comprehensive understanding of how the sharpness of the individual infectiousness kernel, independent of other features like the individual reproduction number, basic reproduction number, and generation interval distribution, impacts epidemic dynamics under both uncontrolled and controlled settings. Furthermore, we lack an understanding of how to measure the shape of the individual infectiousness kernel reliably, along with the settings when the kernel's shape is statistically identifiable.
 
 Here, we address these gaps. 
+
+
+% ⏺ The literature search is done. Here's the key finding upfront: no paper makes your core results
+%   redundant. But there are several important papers to cite and position against. Let me give you the
+%    organized summary.
+
+%   Papers you must cite and distinguish from
+
+%   Most structurally similar:
+%   - Yan (2008), J. Theor. Biol. — Decomposes the generation interval into latent + infectious periods
+%    and studies how the split affects dynamics. Key difference: Yan changes A(τ) when varying the
+%   split; you fix it. Also purely deterministic.
+%   - Lloyd (2001a,b), Theor. Pop. Biol. & Proc. R. Soc. B — Shows narrower (Erlang) infectious periods
+%    destabilize deterministic dynamics. Conceptually analogous (many E stages vs few I stages ≈
+%   varying κ), but again changes A(τ), and is deterministic only.
+%   - Wearing, Rohani & Keeling (2005), PLoS Medicine — Distribution shape of the infectious period
+%   affects R0 estimates, peak size, intervention timing. Motivates your question but varies the
+%   population-level profile.
+
+%   Generation interval variance and growth rates:
+%   - Wallinga & Lipsitch (2007), Proc. R. Soc. B — Foundational r-to-R0 mapping via GI shape. Their
+%   "all GI equal to the mean" upper bound corresponds to your κ→0. Your project shows r and R0 are
+%   κ-invariant by construction, but stochastic variability is not.
+%   - Park, Champredon, Weitz & Dushoff (2019), Epidemics — Extends Wallinga-Lipsitch with Gamma GI
+%   methods. Machinery you use, but no individual-level decomposition.
+
+%   The W/time-shift framework:
+%   - Morris, Maclean & Black (2024), J. Math. Biol. — Already cited. Provides the time-shift framework
+%    but does not study how W depends on individual-level kernel decomposition or anything like κ.
+%   - Jagers (1975), Nerman (1981), Jagers & Nerman (1984) — Foundational CMJ theory for W. Your Var(W)
+%    as a function of κ extends their general results.
+
+%   Superspreading / intervention papers:
+%   - Lloyd-Smith et al. (2005), Nature — Foundational for overdispersion in offspring number. Does not
+%    consider temporal variation. Your result that punctuated infectiousness + periodic contacts
+%   generates overdispersion without R_i heterogeneity is a genuinely new mechanism.
+%   - Goyal et al. (2021), eLife — Closest to your overdispersion mechanism (concentrated viral load +
+%   heterogeneous contacts), but simulation-only, no analytical decomposition, no closed-form k(κ).
+%   - Fraser, Riley, Anderson & Ferguson (2004), PNAS — Controllability depends on pre-symptomatic
+%   transmission fraction θ. Your F_κ(δ_sym) generalises their θ by showing it depends on κ. They treat
+%    it as a fixed pathogen property.
+%   - Champredon & Dushoff (2015), Proc. R. Soc. B — Intrinsic vs realized generation intervals, but
+%   focused on how dynamics filter the distribution, not on different individual kernels producing the
+%   same population kernel.
+
+%   What's genuinely novel in your project
+
+%   1. The κ-parameterised family — a one-parameter family of individual infectiousness profiles that
+%   all share the same population-level A(τ) via Gamma additivity. Nobody has formalised this
+%   non-identifiability.
+%   2. Var(W) as a function of κ — closed-form dependence of stochastic epidemic variability on the
+%   individual-level decomposition, holding A(τ) and R0 fixed.
+%   3. "Temporal superspreading" — punctuated infectiousness interacting with periodic contacts to
+%   generate overdispersed offspring counts. The closed-form k(κ) is new.
+%   4. Intervention effectiveness varying with κ — no paper examines how κ affects isolation/contact
+%   tracing while holding A(τ) fixed.
+
+%   Recommended follow-up searches
+
+%   The agent couldn't access Google Scholar directly, so I'd suggest checking for 2025–2026 papers by
+%   Morris's group, Park & Dushoff, Britton/Ball/Trapman, and Kucharski using terms like "clustered
+%   transmission events," "correlated infection times branching process," "burstiness transmission,"
+%   and "generation interval decomposition within between individual."

@@ -45,6 +45,57 @@ seir <- odin({
 })
 
 # ==============================================================================
+# Mean-field renewal equation model
+# ==============================================================================
+
+# renewal_epidemic <- function(R0, popshape, T_gen, N, dt = 0.01, tmax = 100) {
+#   r <- popshape / T_gen
+#   times <- seq(0, tmax, by = dt)
+#   nt <- length(times)
+
+#   j <- numeric(nt)       # incidence rate
+#   C <- numeric(nt)       # cumulative infections
+#   j[1] <- 1 / N          # seed
+#   C[1] <- 1 / N
+
+#   # Pre-compute generation interval weights
+#   g <- dgamma(times, shape = popshape, rate = r) * dt
+
+#   for (i in 2:nt) {
+#     S <- 1 - C[i-1]
+#     # Convolution: sum over past incidence weighted by g
+#     j[i] <- S * R0 * sum(g[2:i] * j[(i-1):1])
+#     C[i] <- C[i-1] + j[i] * dt
+#   }
+
+#   tibble(t = times, j = j, cuminf = C, S = 1 - C)
+# }
+
+renewal_epidemic <- function(R0, popshape, T_gen, N, dt = 0.01, tmax = 100) {
+  r <- popshape / T_gen
+  times <- seq(0, tmax, by = dt)
+  nt <- length(times)
+
+  j <- numeric(nt)
+  C <- numeric(nt)
+  C[1] <- 1 / N
+
+  # Generation interval weights (with dt baked in for the convolution)
+  g <- dgamma(times, shape = popshape, rate = r) * dt
+  # Index case kernel (no dt — it's a single person, not a rate)
+  g_index <- dgamma(times, shape = popshape, rate = r) / N
+
+  for (i in 2:nt) {
+    S <- 1 - C[i-1]
+    # Index case + renewal convolution
+    j[i] <- S * R0 * (g_index[i] + sum(g[2:i] * j[(i-1):1]))
+    C[i] <- C[i-1] + j[i] * dt
+  }
+
+  tibble(t = times, j = j, cuminf = C, S = 1 - C)
+}
+
+# ==============================================================================
 # Stochastic simulation model
 # ==============================================================================
 
@@ -89,23 +140,54 @@ gen_inf_attempts_spike <- function(e_dur, i_dur, R0){
 #' @param popshape Shape parameter for the Gamma-distributed population 
 #'   infectiousness profile (A(tau) ~ Gamma(popshape, popshape/T))
 #' @param kappa Parameter governing punctuation of the individual
-#'   infectiousness profile (kappa \in (0, 1), with kappa -> 0 giving sharp
+#'   infectiousness profile (kappa \in [0, 1], with kappa -> 0 giving sharp
 #'   infectiousness profiles and kappa -> 1 giving smooth ones equivalent to 
 #'   the population generation interval distribution)
 #' @return A function(t_inf) that returns sorted infection attempt times
 gen_inf_attempts_gamma <- function(T, R0, popshape, kappa){
-	stopifnot(kappa>0, kappa<1)
+	stopifnot(kappa>=0, kappa<=1)
 	r <- popshape/T
-	shiftshape <- (1-kappa)*popshape
-	function(tinf){
-		nattempts <- rpois(1,R0)
-		if(nattempts==0L) return(numeric(0))
-		shift <- rgamma(1, shape=shiftshape, rate=r)
-		attempt_times <- tinf + shift + rgamma(nattempts, shape=kappa*popshape, rate=r)
-		return(sort(attempt_times))
-	}
-}
 
+	if(kappa < 1e-6){ # spike implementation
+		shiftshape <- popshape 
+		function(tinf){
+			nattempts <- rpois(1,R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=r)
+			attempt_times <- rep(tinf + shift, nattempts)
+			return(sort(attempt_times))
+		}
+	} else if(kappa > 1-1e-6){ # smooth implementation
+		function(tinf){
+			nattempts <- rpois(1,R0)
+			if(nattempts==0L) return(numeric(0))
+			attempt_times <- tinf + rgamma(nattempts, shape=popshape, rate=r)
+			return(sort(attempt_times))
+		}
+	} else { # regular implementation
+		shiftshape <- (1-kappa)*popshape
+		function(tinf){
+			nattempts <- rpois(1,R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=r)
+			attempt_times <- tinf + shift + rgamma(nattempts, shape=kappa*popshape, rate=r)
+			return(sort(attempt_times))
+		}
+	}
+	
+}
+# gen_inf_attempts_gamma <- function(T, R0, popshape, kappa){
+# 	stopifnot(kappa>0, kappa<1)
+# 	r <- popshape/T
+# 	shiftshape <- (1-kappa)*popshape
+# 	function(tinf){
+# 		nattempts <- rpois(1,R0)
+# 		if(nattempts==0L) return(numeric(0))
+# 		shift <- rgamma(1, shape=shiftshape, rate=r)
+# 		attempt_times <- tinf + shift + rgamma(nattempts, shape=kappa*popshape, rate=r)
+# 		return(sort(attempt_times))
+# 	}
+# }
 
 
 gen_inf_attempts_gamma_contacts <- function(T, z, z_max, popshape, kappa){

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  13 MAR 2026 06:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  13 MAR 2026 13:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -343,19 +343,37 @@ LaTeX Info: Redefining \\ on input line 3056.
 )
 Package hyperref Info: Option `colorlinks' set `true' on input line 25.
 
+(/usr/local/texlive/2021/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2020/10/26 v3.5g Customizing captions (AR)
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2020/10/21 v2.2e caption3 kernel (AR)
+\captionmargin=\dimen167
+\captionmargin@=\dimen168
+\captionwidth=\dimen169
+\caption@tempdima=\dimen170
+\caption@indent=\dimen171
+\caption@parindent=\dimen172
+\caption@hangindent=\dimen173
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count289
+\c@continuedfloat=\count290
+Package caption Info: hyperref package is loaded.
+)
 (/usr/local/texlive/2021/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2019/10/16 v2.13 Sectioning titles
 \ttl@box=\box50
 \beforetitleunit=\skip60
 \aftertitleunit=\skip61
-\ttl@plus=\dimen167
-\ttl@minus=\dimen168
+\ttl@plus=\dimen174
+\ttl@minus=\dimen175
 \ttl@toksa=\toks29
-\titlewidth=\dimen169
-\titlewidthlast=\dimen170
-\titlewidthfirst=\dimen171
+\titlewidth=\dimen176
+\titlewidthlast=\dimen177
+\titlewidthfirst=\dimen178
 )
-LaTeX Font Info:    Trying to load font information for T1+phv on input line 37
+LaTeX Font Info:    Trying to load font information for T1+phv on input line 41
 .
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/t1phv.fd
@@ -363,30 +381,34 @@ File: t1phv.fd 2020/03/25 scalable font definitions for T1/phv.
 )
 (/usr/local/texlive/2021/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count289
+\l__color_backend_stack_int=\count291
 \l__pdf_internal_box=\box51
 )
-(./main.aux)
+(./main.aux
+
+LaTeX Warning: Label `fig:episims' multiply defined.
+
+)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -424,16 +446,16 @@ LaTeX Font Info:    ... okay on input line 37.
 
 (/usr/local/texlive/2021/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count290
-\scratchdimen=\dimen172
+\scratchcounter=\count292
+\scratchdimen=\dimen179
 \scratchbox=\box52
-\nofMPsegments=\count291
-\nofMParguments=\count292
+\nofMPsegments=\count293
+\nofMParguments=\count294
 \everyMPshowfont=\toks30
-\MPscratchCnt=\count293
-\MPscratchDim=\dimen173
-\MPnumerator=\count294
-\makeMPintoPDFobject=\count295
+\MPscratchCnt=\count295
+\MPscratchDim=\dimen180
+\MPnumerator=\count296
+\makeMPintoPDFobject=\count297
 \everyMPtoPDFconversion=\toks31
 ) (/usr/local/texlive/2021/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -444,7 +466,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring ON on input line 37.
+Package hyperref Info: Link coloring ON on input line 41.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -456,16 +478,18 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count296
+\c@section@level=\count298
 )
-LaTeX Info: Redefining \ref on input line 37.
-LaTeX Info: Redefining \pageref on input line 37.
-LaTeX Info: Redefining \nameref on input line 37.
+LaTeX Info: Redefining \ref on input line 41.
+LaTeX Info: Redefining \pageref on input line 41.
+LaTeX Info: Redefining \nameref on input line 41.
  (./main.out) (./main.out)
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 40
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 44
 .
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/t1pcr.fd
@@ -483,7 +507,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 13.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ))
-Underfull \hbox (badness 10000) in paragraph at lines 18--43
+Underfull \hbox (badness 10000) in paragraph at lines 18--47
 
  []
 
@@ -502,32 +526,50 @@ LaTeX Font Info:    Font shape `T1/phv/b/it' in size <10.95> not available
  [3
 
 ]
+<figures/stock.png, id=118, 716.6775pt x 417.56pt>
+File: figures/stock.png Graphic file (type png)
+<use figures/stock.png>
+Package pdftex.def Info: figures/stock.png  used on input line 71.
+(pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
+
 
 Package natbib Warning: Citation `lloydsmith2005' on page 4 undefined on input 
-line 72.
+line 79.
 
-LaTeX Font Info:    Trying to load font information for TS1+phv on input line 7
-6.
+[4 <./figures/stock.png>]
+LaTeX Font Info:    Trying to load font information for TS1+phv on input line 8
+3.
+
 (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1phv.fd
 File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
-) [4] [5])
-(./uncontrolled.tex [6]
+) [5] [6]
+File: figures/stock.png Graphic file (type png)
+<use figures/stock.png>
+Package pdftex.def Info: figures/stock.png  used on input line 154.
+(pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
+)
+(./uncontrolled.tex [7]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 9.
 
-Overfull \hbox (6.6302pt too wide) in paragraph at lines 30--30
+Overfull \hbox (6.6302pt too wide) in paragraph at lines 29--29
 |[]\T1/phv/b/sl/10.95 Narrower in-di-vid-ual in-fec-tious-ness pro-files yield 
 greater un-cer-tainty in epi-demic growth
  []
 
-[7
+[8
 
-]) (./interventions.tex [8]) (./identifiability.tex [9
+]
+File: figures/stock.png Graphic file (type png)
+<use figures/stock.png>
+Package pdftex.def Info: figures/stock.png  used on input line 43.
+(pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
+) (./interventions.tex [9]) (./identifiability.tex [10
 
 ]) (./discussion.tex
-[10
+[11
 
-]) [11
+]) [12
 
 ] (./main.bbl
 Underfull \hbox (badness 4846) in paragraph at lines 32--41
@@ -559,28 +601,31 @@ Underfull \hbox (badness 5417) in paragraph at lines 32--41
  . org / rspa / article / 115 / 772 / 700 / 2165 /
  []
 
-) [12
+) [13
 
-] (./acknowledgements.tex) [13
+] (./acknowledgements.tex) [14
 
 ] (./supplementary.tex)
 
 Package natbib Warning: There were undefined citations.
 
-[14
+[15
 
 ] (./main.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: F64F619F5E3054E27DB8183EB91393B1;5782.
+(rerunfilecheck)             Checksum: 89ACA9BB998E724D4083D00BE83C9590;5797.
  ) 
 Here is how much of TeX's memory you used:
- 11250 strings out of 478994
- 158618 string characters out of 5858184
- 478128 words of memory out of 5000000
- 28467 multiletter control sequences out of 15000+600000
+ 12467 strings out of 478994
+ 182303 string characters out of 5858184
+ 500744 words of memory out of 5000000
+ 29671 multiletter control sequences out of 15000+600000
  438465 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,77p,1596b,412s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 75i,10n,77p,1596b,375s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
 live/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texl
@@ -597,10 +642,10 @@ ts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type
 1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/
 helvetic/uhvr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/helveti
 c/uhvro8a.pfb>
-Output written on main.pdf (14 pages, 180056 bytes).
+Output written on main.pdf (15 pages, 351736 bytes).
 PDF statistics:
- 273 PDF objects out of 1000 (max. 8388607)
- 240 compressed objects within 3 object streams
- 59 named destinations out of 1000 (max. 500000)
- 129 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 284 PDF objects out of 1000 (max. 8388607)
+ 248 compressed objects within 3 object streams
+ 63 named destinations out of 1000 (max. 500000)
+ 134 words of extra memory for PDF output out of 10000 (max. 10000000)
 
