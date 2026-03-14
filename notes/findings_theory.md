@@ -77,13 +77,13 @@ This gives a clean interpretation: $\psi \in (0, 1)$ is the fraction of generati
 
 ### Extension: heterogeneous $\psi$ across individuals
 
-The shifted Gamma construction is remarkably robust to heterogeneity in the punctuation parameter. If different individuals draw different $\psi_i$ values from some distribution $\psi_i \sim F$ on $(0, \alpha)$, the population-level kernel $A(\tau)$ is **exactly unchanged** — and this holds for *any* distribution $F$, with no moment conditions required.
+The shifted Gamma construction is remarkably robust to heterogeneity in the punctuation parameter. If different individuals draw different $\psi_i$ values from some distribution $\psi_i \sim F$ on $(0, 1)$, the population-level kernel $A(\tau)$ is **exactly unchanged** — and this holds for *any* distribution $F$, with no moment conditions required.
 
 #### Why it works
 
 The argument is simple. For a given individual $i$ with punctuation parameter $\psi_i$, their attempted infection times decompose as:
 
-$$\xi_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha - \psi_i, \beta), \quad \varepsilon_j \sim \text{Gamma}(\psi_i, \beta)$$
+$$\xi_j = l_i + \varepsilon_j, \qquad l_i \sim \text{Gamma}(\alpha - \psi_i, \beta), \quad \varepsilon_j \sim \text{Gamma}(\psi_i, \beta)$$
 
 By the Gamma additivity property, the marginal distribution of each attempted infection time is:
 
@@ -161,7 +161,7 @@ The time-varying contact function acts as a multiplicative modulator on the effe
 
 In the shifted Gamma framework (Section 9), with constant contacts:
 
-- $b_i(\tau) = f_\psi(\tau - s_i)$ — the $\text{Gamma}(\psi, \beta)$ density shifted to onset time $s_i$
+- $b_i(\tau) = f_\psi(\tau - l_i)$ — the $\text{Gamma}(\psi, \beta)$ density shifted to onset time $l_i$
 - $c_i(t) = R_0$ for all $i, t$
 
 This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\tilde{\nu}_i = R_0$ for every individual.
@@ -172,18 +172,18 @@ The decomposition reveals a mechanism for generating overdispersion in the indiv
 
 **Setup.** Suppose:
 
-- Biological profiles are shifted Gammas: $b_i(\tau) = f_\psi(\tau - s_i)$ with punctuation parameter $\psi$
+- Biological profiles are shifted Gammas: $b_i(\tau) = f_\psi(\tau - l_i)$ with punctuation parameter $\psi$
 - The contact function is the *same for everyone* and varies periodically in calendar time: $c_i(t) = c(t) = R_0 \cdot z(t)$, where $z(t)$ oscillates around 1 (e.g., weekday/weekend cycles, seasonal forcing)
 
-There is no individual-level variation in contact rates — the only heterogeneity is in the biological timing $s_i$. Yet the individual reproduction number becomes:
+There is no individual-level variation in contact rates — the only heterogeneity is in the biological timing $l_i$. Yet the individual reproduction number becomes:
 
-$$\tilde{\nu}_i = R_0 \int_0^\infty f_\psi(\tau - s_i) \cdot z(t_i + \tau)\,d\tau.$$
+$$\tilde{\nu}_i = R_0 \int_0^\infty f_\psi(\tau - l_i) \cdot z(t_i + \tau)\,d\tau.$$
 
 The variance of $\tilde{\nu}_i$ depends on how much the biological profile "averages over" the oscillations in $z$:
 
 - **Smooth limit** ($\psi \to \alpha$): $b_i \approx B$ for all $i$, so $\tilde{\nu}_i \approx R_0 \int B(\tau)\,z(t_i + \tau)\,d\tau$. The broad biological window averages over $z$, and $\tilde{\nu}_i \approx R_0$ for everyone. Minimal overdispersion.
 
-- **Delta limit** ($\psi \to 0$): $b_i \to \delta(\tau - s_i)$, so $\tilde{\nu}_i \to R_0 \cdot z(t_i + s_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $z$ oscillates between 0.5 and 1.5, so does $\tilde{\nu}_i$. Maximal overdispersion.
+- **Delta limit** ($\psi \to 0$): $b_i \to \delta(\tau - l_i)$, so $\tilde{\nu}_i \to R_0 \cdot z(t_i + l_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $z$ oscillates between 0.5 and 1.5, so does $\tilde{\nu}_i$. Maximal overdispersion.
 
 - **Intermediate $\psi$**: the narrower $b_i$ is, the less it averages over $z$, and the more variable $\tilde{\nu}_i$ becomes. The punctuation parameter $\psi$ continuously controls the degree of overdispersion.
 
@@ -192,7 +192,7 @@ The variance of $\tilde{\nu}_i$ depends on how much the biological profile "aver
 This is distinct from the standard superspreading mechanisms (heterogeneous $\nu_i$ across individuals, heterogeneous susceptibility, stochastic contact networks). It requires only three ingredients:
 
 1. Punctuated biological infectiousness (narrow $b_i$)
-2. Stochastic variation in the timing of infectiousness (random $s_i$)
+2. Stochastic variation in the timing of infectiousness (random $l_i$)
 3. Time-varying contact rates at the population level ($z(t) \neq \text{const}$)
 
 All three are empirically plausible for many infectious diseases. The shifted Gamma construction provides a single parameter ($\psi$) that controls the strength of this effect.
