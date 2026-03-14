@@ -87,39 +87,39 @@ $$\xi_j = s_i + \varepsilon_j, \qquad s_i \sim \text{Gamma}(\alpha - \psi_i, \be
 
 By the Gamma additivity property, the marginal distribution of each attempted infection time is:
 
-$$\xi_j \mid \kappa_i \sim \text{Gamma}(\alpha, \beta) \qquad \text{for every } \kappa_i \in (0, \alpha)$$
+$$\xi_j \mid \psi_i \sim \text{Gamma}(\alpha, \beta) \qquad \text{for every } \psi_i \in (0, \alpha)$$
 
-The crucial point: the right-hand side **does not depend on $\kappa_i$**. The identity $\text{Gamma}(\alpha - \kappa, \beta) + \text{Gamma}(\kappa, \beta) = \text{Gamma}(\alpha, \beta)$ is exact for every $\kappa$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ regardless of their punctuation parameter.
+The crucial point: the right-hand side **does not depend on $\psi_i$**. The identity $\text{Gamma}(\alpha - \psi, \beta) + \text{Gamma}(\psi, \beta) = \text{Gamma}(\alpha, \beta)$ is exact for every $\psi$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ regardless of their punctuation parameter.
 
 When we average over the population:
 
-$$A(\tau) = E_{\kappa_i}\left[E[a_i(\tau) \mid \kappa_i]\right] = E_{\kappa_i}\left[R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)\right] = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$$
+$$A(\tau) = E_{\psi_i}\left[E[a_i(\tau) \mid \psi_i]\right] = E_{\psi_i}\left[R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)\right] = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$$
 
-The expectation over $\kappa_i$ passes through because the integrand does not depend on $\kappa_i$. The distribution $F$ cancels entirely.
+The expectation over $\psi_i$ passes through because the integrand does not depend on $\psi_i$. The distribution $F$ cancels entirely.
 
 #### Example distributions
 
-With $\alpha = 10$, we can define $\kappa_i = \alpha \cdot B_i$ where $B_i \sim \text{Beta}(a, b)$ on $(0, 1)$, giving $\kappa_i \in (0, 10)$.
+With $\alpha = 10$, we can define $\psi_i = \alpha \cdot B_i$ where $B_i \sim \text{Beta}(a, b)$ on $(0, 1)$, giving $\psi_i \in (0, 10)$.
 
-**Example 1: Homogeneous population (degenerate $F$).** $\kappa_i = 5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
+**Example 1: Homogeneous population (degenerate $F$).** $\psi_i = 5$ for all $i$ (i.e., $B_i = 0.5$ with probability 1). Everyone has the same moderate punctuation. This is the baseline case.
 
-**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\kappa_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\kappa_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, \beta)$.
+**Example 2: Bimodal / U-shaped distribution.** $B_i \sim \text{Beta}(0.3, 0.3)$, giving a U-shaped density on $(0, 1)$ with most mass near the extremes. This produces a population split between highly punctuated individuals ($\psi_i \approx 0.5$, narrow spikes) and highly smooth individuals ($\psi_i \approx 9.5$, broad profiles resembling $A(\tau)$), with few individuals in between. Despite this radical heterogeneity in individual profile shapes, $A(\tau)$ is exactly $R_0 \cdot \text{Gamma}(10, \beta)$.
 
-**Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\kappa_i$ near $\alpha$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
+**Example 3: Right-skewed (mostly smooth).** $B_i \sim \text{Beta}(5, 1)$, concentrating $\psi_i$ near $\alpha$. Most individuals have smooth, population-like profiles; a small minority are punctuated. $A(\tau)$ is unchanged.
 
-**Example 4: Left-skewed (mostly spiky).** $B_i \sim \text{Beta}(1, 5)$, concentrating $\kappa_i$ near 0. Most individuals have narrow spikes; a few are smooth. $A(\tau)$ is still unchanged.
+**Example 4: Left-skewed (mostly spiky).** $B_i \sim \text{Beta}(1, 5)$, concentrating $\psi_i$ near 0. Most individuals have narrow spikes; a few are smooth. $A(\tau)$ is still unchanged.
 
-In all four cases — and in any other distribution on $(0, \alpha)$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. Importantly, heterogeneous $\kappa$ alone does not introduce variation in $R_i$: each individual's profile integrates to exactly $R_0$ regardless of their $\kappa_i$, because $f_{\kappa_i}$ is a proper density for every $\kappa_i$. Variation in $R_i$ arises only when there is a time-varying contact process to interact with (Sections 10–11); what $\kappa$ heterogeneity does is create heterogeneous *sensitivity* to that contact variation. The observables that differ across $\kappa$ distributions are therefore conditional on the contact environment: the degree of offspring overdispersion given periodic contacts, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
+In all four cases — and in any other distribution on $(0, \alpha)$ — the population-level kernel, the mean generation interval, and the mean-field ODE dynamics are identical. Importantly, heterogeneous $\psi$ alone does not introduce variation in $R_i$: each individual's profile integrates to exactly $R_0$ regardless of their $\psi_i$, because $f_{\psi_i}$ is a proper density for every $\psi_i$. Variation in $R_i$ arises only when there is a time-varying contact process to interact with (Sections 10–11); what $\psi$ heterogeneity does is create heterogeneous *sensitivity* to that contact variation. The observables that differ across $\psi$ distributions are therefore conditional on the contact environment: the degree of offspring overdispersion given periodic contacts, the distribution of generation intervals from individual infectors, and the effectiveness of timing-dependent interventions.
 
 #### Implication for interventions
 
-This invariance property means that a population with heterogeneous $\kappa$ provides a clean setting for studying how interventions perform across a mixture of profile types, without any confounding from changes in $A(\tau)$. For instance, in a U-shaped population (Example 2):
+This invariance property means that a population with heterogeneous $\psi$ provides a clean setting for studying how interventions perform across a mixture of profile types, without any confounding from changes in $A(\tau)$. For instance, in a U-shaped population (Example 2):
 
 - Detect-and-isolate would be highly effective against the spiky subpopulation (all-or-nothing aversion, biased toward "all") but less effective against the smooth subpopulation (partial aversion, generation interval distortion).
 - Gathering size restrictions would primarily affect the spiky subpopulation in absolute variance terms, while having the same mean effect on everyone.
-- Contact tracing effectiveness would depend on the $\kappa$ of both infector and infectee, creating a $2 \times 2$ structure of spiky/smooth pairings within the same population.
+- Contact tracing effectiveness would depend on the $\psi$ of both infector and infectee, creating a $2 \times 2$ structure of spiky/smooth pairings within the same population.
 
-The population-level $R_{\text{eff}}$ under any intervention is a mixture over individual-level $\kappa_i$ values, and the mixture weights are set by $F$ — but the uncontrolled $A(\tau)$ is invariant, so any differences in epidemic outcomes under intervention are attributable purely to the $\kappa$ heterogeneity, not to differences in the baseline transmission kernel.
+The population-level $R_{\text{eff}}$ under any intervention is a mixture over individual-level $\psi_i$ values, and the mixture weights are set by $F$ — but the uncontrolled $A(\tau)$ is invariant, so any differences in epidemic outcomes under intervention are attributable purely to the $\psi$ heterogeneity, not to differences in the baseline transmission kernel.
 
 ## Decomposing infectiousness into biological and contact components
 
@@ -161,7 +161,7 @@ The time-varying contact function acts as a multiplicative modulator on the effe
 
 In the shifted Gamma framework (Section 9), with constant contacts:
 
-- $b_i(\tau) = f_\kappa(\tau - s_i)$ — the $\text{Gamma}(\kappa, \beta)$ density shifted to onset time $s_i$
+- $b_i(\tau) = f_\psi(\tau - s_i)$ — the $\text{Gamma}(\psi, \beta)$ density shifted to onset time $s_i$
 - $c_i(t) = R_0$ for all $i, t$
 
 This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\tilde{\nu}_i = R_0$ for every individual.
@@ -172,20 +172,20 @@ The decomposition reveals a mechanism for generating overdispersion in the indiv
 
 **Setup.** Suppose:
 
-- Biological profiles are shifted Gammas: $b_i(\tau) = f_\kappa(\tau - s_i)$ with punctuation parameter $\kappa$
+- Biological profiles are shifted Gammas: $b_i(\tau) = f_\psi(\tau - s_i)$ with punctuation parameter $\psi$
 - The contact function is the *same for everyone* and varies periodically in calendar time: $c_i(t) = c(t) = R_0 \cdot z(t)$, where $z(t)$ oscillates around 1 (e.g., weekday/weekend cycles, seasonal forcing)
 
 There is no individual-level variation in contact rates — the only heterogeneity is in the biological timing $s_i$. Yet the individual reproduction number becomes:
 
-$$\tilde{\nu}_i = R_0 \int_0^\infty f_\kappa(\tau - s_i) \cdot z(t_i + \tau)\,d\tau.$$
+$$\tilde{\nu}_i = R_0 \int_0^\infty f_\psi(\tau - s_i) \cdot z(t_i + \tau)\,d\tau.$$
 
 The variance of $\tilde{\nu}_i$ depends on how much the biological profile "averages over" the oscillations in $z$:
 
-- **Smooth limit** ($\kappa \to \alpha$): $b_i \approx B$ for all $i$, so $\tilde{\nu}_i \approx R_0 \int B(\tau)\,z(t_i + \tau)\,d\tau$. The broad biological window averages over $z$, and $\tilde{\nu}_i \approx R_0$ for everyone. Minimal overdispersion.
+- **Smooth limit** ($\psi \to \alpha$): $b_i \approx B$ for all $i$, so $\tilde{\nu}_i \approx R_0 \int B(\tau)\,z(t_i + \tau)\,d\tau$. The broad biological window averages over $z$, and $\tilde{\nu}_i \approx R_0$ for everyone. Minimal overdispersion.
 
-- **Delta limit** ($\kappa \to 0$): $b_i \to \delta(\tau - s_i)$, so $\tilde{\nu}_i \to R_0 \cdot z(t_i + s_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $z$ oscillates between 0.5 and 1.5, so does $\tilde{\nu}_i$. Maximal overdispersion.
+- **Delta limit** ($\psi \to 0$): $b_i \to \delta(\tau - s_i)$, so $\tilde{\nu}_i \to R_0 \cdot z(t_i + s_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $z$ oscillates between 0.5 and 1.5, so does $\tilde{\nu}_i$. Maximal overdispersion.
 
-- **Intermediate $\kappa$**: the narrower $b_i$ is, the less it averages over $z$, and the more variable $\tilde{\nu}_i$ becomes. The punctuation parameter $\kappa$ continuously controls the degree of overdispersion.
+- **Intermediate $\psi$**: the narrower $b_i$ is, the less it averages over $z$, and the more variable $\tilde{\nu}_i$ becomes. The punctuation parameter $\psi$ continuously controls the degree of overdispersion.
 
 **The mechanism in words:** when biological infectiousness is concentrated in a narrow window, the individual's total transmission depends on *when* that window falls relative to the contact landscape. Some individuals' narrow windows align with high-contact periods (weekdays, social events, crowded settings); others align with low-contact periods (nights, weekends, holidays). This "sampling" of the contact function creates between-individual variation in $\tilde{\nu}_i$ — i.e., superspreading — even without any intrinsic heterogeneity in contact rates or biological susceptibility.
 
@@ -195,4 +195,4 @@ This is distinct from the standard superspreading mechanisms (heterogeneous $\nu
 2. Stochastic variation in the timing of infectiousness (random $s_i$)
 3. Time-varying contact rates at the population level ($z(t) \neq \text{const}$)
 
-All three are empirically plausible for many infectious diseases. The shifted Gamma construction provides a single parameter ($\kappa$) that controls the strength of this effect.
+All three are empirically plausible for many infectious diseases. The shifted Gamma construction provides a single parameter ($\psi$) that controls the strength of this effect.
