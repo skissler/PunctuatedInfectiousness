@@ -51,7 +51,7 @@ which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\psi, \beta)$ density
 
 ### Limiting behaviour
 
-| $\psi$ | Individual profile $f_\psi$ | Shift distribution $l_i$ | Interpretation |
+| $\psi$ | Individual profile $f_\psi$ | Shift distribution (of $l_i$) | Interpretation |
 |---|---|---|---|
 | $\psi \to 0$ | $\delta$-function (infinitely narrow spike) | $\approx \text{Gamma}(\alpha, \beta) = A(\tau)/R_0$ | Maximally punctuated: all infection attempts at one instant |
 | Small $\psi$ (e.g. 0.25) | Narrow unimodal bump | Wide shift distribution | Punctuated but not singular |
@@ -61,13 +61,13 @@ which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\psi, \beta)$ density
 
 The total variance of a person's attempted infection times decomposes additively:
 
-$$\text{Var}(\xi_j) = \underbrace{\text{Var}(s_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha_{\text{total}} - \kappa}{r^2} + \frac{\kappa}{r^2} = \frac{\alpha_{\text{total}}}{r^2}.$$
+$$\text{Var}(\xi_j) = \underbrace{\text{Var}(l_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha}(1-\psi)}{\beta^2} + \frac{\alpha \psi}{\beta^2} = \frac{\alpha}{\beta^2}.$$
 
 The fraction of total variance that is between-individual (i.e., due to punctuation) is
 
-$$\text{punctuation fraction} = \frac{\alpha_{\text{total}} - \kappa}{\alpha_{\text{total}}} = 1 - \frac{\kappa}{\alpha_{\text{total}}}.$$
+$$\text{punctuation fraction} = \frac{\alpha}(1- - \psi)}{\alpha} = 1 - \frac{\psi}{\alpha}.$$
 
-This gives a clean interpretation: $\kappa / \alpha_{\text{total}} \in (0, 1)$ is the fraction of generation-time variability that is within-individual.
+This gives a clean interpretation: $\psi \in (0, 1)$ is the fraction of generation-time variability that is within-individual.
 
 ### Design choices
 
