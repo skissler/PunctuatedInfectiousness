@@ -2,7 +2,7 @@
 
 The original three profiles (smooth, stepwise, spike) are useful theoretical bookends but leave open the question of how to *interpolate* between the smooth and spike extremes with a single punctuation parameter, while preserving:
 
-1. $\int a_i(\tau)\,d\tau = R_0$ exactly for every individual,
+1. $\int a_i(\tau) d\tau = R_0$ exactly for every individual,
 2. $E[a_i(\tau)] = A(\tau)$ exactly (population kernel recovered in expectation),
 3. $A(\tau)$ invariant as the punctuation parameter varies,
 4. All individual profiles having the same shape, height, and width (differing only in location).
