@@ -139,7 +139,7 @@ where $t_i$ is the calendar time at which person $i$ was infected, and:
 
 The individual's realized reproduction number is then
 
-$$\tilde{\nu}_i = \int_0^\infty a_i(\tau)\,d\tau = \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau,$$
+$$\nu_i = \int_0^\infty a_i(\tau) d\tau = \int_0^\infty b_i(\tau) c_i(t_i + \tau) d\tau,$$
 
 a weighted average of their contact potential over the times they are biologically infectious.
 
@@ -161,19 +161,19 @@ The time-varying contact function acts as a multiplicative modulator on the effe
 
 In the shifted Gamma framework (Section 9), with constant contacts:
 
-- $b_i(\tau) = f_\psi(\tau - l_i)$ — the $\text{Gamma}(\psi, \beta)$ density shifted to onset time $l_i$
+- $b_i(\tau) = f_\psi(\tau - l_i)$ — the $\text{Gamma}(\alpha \psi, \beta)$ density shifted to onset time $l_i$
 - $c_i(t) = R_0$ for all $i, t$
 
-This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\tilde{\nu}_i = R_0$ for every individual.
+This is the simplest case: all the punctuation lives in $b_i$, contacts are homogeneous and time-invariant, and $\nu_i = R_0$ for every individual.
 
 ### Punctuated infectiousness as a source of superspreading
 
-The decomposition reveals a mechanism for generating overdispersion in the individual reproduction number $\tilde{\nu}_i$ that, to our knowledge, has not been previously described.
+The decomposition reveals a mechanism for generating overdispersion in the individual reproduction number $\nu_i$ that, to our knowledge, has not been previously described.
 
 **Setup.** Suppose:
 
 - Biological profiles are shifted Gammas: $b_i(\tau) = f_\psi(\tau - l_i)$ with punctuation parameter $\psi$
-- The contact function is the *same for everyone* and varies periodically in calendar time: $c_i(t) = c(t) = R_0 \cdot z(t)$, where $z(t)$ oscillates around 1 (e.g., weekday/weekend cycles, seasonal forcing)
+- The contact function is the *same for everyone* and varies periodically in calendar time, e.g.: $c_i(t) = c(t) = R_0 \cdot z(t)$, where $z(t)$ oscillates around 1 (e.g., weekday/weekend cycles, seasonal forcing)
 
 There is no individual-level variation in contact rates — the only heterogeneity is in the biological timing $l_i$. Yet the individual reproduction number becomes:
 
