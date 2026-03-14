@@ -15,7 +15,7 @@ $$g(\tau) = \frac{A(\tau)}{R_0} $$
 Importantly, $A(\tau)$ is a population-level object (an expected value across individuals). At the individual level, various "individual infectiousness profiles" $a_i(\tau)$ can yield the same $A(\tau)$. For example, the SEIR model is commonly motivated by assuming a person undergoes an exponentially-distributed latent period (ending at rate $\nu$), followed by another exponentially-distributed latent period (ending at rate $\gamma$), and is infectious at level $\beta$ during the infectious period, i.e., 
 
 $$ a_i(\tau) = \begin{cases}
-\beta &\qquad \tau \in [t_i^{on}, t_i^{on} + t_i^{off}] \qquad \text{ where } \tau_i^{on} \sim \text{Exp}(\gamma) \text{ and } \tau_i^{off} \sim \text{Exp}(\gamma) \\ 
+\beta &\qquad \tau \in [t_i^\text{on}, t_i^\text{on} + t_i^\text{off}] \qquad \text{ where } \tau_i^\text{on} \sim \text{Exp}(\gamma) \text{ and } \tau_i^\text{off} \sim \text{Exp}(\gamma) \\ 
 0 &\qquad \text{otherwise}
 \end{cases}$$ 
 
