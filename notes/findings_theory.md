@@ -179,11 +179,11 @@ There is no individual-level variation in contact rates — the only heterogenei
 
 $$\tilde{\nu}_i = R_0 \int_0^\infty f_\psi(\tau - l_i) \cdot z(t_i + \tau)\,d\tau.$$
 
-The variance of $\tilde{\nu}_i$ depends on how much the biological profile "averages over" the oscillations in $z$:
+The variance of $\nu_i$ depends on how much the biological profile "averages over" the oscillations in $z$:
 
-- **Smooth limit** ($\psi \to \alpha$): $b_i \approx B$ for all $i$, so $\tilde{\nu}_i \approx R_0 \int B(\tau)\,z(t_i + \tau)\,d\tau$. The broad biological window averages over $z$, and $\tilde{\nu}_i \approx R_0$ for everyone. Minimal overdispersion.
+- **Smooth limit** ($\psi \to 1$): $b_i \approx B$ for all $i$, so $\nu_i \approx R_0 \int B(\tau) z(t_i + \tau) d\tau$. The broad biological window averages over $z$, and $\nu_i \approx R_0$ for everyone. Minimal overdispersion.
 
-- **Delta limit** ($\psi \to 0$): $b_i \to \delta(\tau - l_i)$, so $\tilde{\nu}_i \to R_0 \cdot z(t_i + l_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $z$ oscillates between 0.5 and 1.5, so does $\tilde{\nu}_i$. Maximal overdispersion.
+- **Delta limit** ($\psi \to 0$): $b_i \to \delta(\tau - l_i)$, so $\nu_i \to R_0 \cdot z(t_i + l_i)$. The individual's reproduction number directly *samples* the contact function at a single point. If $z$ oscillates between 0.5 and 1.5, $\nu_i$ varies between $0.5 R_0$ and $1.5 R_0$. Maximal overdispersion.
 
 - **Intermediate $\psi$**: the narrower $b_i$ is, the less it averages over $z$, and the more variable $\tilde{\nu}_i$ becomes. The punctuation parameter $\psi$ continuously controls the degree of overdispersion.
 
