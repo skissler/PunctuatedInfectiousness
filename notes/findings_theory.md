@@ -19,6 +19,9 @@ $$ a_i(\tau) = \begin{cases}
 0 &\qquad \text{otherwise}
 \end{cases}$$ 
 
+It can be shown that this yields the population-level infectiousness profile 
+
+$$A(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$ 
 
 ## Shifted Gamma construction: a clean one-parameter interpolation
 
