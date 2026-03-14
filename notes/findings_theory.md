@@ -65,7 +65,7 @@ $$\text{Var}(\xi_j) = \underbrace{\text{Var}(l_i)}_{\text{between-individual}} +
 
 The fraction of total variance that is between-individual (i.e., due to punctuation) is
 
-$$\text{punctuation fraction} = \frac{\alpha}(1- - \psi)}{\alpha} = 1 - \frac{\psi}{\alpha}.$$
+$$\text{punctuation fraction} = \frac{\alpha (1- - \psi)}{\alpha} = 1 - \frac{\psi}{\alpha}.$$
 
 This gives a clean interpretation: $\psi \in (0, 1)$ is the fraction of generation-time variability that is within-individual.
 
