@@ -8,10 +8,6 @@ In the smooth case, an infector's $\chi_i$ infection attempts have times drawn f
 
 The growth delay from punctuation **increases** with $R_0$. This is because the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $\chi_i = 1$ attempt, so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau_j$, giving smooth profiles a compounding head start at each generation. The result is that punctuation slows early growth most precisely when $R_0$ is large, i.e., when the epidemic would otherwise grow fastest.
 
-## Spike epidemics have more variable empirical exponential growth rates
-
-Estimates of the early-epidemic exponential growth rate $r$ have early identical means for smooth and spike infectiousness profiles, but the estimates for the spike case have higher standard deviation, based on log-linear fit to cases 10–100. 
-
 ## Why punctuated profiles yield slower early growth despite identical mean-field dynamics
 
 ### The apparent paradox
@@ -377,6 +373,13 @@ Consequently, the true $E[Z(t)]$ grows slower than the ODE solution at every tim
 In `code/1_1_basicmetrics.R`, we overlay the ODE solution (blue) and the empirical mean of established stochastic trajectories (black) on `fig_cuminf_overlay`. The black curve is consistently pulled below the blue curve, with the gap largest for the spike profile. This gap is *not* primarily a conditioning artefact (conditioning on establishment has a comparatively small effect when the establishment probability is high). It reflects the finite-population mean-field bias described above, and would shrink with increasing $N$.
 
 ---
+
+## Spike epidemics have more variable empirical exponential growth rates
+
+Estimates of the early-epidemic exponential growth rate $r$ have early identical means for smooth and spike infectiousness profiles, but the estimates for the spike case have higher standard deviation, based on log-linear fit to cases 10–100. 
+
+---
+
 ## Overdispersion from punctuated infectiousness with periodic contacts
 
 We decompose individual infectiousness as $a_i(\tau) = b_i(\tau) \cdot R_0 z(t_i + \tau)$, where:
