@@ -159,23 +159,19 @@ The growth delay discussed in the previous section is precisely the statement th
 
 ### What they compute (and how)
 
-Morris et al. develop two numerical methods to compute the *full distribution* of $W$ (and hence $\tau$):
+Morris et al. develop two numerical methods to compute the *full distribution* of $W$ (and hence $\varsigma$):
 
-1. **PE (Probability Estimation) method:** Numerically inverts the Laplace-Stieltjes transform (LST) of $W$. The LST satisfies a functional equation derived from the branching structure:
-
-   $$E[e^{-sW}] = g\left(\frac{1}{R_0}\int_0^\infty E[e^{-s \, e^{-\alpha u} W}] \, \mu(du)\right)$$
-
-   (where $g$ is the offspring probability generating function and $\mu$ is the intensity measure). They solve this iteratively and invert to obtain the density of $W$. This gives the exact distribution up to numerical precision.
+1. **PE (Probability Estimation) method:** Numerically inverts the Laplace-Stieltjes transform (LST) of $W$. The LST satisfies a functional equation derived from the branching structure. They solve this iteratively and invert to obtain the density of $W$. This gives the exact distribution up to numerical precision.
 
 2. **MM (Moment Matching) method:** Computes the first few moments of $W$ analytically (from the branching process structure) and fits a **generalised gamma distribution** to match them. This is faster and gives a closed-form approximation that is typically very accurate.
 
 ### What we do that they don't
 
-Morris et al. treat the offspring process as *given* and ask "what is the distribution of $W$?" Their paper does not consider the possibility of varying the offspring process while keeping the intensity measure (and hence the Malthusian parameter $\alpha$ and the deterministic trajectory $v(t)$) invariant.
+Morris et al. treat the offspring process as *given* and ask "what is the distribution of $W$?" Their paper does not consider the possibility of varying the offspring process while keeping the intensity measure (and hence the Malthusian parameter $r$ and the deterministic trajectory) invariant.
 
-This is precisely our contribution. We construct a family of offspring processes — parametrised by $\psi$ — that all share the same $A(\tau)$ (and hence the same $\alpha$, $R_0$, and generation-interval distribution) but differ in the within-individual correlation structure of offspring timing. This family traces a path through the space of branching processes that Morris et al.'s methods could be applied to, generating a *curve* of $W$-distributions indexed by $\psi$.
+This is precisely our contribution. We construct a family of offspring processes — parametrised by $\psi$ — that all share the same $A(\tau)$ (and hence the same $r$, $R_0$, and generation interval distribution) but differ in the within-individual correlation structure of offspring timing. This family traces a path through the space of branching processes that Morris et al.'s methods could be applied to, generating a *curve* of $W$-distributions indexed by $\psi$.
 
-In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) \, d\tau$ fixed and vary the offspring point process (from independent arrival times at $\psi = \alpha_{\text{total}}$ to perfectly synchronised arrivals at $\psi \to 0$). The deterministic trajectory $v(t)$ is invariant across this family; only the stochastic fluctuation $W$ changes.
+In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) d\tau$ fixed and vary the offspring point process (from independent arrival times at $\psi \rightarrow 1}$ to perfectly synchronised arrivals at $\psi \rightarrow 0$). The deterministic trajectory is invariant across this family; only the stochastic fluctuation $W$ changes.
 
 ### Their framework applied to our problem
 
