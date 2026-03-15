@@ -12,29 +12,45 @@ $$R_0 = \int_0^\infty A(\tau) d\tau$$
 
 $$g(\tau) = \frac{A(\tau)}{R_0} $$ 
 
-Importantly, $A(\tau)$ is a population-level object (an expected value across individuals). At the individual level, various "individual infectiousness profiles" $a_i(\tau)$ can yield the same $A(\tau)$. For example, the SEIR model is commonly motivated by assuming a person undergoes an exponentially-distributed latent period (ending at rate $\eta$), followed by another exponentially-distributed latent period (ending at rate $\gamma$), and is infectious at level $\beta$ during the infectious period, i.e., 
+Importantly, $A(\tau)$ is a population-level object (an expected value across individuals). At the individual level, various "individual infectiousness profiles" $a_i(\tau)$ can yield the same $A(\tau)$. For example, the SEIR model is commonly motivated by assuming a person undergoes an exponentially-distributed latent period (ending at rate $\eta$), followed by another exponentially-distributed infectious period (ending at rate $\gamma$), and is infectious at level $\beta$ during the infectious period, i.e., 
 
 $$ a_i(\tau) = \begin{cases}
 \beta &\qquad \tau \in [t_i^\text{on}, t_i^\text{on} + t_i^\text{off}] \qquad \text{ where } \tau_i^\text{on} \sim \text{Exp}(\eta) \text{ and } \tau_i^\text{off} \sim \text{Exp}(\gamma) \\ 
 0 &\qquad \text{otherwise}
 \end{cases}$$ 
 
-It can be shown that this yields the population-level infectiousness profile 
+We call this the "stepwise" individual infectiousness profile. It can be shown that this yields the population-level infectiousness profile 
 
 $$A(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$ 
 
+However, other choices of $a_i(\tau)$ yield this same $A(\tau)$; for example, we might assume each person's individual infectiousness profile is identical to the population-level profile: 
 
+$$a_i(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau}) \qquad \forall i$$ 
+
+We call this the "smooth" individual infectiousness profile. Or, we might assume each person's individual infectiousness profile is a delta function concentrated at time ${t_i}^*$, where ${t_i}^*$ is distributed according to $g(\tau) = A(\tau)/R_0$: 
+
+$$a_i(\tau) = \frac{\beta}{\gamma} \delta_{{t_i}^*}(\tau) \qquad {t_i}^* \sim A(\tau)/R_0$$
+
+Here, each person's secondary infections are all concentrated at a single moment. We call this the "spike" individual infectiousness profile. 
+
+In each of these cases, 
+
+$$ E_i[a_i(\tau)] = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$ 
+
+That is, each yields the same population-level infectiousness profile $A(\tau)$, and thus the same deterministic dynamics. 
+
+Our goal is to determine whether and how the shape of the individual infectiousness profile, $a_i(\tau)$, impacts the stochastic dynamics of both uncontrolled and controlled epidemics. Then, we briefly examine how the shape of $a_i(\tau)$ might be inferred from contact tracing data. 
 
 ## Shifted Gamma construction: a clean one-parameter interpolation
 
-The original three profiles (smooth, stepwise, spike) are useful theoretical bookends but leave open the question of how to *interpolate* between the smooth and spike extremes with a single punctuation parameter, while preserving:
+The three canonical profiles (smooth, stepwise, spike) are useful theoretical bookends but have two main problems. The first is that the stepwise case inherently builds **overdispersion** (i.e., variation in how infectious each person is -- $\int a_i(\tau) d\tau)$ is different across individuals) into the model. Overdispersion is known to impact the stochastic dynamics of epidemics, and this has been well studied elsewhere. We isntead want to examine how the stochastic dynamics of epidemics differ even when everyone's baseline infectiousness is the same, and all that differs is its timing. Second, while the "smooth" and "spike" individual infectiousness profiles avoid the issue of inherent overdispersion, real individual infectiousness profile likely sits somewhere between the "smooth" and "spike" extremes. This laves open the question of how to *interpolate* between the smooth and spike extremes with a single punctuation parameter, while preserving:
 
 1. $\int a_i(\tau) d\tau = R_0$ exactly for every individual,
 2. $E[a_i(\tau)] = A(\tau)$ exactly (population kernel recovered in expectation),
 3. $A(\tau)$ invariant as the punctuation parameter varies,
 4. All individual profiles having the same shape, height, and width (differing only in location).
 
-The shifted Gamma construction achieves all four simultaneously.
+A shifted Gamma construction achieves all four simultaneously.
 
 ### Setup
 
