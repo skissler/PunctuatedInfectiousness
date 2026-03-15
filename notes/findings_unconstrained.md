@@ -16,12 +16,12 @@ Estimates of the early-epidemic exponential growth rate $r$ have early identical
 
 We decompose individual infectiousness as $a_i(\tau) = b_i(\tau) \cdot R_0 z(t_i + \tau)$, where:
 
-- $b_i(\tau) = f_\psi(\tau - l_i)$ is the biological timing density (a Gamma($\psi \alpha$, $r$) density shifted by individual onset $`l_i \sim \text{Gamma}((1-\psi) \alpha, r)`$)
+- $b_i(\tau) = f_\psi(\tau - l_i)$ is the biological timing density (a Gamma($\psi \alpha$, $\beta$) density shifted by individual onset $`l_i \sim \text{Gamma}((1-\psi) \alpha, \beta)`$)
 - $z(t) = 1 + \epsilon \sin(2\pi t / T)$ is a periodic contact rate multiplier with period $T = 7$ days
 
 The parameter $\psi$ controls punctuation: small $\psi$ gives narrow, spike-like individual profiles; large $\psi$ gives broad profiles that resemble the population average. The parameter $\epsilon$ controls the amplitude of contact variation ($\epsilon = 0$ is constant contacts, $\epsilon = 0.9$ is strong weekly oscillation).
 
-The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, r)$ is invariant across $\psi$ by the Gamma additivity property. Parameters: $R_0 = 2$, $\alpha = 10$, $\mu = 5$ days, so $r = 2$.
+The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ is invariant across $\psi$ by the Gamma additivity property. Parameters: $R_0 = 2$, $\alpha = 10$, $\mu = 5$ days, so $r = 2$.
 
 ### Part A: Branching process offspring distributions
 
@@ -235,17 +235,6 @@ $$\implies E[T_n]_{\text{spike}} > E[T_n]_{\text{smooth}}$$
 
 **The spike case reaches milestones later, on average, despite having the same expected population size at every time point.** The epidemic doesn't grow slower — it effectively starts later (in a stochastic sense), then grows at the same deterministic rate.
 
-### The investor analogy
-
-Consider two investors, both earning 10% on average annually:
-
-- **Smooth investor**: earns exactly 10% every year. After $t$ years, wealth $= (1.10)^t$ deterministically.
-- **Volatile investor**: earns $-20\%$ or $+40\%$ each year with equal probability. Expected wealth $= E[(1 + r_t)] = 1.10$, so $E[\text{wealth at } t] = (1.10)^t$ — the same.
-
-But the expected TIME to double differs. The smooth investor doubles at $t^* = \log 2 / \log 1.10 \approx 7.3$ years. The volatile investor's log-wealth performs a random walk with drift $E[\log(1 + r)] = \frac{1}{2}\log(0.8) + \frac{1}{2}\log(1.4) \approx 0.057 < \log(1.10) \approx 0.095$. The volatile investor takes $\log 2 / 0.057 \approx 12.2$ years in expectation — 67% longer.
-
-The epidemic analogy is exact: $W$ plays the role of initial wealth, $\alpha$ plays the role of the growth rate, and the spike model's synchronized offspring create the "volatility" that Jensen's inequality penalises.
-
 ### Quantitative connection to the order-statistics mechanism
 
 The order-statistics mechanism described in Findings 3 and 12 is the *micro-level* manifestation of the variance difference in $W$.
@@ -382,7 +371,7 @@ where $m_2 = E[\sum_j e^{-2\alpha \tau_j}] = R_0 \cdot \rho_2^{\alpha\_{\text{to
 
 ### The crucial $\psi$-dependent quantity: Var(S)
 
-Using the decomposition $\tau_j = s + \epsilon_j$ (shared shift + independent jitter), where $s \sim \text{Gamma}(\alpha\_{\text{total}} - \psi, r)$ and $\epsilon_j \sim \text{Gamma}(\psi, r)$:
+Using the decomposition $\tau_j = s + \epsilon_j$ (shared shift + independent jitter), where $s \sim \text{Gamma}(\alpha\_{\text{total}} - \psi, \beta)$ and $\epsilon_j \sim \text{Gamma}(\psi, \beta)$:
 
 $$S = e^{-\alpha s} \cdot T, \qquad T = \sum_j e^{-\alpha \epsilon_j}$$
 
@@ -526,9 +515,9 @@ where $\rho = |\varphi_g(\omega)|$ is the modulus of the characteristic function
 
 ### Dependence on $\psi$ in the Gamma convolutional family
 
-In our model, each infection attempt has timing $\tau_j = s + \varepsilon_j$, where $s \sim \text{Gamma}(\alpha\_{\text{total}} - \psi, r)$ is a shared component and $\varepsilon_j \sim \text{Gamma}(\psi, r)$ is independent jitter. Only the jitter provides smoothing — the shared component shifts all attempts together without averaging. Therefore:
+In our model, each infection attempt has timing $\tau_j = s + \varepsilon_j$, where $s \sim \text{Gamma}(\alpha\_{\text{total}} - \psi, \beta)$ is a shared component and $\varepsilon_j \sim \text{Gamma}(\psi, \beta)$ is independent jitter. Only the jitter provides smoothing — the shared component shifts all attempts together without averaging. Therefore:
 
-$$\rho(\psi) = |\varphi\_{\text{Gamma}(\psi, r)}(\omega)| = \left(\frac{r}{\sqrt{r^2 + \omega^2}}\right)^\psi$$
+$$\rho(\psi) = |\varphi\_{\text{Gamma}(\psi, \beta)}(\omega)| = \left(\frac{r}{\sqrt{r^2 + \omega^2}}\right)^\psi$$
 
 - **Spike ($\psi \to 0$):** $\rho = 1$. No jitter, no smoothing. The full contact amplitude $\varepsilon$ feeds through to $R_i$.
 - **Smooth ($\psi = \alpha\_{\text{total}}$):** $\rho = (r / \sqrt{r^2 + \omega^2})^{\alpha\_{\text{total}}} < 1$. Maximum smoothing; the contact variation is strongly attenuated.
