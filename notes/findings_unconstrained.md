@@ -175,13 +175,13 @@ In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) d\tau$ fi
 
 ### Their framework applied to our problem
 
-**Peak timing and planning.** Morris et al. motivate their work with the problem of predicting when an epidemic will reach its peak — a quantity that depends on $\tau$ and hence on $W$. Our results add a new source of uncertainty to this prediction: even if $R_0$, the generation-interval distribution, and $\alpha$ are perfectly known, uncertainty about $\psi$ (how punctuated individual infectiousness is) translates into uncertainty about $\text{Var}(W)$ and hence about the spread of possible peak times.
+**Peak timing and planning.** Morris et al. motivate their work with the problem of predicting when an epidemic will reach its peak — a quantity that depends on $\varsigma$ and hence on $W$. Our results add a new source of uncertainty to this prediction: even if $R_0$, the generation-interval distribution, and $r$ are perfectly known, uncertainty about $\psi$ (how punctuated individual infectiousness is) translates into uncertainty about $\text{Var}(W)$ and hence about the spread of possible peak times.
 
-**A computational route to $\text{Var}(W)$ for our models.** Section 17 argues qualitatively that $`\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}`$, based on the within-individual covariance structure. Morris et al.'s PE or MM methods could be used to compute $\text{Var}(W)$ *exactly* for each $\psi$ in our Gamma convolutional family. This would:
+**A computational route to $\text{Var}(W)$ for our models.** The previous section argues qualitatively that $`\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}`$, based on the within-individual covariance structure. Morris et al.'s PE or MM methods could be used to compute $\text{Var}(W)$ *exactly* for each $\psi$ in our Gamma convolutional family. This would:
 
 - Quantify the growth delay $\Delta E[T_n]$ analytically (rather than relying on simulation).
-- Provide the full distribution of $\tau$, enabling probabilistic statements like "there is a 90% chance the spike epidemic reaches 100 cases between days $X$ and $Y$."
-- Validate the approximation $\Delta E[T_n] \approx \text{Var}(W) / (2 \alpha \, (E[W])^2)$ from the delta-method expansion in Section 17.
+- Provide the full distribution of $\varsigma$, enabling probabilistic statements like "there is a 90% chance the spike epidemic reaches 100 cases between days $X$ and $Y$."
+- Validate the approximation $\Delta E[T_n] \approx \text{Var}(W) / (2 r (E[W])^2)$ from the delta-method expansion in the previous section.
 
 **The moment-matching route.** Morris et al. show that $W$ is often well-approximated by a generalised gamma distribution. If this holds for our family, the entire effect of $\psi$ on the time-shift distribution could be summarised by three parameters (shape, scale, power) as functions of $\psi$, giving a parsimonious description of how punctuated infectiousness affects epidemic timing uncertainty.
 
@@ -189,13 +189,13 @@ In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) d\tau$ fi
 
 **CT-MBP vs. CMJ.** Morris et al.'s implementation focuses on continuous-time Markovian branching processes (CT-MBP), where each individual has an exponentially-distributed lifetime and gives birth at a constant rate while alive. Our models are age-dependent (CMJ): the infectiousness profile $a_i(\tau)$ is a non-trivial function of infection age $\tau$. The *theory* (convergence to $W$, functional equations for the LST) applies to both, but their specific numerical algorithms would need adaptation for the non-Markovian case. The Gamma convolutional model could potentially be embedded in a Markovian framework via phase-type distributions (the Gamma profile with integer shape parameter is a sum of exponentials), making it amenable to their methods.
 
-**The functional equation for $W$.** For a CMJ process with offspring point process $\xi$ (a random counting measure on $[0, \infty)$), the LST of $W$ satisfies:
+**The functional equation for $W$.** For a CMJ process with offspring point process $\xi$ (a random counting measure on $`[0, \infty)`$), the LST of $W$ satisfies:
 
 $$E[e^{-sW}] = E\left[\prod_{j=1}^{N} E[e^{-s \, e^{-\alpha \tau_j} W}]\right]$$
 
 where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birth times. For the smooth model ($\tau_j$ independent given $N$), the product factorises into a simpler form. For the spike model ($\tau_j = \tau^*$ for all $j$), the product collapses to $E[e^{-sW}]^N$ evaluated at a single random time. The difference in these functional equations is what drives the difference in $W$-distributions — and hence the growth delay.
 
-**Independence structure matters.** A key insight connecting our work to theirs: the functional equation for $W$ depends on the *joint* distribution of offspring times, not just their marginal distribution. Two models can have the same number-of-offspring distribution and the same marginal birth-time distribution (i.e., the same $A(\tau)$) but different $W$ distributions if the offspring times are correlated differently. This is exactly the mechanism our $\psi$ parameter controls.
+**Independence structure matters.** A key insight connecting our work to theirs: the functional equation for $W$ depends on the *joint* distribution of offspring times, not just their marginal distribution. Two models can have the same number-of-offspring distribution and the same marginal birth-time distribution (i.e., the same $`A(\tau)`$) but different $W$ distributions if the offspring times are correlated differently. This is exactly the mechanism our $\psi$ parameter controls.
 
 ### Summary of the relationship
 
@@ -212,7 +212,7 @@ Their computational machinery is complementary to our conceptual framework. We i
 
 ## Analytical computation of Var(W) and generalized gamma moment matching
 
-Section 17 argued qualitatively that the spike model has higher $\text{Var}(W)$ than the smooth model, and Section 18 noted that Morris et al. (2024) provide computational methods for the $W$ distribution. Here we derive **exact closed-form expressions** for $\text{Var}(W)$ as a function of $\psi$ in our Gamma convolutional family and implement **generalized gamma moment matching** to approximate the full distribution of $W$ (and hence the time-shift $\tau$).
+The previous section argued qualitatively that the spike model has higher $\text{Var}(W)$ than the smooth model, and Section 18 noted that Morris et al. (2024) provide computational methods for the $W$ distribution. Here we derive **exact closed-form expressions** for $\text{Var}(W)$ as a function of $\psi$ in our Gamma convolutional family and implement **generalized gamma moment matching** to approximate the full distribution of $W$ (and hence the time-shift $\tau$).
 
 ### Closed-form Malthusian parameter
 
