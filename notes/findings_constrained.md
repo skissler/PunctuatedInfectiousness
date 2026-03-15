@@ -5,7 +5,7 @@ Detect-and-isolate interventions reduce transmission by truncating each detected
 
 The key insight that unifies screening-based and symptom-triggered interventions: both truncate the profile at a detection time $\tau_{\text{det}}$, and the entire $\psi$-dependence flows through a single quantity:
 
-$$F_\psi(\tau_{\text{det}} - l_i) = \int_0^{\tau_{\text{det}} - l_i} f_\psi(u)\,du$$
+$$F_\psi(\tau_{\text{det}} - l_i) = \int_0^{\tau_{\text{det}} - l_i} f_\psi(u) du$$
 
 — the fraction of the biological profile's mass that has elapsed before detection. What differs between detection mechanisms is the **joint distribution of $\tau_{\text{det}}$ and the profile timing**.
 
