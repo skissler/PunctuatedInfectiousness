@@ -144,11 +144,11 @@ Morris et al. formalise exactly the object that drives the growth-delay phenomen
 
 Their starting point is the same CMJ/CT-MBP convergence:
 
-$$Z(t) \approx W \cdot e^{\alpha t} \qquad \text{as } t \to \infty,$$
+$$Z(t) \approx W \cdot c e^{r t} \qquad \text{as } t \to \infty,$$
 
-where $r$ is the early-epidemic growth rate. Each stochastic trajectory is approximately a *time-shifted* copy of the deterministic trajectory:
+where $r$ is the early-epidemic growth rate and $c$ is a scaling parameter. Each stochastic trajectory is approximately a *time-shifted* copy of the deterministic trajectory:
 
-$$Z(t) \approx v(t + \tau), \qquad \tau = \frac{\log W - \log E[W]}{\alpha}.$$
+$$Z(t) \approx c e^{t + \tau}, \qquad \tau = \frac{\log W - \log E[W]}{r}.$$
 
 The random time-shift $\tau$ is what separates a fast-starting epidemic from a slow one. In our framework:
 
