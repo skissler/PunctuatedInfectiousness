@@ -4,60 +4,13 @@ Conditional on establishing, the spike case takes longer to reach early case-cou
 
 In the smooth case, an infector's $\chi_i$ infection attempts have times drawn from the generation interval distribution, $g(\tau)$. The *first* onward transmission is $\min(\tau_1, \ldots, \tau_{\chi_i})$, which is stochastically earlier than a single draw from $g(\tau)$. In the spike case, all $\chi_i$ infection attempts occur at the same time $\tau_i^*$, so the first transmission time is just a single generation-interval draw regardless of $\chi_i$.
 
-## Early epidemic growth: smooth vs. spike across $R_0$
-
-Punctuated (spike) profiles produce slower early epidemic growth than smooth profiles, via a minimum-of-order-statistics mechanism. In the smooth case, an infector's $k$ infection attempts race independently across the generation interval, so the first successful transmission happens at time $\min(\tau_1, \ldots, \tau_k)$, which shrinks with $k$. In the spike case, all $k$ infection attempts occur at the same time, so the first-transmission time is a single draw from the generation interval regardless of $k$.
-
-### Time to 100 infections (established epidemics)
-
-Simulations with $N = 1000$, $e_\text{dur} = 2$, $i_\text{dur} = 3$ (mean generation interval = 5 days), 2000--3000 runs per ($R_0$, profile) pair, conditioning on epidemics reaching $\geq 100$ infections:
-
-| $R_0$ | $\bar{t}_{10}$ smooth | $\bar{t}_{10}$ spike | delay (t10) | $\bar{t}_{100}$ smooth | $\bar{t}_{100}$ spike | delay (t100) |
-|-------|----------------------|---------------------|-------------|----------------------|---------------------|-------------|
-| 1.2   | 17.7                 | 17.2                | ~0%         | 65.5                 | 63.7                | ~0%         |
-| 1.5   | 15.7                 | 16.9                | +7.6%       | 43.1                 | 44.1                | +2.1%       |
-| 2.0   | 12.7                 | 13.5                | +6.4%       | 27.6                 | 28.4                | +2.8%       |
-| 3.0   | 8.8                  | 10.2                | +16.7%      | 17.1                 | 18.5                | +8.4%       |
-| 5.0   | 5.6                  | 7.4                 | +32.4%      | 10.5                 | 12.3                | +17.6%      |
-
-### Variability in time to 100 infections
-
-The spike case also produces substantially more **variable** epidemic timelines, with the effect again scaling with $R_0$:
-
-| $R_0$ | SD($t_{100}$) smooth | SD($t_{100}$) spike | spike/smooth ratio |
-|-------|---------------------|--------------------|--------------------|
-| 1.2   | 22.9                | 22.8               | 1.00               |
-| 1.5   | 14.6                | 14.9               | 1.03               |
-| 2.0   | 8.4                 | 9.0                | 1.07               |
-| 3.0   | 4.4                 | 6.0                | 1.34               |
-| 5.0   | 2.4                 | 4.3                | 1.82               |
-
-At $R_0 = 5$, the spike case has nearly twice the standard deviation in time-to-100 as the smooth case. The mechanism is the same order-statistics effect operating on variance rather than the mean: in the smooth case, each infector's first-transmission time is $\min(\tau_1, \ldots, \tau_k)$, which concentrates around its mean as $k$ grows (the minimum of many independent draws has lower variance than a single draw). In the spike case, the first-transmission time is always a single draw from the generation interval, preserving the full variance regardless of $k$. This per-generation variance compounds across the chain of transmission, producing more variable epidemic trajectories.
-
 ### R0 dependence
 
-The growth delay from punctuation **increases** with $R_0$, contrary to a naive expectation. The mechanism: the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $k = 1$ attempt (P(k=1) $\approx 0.36$, P(k=0) $\approx 0.30$), so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau$, giving smooth profiles a compounding head start at each generation.
-
-The effect is strongest at the earliest milestones: the t10 delay at $R_0 = 5$ is 32%, attenuating to 18% by t100 as later generations compound and susceptible depletion begins to equalize growth rates.
-
-### Intuition
-
-At high $R_0$, smooth profiles benefit from a "fastest horse wins" dynamic — many independent infection attempts race across the generation interval, and only the fastest one matters for determining the next generation's timing. Spike profiles forfeit this advantage by concentrating all attempts at one time point. The result is that punctuation slows early growth most precisely when $R_0$ is large, i.e., when the epidemic would otherwise grow fastest.
-
-## Establishment timing variance is higher for spike
-
-The same burstiness that slows early takeoff also makes the timing more variable. The spike case shows 22–48% higher variance in the time to reach early thresholds (5,000 simulations):
-
-| Threshold | Smooth | Spike | Variance ratio |
-|-----------|--------|-------|----------------|
-| $N = 5$   | $8.5 \pm 4.7$ | $9.3 \pm 5.7$ | **1.48** ($p < 10^{-15}$) |
-| $N = 10$  | $12.7 \pm 5.9$ | $13.6 \pm 6.9$ | **1.41** ($p < 10^{-15}$) |
-| $N = 20$  | $17.1 \pm 6.8$ | $18.0 \pm 7.7$ | **1.27** ($p < 10^{-14}$) |
-| $N = 50$  | $22.9 \pm 7.6$ | $23.7 \pm 8.4$ | **1.22** ($p < 10^{-9}$) |
+The growth delay from punctuation **increases** with $R_0$. This is because the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $\chi_i = 1$ attempt, so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau$, giving smooth profiles a compounding head start at each generation. The result is that punctuation slows early growth most precisely when $R_0$ is large, i.e., when the epidemic would otherwise grow fastest.
 
 ## Spike epidemics have more variable empirical exponential growth rates
 
-- **Exponential growth rate** : Nearly identical means (0.166 vs. 0.170), but the spike case has 13% higher SD (0.053 vs. 0.047), consistent with the higher-variance theme. Based on log-linear fit, cases 5–50. 
+- **Exponential growth rate** : Estimates of the early-epidemic exponential growth rate $r$ have early identical means for smooth and spike infectiousness profiles, but the estimates for the spike case have higher standard deviation, based on log-linear fit to cases 10–100. 
 
 ## Overdispersion from punctuated infectiousness x periodic contacts
 
