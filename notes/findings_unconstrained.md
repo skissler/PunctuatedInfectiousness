@@ -155,7 +155,7 @@ The random time-shift $\varsigma$ is what separates a fast-starting epidemic fro
 - **Smooth model:** $\varsigma$ is tightly distributed (low $`\text{Var}(W)`$), so trajectories cluster near the deterministic solution.
 - **Spike model:** $\varsigma$ is broadly distributed (high $`\text{Var}(W)`$), producing a wide spread of trajectory timings.
 
-The growth delay discussed in the previous section is precisely the statement that $`E[\varsigma]_{\text{spike}}$ < $E[\varsigma]_{\text{smooth}}`$ (i.e., the spike model's typical trajectory is shifted further *behind* the deterministic solution). This follows from Jensen's inequality on $\log W$: since $E[W]$ is the same for both models but $\text{Var}(W)$ is larger for the spike model, $` E[\log W]_{\text{spike}} < $E[\log W]_{\text{smooth}} `$, and hence $`E[\varsigma]_{\text{spike}} < E[\varsigma]_{\text{smooth}}`$.
+The growth delay discussed in the previous section is precisely the statement that $`E[\varsigma]_{\text{spike}}$ < $E[\varsigma]_{\text{smooth}}`$ (i.e., the spike model's typical trajectory is shifted further *behind* the deterministic solution). This follows from Jensen's inequality on $\log W$: since $E[W]$ is the same for both models but $\text{Var}(W)$ is larger for the spike model, $` E[\log W]_{\text{spike}} < E[\log W]_{\text{smooth}} `$, and hence $`E[\varsigma]_{\text{spike}} < E[\varsigma]_{\text{smooth}}`$.
 
 ### What they compute (and how)
 
