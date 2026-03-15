@@ -60,7 +60,7 @@ $$R_{\text{eff}} = R_0 (1 - \text{TE})$$
 
 Middleton & Larremore (M&L) define testing effectiveness as
 
-$$\text{TE}_{\text{M\&L}} = \frac{\int E[\beta(\tau) \cdot F_D(\tau)]\, d\tau}{\int E[\beta(\tau)]\, d\tau}$$
+$$\text{TE} = \frac{\int E[\beta(\tau) \cdot F_D(\tau)]\, d\tau}{\int E[\beta(\tau)]\, d\tau}$$
 
 where $\beta(\tau)$ is the infectiousness profile and $F_D(\tau)$ is the CDF of diagnosis time. In our notation, $\beta(\tau) = R_0 \cdot b_i(\tau)$ and $F_D(\tau) = P(\tau_{\text{det}} \leq \tau)$. With perfect isolation ($\eta = 1$) and no action delay ($\delta_{\text{act}} = 0$), our TE reduces to M&L's expression. The key adaptations from their framework:
 
