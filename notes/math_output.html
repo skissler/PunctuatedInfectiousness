@@ -665,6 +665,250 @@ $$k = \frac{2\bar{c}^2}{A^2}\left(1 + \left(\frac{z^*_{\text{per}}}{z_{\text{per
 
 <p>Both are near one week — so <strong>weekly contact patterns</strong> sit squarely in the critical regime where the punctuation parameter \(\psi\) has maximal effect on overdispersion.</p>
 
+<hr>
+
+<div class="prompt">Detailed summary of Middleton &amp; Larremore (2024), "Modeling the transmission mitigation impact of testing for infectious diseases," <em>Science Advances</em> 10, eadk5108.</div>
+
+<h1>Middleton &amp; Larremore (2024): Mathematical framework</h1>
+
+<h2>1. Core quantity: Testing Effectiveness (TE)</h2>
+
+<p>The central quantity is <strong>Testing Effectiveness (TE)</strong>, defined in direct analogy to vaccine effectiveness (VE):</p>
+
+<div class="highlight">
+$$TE = 1 - \frac{R_{\text{testing}}}{R_{\text{no testing}}} \qquad \Longleftrightarrow \qquad R_{\text{testing}} = (1 - TE)\, R_{\text{no testing}} \tag{1}$$
+</div>
+
+<p>TE is the proportion by which a testing program reduces population-level transmission, in expectation. It incorporates the test itself, its administration strategy, human behaviors (compliance, participation), and the interplay with viral kinetics. They note this mirrors VE: the expected reduction in post-infection transmission risk for tested vs. untested populations.</p>
+
+<h2>2. Infectiousness curve \(\beta(t)\) and the reproduction number</h2>
+
+<p>Each individual has a time-varying <strong>infectiousness curve</strong> \(\beta(t)\), where \(t\) is time since exposure. The <strong>individual reproduction number</strong> (in the absence of testing) is:</p>
+
+$$\nu_0 = \int_0^\infty \beta(t)\, dt \tag{2}$$
+
+<p>The population-level basic reproduction number is the mean across all individuals:</p>
+
+$$R_{\text{no testing}} = \mathbb{E}[\nu_0] = \int_0^\infty \mathbb{E}[\beta(t)]\, dt \tag{3}$$
+
+<p>The key modeling assumption is that <strong>infectiousness is proportional to the logarithm of pathogen load above an empirically established threshold</strong>. That is, \(\beta(t) \propto \max(0,\, \log_{10} V(t) - \log_{10} V_{\text{thresh}})\), where \(V(t)\) is the viral load at time \(t\). This is consistent with observations that higher viral loads are associated with more efficient transmission for SARS, SARS-CoV-2, influenza, and RSV.</p>
+
+<h2>3. Viral kinetics model</h2>
+
+<p>Middleton &amp; Larremore use a <strong>piecewise linear model of log pathogen load</strong> (a tent function on the log scale), specified by four parameters per infection trajectory:</p>
+
+<ul>
+  <li><strong>Latent period</strong>: \(t_0\) to \(t_0 + \text{LLOQ}\) -- time from exposure to when the virus first exceeds the lower limit of quantification. During this time, \(D(t) = 0\) and \(\beta(t) = 0\).</li>
+  <li><strong>Proliferation phase</strong>: Exponential growth (linear increase in log VL) at some proliferation rate, from first detectability to peak VL at time \(t_{\text{peak}}\).</li>
+  <li><strong>Peak viral load</strong>: \(V_{\text{peak}}\), drawn from a distribution (Lognormal).</li>
+  <li><strong>Clearance phase</strong>: Exponential decline (linear decrease in log VL) from peak back down to undetectable.</li>
+</ul>
+
+<p>All four control points \((t_0, \text{LLOQ})\), \((t_{\text{peak}}, V_{\text{peak}})\), and \((t_f, \text{LLOQ})\) are drawn from distributions (Lognormal with parameters \(\mu, \sigma\)) estimated from the literature for each pathogen (RSV, influenza A, SARS-CoV-2 founder/naive and omicron/experienced). This yields stochastic, individual-level VL trajectories.</p>
+
+<h3>Symptom onset time</h3>
+
+<p>Symptom onset \(t_{\text{Sx}}\) is drawn relative to peak pathogen load. For example, for founder-strain SARS-CoV-2 in naive hosts, symptoms occur 0 to 3 days after peak VL; for omicron in experienced hosts, 1 to 5 days before peak VL. This reflects the typical manner of reporting in the literature. Asymptomatic infections correspond to trajectories with no symptom onset time drawn.</p>
+
+<h2>4. Isolation after diagnosis</h2>
+
+<p>If an individual receives a diagnosis at time \(t_{\text{Dx}}\), they isolate and thereby attenuate transmission. For <strong>perfect isolation of fixed duration \(\ell\)</strong>, the individual exits isolation at \(t_{\text{exit}} = t_{\text{Dx}} + \ell\). The post-testing reproduction number becomes:</p>
+
+<div class="highlight">
+$$\nu_{\text{testing}}(t_{\text{Dx}}, t_{\text{exit}}) = \int_0^{t_{\text{Dx}}} \beta(t)\, dt + \int_{t_{\text{exit}}}^{\infty} \beta(t)\, dt \tag{5}$$
+</div>
+
+<p>This has the intuitive interpretation: transmission that occurred before diagnosis plus transmission that occurs after exiting isolation. Transmission during isolation is assumed to be zero (perfect isolation). They note that <strong>imperfect/partial isolation is developed in Supplementary Materials</strong>, where time-varying impacts of behavioral changes (masking, increased ventilation) can be modeled instead of binary on/off isolation.</p>
+
+<h2>5. Diagnosis time as a random variable</h2>
+
+<p>The time of diagnosis \(t_{\text{Dx}}\) depends on test availability, schedule, symptom timing, and compliance. It is modeled as a <strong>random variable</strong> with (improper) probability density \(f(t_{\text{Dx}})\). This leads to an effective infectiousness in the testing scenario, averaged over possible diagnosis times:</p>
+
+$$\bar{\nu}_{\text{testing}} = \int_0^\infty \nu_{\text{testing}}(t_{\text{Dx}})\, f(t_{\text{Dx}})\, dt_{\text{Dx}} \tag{6}$$
+
+<p>Substituting and rearranging using the cumulative probability of diagnosis \(F(t)\):</p>
+
+<div class="highlight">
+$$\bar{\nu}_{\text{testing}} = \nu_0 - \int_0^\infty \beta(t)\!\left[F(t) - F(t - \ell)\right]\, dt \tag{7}$$
+</div>
+
+<p>The term \(F(t) - F(t - \ell)\) is the probability of being in isolation at time \(t\): diagnosed before \(t\) but not yet released (released \(\ell\) days after diagnosis). Note that \(F(t)\) is an <strong>improper CDF</strong> -- it need not reach 1 as \(t \to \infty\), because not all individuals will necessarily be diagnosed.</p>
+
+<p>They observe that if \(F(t)\) is reinterpreted as the CDF of symptom onset (symptoms as a perfect diagnostic test), with exhaustive isolation thereafter (large \(\ell\)), Eq. 7 recovers the core notion of <strong>symptom-based controllability</strong> from Fraser et al. (2004).</p>
+
+<h2>6. Participation and the effective reproduction number</h2>
+
+<p>Let \(p\) be the proportion of the population participating in the testing program. Participants have their infectiousness reduced from \(\nu_0\) to \(\bar{\nu}_{\text{testing}}\); non-participants are unaffected. The effective reproduction number is:</p>
+
+<div class="highlight">
+$$R_{\text{testing}} = p\,\mathbb{E}[\bar{\nu}_{\text{testing}}] + (1 - p)\,\mathbb{E}[\nu_0] \tag{4}$$
+</div>
+
+<p>where the expectations are over the heterogeneous within-host kinetics across the population.</p>
+
+<h2>7. Calculating the diagnosis CDF \(F(t)\): testing, compliance, detectability, and TAT</h2>
+
+<p>The CDF \(F(t)\) -- the probability of having received a positive diagnosis by time \(t\) -- is built from three components:</p>
+
+<h3>7a. Test administration rate \(A(t)\)</h3>
+
+<p>\(A(t)\) is the prescribed rate of test administration in tests per day. For sufficiently small \(\delta\):</p>
+
+$$\Pr(\text{test administered between } t \text{ and } t + \delta) = \int_t^{t+\delta} A(t')\, dt' \tag{8}$$
+
+<p>Examples: \(A(t) = 1/7\) models weekly screening; \(A(t) = 2\) for \(4 \leq t \leq 6\) represents twice-daily testing in a two-day window.</p>
+
+<h3>7b. Detectability indicator \(D(t)\)</h3>
+
+<p>\(D(t)\) is a binary indicator: \(D(t) = 1\) when the infection is analytically detectable at time \(t\) (pathogen load above the test's limit of detection, LOD), and \(D(t) = 0\) otherwise. This defines the <strong>detectability window</strong>.</p>
+
+<h3>7c. Cumulative number of possible positive tests</h3>
+
+<p>Combining administration with detectability, the cumulative number of scheduled tests with the potential to return a positive result by time \(t\) is:</p>
+
+$$m(t) = \int_0^{t - \text{TAT}} A(t')\, D(t')\, dt' \tag{9}$$
+
+<p>The upper limit is shifted by <strong>TAT (turnaround time)</strong> -- the delay between a test's administration and the return of actionable results. This is a crucial parameter: even if a test is taken during the detectable window, the result is not available until TAT later.</p>
+
+<h3>7d. Compliance and test failure</h3>
+
+<ul>
+  <li><strong>Compliance \(c\)</strong>: Independent Bernoulli probability that each prescribed test is actually taken.</li>
+  <li><strong>Test failure \(\phi\)</strong>: Independent Bernoulli probability that a test fails for non-analytical reasons (e.g., poor biospecimen collection).</li>
+</ul>
+
+<p>Combining these, the CDF of having received a positive test by time \(t\) is:</p>
+
+<div class="highlight">
+\begin{align}
+F(t) &= 1 - \left[1 - \overline{m}(t)\right]\left[1 - c(1 - \phi)\right]^{m(t) - \overline{m}(t)} \notag \\
+&\quad - \overline{m}(t)\left[1 - c(1 - \phi)\right]^{m(t) - \overline{m}(t) + 1} \tag{10}
+\end{align}
+</div>
+
+<p>where \(\overline{m}(t) = m(t) \bmod 1\). This function reflects that for a monotonically increasing number of possible positive tests \(m(t)\), there are two possibilities: one may have taken either \(m(t) - \overline{m}(t)\) tests (with probability \(1 - \overline{m}(t)\)) or \(m(t) - \overline{m}(t) + 1\) tests (with probability \(\overline{m}(t)\)). Each such test may fail with probability \(\phi\) or be missed with probability \(1 - c\).</p>
+
+<p>This is an <strong>improper CDF</strong> -- it need not reach 1, reflecting that not all individuals will be diagnosed.</p>
+
+<h3>7e. Constant-rate special case</h3>
+
+<p>When \(A(t)D(t)\) is a constant \(\bar{A}\) between times \(t_1\) and \(t_2\) (and 0 otherwise), the improper PDF simplifies to:</p>
+
+$$f(t) = \bar{A}c(1 - \phi)\left[1 - c(1 - \phi)\right]^{m(t) - \overline{m}(t)} \tag{11}$$
+
+<p>for \(t_1 + \text{TAT} \leq t \leq t_2 + \text{TAT}\), and 0 otherwise.</p>
+
+<h3>7f. Elective testing at symptom onset</h3>
+
+<p>For elective testing triggered by symptoms at time \(t_{\text{Sx}}\), they model individuals as waiting \(x\) days after symptoms and then testing for \(y\) days at rate \(\bar{A}\) per day, leading to a test administration function:</p>
+
+$$A(t, t_{\text{Sx}}) = \bar{A}\!\left[u(t - t_{\text{Sx}} - x) - u(t - t_{\text{Sx}} - x - y)\right] \tag{12}$$
+
+<p>where \(u(\cdot)\) is the unit step function. The detection CDF then depends on \(t_{\text{Sx}}\) and must be integrated over the \(t_{\text{Sx}}\) distribution (Eq. 13).</p>
+
+<h2>8. The TE formula</h2>
+
+<p>Substituting Eq. 7 (\(\bar{\nu}_{\text{testing}}\)) into Eq. 4 (\(R_{\text{testing}}\)) and then into Eq. 1 (\(TE\)):</p>
+
+<div class="highlight">
+$$TE = p \int_0^\infty \mathbb{E}\!\left\{\beta(t)\!\left[F(t) - F(t - \ell)\right]\right\}\, dt \;\bigg/\; \int_0^\infty \mathbb{E}[\beta(t)]\, dt \tag{14}$$
+</div>
+
+<p>The numerator is the expected infectiousness averted by isolation; the denominator is the total expected infectiousness without testing. Both integrands are <strong>expected infectiousness trajectories</strong> -- ensemble averages over the population's heterogeneous within-host kinetics.</p>
+
+<p>When isolation is of sufficient duration to prevent all post-diagnosis transmission (large \(\ell\)), this simplifies to:</p>
+
+<div class="highlight">
+$$TE = p \int_0^\infty \mathbb{E}[\beta(t)\, F(t)]\, dt \;\bigg/\; \int_0^\infty \mathbb{E}[\beta(t)]\, dt \tag{15}$$
+</div>
+
+<p>Note the subtle but important distinction: the numerator involves \(\mathbb{E}[\beta(t)\, F(t)]\), not \(\mathbb{E}[\beta(t)] \cdot \mathbb{E}[F(t)]\). The joint expectation matters because \(\beta(t)\) and \(F(t)\) are correlated -- both depend on the same within-host viral kinetics trajectory.</p>
+
+<h2>9. Ascertainment (protocol sensitivity)</h2>
+
+<p>The long-time limit of \(F(t)\) gives the probability that an individual is ever diagnosed. <strong>Ascertainment</strong> \(\alpha\) (also called "protocol sensitivity" in the literature) is the population-level fraction of infections diagnosed:</p>
+
+$$\alpha = p \cdot \lim_{t \to \infty} \mathbb{E}[F(t)] \tag{16}$$
+
+<p>A key empirical finding of the paper is that <strong>ascertainment and TE are only weakly related</strong>. For instance, for influenza A with elective RDT testing after symptoms, TE = 38% but ascertainment = 60%; for elective RT-qPCR testing, TE dropped by 36 percentage points (to 2%) while ascertainment dropped by only 10 percentage points (to 50%). This is because TE depends on <em>when</em> diagnoses occur relative to the infectiousness curve, not just <em>whether</em> they occur.</p>
+
+<h2>10. Mean generation interval and selection coefficient</h2>
+
+<p>The mean generation interval can be computed from the centers of mass of the expected infectiousness curves. The integrands in Eq. 14 represent the expected infectiousness trajectories with (numerator) and without (denominator) testing. These estimates may be important for post hoc estimation of TE from empirical data, since methods for estimating \(R\) from case counts often rely on the mean generation interval.</p>
+
+<p>If a single test can diagnose two strains of the same pathogen, testing can alter the selection coefficient. The selection coefficient shifts from \(s = R_A/R_B\) to \(s_{\text{testing}} = s \cdot (1 - TE_A)/(1 - TE_B)\).</p>
+
+<h2>11. Test consumption</h2>
+
+<p>They estimate two quantities for test consumption:</p>
+
+<h3>11a. No-diagnosis case</h3>
+
+<p>If no diagnosis is ever made, the expected number of tests consumed is a weighted combination of tests taken during the detectable window (each at rate \(c\phi/(1 - c + c\phi)\), reflecting the probability that a planned test is consumed given absence of diagnosis) and during the non-detectable window (each at rate \(c\)):</p>
+
+$$\bar{q}_{\text{no-Dx}} = \frac{c\phi}{1 - c + c\phi}\int_0^\infty A(t)D(t)\, dt + c \int_0^\infty A(t)[1 - D(t)]\, dt \tag{17}$$
+
+<h3>11b. Diagnosis case</h3>
+
+<p>For a fixed time of diagnosis \(t_{\text{Dx}}\), the expected tests consumed is 1 (the diagnosing test) plus any tests administered before it:</p>
+
+$$\bar{q}_{\text{Dx}}(t_{\text{Dx}}) = 1 + c\!\left[\left|\int_0^{t_{\text{Dx}} - \text{TAT}} A(t)\, dt\right| + \left|\int_{t_{\text{Dx}} - \text{TAT}}^{t_{\text{Dx}}} A(t)\, dt\right|\right] \tag{18}$$
+
+<p>The total expected test consumption per infected individual is then obtained by combining these, weighted by ascertainment. The overall population test consumption rate (including non-infected individuals) is:</p>
+
+$$Q = p\!\left[(\theta\, se_{\text{ref.}})\,\bar{q}_{\text{infected}} + (1 - \theta)(1 - sp_{\text{ref.}})\,\bar{q}_{\text{not infected}}\right] \tag{22}$$
+
+<p>where \(\theta\) is the prevalence, \(se_{\text{ref.}}\) and \(sp_{\text{ref.}}\) are sensitivity and specificity of the referral scheme (e.g., contact tracing, symptom presence), and \(\bar{q}_{\text{not infected}} = c \int_0^\infty A(t)\, dt\).</p>
+
+<h2>12. Days spent in isolation</h2>
+
+<p>For fixed-duration perfect isolation of length \(\ell\), the average isolation days per diagnosed individual is simply \(d = \ell \cdot \alpha\). They also model <strong>test-to-exit (TTE)</strong> strategies, where individuals test daily (using the same or a different test) after a minimum waiting period in isolation, and exit upon a negative test result. This is covered in the Supplementary Materials (Eq. S10).</p>
+
+<h2>13. Imperfect isolation and behavioral changes</h2>
+
+<p>While the main text develops perfect isolation (zero transmission during isolation), the Supplementary Materials provide equations for <strong>partial and time-varying impacts of behavioral changes</strong> such as masking or increased ventilation. The general form replaces the binary "in/out of isolation" with a time-varying infectiousness attenuation factor during the isolation period.</p>
+
+<h2>14. Parameterization of viral kinetics</h2>
+
+<p>The viral kinetics model uses <strong>Lognormal distributions</strong> for peak VL, proliferation duration, and clearance duration, with parameters \(\mu\) and \(\sigma\) adapted from published means, 95% credible intervals, and sample sizes. Specifically:</p>
+
+<ul>
+  <li><strong>RSV</strong>: Challenge studies (Refs 28, 29). 2-4 day latent, 3-6 day clearance. VL between 4.5 and 8 \(\log_{10}\) cp RNA/ml.</li>
+  <li><strong>Influenza A</strong>: Challenge studies (Refs 30-32). 0.5-2 day latent. Peak VL at 1-3 days after symptom onset. VL between 6 and 8.5 \(\log_{10}\) cp RNA/ml.</li>
+  <li><strong>SARS-CoV-2 (founder/naive)</strong>: Prospective longitudinal studies (Refs 17, 34). Higher peaks, longer detectability windows (~6.6 days RDT detection).</li>
+  <li><strong>SARS-CoV-2 (omicron/experienced)</strong>: Lower peaks, shorter clearance, shorter detectability windows (~2.2 days RDT detection), earlier symptom onset relative to peak VL.</li>
+</ul>
+
+<p>Because within-host kinetics vary from one infection to another, each trajectory is parameterized using <strong>independent draws from random variables</strong> for each control point. They use \(10^5\) stochastic realizations for Monte Carlo estimation.</p>
+
+<h2>15. Analytical sensitivity and LOD</h2>
+
+<p>LODs are drawn from the literature for RT-qPCR and RDT tests for each pathogen. Because of variability across assays, a <strong>single LOD per pathogen and test type</strong> is used. Test failure rates \(\phi\) were available only for SARS-CoV-2 (~5%); the same rate was assumed for RSV and influenza A to model sample contamination, poor biospecimen collection, or manufacturing error.</p>
+
+<h2>16. Key findings and their mathematical basis</h2>
+
+<ul>
+  <li><strong>TE varies considerably by pathogen and strategy</strong>: Weekly RDT screening with 50% compliance gave TE of 13% (RSV), 7% (influenza A), and 13% (SARS-CoV-2 omicron). Elective RDT at symptom onset: 21% (RSV), 38% (influenza A), 25% (SARS-CoV-2).</li>
+  <li><strong>Ascertainment \(\neq\) TE</strong>: Ascertainment was only weakly correlated with TE across scenarios (11-14% ascertainment for weekly screening vs. up to 60% for elective post-symptom testing, but TE did not track proportionally).</li>
+  <li><strong>RT-qPCR vs RDT reversal</strong>: For founder-strain/naive SARS-CoV-2, RDTs provided higher TE than RT-qPCR (replicating earlier literature). For omicron/experienced hosts, this <em>reversed</em> -- RT-qPCR gave higher TE despite its 2-day TAT, due to shortened RDT detectability windows and the larger gap between PCR and RDT detectability.</li>
+  <li><strong>Presymptomatic transmission limits TE</strong>: The existence of asymptomatic and presymptomatic transmission implies TE &lt; 1 for symptom-driven testing, regardless of test quality.</li>
+</ul>
+
+<h2>17. Relationship to the Fraser et al. (2004) controllability framework</h2>
+
+<p>Eq. 7 with \(F(t)\) reinterpreted as the CDF of symptom onset and \(\ell \to \infty\) recovers the Fraser et al. notion of symptom-based controllability. However, Middleton &amp; Larremore generalize this by:</p>
+
+<ol>
+  <li>Making \(t_{\text{Dx}}\) depend on the test's properties and within-host kinetics (not just symptom onset)</li>
+  <li>Including compliance, test failure, and turnaround time</li>
+  <li>Allowing finite isolation duration</li>
+  <li>Modeling heterogeneous viral kinetics across individuals</li>
+</ol>
+
+<h2>18. Computational approach</h2>
+
+<p>All calculations are performed either by <strong>integration</strong> (when \(A(t)D(t)\) is a constant, leading to closed-form expressions) or by <strong>Monte Carlo simulation</strong> (\(10^5\) stochastic realizations of viral load trajectories, symptom onset, test timing, and diagnosis). The ensemble mean of the infectiousness curves with and without testing (Fig. 1B) directly yields the TE estimate. They note this is "similar in spirit to the CEPAC model" for HIV, which provides stochastic individual-level realizations of infection dynamics, costs, and outcomes.</p>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
