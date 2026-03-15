@@ -30,7 +30,7 @@ $$a_i(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau}
 We call this the "smooth" individual infectiousness profile. Or, we might assume each person's individual infectiousness profile is a delta function concentrated at time $`{t_i}^*`$, where $`{t_i}^*`$ is distributed according to $`g(\tau) = A(\tau)/R_0`$: 
 
 ```math
-a_i(\tau) = \frac{\beta}{\gamma} \delta_{{t_i}^*}(\tau) \qquad {t_i}^* \sim A(\tau)/R_0`$$
+a_i(\tau) = \frac{\beta}{\gamma} \delta_{{t_i}^*}(\tau) \qquad {t_i}^* \sim A(\tau)/R_0
 ```
 
 Here, each person's secondary infections are all concentrated at a single moment. We call this the "spike" individual infectiousness profile. 
