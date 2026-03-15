@@ -12,21 +12,17 @@ The growth delay from punctuation **increases** with $R_0$. This is because the 
 
 ### The apparent paradox
 
-Based on simulations, spike (punctuated) profiles produce slower and more variable early epidemic growth than smooth profiles. Yet by construction, both profiles share the same population-level infectiousness kernel $A(\tau)$, and therefore the same deterministic renewal equation, the same Euler–Lotka growth rate $\alpha$, and the same mean-field epidemic trajectory. How can two models with identical $E[Z(t)]$ consistently differ in the time to reach epidemic milestones?
+Based on simulations, spike (punctuated) profiles produce slower and more variable early epidemic growth than smooth profiles. Yet by construction, both profiles share the same population-level infectiousness kernel $A(\tau)$, and therefore the same deterministic renewal equation, the same Euler–Lotka growth rate $r$, and the same mean-field epidemic trajectory. How can two models with identical expected trajectories consistently differ in the time to reach epidemic milestones?
 
-The resolution involves two distinct insights:
-
-1. "Same expected trajectory" does not imply "same expected time to reach a milestone." The two quantities are related by a nonlinear transformation, and Jensen's inequality drives a wedge between them.
-
-2. More fundamentally: the **mean** trajectory is not the **typical** trajectory. The spike case's $Z(t)$ distribution is more right-skewed than the smooth case's — rare explosive realizations pull up $E[Z(t)]$ to match, even though the median and most individual realizations are slower.
+Fundamentally: the **mean** trajectory is not the **typical** trajectory. If $Z(t)$ represents a realized epidemic trajectory (cumulative case counts over time), the spike case's $Z(t)$ distribution is more right-skewed than the smooth case's. Rare explosive realizations pull up $E[Z(t)]$ to match, even though the median and modal realizations are slower.
 
 ### Setup: the Crump–Mode–Jagers branching process
 
-The early epidemic (before susceptible depletion matters) is a Crump–Mode–Jagers (CMJ) branching process. Let $Z(t)$ denote the total number of individuals infected by time $t$ (cumulative incidence), starting from a single index case at $t = 0$. Each individual $i$, infected at time $t_i$, independently generates offspring according to a point process on $[0, \infty)$ with intensity measure $\mu(d\tau) = A(\tau)\,d\tau$.
+The early epidemic (before susceptible depletion matters) can be described using a Crump–Mode–Jagers (CMJ) branching process. Let $Z(t)$ denote the total number of individuals infected by time $t$ (cumulative incidence), starting from a single index case at $t = 0$. Each individual $i$, infected at time $t_i$, independently generates offspring according to a point process on $[0, \infty)$ with intensity measure $\mu(d\tau) = A(\tau) d\tau$.
 
-For the **smooth** model, individual $i$ draws $k_i \sim \text{Poisson}(R_0)$ offspring at independent times $\tau_1, \ldots, \tau_{k_i} \sim g(\tau)$.
+For the **smooth** model, individual $i$ draws $\chi_i \sim \text{Poisson}(R_0)$ offspring at independent times $\tau_1, \ldots, \tau_{\chi_i} \overset{\mathrm{iid}}{\sim} g(\tau)$.
 
-For the **spike** model, individual $i$ draws $k_i \sim \text{Poisson}(R_0)$ offspring, all at the same time $\tau_i^* \sim g(\tau)$.
+For the **spike** model, individual $i$ draws $\chi_i \sim \text{Poisson}(R_0)$ offspring, all at the same time $\tau_i^* \sim g(\tau)$.
 
 Both models have the same intensity measure:
 
