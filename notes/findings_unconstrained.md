@@ -14,7 +14,7 @@ The growth delay from punctuation **increases** with $R_0$. This is because the 
 
 Based on simulations, spike (punctuated) profiles produce slower and more variable early epidemic growth than smooth profiles. Yet by construction, both profiles share the same population-level infectiousness kernel $A(\tau)$, and therefore the same deterministic renewal equation, the same Euler–Lotka growth rate $r$, and the same mean-field epidemic trajectory. How can two models with identical expected trajectories consistently differ in the time to reach epidemic milestones?
 
-Fundamentally: the **mean** trajectory is not the **typical** trajectory. If $Z(t)$ represents a realized epidemic trajectory (cumulative case counts over time), the spike case's $Z(t)$ distribution is more right-skewed than the smooth case's. Rare explosive realizations pull up $E[Z(t)]$ to match, even though the median and modal realizations are slower.
+Fundamentally: the **mean** trajectory is not the **typical** trajectory. If $Z(t)$ represents a realized epidemic trajectory (cumulative cases over time), the spike case's $Z(t)$ distribution is more right-skewed than the smooth case's. Rare explosive realizations pull up $E[Z(t)]$ to match, even though the median and modal realizations are slower.
 
 ### Setup: the Crump–Mode–Jagers branching process
 
@@ -28,17 +28,15 @@ Both models have the same intensity measure:
 
 $$\mu(B) = E[\text{number of offspring in time set } B] = R_0 \int_B g(\tau)\,d\tau = \int_B A(\tau)\,d\tau$$
 
-for any measurable set $B$. This is because $E[k_i \cdot \mathbf{1}(\tau_i^* \in B)] = R_0 \cdot P(\tau^* \in B) = R_0 \int_B g(\tau)\,d\tau$ for the spike case, which matches the smooth case. Thus:
+for any measurable set $B$. This is because $E[\chi_i \cdot \mathbf{1}(\tau_i^* \in B)] = R_0 \cdot P(\tau^* \in B) = R_0 \int_B g(\tau) d\tau$ for the spike case, which matches the smooth case. Thus, $E[Z(t)]$ is identical for both models at every $t$. 
 
-$$E[Z(t)] \text{ is identical for both models at every } t.$$
+The early-epidemic ("Malthusian") growth rate $r$, defined by the Euler–Lotka equation
 
-The Malthusian growth rate $\alpha$, defined by the Euler–Lotka equation
-
-$$1 = \int_0^\infty e^{-\alpha \tau} A(\tau)\,d\tau,$$
+$$1 = \int_0^\infty e^{-r \tau} A(\tau) d\tau,$$
 
 is the same. The mean-field dynamics are truly, provably, identical.
 
-**Importantly, this is not a large-numbers approximation.** The proof uses the Campbell theorem for point processes: $E[\sum_j f(\tau_j)] = \int f(s)\,\mu(ds)$ for any point process with intensity measure $\mu$, regardless of the dependence structure between the points $\tau_j$. It does not matter whether offspring times are independent (smooth) or perfectly correlated (spike). The renewal equation for $E[Z(t)]$ inherits this, giving an identical expected cumulative incidence curve at every $t$, even starting from a single case.
+**Importantly, this is not a large-numbers approximation.** The proof uses the Campbell theorem for point processes: $E[\sum_j f(\tau_j)] = \int f(s) \mu(ds)$ for any point process with intensity measure $\mu$, regardless of the dependence structure between the points $\tau_j$. It does not matter whether offspring times are independent (smooth) or perfectly correlated (spike). The renewal equation for $E[Z(t)]$ inherits this, giving an identical expected cumulative incidence curve at every $t$, even starting from a single case.
 
 ### The mean trajectory is not the typical trajectory
 
@@ -46,20 +44,12 @@ If this is true, why do simulations consistently show the spike case reaching mi
 
 The spike case's $Z(t)$ has a more right-skewed distribution than the smooth case's. A few explosive realizations — where early spikes all happen to fall at short generation intervals — produce very large $Z(t)$ values that pull up $E[Z(t)]$ to match the smooth case. But these are rare. The typical (median) realization is slower.
 
-**A concrete toy example.** Suppose at $t = 5$ days, five simulations of each model give:
+<!-- **A concrete toy example.** Suppose at $t = 5$ days, five simulations of each model give:
 
 - Smooth: $Z(5) = 8, 9, 10, 11, 12$. Mean $= 10$. Median $= 10$. All near threshold.
 - Spike: $Z(5) = 3, 5, 6, 8, 28$. Mean $= 10$. Median $= 6$. Only 1 of 5 has crossed 10.
 
-Same $E[Z(5)]$. Very different $T_{10}$. The one explosive spike realization ($Z = 28$) does all the work of preserving the mean, while the majority of spike trajectories lag behind the smooth trajectories. This is the "skewness tax."
-
-**What you would see in simulation:** if you ran 10,000 simulations of each model and plotted:
-
-- The **mean curve** (average $Z(t)$ across simulations at each $t$): **identical** for both models, exactly.
-- The **median curve**: **shifted right** for the spike case.
-- Individual curves: more spread out for the spike case.
-
-The user's intuition that "the spike curves are shifted right" is correct for the typical/median trajectory, and this is what drives the difference in $E[T_n]$. The mean trajectory is unshifted, but $T_n$ is determined by where individual trajectories cross the threshold $n$, not by where the mean trajectory crosses.
+Same $E[Z(5)]$. Very different $T_{10}$. The one explosive spike realization ($Z = 28$) does all the work of preserving the mean, while the majority of spike trajectories lag behind the smooth trajectories. This is the "skewness tax." -->
 
 ### The CMJ limit theorem and the random variable $W$
 
