@@ -336,7 +336,7 @@ Estimates of the early-epidemic exponential growth rate $r$ have early identical
 We decompose individual infectiousness as $a_i(\tau) = b_i(\tau) \cdot R_0 z(t_i + \tau)$, where:
 
 - $b_i(\tau) = f_\psi(\tau - l_i)$ is the biological timing density (a Gamma($\psi \alpha$, $\beta$) density shifted by individual onset $`l_i \sim \text{Gamma}((1-\psi) \alpha, \beta)`$)
-- $z(t) = 1 + \epsilon \cos(2\pi t / T)$ is a periodic contact rate multiplier with period $T$ days and amplitude $\epsilon \in [0,1]$. 
+- $z(t) = 1 + \epsilon \cos(2\pi t / P)$ is a periodic contact rate multiplier with period $P$ days and amplitude $\epsilon \in [0,1]$. 
 
 The parameter $\psi$ controls punctuation: $\psi \rightarrow 0$ gives narrow, spike-like individual profiles; $\psi \rightarrow 1$ gives broad profiles that resemble the population average.
 
@@ -346,30 +346,32 @@ The hypothesis: when the biological profile $b_i$ is a narrow spike (small $\psi
 
 ### Setup
 
-When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $R_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\psi$), and (iii) the infection time. Here we derive the distribution of $R_i$ for sinusoidal contacts.
+When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $\nu_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\psi$), and (iii) the infection time. Here we derive the distribution of $R_i$ for sinusoidal contacts.
 
-Suppose contacts vary sinusoidally: $c(t) = \bar{c}(1 + \varepsilon \sin(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_0$ has individual reproduction number:
+Suppose contacts vary sinusoidally: $c(t) = R_0 (1 - \varepsilon \cos(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_i$ has individual reproduction number:
 
-$$R_i(t_0) = R_0 \int_0^\infty g_i(\tau) \cdot \frac{c(t_0 + \tau)}{\bar{c}} \, d\tau$$
+$$\nu_i(t_i) = \int_0^\infty b_i(\tau) \cdot c(t_0 + \tau) d\tau$$
 
-where $g_i(\tau)$ describes how person $i$'s infectiousness is distributed over time after infection.
+where $b_i(\tau)$ is the person's biological infectiousness profile. 
 
 ### Smoothing via the characteristic function
 
-Expanding the sinusoidal contact term and integrating against $g_i$:
+Expanding the sinusoidal contact term and integrating:
 
-$$R_i(t_0) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \sin(\omega t_0 + \varphi)\right)$$
+$$\n_i(t_i) = xxx $$
+
+% $$R_i(t_0) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \sin(\omega t_0 + \varphi)\right)$$
 
 where $\rho = |\varphi_g(\omega)|$ is the modulus of the characteristic function of the generation interval distribution $g$, and $\varphi$ is the corresponding phase shift. The quantity $\rho \in [0, 1]$ measures how much the infectiousness profile *smooths out* the contact variation: a more spread-out profile averages over more of the contact cycle, reducing $\rho$.
 
 ### Dependence on $\psi$ in the Gamma convolutional family
 
-In our model, each infection attempt has timing $\tau_j = s + \varepsilon_j$, where $s \sim \text{Gamma}(\alpha\_{\text{total}} - \psi, \beta)$ is a shared component and $\varepsilon_j \sim \text{Gamma}(\psi, \beta)$ is independent jitter. Only the jitter provides smoothing — the shared component shifts all attempts together without averaging. Therefore:
+In our model, each infection attempt has timing $\tau_j = l_i + \varepsilon_j$, where $l_i \sim \text{Gamma}(\alpha (1 - \psi), \beta)$ is a shared component and $\varepsilon_j \sim \text{Gamma}(\psi \alpha, \beta)$ is independent jitter. Only the jitter provides smoothing — the shared component shifts all attempts together without averaging. Therefore:
 
-$$\rho(\psi) = |\varphi\_{\text{Gamma}(\psi, \beta)}(\omega)| = \left(\frac{r}{\sqrt{r^2 + \omega^2}}\right)^\psi$$
+$$\rho(\psi) = |\varphi\_{\text{Gamma}(\psi, \beta)}(\omega)| = \left(\frac{\beta}{\sqrt{\beta^2 + \omega^2}}\right)^\psi$$
 
-- **Spike ($\psi \to 0$):** $\rho = 1$. No jitter, no smoothing. The full contact amplitude $\varepsilon$ feeds through to $R_i$.
-- **Smooth ($\psi = \alpha\_{\text{total}}$):** $\rho = (r / \sqrt{r^2 + \omega^2})^{\alpha\_{\text{total}}} < 1$. Maximum smoothing; the contact variation is strongly attenuated.
+- **Spike ($\psi \to 0$):** $\rho = 1$. No jitter, no smoothing. The full contact amplitude $\varepsilon$ feeds through to $\nu_i$.
+- **Smooth ($\psi = 1$):** $\rho = (\beta / \sqrt{\beta^2 + \omega^2})^{\alpha} < 1$. Maximum smoothing; the contact variation is strongly attenuated.
 - **Intermediate $\psi$:** Smooth interpolation between these extremes.
 
 ### Marginal distribution over uniform infection times
@@ -384,11 +386,11 @@ This gives:
 - $\text{Var}(R_i) = R_0^2 \varepsilon^2 \rho(\psi)^2 / 2$
 - Support: $[R_0(1 - \varepsilon \rho), \; R_0(1 + \varepsilon \rho)]$
 
-The overdispersion in $R_i$ is **monotonically decreasing in $\psi$**: spike profiles produce the widest distribution of individual reproduction numbers, smooth profiles the narrowest.
+The overdispersion in $\nu_i$ is **monotonically decreasing in $\psi$**: spike profiles produce the widest distribution of individual reproduction numbers, smooth profiles the narrowest.
 
 ### Role of contact frequency
 
-The contact frequency $\omega$ interacts with $\psi$ through $\rho(\psi) = (r / \sqrt{r^2 + \omega^2})^\psi$:
+The contact frequency $\omega$ interacts with $\psi$ through $\rho(\psi) = (\beta / \sqrt{\beta^2 + \omega^2})^\psi$:
 
 - **Slow variation ($\omega \to 0$):** $\rho \to 1$ for all $\psi$. Contact changes are slow relative to the generation interval, so all profiles "see" the same local contact rate. No differentiation between profiles.
 - **Fast variation ($\omega \to \infty$):** $\rho \to 0$ for all $\psi > 0$. Contact changes are fast relative to the generation interval, so all profiles average over many cycles. No overdispersion from contacts.
@@ -396,4 +398,4 @@ The contact frequency $\omega$ interacts with $\psi$ through $\rho(\psi) = (r / 
 
 ### Extension to non-sinusoidal contacts
 
-For a general periodic contact pattern $c(t) = \bar{c}(1 + \sum_k \varepsilon_k \sin(k\omega t + \psi_k))$, each Fourier harmonic is smoothed independently by $\rho(\psi)$ evaluated at frequency $k\omega$. The marginal distribution of $R_i$ is then the distribution of a sum of weighted arcsine random variables (which is no longer arcsine in general). For complex contact patterns, simulation is more practical than analytical computation.
+For a general periodic contact pattern $c(t) = R_0 (1 + \sum_k \varepsilon_k \sin(k\omega t + \psi_k))$, each Fourier harmonic is smoothed independently by $\rho(\psi)$ evaluated at frequency $k\omega$. The marginal distribution of $\nu_i$ is then the distribution of a sum of weighted arcsine random variables (which is no longer arcsine in general). For complex contact patterns, simulation is more practical than analytical computation.
