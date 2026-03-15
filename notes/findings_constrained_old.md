@@ -378,7 +378,7 @@ This section formalises the connection between the $\psi$-dependent infectiousne
 
 Following Middleton & Larremore (M&L), define testing effectiveness as the fraction by which a detect-and-isolate intervention reduces cumulative transmission:
 
-$$\text{TE} = \frac{\int_0^\infty \beta(\tau)\,F_D(\tau)\,d\tau}{\int_0^\infty \beta(\tau)\,d\tau}$$
+$$\text{TE} = \frac{\int_0^\infty \beta(\tau) F_D(\tau) d\tau}{\int_0^\infty \beta(\tau) d\tau}$$
 
 where $\beta(\tau)$ is the infectiousness profile (relative to infection time) and $F_D(\tau) = P(D \leq \tau)$ is the CDF of the diagnosis time $D$ (also relative to infection time). Equivalently, TE is the probability that a randomly chosen transmission event occurs after diagnosis: $\text{TE} = E_\varepsilon[F_D(\varepsilon)]$, where $\varepsilon \sim \beta$ is the timing of a random transmission attempt.
 
