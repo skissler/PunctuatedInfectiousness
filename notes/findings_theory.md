@@ -12,32 +12,32 @@ $$R_0 = \int_0^\infty A(\tau) d\tau$$
 
 $$g(\tau) = \frac{A(\tau)}{R_0} $$ 
 
-Importantly, $A(\tau)$ is a population-level object (an expected value across individuals). At the individual level, various "individual infectiousness profiles" $a_i(\tau)$ can yield the same $A(\tau)$. For example, the SEIR model is commonly motivated by assuming a person undergoes an exponentially-distributed latent period (ending at rate $\eta$), followed by another exponentially-distributed infectious period (ending at rate $\gamma$), and is infectious at level $\beta$ during the infectious period, i.e., 
+Importantly, $A(\tau)$ is a population-level object (an expected value across individuals). At the individual level, various "individual infectiousness profiles" $a_i(\tau)$ can yield the same $A(\tau)$. For example, the SEIR model is commonly motivated by assuming a person undergoes an exponentially-distributed latent period (ending at rate $\eta$), followed by another exponentially-distributed infectious period (ending at rate $\gamma$), and is infectious at level $\lambda$ during the infectious period, i.e.,
 
 $$ a_i(\tau) = \begin{cases}
-\beta &\qquad \tau \in [\tau_i^\text{on}, \tau_i^\text{on} + \tau_i^\text{off}] \qquad \text{ where } \tau_i^\text{on} \sim \text{Exp}(\eta) \text{ and } \tau_i^\text{off} \sim \text{Exp}(\gamma) \\ 
+\lambda &\qquad \tau \in [\tau_i^\text{on}, \tau_i^\text{on} + \tau_i^\text{off}] \qquad \text{ where } \tau_i^\text{on} \sim \text{Exp}(\eta) \text{ and } \tau_i^\text{off} \sim \text{Exp}(\gamma) \\
 0 &\qquad \text{otherwise}
-\end{cases}$$ 
+\end{cases}$$
 
-We call this the "stepwise" individual infectiousness profile. It can be shown that this yields the population-level infectiousness profile 
+We call this the "stepwise" individual infectiousness profile. It can be shown that this yields the population-level infectiousness profile
 
-$$A(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$ 
+$$A(\tau) = \lambda \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$
 
-However, other choices of $a_i(\tau)$ yield this same $A(\tau)$; for example, we might assume each person's individual infectiousness profile is identical to the population-level profile: 
+However, other choices of $a_i(\tau)$ yield this same $A(\tau)$; for example, we might assume each person's individual infectiousness profile is identical to the population-level profile:
 
-$$a_i(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau}) \qquad \forall i$$ 
+$$a_i(\tau) = \lambda \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau}) \qquad \forall i$$
 
-We call this the "smooth" individual infectiousness profile. Or, we might assume each person's individual infectiousness profile is a delta function concentrated at time $`{\tau_i}^*`$, where $`{\tau_i}^*`$ is distributed according to $`g(\tau) = A(\tau)/R_0`$: 
+We call this the "smooth" individual infectiousness profile. Or, we might assume each person's individual infectiousness profile is a delta function concentrated at time $`{\tau_i}^*`$, where $`{\tau_i}^*`$ is distributed according to $`g(\tau) = A(\tau)/R_0`$:
 
 ```math
-a_i(\tau) = \frac{\beta}{\gamma} \delta_{{\tau_i}^*}(\tau) \qquad {\tau_i}^* \sim A(\tau)/R_0
+a_i(\tau) = \frac{\lambda}{\gamma} \delta_{{\tau_i}^*}(\tau) \qquad {\tau_i}^* \sim A(\tau)/R_0
 ```
 
-Here, each person's secondary infections are all concentrated at a single moment. We call this the "spike" individual infectiousness profile. 
+Here, each person's secondary infections are all concentrated at a single moment. We call this the "spike" individual infectiousness profile.
 
-In each of these cases, 
+In each of these cases,
 
-$$ E_i[a_i(\tau)] = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$ 
+$$ E_i[a_i(\tau)] = \lambda \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$ 
 
 That is, each yields the same population-level infectiousness profile $A(\tau)$, and thus the same deterministic dynamics. 
 
@@ -54,7 +54,7 @@ The three canonical profiles (smooth, stepwise, spike) are useful theoretical bo
 
 A shifted Gamma construction achieves all four simultaneously.
 
-> The smooth and spike cases both produce Poisson($R_0$) secondary infections per individual. The stepwise case produces a compound Poisson — Poisson($\beta \cdot D$) where $D \sim \text{Exp}(\gamma)$ — which is overdispersed relative to Poisson($R_0$). Concretely, $\text{Var}[\text{offspring}] = R_0 + R_0^2$ for the stepwise case (a negative binomial with $k = 1$), vs. $\text{Var}[\text{offspring}] = R_0$ for the smooth and spike cases.
+> The smooth and spike cases both produce Poisson($R_0$) secondary infections per individual. The stepwise case produces a compound Poisson — Poisson($\lambda \cdot D$) where $D \sim \text{Exp}(\gamma)$ — which is overdispersed relative to Poisson($R_0$). Concretely, $\text{Var}[\text{offspring}] = R_0 + R_0^2$ for the stepwise case (a negative binomial with $k = 1$), vs. $\text{Var}[\text{offspring}] = R_0$ for the smooth and spike cases.
 > 
 > This means the stepwise case — which is the implicit individual-level interpretation of the standard SEIR model — carries superspreading-like overdispersion even without any explicit heterogeneity in contact rates or susceptibility.
 
@@ -209,7 +209,7 @@ The time-varying contact function acts as a multiplicative modulator on the effe
 
 ### Connection to the shifted Gamma construction
 
-In the shifted Gamma framework (Section 9), with constant contacts:
+In the shifted Gamma framework (see "Shifted Gamma construction" above), with constant contacts:
 
 - $b_i(\tau) = f_\psi(\tau - l_i)$ — the $\text{Gamma}(\alpha \psi, \beta)$ density shifted to onset time $l_i$
 - $c_i(t) = R_0$ for all $i, t$
