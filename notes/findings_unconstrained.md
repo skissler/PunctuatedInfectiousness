@@ -19,9 +19,9 @@ We decompose individual infectiousness as $a_i(\tau) = b_i(\tau) \cdot R_0 z(t_i
 - $b_i(\tau) = f_\psi(\tau - l_i)$ is the biological timing density (a Gamma($\psi \alpha$, $\beta$) density shifted by individual onset $`l_i \sim \text{Gamma}((1-\psi) \alpha, \beta)`$)
 - $z(t) = 1 + \epsilon \cos(2\pi t / T)$ is a periodic contact rate multiplier with period $T$ days and amplitude $\epsilon \in [0,1]$. 
 
-The parameter $\psi$ controls punctuation: small $\psi$ gives narrow, spike-like individual profiles; large $\psi$ gives broad profiles that resemble the population average. The parameter $\epsilon$ controls the amplitude of contact variation ($\epsilon = 0$ is constant contacts, $\epsilon = 0.9$ is strong weekly oscillation).
+The parameter $\psi$ controls punctuation: $\psi \rightarrow 0$ gives narrow, spike-like individual profiles; $\psi \rightarrow 1$ gives broad profiles that resemble the population average.
 
-The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ is invariant across $\psi$ by the Gamma additivity property. Parameters: $R_0 = 2$, $\alpha = 10$, $\mu = 5$ days, so $r = 2$.
+The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ is invariant across $\psi$ by the Gamma additivity property.
 
 ### Part A: Branching process offspring distributions
 
