@@ -212,15 +212,15 @@ Their computational machinery is complementary to our conceptual framework. We i
 
 ## Analytical computation of Var(W) and generalized gamma moment matching
 
-The previous section argued qualitatively that the spike model has higher $\text{Var}(W)$ than the smooth model, and Section 18 noted that Morris et al. (2024) provide computational methods for the $W$ distribution. Here we derive **exact closed-form expressions** for $\text{Var}(W)$ as a function of $\psi$ in our Gamma convolutional family and implement **generalized gamma moment matching** to approximate the full distribution of $W$ (and hence the time-shift $\tau$).
+We have argued qualitatively that the spike model has higher $\text{Var}(W)$ than the smooth model, and noted that Morris et al. (2024) provide computational methods for characterizing the $W$ distribution. Here we derive **exact closed-form expressions** for $\text{Var}(W)$ as a function of $\psi$ in our Gamma convolutional family and implement **generalized gamma moment matching** to approximate the full distribution of $W$ (and hence the time-shift $\varsigma$).
 
 ### Closed-form Malthusian parameter
 
-For a Gamma($\alpha\_{\text{total}}$, $r$) generation-interval distribution, the Euler-Lotka equation $R_0 \cdot (r/(r + \alpha))^{\alpha\_{\text{total}}} = 1$ yields:
+For a $\text{Gamma}(\alpha, \beta)$ generation-interval distribution, the Euler-Lotka equation $R_0 \cdot (\beta/(\beta + r))^{\alpha} = 1$ yields:
 
-$$\alpha = r \cdot (R_0^{1/\alpha\_{\text{total}}} - 1)$$
+$$r = \beta \cdot (R_0^{1/\alpha} - 1)$$
 
-With standard parameters ($R_0 = 2$, $\alpha\_{\text{total}} = 10$, $r = 2$): $\alpha \approx 0.1435$.
+With standard parameters ($R_0 = 2$, $\alpha = 10$, $\beta = 2$): $r \approx 0.1435$.
 
 ### Var(W) via the distributional fixed-point equation
 
