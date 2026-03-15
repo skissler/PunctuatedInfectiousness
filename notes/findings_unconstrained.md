@@ -171,7 +171,7 @@ Morris et al. treat the offspring process as *given* and ask "what is the distri
 
 This is precisely our contribution. We construct a family of offspring processes — parametrised by $\psi$ — that all share the same $A(\tau)$ (and hence the same $r$, $R_0$, and generation interval distribution) but differ in the within-individual correlation structure of offspring timing. This family traces a path through the space of branching processes that Morris et al.'s methods could be applied to, generating a *curve* of $W$-distributions indexed by $\psi$.
 
-In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) d\tau$ fixed and vary the offspring point process (from independent arrival times at $\psi \rightarrow 1}$ to perfectly synchronised arrivals at $\psi \rightarrow 0$). The deterministic trajectory is invariant across this family; only the stochastic fluctuation $W$ changes.
+In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) d\tau$ fixed and vary the offspring point process (from independent arrival times at $\psi \rightarrow 1$ to perfectly synchronised arrivals at $\psi \rightarrow 0$). The deterministic trajectory is invariant across this family; only the stochastic fluctuation $W$ changes.
 
 ### Their framework applied to our problem
 
