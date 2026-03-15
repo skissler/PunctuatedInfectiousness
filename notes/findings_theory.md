@@ -23,6 +23,8 @@ It can be shown that this yields the population-level infectiousness profile
 
 $$A(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau})$$ 
 
+
+
 ## Shifted Gamma construction: a clean one-parameter interpolation
 
 The original three profiles (smooth, stepwise, spike) are useful theoretical bookends but leave open the question of how to *interpolate* between the smooth and spike extremes with a single punctuation parameter, while preserving:
@@ -202,7 +204,7 @@ The decomposition reveals a mechanism for generating overdispersion in the indiv
 
 There is no individual-level variation in contact rates — the only heterogeneity is in the biological timing $l_i$. Yet the individual reproduction number becomes:
 
-$$\tilde{\nu}_i = R_0 \int_0^\infty f_\psi(\tau - l_i) \cdot z(t_i + \tau)\,d\tau.$$
+$$\nu_i = R_0 \int_0^\infty f_\psi(\tau - l_i) \cdot z(t_i + \tau)\,d\tau.$$
 
 The variance of $\nu_i$ depends on how much the biological profile "averages over" the oscillations in $z$:
 
