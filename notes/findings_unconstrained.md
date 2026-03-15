@@ -55,34 +55,34 @@ Same $E[Z(5)]$. Very different $T_{10}$. The one explosive spike realization ($Z
 
 CMJ theory provides the following almost-sure convergence result: conditional on non-extinction,
 
-$$\frac{Z(t)}{e^{\alpha t}} \xrightarrow{a.s.} W \qquad \text{as } t \to \infty,$$
+$$\frac{Z(t)}{e^{r t}} \xrightarrow{a.s.} W \qquad \text{as } t \to \infty,$$
 
-where $W > 0$ is a random variable that depends on the stochastic early phase of the epidemic. The random variable $W$ captures the "effective head start" of the epidemic: a large $W$ means the epidemic got off to a fast start; a small $W$ means a slow start. Once $Z(t)$ is large, the epidemic grows deterministically at rate $\alpha$, but the trajectory is permanently shifted by the early stochastic phase.
+where $W > 0$ is a random variable that depends on the stochastic early phase of the epidemic. The random variable $W$ captures the "effective head start" of the epidemic: a large $W$ means the epidemic got off to a fast start; a small $W$ means a slow start; it can be interpreted as an "effective initial condition". Once $Z(t)$ is large, the epidemic grows deterministically at rate $r$, but the trajectory is permanently shifted by the early stochastic phase.
 
 The key properties of $W$:
 
-- **$E[W \mid \text{survival}]$** is determined by the intensity measure $\mu$ and is the same for both models (it depends on $A(\tau)$ and $\alpha$, which are shared).
+- **$E[W \mid \text{survival}]$** is determined by the intensity measure $\mu$ and is the same for both models (it depends on $A(\tau)$ and $r$, which are shared).
 - **$\text{Var}(W)$** depends on the full offspring process, not just the intensity measure. It differs between the smooth and spike models.
 
 ### Why the spike case has higher $\text{Var}(W)$
 
 The variance of $W$ is determined by the second-moment structure of the offspring process. Define the "variance contribution" from each individual:
 
-- **Smooth model:** Individual $i$'s offspring arrive at $k_i$ distinct times, spread across the generation interval. The contribution to $Z(t)$ from $i$'s offspring is a sum of $k_i$ terms at different times. By the independence of offspring times, the variance of this contribution is roughly $k_i$ times the variance of a single-offspring contribution (reduced by the spreading across time).
+- **Smooth model:** Individual $i$'s offspring arrive at $\chi_i$ distinct times, spread across the generation interval. The contribution to $Z(t)$ from $i$'s offspring is a sum of $\chi_i$ terms at different times. By the independence of offspring times, the variance of this contribution is roughly $\chi_i$ times the variance of a single-offspring contribution (reduced by the spreading across time).
 
-- **Spike model:** Individual $i$'s offspring all arrive at the same time $\tau_i^*$. The contribution to $Z(t)$ is $k_i$ individuals all launched from the same time point. The variance is higher because offspring are perfectly correlated in timing — they all either arrive "early" (contributing to fast growth) or "late" (contributing to slow growth) together.
+- **Spike model:** Individual $i$'s offspring all arrive at the same time $\tau_i^*$. The contribution to $Z(t)$ is $\chi_i$ individuals all launched from the same time point. The variance is higher because offspring are perfectly correlated in timing — they all either arrive "early" (contributing to fast growth) or "late" (contributing to slow growth) together.
 
 Formally, the within-individual covariance of offspring contributions is zero for the smooth model (independent arrival times) but positive for the spike model (identical arrival times). This inflates $\text{Var}(W)$ for the spike case.
 
 ### Jensen's inequality: from $E[Z(t)]$ to $E[T_n]$
 
-Define $T_n = \inf\{t : Z(t) \geq n\}$, the time to reach $n$ infections. Using the CMJ limit:
+Define $T_n = \inf\\{t : Z(t) \geq n\\}$, the time to reach $n$ infections. Using the CMJ limit:
 
-$$Z(T_n) \approx n \implies W \cdot e^{\alpha T_n} \approx n \implies T_n \approx \frac{\log n - \log W}{\alpha}$$
+$$Z(T_n) \approx n \implies W \cdot e^{r T_n} \approx n \implies T_n \approx \frac{\log n - \log W}{r}$$
 
 Taking expectations (conditional on survival):
 
-$$E[T_n] \approx \frac{\log n - E[\log W]}{\alpha}$$
+$$E[T_n] \approx \frac{\log n - E[\log W]}{r}$$
 
 Now apply Jensen's inequality. Since $\log$ is concave:
 
@@ -90,7 +90,7 @@ $$E[\log W] \leq \log E[W]$$
 
 with equality only when $W$ is deterministic. The gap $\log E[W] - E[\log W]$ is exactly the **expected log-deviation**, which increases with $\text{Var}(W)$. More precisely, for a random variable $W > 0$:
 
-$$\log E[W] - E[\log W] = \frac{\text{Var}(W)}{2\,(E[W])^2} + O(\text{higher cumulants})$$
+$$\log E[W] - E[\log W] = \frac{\text{Var}(W)}{2 (E[W])^2} + O(\text{higher cumulants})$$
 
 (this is the second-order expansion via the delta method, exact for log-normal $W$).
 
@@ -104,11 +104,11 @@ $$\implies E[T_n]_{\text{spike}} > E[T_n]_{\text{smooth}}$$
 
 ### Quantitative connection to the order-statistics mechanism
 
-The order-statistics mechanism described in Findings 3 and 12 is the *micro-level* manifestation of the variance difference in $W$.
+The order-statistics mechanism described above is the *micro-level* manifestation of the variance difference in $W$.
 
-In the smooth case, an infector with $k$ offspring has first-transmission time $\min(\tau_1, \ldots, \tau_k)$, which is stochastically earlier than a single draw from $g(\tau)$. This "fastest horse wins" dynamic reduces the *effective* generation interval for the first link in each chain, compressing the early stochastic phase and reducing $\text{Var}(W)$.
+In the smooth case, an infector with $\chi_i$ offspring has first-transmission time $\min(\tau_1, \ldots, \tau_{\chi_i})$, which is stochastically earlier than a single draw from $g(\tau)$. This "fastest horse wins" dynamic reduces the *effective* generation interval for the first link in each chain, compressing the early stochastic phase and reducing $\text{Var}(W)$.
 
-In the spike case, the first-transmission time is $\tau^*$ regardless of $k$, so the effective generation interval equals the population generation interval. There is no order-statistics acceleration, and $\text{Var}(W)$ remains high.
+In the spike case, the first-transmission time is ${\tau_i}^*$ regardless of $\chi_i$, so the effective generation interval equals the population generation interval. There is no order-statistics acceleration, and $\text{Var}(W)$ remains high.
 
 The connection: the per-infector first-transmission advantage compounds multiplicatively across the first few generations of the branching process, translating into a multiplicative factor in $W$. The smooth case's $W$ is a product of terms that are individually less variable (each has a narrower first-transmission distribution), yielding a tighter distribution overall.
 
@@ -116,27 +116,25 @@ The connection: the per-infector first-transmission advantage compounds multipli
 
 The magnitude of the delay $`\Delta T_n`$ = $`E[T_n]_{\text{spike}}`$ - $`E[T_n]_{\text{smooth}}`$ depends on:
 
-1. **$R_0$**: The order-statistics advantage scales with the expected number of offspring $E[k] = R_0$. At $R_0 \leq 1.2$, most infectors produce 0 or 1 offspring, so $\min(\tau_1) = \tau_1$ — no advantage. At $R_0 = 5$, infectors typically produce 4–6 offspring, and $\min(\tau_1, \ldots, \tau_5)$ is much earlier than $\tau^*$. This explains the $R_0$-dependence in Finding 12 (delay grows from ~0% at $R_0 = 1.2$ to ~18% at $R_0 = 5$).
+1. **$R_0$**: The order-statistics advantage scales with the expected number of offspring $E_i[\chi_i] = R_0$. At $R_0 \leq 1.2$, most infectors produce 0 or 1 offspring, so $\min(\tau_1) = \tau_1$ — no advantage. At $R_0 = 5$, infectors typically produce 4–6 offspring, and $\min(\tau_1, \ldots, \tau_5)$ is much earlier in expectation than $\tau_i^*$.
 
-2. **$n$ (the threshold)**: The delay $\Delta T_n$ is approximately *constant* in $n$ (it's a time offset, not a rate difference). As a fraction of $T_n$, it decreases as $\log n$ grows. This explains the finding that percentage delays attenuate from $t_{10}$ to $t_{100}$ (Finding 12).
+<!-- 2. **$n$ (the threshold)**: The delay $\Delta T_n$ is approximately *constant* in $n$ (it's a time offset, not a rate difference). As a fraction of $T_n$, it decreases as $\log n$ grows. This explains the finding that percentage delays attenuate from $t_{10}$ to $t_{100}$ (Finding 12). -->
 
-3. **Initial number of cases**: If the epidemic is seeded with $m$ initial cases (rather than 1), the variance of $W$ decreases by a factor of $\sim m$ (law of large numbers over independent branching processes), and $\Delta T_n \to 0$. The effect is purely a *small-number-of-cases* phenomenon.
+2. **Initial number of cases**: If the epidemic is seeded with $m$ initial cases (rather than 1), the variance of $W$ decreases by a factor of $\sim m$ (law of large numbers over independent branching processes), and $\Delta T_n \to 0$. The effect is purely a *small-number-of-cases* phenomenon.
 
-4. **$\psi$ (for the Gamma convolutional model)**: At $\psi \to 0$ (delta spike), $\text{Var}(W)$ is maximised. At $\psi \to \alpha_{\text{total}}$ (smooth = $A$), $\text{Var}(W)$ is minimised. The delay interpolates continuously between these extremes.
+3. **$\psi$ (for the Gamma convolutional model)**: At $\psi \to 0$ (delta spike), $\text{Var}(W)$ is maximised. At $\psi \to \alpha_{\text{total}}$ (smooth = $A$), $\text{Var}(W)$ is minimised. The delay interpolates continuously between these extremes.
 
 ### Key clarifications
 
 **This is not a finite-population effect.** The branching process operates in an effectively infinite population (no susceptible depletion). The delay arises from starting with a small number of infected individuals, not from the total population being finite. An epidemic seeded into a population of $10^9$ with a single index case would show the same delay as one seeded into a population of $10^3$.
 
-**The expected growth rate is truly identical.** The Malthusian parameter $\alpha$ is the same. The delay is a *time offset*, not a rate reduction. Once $Z(t)$ is large enough for the law of large numbers to apply (roughly $`Z(t) \gtrsim 50 - 100`$), both models grow at rate $\alpha$ and the offset is frozen.
+**The expected growth rate is truly identical.** The early-epidemic growth rate $r$ is the same across individual infectiousness profiles. The delay is a *time offset*, not a rate reduction. Once $Z(t)$ is large enough for the law of large numbers to apply, both models grow at rate $r$ and the offset is frozen.
 
-**$E[Z(t)]$ is identical — but the median of $Z(t)$ is not.** This is the core resolution of the apparent paradox. $E[Z(t)]$ is the same at every $t$, starting from a single case, with no approximations. This is an exact consequence of the Campbell theorem (the intensity measure determines $E[Z(t)]$, and the intensity measure is the same for both models). However, the **median** (and other quantiles) of $Z(t)$ differs: the spike case has a lower median at any given $t$ during the early epidemic, compensated by a heavier right tail. When we look at simulation curves, we see the median behavior, not the mean. The mean curve would overlay exactly; the median curve is shifted right for the spike case. The delay in $E[T_n]$ arises because $T_n$ is determined by where individual trajectories cross the threshold — a quantity sensitive to the median/distribution of $Z(t)$, not just its mean. Jensen's inequality on the concave function $\log$ formalises this: higher variance in $W$ (the stochastic head-start factor) produces a later expected milestone time.
+**$E[Z(t)]$ is identical — but the median (and mode) of $Z(t)$ is not.** This is the core resolution of the apparent paradox. $E[Z(t)]$ is the same at every $t$, starting from a single case, with no approximations. This is an exact consequence of the Campbell theorem (the intensity measure determines $E[Z(t)]$, and the intensity measure is the same for both models). However, the **median** (and other quantiles) of $Z(t)$ differs: the spike case has a lower median at any given $t$ during the early epidemic, compensated by a heavier right tail. When we look at simulation curves, we see the median behavior, not the mean. The mean curve would overlay exactly; the median curve is shifted right for the spike case. The delay in $E[T_n]$ arises because $T_n$ is determined by where individual trajectories cross the threshold — a quantity sensitive to the median/distribution of $Z(t)$, not just its mean. Jensen's inequality on the concave function $\log$ formalises this: higher variance in $W$ (the stochastic head-start factor) produces a later expected milestone time.
 
 **Conditioning on establishment does not eliminate the effect.** Among epidemics that establish (avoid stochastic extinction), the spike case still reaches milestones later. Both models have the same extinction probability (both have Poisson($R_0$) offspring counts — the timing of offspring does not affect the offspring *distribution*). Conditioning on $W > 0$ (survival) changes the distribution of $W$ but preserves the ordering $`\text{Var}(W)_{\text{spike}} > \text{Var}(W)_{\text{smooth}}`$, so Jensen's inequality still applies.
 
----
-
-## 18. Connection to Morris, Maclean & Black (2024): computing the time-shift distribution
+## Connection to Morris, Maclean & Black (2024): computing the time-shift distribution
 
 **Reference:** Morris, Maclean & Black (2024), "Computation of random time-shift distributions for stochastic population models," *Journal of Mathematical Biology*.
 
