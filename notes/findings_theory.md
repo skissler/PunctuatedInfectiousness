@@ -27,7 +27,7 @@ However, other choices of $a_i(\tau)$ yield this same $A(\tau)$; for example, we
 
 $$a_i(\tau) = \beta \frac{\eta}{\eta - \gamma}(e^{-\gamma \tau} - e^{-\eta \tau}) \qquad \forall i$$ 
 
-We call this the "smooth" individual infectiousness profile. Or, we might assume each person's individual infectiousness profile is a delta function concentrated at time ${t_i}^*$, where ${t_i}^*$ is distributed according to $g(\tau) = A(\tau)/R_0$: 
+We call this the "smooth" individual infectiousness profile. Or, we might assume each person's individual infectiousness profile is a delta function concentrated at time $`{t_i}^*`$, where $`{t_i}^*`$ is distributed according to $`g(\tau) = A(\tau)/R_0`$: 
 
 $$a_i(\tau) = \frac{\beta}{\gamma} \delta_{{t_i}^*}(\tau) \qquad {t_i}^* \sim A(\tau)/R_0$$
 
