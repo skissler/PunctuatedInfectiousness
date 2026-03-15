@@ -6,7 +6,7 @@ In the smooth case, an infector's $\chi_i$ infection attempts have times drawn f
 
 ### R0 dependence
 
-The growth delay from punctuation **increases** with $R_0$. This is because the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $\chi_i = 1$ attempt, so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau$, giving smooth profiles a compounding head start at each generation. The result is that punctuation slows early growth most precisely when $R_0$ is large, i.e., when the epidemic would otherwise grow fastest.
+The growth delay from punctuation **increases** with $R_0$. This is because the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $\chi_i = 1$ attempt, so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau_j$, giving smooth profiles a compounding head start at each generation. The result is that punctuation slows early growth most precisely when $R_0$ is large, i.e., when the epidemic would otherwise grow fastest.
 
 ## Spike epidemics have more variable empirical exponential growth rates
 
