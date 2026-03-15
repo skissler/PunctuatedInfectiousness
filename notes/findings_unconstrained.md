@@ -12,7 +12,7 @@ The growth delay from punctuation **increases** with $R_0$. This is because the 
 
 ### The apparent paradox
 
-Findings 3, 4, 5, and 12 all show that spike (punctuated) profiles produce slower and more variable early epidemic growth than smooth profiles. Yet by construction, both profiles share the same population-level infectiousness kernel $A(\tau)$, and therefore the same deterministic renewal equation, the same Euler–Lotka growth rate $\alpha$, and the same mean-field epidemic trajectory. How can two models with identical $E[Z(t)]$ consistently differ in the time to reach epidemic milestones?
+Based on simulations, spike (punctuated) profiles produce slower and more variable early epidemic growth than smooth profiles. Yet by construction, both profiles share the same population-level infectiousness kernel $A(\tau)$, and therefore the same deterministic renewal equation, the same Euler–Lotka growth rate $\alpha$, and the same mean-field epidemic trajectory. How can two models with identical $E[Z(t)]$ consistently differ in the time to reach epidemic milestones?
 
 The resolution involves two distinct insights:
 
