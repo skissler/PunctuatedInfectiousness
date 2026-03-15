@@ -107,7 +107,7 @@ For $p_{\text{sens}} = 1$, detection is certain whenever $w \geq \Delta$ (at lea
 
 ### Fraction averted conditional on detection
 
-Given detection at time $\tau_{\text{det}} \in \mathcal{W}_i$, isolation begins at $\tau_{\text{iso}} = \tau_{\text{det}} + \delta_{\text{act}}$. The fraction averted is
+Given detection at time $`\tau_{\text{det}} \in \mathcal{W}_i`$, isolation begins at $`\tau_{\text{iso}} = \tau_{\text{det}} + \delta_{\text{act}}`$. The fraction averted is
 
 $$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i)$$
 
@@ -249,7 +249,7 @@ $$\tau_{\text{iso}}^{(j)} = \max(0,\, \tau_{\text{reach}}^{(j)}) + \delta_{\text
 
 The $\max(0, \cdot)$ handles the case where tracing reaches contact $j$ before they were infected ($\tau_{\text{reach}}^{(j)} < 0$), in which case quarantine begins at the time of infection. The fraction of contact $j$'s transmission averted is
 
-$$\theta_j = \eta \cdot S_\psi\!\left(\tau_{\text{iso}}^{(j)} - l_j\right)$$
+$$\theta_j = \eta \cdot S_\psi\left(\tau_{\text{iso}}^{(j)} - l_j\right)$$
 
 Since $S_\psi(x) = 1$ for $x \leq 0$, this correctly gives $\theta_j = \eta$ whenever isolation precedes $j$'s biological onset.
 
@@ -257,13 +257,13 @@ Since $S_\psi(x) = 1$ for $x \leq 0$, this correctly gives $\theta_j = \eta$ whe
 
 The fraction of a traced contact's transmission averted, averaged over all sources of randomness, is
 
-$$\text{TE}_{\text{CT}} = p_{\text{trace}} \cdot E\!\left[\eta \cdot S_\psi\!\left(\max\!\left(0,\, m_\psi + \delta_{\text{sym}}^A + \delta_{\text{trace}} - \varepsilon_j\right) + \delta_{\text{act}} - l_j\right)\right]$$
+$$\text{TE}_{\text{CT}} = p_{\text{trace}} \cdot E\left[\eta \cdot S_\psi\left(\max\left(0,\, m_\psi + \delta_{\text{sym}}^A + \delta_{\text{trace}} - \varepsilon_j\right) + \delta_{\text{act}} - l_j\right)\right]$$
 
 where the expectation is over $\delta_{\text{sym}}^A$, $\delta_{\text{trace}}$, $\varepsilon_j \sim \text{Gamma}(\psi\alpha, \beta)$, $l_j \sim \text{Gamma}((1-\psi)\alpha, \beta)$, and $\delta_{\text{act}}$; and $p_{\text{trace}} \in [0, 1]$ is the probability that a contact is successfully traced.
 
 **Simplification for perfect immediate isolation** ($\eta = 1$, $\delta_{\text{act}} = 0$) **and deterministic** $\delta_{\text{sym}}^A = \mu_{\text{sym}}$:
 
-$$\text{TE}_{\text{CT}} = p_{\text{trace}} \cdot E\!\left[S_\psi\!\left(\max\!\left(0,\, m_\psi + \mu_{\text{sym}} + \delta_{\text{trace}} - \varepsilon_j\right) - l_j\right)\right]$$
+$$\text{TE}_{\text{CT}} = p_{\text{trace}} \cdot E\left[S_\psi\left(\max\left(0,\, m_\psi + \mu_{\text{sym}} + \delta_{\text{trace}} - \varepsilon_j\right) - l_j\right)\right]$$
 
 The expectation is over three independent random variables: $\delta_{\text{trace}}$, $\varepsilon_j$, and $l_j$.
 
@@ -332,6 +332,6 @@ In practice, individuals may be detected by whichever trigger fires first. The c
 
 $$\tau_{\text{det}} = \min(\tau_{\text{det}}^{\text{screen}}, \tau_{\text{det}}^{\text{sym}})$$
 
-(with $\tau_{\text{det}}^{\text{screen}} = \infty$ if undetected by screening, $\tau_{\text{det}}^{\text{sym}} = \infty$ if asymptomatic). The combined TE is not the sum of the individual TEs (because the second trigger is redundant conditional on the first firing earlier), but is bounded below by $\max(\text{TE}_{\text{screen}}, \text{TE}_{\text{sym}})$.
+(with $\tau_{\text{det}}^{\text{screen}} = \infty$ if undetected by screening, $\tau_{\text{det}}^{\text{sym}} = \infty$ if asymptomatic). The combined TE is not the sum of the individual TEs (because the second trigger is redundant conditional on the first firing earlier), but is bounded below by $`\max(\text{TE}_{\text{screen}}, \text{TE}_{\text{sym}})`$.
 
 For contact tracing, the index case is detected by one of the direct triggers, and tracing then acts on their contacts. The overall population-level impact combines: (1) direct isolation of index cases, and (2) secondary isolation of traced contacts. Both depend on $\psi$.
