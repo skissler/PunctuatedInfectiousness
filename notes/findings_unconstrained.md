@@ -148,7 +148,7 @@ $$Z(t) \approx W \cdot c e^{r t} \qquad \text{as } t \to \infty,$$
 
 where $r$ is the early-epidemic growth rate and $c$ is a scaling parameter. Each stochastic trajectory is approximately a *time-shifted* copy of the deterministic trajectory:
 
-$$Z(t) \approx c e^{t + \tau}, \qquad \tau = \frac{\log W - \log E[W]}{r}.$$
+$$Z(t) \approx c e^{r (t + \tau)}, \qquad \tau = \frac{\log W - \log E[W]}{r}.$$
 
 The random time-shift $\tau$ is what separates a fast-starting epidemic from a slow one. In our framework:
 
