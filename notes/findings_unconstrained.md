@@ -6,7 +6,7 @@ In the smooth case, an infector's $\chi_i$ infection attempts have times drawn f
 
 ### R0 dependence
 
-The growth delay from punctuation **increases** with $R_0$. This is because the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[k] = R_0$. At $R_0 = 1.2$, most infectors draw only $\chi_i = 1$ attempt, so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $k = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau_j$, giving smooth profiles a compounding head start at each generation. The result is that punctuation slows early growth most precisely when $R_0$ is large, i.e., when the epidemic would otherwise grow fastest.
+The growth delay from punctuation **increases** with $R_0$. This is because the order-statistics advantage of smooth profiles scales with the expected number of infection attempts per infector, $E[\chi_i] = R_0$. At $R_0 = 1.2$, most infectors draw only $\chi_i = 1$ attempt, so there is no order-statistics effect to exploit — the two profiles produce indistinguishable growth. At $R_0 = 5$, infectors typically draw $\chi_i = 4 \text{-} 6$ attempts, and $\min(\tau_1, \ldots, \tau_5)$ is substantially earlier than a single $\tau_j$, giving smooth profiles a compounding head start at each generation. The result is that punctuation slows early growth most precisely when $R_0$ is large, i.e., when the epidemic would otherwise grow fastest.
 
 ## Why punctuated profiles yield slower early growth despite identical mean-field dynamics
 
@@ -122,7 +122,7 @@ The magnitude of the delay $`\Delta T_n`$ = $`E[T_n]_{\text{spike}}`$ - $`E[T_n]
 
 2. **Initial number of cases**: If the epidemic is seeded with $m$ initial cases (rather than 1), the variance of $W$ decreases by a factor of $\sim m$ (law of large numbers over independent branching processes), and $\Delta T_n \to 0$. The effect is purely a *small-number-of-cases* phenomenon.
 
-3. **$\psi$ (for the Gamma convolutional model)**: At $\psi \to 0$ (delta spike), $\text{Var}(W)$ is maximised. At $\psi \to \alpha_{\text{total}}$ (smooth = $A$), $\text{Var}(W)$ is minimised. The delay interpolates continuously between these extremes.
+3. **$\psi$ (for the Gamma convolutional model)**: At $\psi \to 0$ (delta spike), $\text{Var}(W)$ is maximised. At $\psi \to 1$ (smooth = $A$), $\text{Var}(W)$ is minimised. The delay interpolates continuously between these extremes.
 
 ### Key clarifications
 
@@ -140,7 +140,7 @@ The magnitude of the delay $`\Delta T_n`$ = $`E[T_n]_{\text{spike}}`$ - $`E[T_n]
 
 ### The shared framework
 
-Morris et al. formalise exactly the object that drives the growth-delay phenomenon described in the previous section: the random variable $W$ from the branching-process limit theorem, and its associated **time-shift** $\tau$.
+Morris et al. formalise exactly the object that drives the growth-delay phenomenon described in the previous section: the random variable $W$ from the branching-process limit theorem, and its associated **time-shift** $\varsigma$.
 
 Their starting point is the same CMJ/CT-MBP convergence:
 
@@ -191,7 +191,7 @@ In their language: we hold the intensity measure $\mu(d\tau) = A(\tau) d\tau$ fi
 
 **The functional equation for $W$.** For a CMJ process with offspring point process $\xi$ (a random counting measure on $`[0, \infty)`$), the LST of $W$ satisfies:
 
-$$E[e^{-sW}] = E\left[\prod_{j=1}^{N} E[e^{-s \, e^{-\alpha \tau_j} W}]\right]$$
+$$E[e^{-sW}] = E\left[\prod_{j=1}^{N} E[e^{-s \, e^{-r \tau_j} W}]\right]$$
 
 where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birth times. For the smooth model ($\tau_j$ independent given $N$), the product factorises into a simpler form. For the spike model ($\tau_j = \tau^*$ for all $j$), the product collapses to $E[e^{-sW}]^N$ evaluated at a single random time. The difference in these functional equations is what drives the difference in $W$-distributions — and hence the growth delay.
 
@@ -201,7 +201,7 @@ where $N$ is the number of offspring and $\tau_1, \ldots, \tau_N$ are their birt
 
 | Aspect | Morris et al. (2024) | Our framework |
 |--------|----------------------|---------------|
-| Core object | $W$ and time-shift $\tau$ | Same |
+| Core object | $W$ and time-shift $\varsigma$ | Same |
 | What varies | The epidemic/population model | The offspring correlation structure ($\psi$), holding $A(\tau)$ fixed |
 | What's computed | Full distribution of $W$ | Currently: simulated $E[T_n]$; could use their methods for $W$ |
 | Key result | Computational methods (PE, MM) for $W$ | Qualitative ordering: $\text{Var}(W)$ increases as $\psi \to 0$ |
@@ -228,17 +228,17 @@ $W$ satisfies the distributional fixed-point equation $W \stackrel{d}{=} \sum_j 
 
 $$\text{CV}^2(W) = \frac{\text{Var}(W)}{(E[W])^2} = \frac{\text{Var}(S)}{1 - m_2}$$
 
-where $m_2 = E[\sum_j e^{-2r \tau_j}] = R_0 \cdot \rho_2^{\alpha\_{\text{total}}}$ (independent of $\psi$), with $\rho = \beta/(\beta+r)$ and $\rho_2 = 'beta'/(\beta+2r)$.
+where $m_2 = E[\sum_j e^{-2r \tau_j}] = R_0 \cdot \rho_2^{\alpha}$ (independent of $\psi$), with $\rho = \beta/(\beta+r)$ and $\rho_2 = \beta/(\beta+2r)$.
 
 ### The crucial $\psi$-dependent quantity: Var(S)
 
-Using the decomposition $\tau_j = l_i + \epsilon_j$ (shared shift + independent jitter), where $s_i \sim \text{Gamma}((1 - \psi) \alpha, \beta)$ and $\epsilon_j \sim \text{Gamma}(\psi \alpha , \beta)$:
+Using the decomposition $\tau_j = l_i + \epsilon_j$ (shared shift + independent jitter), where $l_i \sim \text{Gamma}((1 - \psi) \alpha, \beta)$ and $\epsilon_j \sim \text{Gamma}(\psi \alpha , \beta)$:
 
-$$S = e^{-r s} \cdot T, \qquad T = \sum_j e^{-r \epsilon_j}$$
+$$S = e^{-r l_i} \cdot T, \qquad T = \sum_j e^{-r \epsilon_j}$$
 
-Since $s \perp T$:
+Since $l_i \perp T$:
 
-$$\text{Var}(S) = \underbrace{m_2}_{\text{Poisson + jitter}} + \underbrace{R_0^2 \cdot \rho^{2\psi} \cdot [\rho_2^{\alpha (1-\psi)} - \rho^{2(\alpha (1 - \psi))}]}_{\text{synchronisation penalty}}$$
+$$\text{Var}(S) = \underbrace{m_2}_{\text{Poisson + jitter}} + \underbrace{R_0^2 \cdot \rho^{2\psi\alpha} \cdot [\rho_2^{(1-\psi)\alpha} - \rho^{2(1 - \psi)\alpha}]}_{\text{synchronisation penalty}}$$
 
 The first term ($m_2$) is constant across $\psi$ — it captures variance from the random offspring count and independent jitter. The second term is the **synchronisation penalty**: it vanishes when $\psi = 1$ (smooth, $l_i = 0$) and is maximised when $\psi \to 0$ (spike, $l_i$ carries all variance). This confirms the qualitative argument from before with an exact formula.
 
@@ -254,9 +254,9 @@ This is independent of $n$ (the case threshold), consistent with the branching-p
 
 $E[W^3]$ requires three auxiliary quantities (all closed-form for the Gamma convolutional model):
 
-- $m_3 = R_0 \cdot \rho_3^{\alpha\_{\text{total}}}$ where $\rho_3 = \beta/(\beta + 3r)$
-- $m\_{21} = R_0^2 \cdot \rho_2^\psi \cdot \rho^\psi \cdot \rho_3^{\alpha (1- - \psi)}$
-- $m\_{111} = R_0^3 \cdot \rho^{3\psi} \cdot \rho_3^{\alpha(1-\psi)}$
+- $m_3 = R_0 \cdot \rho_3^{\alpha}$ where $\rho_3 = \beta/(\beta + 3r)$
+- $m\_{21} = R_0^2 \cdot \rho_2^{\psi\alpha} \cdot \rho^{\psi\alpha} \cdot \rho_3^{(1-\psi)\alpha}$
+- $m\_{111} = R_0^3 \cdot \rho^{3\psi\alpha} \cdot \rho_3^{(1-\psi)\alpha}$
 
 Then: $E[W^3] = (3 \cdot m\_{21} \cdot E[W^2] \cdot E[W] + m\_{111} \cdot (E[W])^3) / (1 - m_3)$.
 
@@ -268,9 +268,9 @@ The generalized gamma moments $E[X^k] = a^k \cdot \Gamma((d+k)/p) / \Gamma(d/p)$
 
 ### Results
 
-**CV²(W) is monotonically decreasing in $\psi$.** This confirms the qualitative ordering: spike ($\psi \to 0$) produces the most variable $W$, smooth ($\psi \to \alpha\_{\text{total}}$) the least. The synchronisation penalty term provides the quantitative explanation.
+**CV²(W) is monotonically decreasing in $\psi$.** This confirms the qualitative ordering: spike ($\psi \to 0$) produces the most variable $W$, smooth ($\psi \to 1$) the least. The synchronisation penalty term provides the quantitative explanation.
 
-**Expected time delays of 1–3 days** accumulate for punctuated profiles relative to smooth. For $\psi = 0.5$ (near-spike), the expected delay is approximately 2–3 days; this narrows monotonically as $\psi \to \alpha\_{\text{total}}$.
+**Expected time delays of 1–3 days** accumulate for punctuated profiles relative to smooth. For $\psi = 0.5$ (near-spike), the expected delay is approximately 2–3 days; this narrows monotonically as $\psi \to 1$.
 
 **Generalized gamma fits** match the first three moments of $W | W > 0$ well for all $\psi$ values, producing overlaid densities that track the empirical simulation histograms closely. The fitted $(a, d, p)$ trace a smooth curve as $\psi$ varies.
 
@@ -280,11 +280,11 @@ The generalized gamma moments $E[X^k] = a^k \cdot \Gamma((d+k)/p) / \Gamma(d/p)$
 
 - **`fig_W_variance.pdf`**: Three panels. (A) CV²(W) vs $\psi$, analytical curve with simulation points. (B) Var(S) decomposition into constant Poisson+jitter and decreasing synchronisation penalty. (C) Expected time delay $\Delta E[T_n]$ vs $\psi$.
 - **`fig_W_gengamma.pdf`**: Four panels ($\psi = 0.5, 2, 6, 9.5$) showing empirical histograms of $W | W > 0$ with overlaid generalized gamma densities from moment matching.
-- **`fig_W_timeshift.pdf`**: Time-shift distributions $\tau = (\log W - \log E[W])/\alpha$ for four $\psi$ values, showing how the spread narrows as $\psi \to \alpha\_{\text{total}}$.
+- **`fig_W_timeshift.pdf`**: Time-shift distributions $\varsigma = (\log W - \log E[W])/r$ for four $\psi$ values, showing how the spread narrows as $\psi \to 1$.
 
 ### Connection to Morris et al. (2024)
 
-This section implements the "moment-matching route". The closed-form expressions for Var(S) and the moment recursions exploit the specific structure of our Gamma convolutional family — in particular, the decomposition $\tau_j = l_i + \epsilon_j$ and the resulting conditional independence of $T$ and $s$. Morris et al.'s PE method (Laplace-Stieltjes transform inversion) would give the exact distribution to arbitrary precision, but the moment-matching approach produces an excellent approximation with far less computational cost and provides interpretable parameters.
+This section implements the "moment-matching route". The closed-form expressions for Var(S) and the moment recursions exploit the specific structure of our Gamma convolutional family — in particular, the decomposition $\tau_j = l_i + \epsilon_j$ and the resulting conditional independence of $T$ and $l_i$. Morris et al.'s PE method (Laplace-Stieltjes transform inversion) would give the exact distribution to arbitrary precision, but the moment-matching approach produces an excellent approximation with far less computational cost and provides interpretable parameters.
 
 **Script**: `code/analytical_W_moments.R`
 
@@ -303,9 +303,9 @@ These two operations commute for *linear* systems: if $dx/dt = Ax$, then $E[x(t)
 
 ### Application to SEIR
 
-The only nonlinearity in the SEIR system is the transmission term $\beta S I / N$. The true expected force of infection is:
+The only nonlinearity in the SEIR system is the transmission term $\lambda S I / N$. The true expected force of infection is:
 
-$$E\left[\frac{\beta S I}{N}\right] = \frac{\beta}{N}\bigl(E[S] \cdot E[I] + \text{Cov}(S, I)\bigr)$$
+$$E\left[\frac{\lambda S I}{N}\right] = \frac{\lambda}{N}\bigl(E[S] \cdot E[I] + \text{Cov}(S, I)\bigr)$$
 
 The ODE sets $\text{Cov}(S, I) = 0$. But mechanistically, every new infection simultaneously decrements $S$ and increments $I$ (or $E$), so $\text{Cov}(S, I) < 0$ always. This means the true expected infection rate is *lower* than the ODE assumes:
 
@@ -346,29 +346,27 @@ The hypothesis: when the biological profile $b_i$ is a narrow spike (small $\psi
 
 ### Setup
 
-When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $\nu_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\psi$), and (iii) the infection time. Here we derive the distribution of $R_i$ for sinusoidal contacts.
+When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $\nu_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\psi$), and (iii) the infection time. Here we derive the distribution of $\nu_i$ for sinusoidal contacts.
 
-Suppose contacts vary sinusoidally: $c(t) = R_0 (1 - \varepsilon \cos(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_i$ has individual reproduction number:
+Suppose contacts vary sinusoidally: $c(t) = R_0 (1 + \varepsilon \cos(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_i$ has individual reproduction number:
 
-$$\nu_i(t_i) = \int_0^\infty b_i(\tau) \cdot c(t_0 + \tau) d\tau$$
+$$\nu_i(t_i) = \int_0^\infty b_i(\tau) \cdot c(t_i + \tau) d\tau$$
 
 where $b_i(\tau)$ is the person's biological infectiousness profile. 
 
 ### Smoothing via the characteristic function
 
-Expanding the sinusoidal contact term and integrating:
+Expanding the cosine contact term and integrating:
 
-$$\nu_i(t_i) = xxx $$
+$$\nu_i(t_i) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \cos(\omega t_i + \omega l_i + \varphi)\right)$$
 
-<!--- $$R_i(t_0) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \sin(\omega t_0 + \varphi)\right)$$ ---> 
-
-where $\rho = |\varphi_g(\omega)|$ is the modulus of the characteristic function of the generation interval distribution $g$, and $\varphi$ is the corresponding phase shift. The quantity $\rho \in [0, 1]$ measures how much the infectiousness profile *smooths out* the contact variation: a more spread-out profile averages over more of the contact cycle, reducing $\rho$.
+where $\rho = |\varphi_{f_\psi}(\omega)|$ is the modulus of the characteristic function of the individual biological profile $f_\psi = \text{Gamma}(\psi\alpha, \beta)$, and $\varphi$ is the corresponding phase shift. The quantity $\rho \in [0, 1]$ measures how much the infectiousness profile *smooths out* the contact variation: a more spread-out profile averages over more of the contact cycle, reducing $\rho$.
 
 ### Dependence on $\psi$ in the Gamma convolutional family
 
 In our model, each infection attempt has timing $\tau_j = l_i + \varepsilon_j$, where $l_i \sim \text{Gamma}(\alpha (1 - \psi), \beta)$ is a shared component and $\varepsilon_j \sim \text{Gamma}(\psi \alpha, \beta)$ is independent jitter. Only the jitter provides smoothing — the shared component shifts all attempts together without averaging. Therefore:
 
-$$\rho(\psi) = |\varphi\_{\text{Gamma}(\psi, \beta)}(\omega)| = \left(\frac{\beta}{\sqrt{\beta^2 + \omega^2}}\right)^\psi$$
+$$\rho(\psi) = |\varphi\_{\text{Gamma}(\psi\alpha, \beta)}(\omega)| = \left(\frac{\beta}{\sqrt{\beta^2 + \omega^2}}\right)^{\psi\alpha}$$
 
 - **Spike ($\psi \to 0$):** $\rho = 1$. No jitter, no smoothing. The full contact amplitude $\varepsilon$ feeds through to $\nu_i$.
 - **Smooth ($\psi = 1$):** $\rho = (\beta / \sqrt{\beta^2 + \omega^2})^{\alpha} < 1$. Maximum smoothing; the contact variation is strongly attenuated.
@@ -376,26 +374,26 @@ $$\rho(\psi) = |\varphi\_{\text{Gamma}(\psi, \beta)}(\omega)| = \left(\frac{\bet
 
 ### Marginal distribution over uniform infection times
 
-If infection times are uniformly distributed over the contact cycle, then $\sin(\omega t_0 + \varphi)$ has the **arcsine distribution** on $[-1, 1]$, with density $f(x) = 1/(\pi \sqrt{1 - x^2})$. Therefore:
+If infection times are uniformly distributed over the contact cycle, then $\cos(\omega t_i + \omega l_i + \varphi)$ has the **arcsine distribution** on $[-1, 1]$, with density $f(x) = 1/(\pi \sqrt{1 - x^2})$. Therefore:
 
-$$R_i \sim R_0 (1 + \varepsilon \cdot \rho(\psi) \cdot X), \qquad X \sim \text{Arcsine}[-1, 1]$$
+$$\nu_i \sim R_0 (1 + \varepsilon \cdot \rho(\psi) \cdot X), \qquad X \sim \text{Arcsine}[-1, 1]$$
 
 This gives:
 
-- $E[R_i] = R_0$ (same for all $\psi$)
-- $\text{Var}(R_i) = R_0^2 \varepsilon^2 \rho(\psi)^2 / 2$
+- $E[\nu_i] = R_0$ (same for all $\psi$)
+- $\text{Var}(\nu_i) = R_0^2 \varepsilon^2 \rho(\psi)^2 / 2$
 - Support: $[R_0(1 - \varepsilon \rho), \; R_0(1 + \varepsilon \rho)]$
 
 The overdispersion in $\nu_i$ is **monotonically decreasing in $\psi$**: spike profiles produce the widest distribution of individual reproduction numbers, smooth profiles the narrowest.
 
 ### Role of contact frequency
 
-The contact frequency $\omega$ interacts with $\psi$ through $\rho(\psi) = (\beta / \sqrt{\beta^2 + \omega^2})^\psi$:
+The contact frequency $\omega$ interacts with $\psi$ through $\rho(\psi) = (\beta / \sqrt{\beta^2 + \omega^2})^{\psi\alpha}$:
 
 - **Slow variation ($\omega \to 0$):** $\rho \to 1$ for all $\psi$. Contact changes are slow relative to the generation interval, so all profiles "see" the same local contact rate. No differentiation between profiles.
 - **Fast variation ($\omega \to \infty$):** $\rho \to 0$ for all $\psi > 0$. Contact changes are fast relative to the generation interval, so all profiles average over many cycles. No overdispersion from contacts.
-- **Intermediate $\omega$ (contact period comparable to generation interval):** Maximum differentiation between profiles. This is the regime where the punctuatedness $\psi$ has the strongest effect on $R_i$ variability.
+- **Intermediate $\omega$ (contact period comparable to generation interval):** Maximum differentiation between profiles. This is the regime where the punctuatedness $\psi$ has the strongest effect on $\nu_i$ variability.
 
 ### Extension to non-sinusoidal contacts
 
-For a general periodic contact pattern $c(t) = R_0 (1 + \sum_k \varepsilon_k \sin(k\omega t + \psi_k))$, each Fourier harmonic is smoothed independently by $\rho(\psi)$ evaluated at frequency $k\omega$. The marginal distribution of $\nu_i$ is then the distribution of a sum of weighted arcsine random variables (which is no longer arcsine in general). For complex contact patterns, simulation is more practical than analytical computation.
+For a general periodic contact pattern $c(t) = R_0 (1 + \sum_k \varepsilon_k \cos(k\omega t + \phi_k))$, each Fourier harmonic is smoothed independently by $\rho(\psi)$ evaluated at frequency $k\omega$. The marginal distribution of $\nu_i$ is then the distribution of a sum of weighted arcsine random variables (which is no longer arcsine in general). For complex contact patterns, simulation is more practical than analytical computation.
