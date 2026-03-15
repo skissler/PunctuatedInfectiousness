@@ -75,7 +75,7 @@ $$ \chi_i \sim \text{Poisson}(R_0)$$
 
 Now, we need to identify the timing of each infection event. Decompose each attempted infection time as
 
-$$\xi_j = l_i + \varepsilon_j,$$
+$$\tau_j = l_i + \varepsilon_j,$$
 
 where:
 
@@ -89,7 +89,7 @@ The key identity is that Gamma distributions with the same rate are closed under
 
 $$\text{Gamma}(\alpha (1-\psi), \beta) + \text{Gamma}(\alpha \psi, \beta) = \text{Gamma}(\alpha, \beta).$$
 
-So the marginal distribution of $\xi_j$ (integrating over $l_i$) is $\text{Gamma}(\alpha, \beta)$ regardless of $\psi$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\psi$ varies.
+So the marginal distribution of $\tau_j$ (integrating over $l_i$) is $\text{Gamma}(\alpha, \beta)$ regardless of $\psi$. This immediately gives $E[a_i(\tau)] = A(\tau)$ and guarantees that $A(\tau)$ is invariant as $\psi$ varies.
 
 ### Individual profiles
 
@@ -111,7 +111,7 @@ which is zero for $\tau < l_i$ and follows a $\text{Gamma}(\alpha \psi, \beta)$ 
 
 The total variance of a person's attempted infection times decomposes additively:
 
-$$\text{Var}(\xi_j) = \underbrace{\text{Var}(l_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha(1-\psi)}{\beta^2} + \frac{\alpha \psi}{\beta^2} = \frac{\alpha}{\beta^2}.$$
+$$\text{Var}(\tau_j) = \underbrace{\text{Var}(l_i)}_{\text{between-individual}} + \underbrace{\text{Var}(\varepsilon_j)}_{\text{within-individual}} = \frac{\alpha(1-\psi)}{\beta^2} + \frac{\alpha \psi}{\beta^2} = \frac{\alpha}{\beta^2}.$$
 
 The fraction of total variance that is between-individual (i.e., due to punctuation) is
 
@@ -133,11 +133,11 @@ The shifted Gamma construction is remarkably robust to heterogeneity in the punc
 
 The argument is simple. For a given individual $i$ with punctuation parameter $\psi_i$, their attempted infection times decompose as:
 
-$$\xi_j = l_i + \varepsilon_j, \qquad l_i \sim \text{Gamma}(\alpha (1 - \psi_i), \beta), \quad \varepsilon_j \sim \text{Gamma}(\alpha \psi_i, \beta)$$
+$$\tau_j = l_i + \varepsilon_j, \qquad l_i \sim \text{Gamma}(\alpha (1 - \psi_i), \beta), \quad \varepsilon_j \sim \text{Gamma}(\alpha \psi_i, \beta)$$
 
 By the Gamma additivity property, the marginal distribution of each attempted infection time is:
 
-$$\xi_j \mid \psi_i \sim \text{Gamma}(\alpha, \beta) \qquad \text{for every } \psi_i \in (0, 1)$$
+$$\tau_j \mid \psi_i \sim \text{Gamma}(\alpha, \beta) \qquad \text{for every } \psi_i \in (0, 1)$$
 
 The crucial point: the right-hand side **does not depend on $\psi_i$**. The identity $\text{Gamma}(\alpha(1 - \psi), \beta) + \text{Gamma}(\alpha \psi, \beta) = \text{Gamma}(\alpha, \beta)$ is exact for every $\psi$, not just in expectation. So each individual's contribution to $A(\tau)$ is $R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ regardless of their punctuation parameter.
 

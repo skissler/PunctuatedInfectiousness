@@ -2,7 +2,7 @@
 
 Conditional on establishing, the spike case takes longer to reach early case-count thresholds than the smooth case. 
 
-In the smooth case, an infector's $\xi$ infection attempts have times drawn from the generation interval distribution, $g(\tau)$. The *first* onward transmission is $\min(\tau_1, \ldots, \tau_\xi)$, which is stochastically earlier than a single draw from $g(\tau)$. In the spike case, all $\xi$ infection attempts occur at the same time $\tau_i^*$, so the first transmission time is just a single generation-interval draw regardless of $k$.
+In the smooth case, an infector's $\chi_i$ infection attempts have times drawn from the generation interval distribution, $g(\tau)$. The *first* onward transmission is $\min(\tau_1, \ldots, \tau_{\xi_i})$, which is stochastically earlier than a single draw from $g(\tau)$. In the spike case, all $\chi$ infection attempts occur at the same time $\tau_i^*$, so the first transmission time is just a single generation-interval draw regardless of $k$.
 
 First-transmission time from a single infector, stratified by number of contacts ($10^5$ replicates; $E[\text{GenInterval}] = e_{dur} + i_{dur} = 5.0$ days):
 
