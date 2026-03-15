@@ -13,11 +13,11 @@ Recall from the theory notes: individual $i$ is infected at calendar time $t_i$ 
 
 We define the **mode of the individual biological profile** relative to biological onset:
 
-$$m_\psi = \max\!\left(0,\; \frac{\psi\alpha - 1}{\beta}\right)$$
+$$m_\psi = \max\left(0, \frac{\psi\alpha - 1}{\beta}\right)$$
 
 The mode of $a_i(\tau)$ (the time since infection at which infectiousness peaks) is $\tau_i^* = l_i + m_\psi$. This is individual-specific through $l_i$ but has the same offset $m_\psi$ from onset for everyone.
 
-We also define the CDF and survival function of the individual profile:
+We also define the CDF and survival function of the individual biological profile:
 
 $$F_\psi(x) = P(\text{Gamma}(\psi\alpha, \beta) \leq x), \qquad S_\psi(x) = 1 - F_\psi(x)$$
 
@@ -33,7 +33,12 @@ Perfect temporal adherence corresponds to $\delta_{\text{act}} = 0$. Imperfect a
 
 Isolation reduces subsequent infectiousness by a factor $\eta \in [0, 1]$:
 
-$$a_i^{\text{eff}}(\tau) = \begin{cases} a_i(\tau) & \tau < \tau_{\text{iso}} \\ (1 - \eta) \cdot a_i(\tau) & \tau \geq \tau_{\text{iso}} \end{cases}$$
+```math
+a_i^{\text{eff}}(\tau) = \begin{cases} 
+a_i(\tau) & \tau < \tau_{\text{iso}} \\ 
+(1 - \eta) \cdot a_i(\tau) & \tau \geq \tau_{\text{iso}} 
+\end{cases}
+```
 
 where $\eta = 1$ is perfect isolation and $\eta = 0$ is no effect.
 
