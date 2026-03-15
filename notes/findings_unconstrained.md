@@ -10,7 +10,7 @@ The growth delay from punctuation **increases** with $R_0$. This is because the 
 
 ## Spike epidemics have more variable empirical exponential growth rates
 
-- **Exponential growth rate** : Estimates of the early-epidemic exponential growth rate $r$ have early identical means for smooth and spike infectiousness profiles, but the estimates for the spike case have higher standard deviation, based on log-linear fit to cases 10–100. 
+Estimates of the early-epidemic exponential growth rate $r$ have early identical means for smooth and spike infectiousness profiles, but the estimates for the spike case have higher standard deviation, based on log-linear fit to cases 10–100. 
 
 ## Overdispersion from punctuated infectiousness x periodic contacts
 
