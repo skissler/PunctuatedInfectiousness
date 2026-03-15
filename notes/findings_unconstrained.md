@@ -140,13 +140,13 @@ The magnitude of the delay $`\Delta T_n`$ = $`E[T_n]_{\text{spike}}`$ - $`E[T_n]
 
 ### The shared framework
 
-Morris et al. formalise exactly the object that drives the growth-delay phenomenon described in Section 17: the random variable $W$ from the branching-process limit theorem, and its associated **time-shift** $\tau$.
+Morris et al. formalise exactly the object that drives the growth-delay phenomenon described in the previous section: the random variable $W$ from the branching-process limit theorem, and its associated **time-shift** $\tau$.
 
 Their starting point is the same CMJ/CT-MBP convergence:
 
-$$Z(t) \approx W \cdot v(t) \qquad \text{as } t \to \infty,$$
+$$Z(t) \approx W \cdot e^{\alpha t} \qquad \text{as } t \to \infty,$$
 
-where $v(t) = c \, e^{\alpha t}$ is the deterministic leading-order solution (with $\alpha$ the Malthusian parameter and $c$ a normalisation constant). Each stochastic trajectory is approximately a *time-shifted* copy of the deterministic trajectory:
+where $r$ is the early-epidemic growth rate. Each stochastic trajectory is approximately a *time-shifted* copy of the deterministic trajectory:
 
 $$Z(t) \approx v(t + \tau), \qquad \tau = \frac{\log W - \log E[W]}{\alpha}.$$
 
