@@ -224,68 +224,39 @@ With standard parameters ($R_0 = 2$, $\alpha = 10$, $\beta = 2$): $r \approx 0.1
 
 ### Var(W) via the distributional fixed-point equation
 
-$W$ satisfies the distributional fixed-point equation $W \stackrel{d}{=} \sum_j e^{-\alpha \tau_j} W_j$, where the $W_j$ are i.i.d. copies of $W$ independent of the offspring times $\tau_j$. Define $S = \sum_j e^{-\alpha \tau_j}$ (discounted offspring sum). The key variance formula is:
+$W$ satisfies the distributional fixed-point equation $W \stackrel{d}{=} \sum_j e^{-r \tau_j} W_j$, where the $W_j$ are i.i.d. copies of $W$ independent of the offspring times $\tau_j$. Define $S = \sum_j e^{-r \tau_j}$ (discounted offspring sum). The key variance formula is:
 
 $$\text{CV}^2(W) = \frac{\text{Var}(W)}{(E[W])^2} = \frac{\text{Var}(S)}{1 - m_2}$$
 
-where $m_2 = E[\sum_j e^{-2\alpha \tau_j}] = R_0 \cdot \rho_2^{\alpha\_{\text{total}}}$ (independent of $\psi$), with $\rho = r/(r+\alpha)$ and $\rho_2 = r/(r+2\alpha)$.
+where $m_2 = E[\sum_j e^{-2r \tau_j}] = R_0 \cdot \rho_2^{\alpha\_{\text{total}}}$ (independent of $\psi$), with $\rho = \beta/(\beta+r)$ and $\rho_2 = 'beta'/(\beta+2r)$.
 
 ### The crucial $\psi$-dependent quantity: Var(S)
 
-Using the decomposition $\tau_j = s + \epsilon_j$ (shared shift + independent jitter), where $s \sim \text{Gamma}(\alpha\_{\text{total}} - \psi, \beta)$ and $\epsilon_j \sim \text{Gamma}(\psi, \beta)$:
+Using the decomposition $\tau_j = l_i + \epsilon_j$ (shared shift + independent jitter), where $s_i \sim \text{Gamma}((1 - \psi) \alpha, \beta)$ and $\epsilon_j \sim \text{Gamma}(\psi \alpha , \beta)$:
 
-$$S = e^{-\alpha s} \cdot T, \qquad T = \sum_j e^{-\alpha \epsilon_j}$$
+$$S = e^{-r s} \cdot T, \qquad T = \sum_j e^{-r \epsilon_j}$$
 
 Since $s \perp T$:
 
-$$\text{Var}(S) = \underbrace{m_2}_{\text{Poisson + jitter}} + \underbrace{R_0^2 \cdot \rho^{2\psi} \cdot [\rho_2^{\alpha\_{\text{total}} - \psi} - \rho^{2(\alpha\_{\text{total}} - \psi)}]}_{\text{synchronisation penalty}}$$
+$$\text{Var}(S) = \underbrace{m_2}_{\text{Poisson + jitter}} + \underbrace{R_0^2 \cdot \rho^{2\psi} \cdot [\rho_2^{\alpha (1-\psi)} - \rho^{2(\alpha (1 - \psi))}]}_{\text{synchronisation penalty}}$$
 
-The first term ($m_2$) is constant across $\psi$ — it captures variance from the random offspring count and independent jitter. The second term is the **synchronisation penalty**: it vanishes when $\psi = \alpha\_{\text{total}}$ (smooth, $s = 0$) and is maximised when $\psi \to 0$ (spike, $s$ carries all variance). This confirms the qualitative argument from Section 17 with an exact formula.
+The first term ($m_2$) is constant across $\psi$ — it captures variance from the random offspring count and independent jitter. The second term is the **synchronisation penalty**: it vanishes when $\psi = 1$ (smooth, $l_i = 0$) and is maximised when $\psi \to 0$ (spike, $l_i$ carries all variance). This confirms the qualitative argument from before with an exact formula.
 
 ### Time-delay formula
 
 The expected time delay of model $\psi$ relative to the smooth limit is:
 
-$$\Delta E[T_n] \approx \frac{\text{CV}^2(W)\_\psi - \text{CV}^2(W)\_{\text{smooth}}}{2\alpha}$$
+$$\Delta E[T_n] \approx \frac{\text{CV}^2(W)\_\psi - \text{CV}^2(W)\_{\text{smooth}}}{2r}$$
 
 This is independent of $n$ (the case threshold), consistent with the branching-process limit theorem: the time shift is established during the initial stochastic phase and persists unchanged as the epidemic grows.
-
-### Variance of the time shift
-
-The time shift relative to the smooth limit is $\tau = (\log W - \log E_c)/\alpha$, so $\text{Var}(\tau) = \text{Var}(\log W)/\alpha^2$. Since $\text{Var}(\log W)$ has no exact closed form from moments alone, we use two approaches.
-
-**Delta method (first-order approximation).** Taylor-expanding $\log W$ around $E[W]$ gives $\text{Var}(\log W) \approx \text{CV}^2(W)$, so:
-
-$$\text{Var}(\tau) \approx \frac{\text{CV}^2_{\text{cond}}}{\alpha^2}$$
-
-This separates into a $\psi$-independent baseline plus a $\psi$-dependent penalty:
-
-$$\text{Var}(\tau) \approx A + B\bigl(\sigma^{(1-\psi)\alpha\_{\text{total}}} - 1\bigr)$$
-
-where the constants are:
-
-- $A = V_0 = \dfrac{m_2 - q}{\alpha^2(1 - m_2)}$ — the variance in the smooth limit ($\psi = 1$), arising from random offspring count and independent jitter alone.
-- $B = \dfrac{1 - q}{\alpha^2(1 - m_2)}$ — the coefficient of the synchronisation penalty.
-- $\sigma = \dfrac{\eta^2}{2\eta - 1}$ where $\eta = R_0^{1/\alpha\_{\text{total}}}$ — the per-stage discount variability ratio $\rho_2/\rho^2$.
-- $m_2 = R_0 \cdot \rho_2^{\alpha\_{\text{total}}}$ — the second-moment discount (defined in the Var(S) derivation above).
-- $q$ = extinction probability of the Poisson($R_0$) branching process.
-- $\alpha = r(\eta - 1)$ = Malthusian growth rate.
-
-Since $\alpha = \alpha\_{\text{total}}(\eta - 1)/T$, we have $\text{Var}(\tau) \propto T^2$: the variance of the time shift scales with the square of the mean generation interval.
-
-**Exact under the Gamma approximation.** If $W \mid \text{surv} \sim \text{Gamma}(k, \lambda)$ (the 2-moment approximation from below), then $\text{Var}(\log W) = \psi_1(k)$, where $\psi_1$ is the trigamma function. This gives:
-
-$$\text{Var}(\tau) = \frac{\psi_1(k)}{\alpha^2}, \qquad k = \frac{1}{\text{CV}^2\_{\text{cond}}}$$
-
-For large $k$, $\psi_1(k) \approx 1/k = \text{CV}^2_{\text{cond}}$, recovering the delta method. For small $k$ (small $\psi$, highly skewed $W$), the trigamma gives a more accurate answer — the relative error of the delta method is roughly $1/(2k)$.
 
 ### Third moment and generalized gamma matching
 
 $E[W^3]$ requires three auxiliary quantities (all closed-form for the Gamma convolutional model):
 
-- $m_3 = R_0 \cdot \rho_3^{\alpha\_{\text{total}}}$ where $\rho_3 = r/(r + 3\alpha)$
-- $m\_{21} = R_0^2 \cdot \rho_2^\psi \cdot \rho^\psi \cdot \rho_3^{\alpha\_{\text{total}} - \psi}$
-- $m\_{111} = R_0^3 \cdot \rho^{3\psi} \cdot \rho_3^{\alpha\_{\text{total}} - \psi}$
+- $m_3 = R_0 \cdot \rho_3^{\alpha\_{\text{total}}}$ where $\rho_3 = \beta/(\beta + 3r)$
+- $m\_{21} = R_0^2 \cdot \rho_2^\psi \cdot \rho^\psi \cdot \rho_3^{\alpha (1- - \psi)}$
+- $m\_{111} = R_0^3 \cdot \rho^{3\psi} \cdot \rho_3^{\alpha(1-\psi)}$
 
 Then: $E[W^3] = (3 \cdot m\_{21} \cdot E[W^2] \cdot E[W] + m\_{111} \cdot (E[W])^3) / (1 - m_3)$.
 
@@ -313,7 +284,7 @@ The generalized gamma moments $E[X^k] = a^k \cdot \Gamma((d+k)/p) / \Gamma(d/p)$
 
 ### Connection to Morris et al. (2024)
 
-This section implements the "moment-matching route" discussed in Section 18. The closed-form expressions for Var(S) and the moment recursions exploit the specific structure of our Gamma convolutional family — in particular, the decomposition $\tau_j = s + \epsilon_j$ and the resulting conditional independence of $T$ and $s$. Morris et al.'s PE method (Laplace-Stieltjes transform inversion) would give the exact distribution to arbitrary precision, but the moment-matching approach produces an excellent approximation with far less computational cost and provides interpretable parameters.
+This section implements the "moment-matching route". The closed-form expressions for Var(S) and the moment recursions exploit the specific structure of our Gamma convolutional family — in particular, the decomposition $\tau_j = l_i + \epsilon_j$ and the resulting conditional independence of $T$ and $s$. Morris et al.'s PE method (Laplace-Stieltjes transform inversion) would give the exact distribution to arbitrary precision, but the moment-matching approach produces an excellent approximation with far less computational cost and provides interpretable parameters.
 
 **Script**: `code/analytical_W_moments.R`
 
@@ -345,7 +316,7 @@ Consequently, the true $E[Z(t)]$ grows slower than the ODE solution at every tim
 ### When does the bias matter?
 
 - **Large $N$:** The covariance $\text{Cov}(S, I)$ is $O(N)$ while $E[S] \cdot E[I]$ is $O(N^2)$, so the relative bias is $O(1/N)$ and the ODE becomes exact as $N \to \infty$.
-- **Small $N$ or fast epidemics:** With $N = 1000$ and $R_0 \geq 5$, a substantial fraction of the population is infected rapidly, the $S$-$I$ correlation is non-negligible relative to $N$, and the ODE visibly overestimates the stochastic mean.
+- **Small $N$ or fast epidemics:** With $N = 1000$ and $R_0 \geq 5$, a substantial fraction of the population is infected rapidly, the $`S`$-$`I`$ correlation is non-negligible relative to $N$, and the ODE visibly overestimates the stochastic mean.
 - **Burstier profiles (spike) show larger bias:** The spike profile concentrates all secondary infections at a single moment, creating larger bursts that deplete susceptibles more abruptly. This amplifies the magnitude of $\text{Cov}(S, I)$ relative to smoother profiles where infections are spread over time.
 
 ### Empirical confirmation
