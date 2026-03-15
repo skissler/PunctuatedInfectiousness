@@ -12,19 +12,6 @@ The growth delay from punctuation **increases** with $R_0$. This is because the 
 
 Estimates of the early-epidemic exponential growth rate $r$ have early identical means for smooth and spike infectiousness profiles, but the estimates for the spike case have higher standard deviation, based on log-linear fit to cases 10–100. 
 
-## Overdispersion from punctuated infectiousness with periodic contacts
-
-We decompose individual infectiousness as $a_i(\tau) = b_i(\tau) \cdot R_0 z(t_i + \tau)$, where:
-
-- $b_i(\tau) = f_\psi(\tau - l_i)$ is the biological timing density (a Gamma($\psi \alpha$, $\beta$) density shifted by individual onset $`l_i \sim \text{Gamma}((1-\psi) \alpha, \beta)`$)
-- $z(t) = 1 + \epsilon \cos(2\pi t / T)$ is a periodic contact rate multiplier with period $T$ days and amplitude $\epsilon \in [0,1]$. 
-
-The parameter $\psi$ controls punctuation: $\psi \rightarrow 0$ gives narrow, spike-like individual profiles; $\psi \rightarrow 1$ gives broad profiles that resemble the population average.
-
-The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ is invariant across $\psi$ by the Gamma additivity property.
-
-The hypothesis: when the biological profile $b_i$ is a narrow spike (small $\psi$), the integral $\int b_i(\tau) \, z(t_i + \tau) \, d\tau$ essentially samples $z$ at one point, so $\nu_i$ varies between $R_0(1 - \epsilon)$ and $R_0(1 + \epsilon)$ depending on when the spike falls relative to the contact cycle. When $b_i$ is broad (large $\psi$), it averages over the contact cycle, and $\nu_i \approx R_0$ for everyone. This is a sampling-vs-averaging effect: punctuated profiles *sample* the contact function; smooth profiles *average* over it. Thus, spike profiles should lead to more overdisperson than smooth ones. 
-
 ## Why punctuated profiles yield slower early growth despite identical mean-field dynamics
 
 ### The apparent paradox
@@ -390,12 +377,22 @@ Consequently, the true $E[Z(t)]$ grows slower than the ODE solution at every tim
 In `code/1_1_basicmetrics.R`, we overlay the ODE solution (blue) and the empirical mean of established stochastic trajectories (black) on `fig_cuminf_overlay`. The black curve is consistently pulled below the blue curve, with the gap largest for the spike profile. This gap is *not* primarily a conditioning artefact (conditioning on establishment has a comparatively small effect when the establishment probability is high). It reflects the finite-population mean-field bias described above, and would shrink with increasing $N$.
 
 ---
+## Overdispersion from punctuated infectiousness with periodic contacts
 
-## 21. Distribution of the individual reproduction number under time-varying contacts
+We decompose individual infectiousness as $a_i(\tau) = b_i(\tau) \cdot R_0 z(t_i + \tau)$, where:
 
-When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $R_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\psi$), and (iii) the infection time. Here we derive the distribution of $R_i$ for sinusoidal contacts.
+- $b_i(\tau) = f_\psi(\tau - l_i)$ is the biological timing density (a Gamma($\psi \alpha$, $\beta$) density shifted by individual onset $`l_i \sim \text{Gamma}((1-\psi) \alpha, \beta)`$)
+- $z(t) = 1 + \epsilon \cos(2\pi t / T)$ is a periodic contact rate multiplier with period $T$ days and amplitude $\epsilon \in [0,1]$. 
+
+The parameter $\psi$ controls punctuation: $\psi \rightarrow 0$ gives narrow, spike-like individual profiles; $\psi \rightarrow 1$ gives broad profiles that resemble the population average.
+
+The population-level kernel $A(\tau) = R_0 \cdot \text{Gamma}(\tau; \alpha, \beta)$ is invariant across $\psi$ by the Gamma additivity property.
+
+The hypothesis: when the biological profile $b_i$ is a narrow spike (small $\psi$), the integral $\int b_i(\tau) \, z(t_i + \tau) \, d\tau$ essentially samples $z$ at one point, so $\nu_i$ varies between $R_0(1 - \epsilon)$ and $R_0(1 + \epsilon)$ depending on when the spike falls relative to the contact cycle. When $b_i$ is broad (large $\psi$), it averages over the contact cycle, and $\nu_i \approx R_0$ for everyone. This is a sampling-vs-averaging effect: punctuated profiles *sample* the contact function; smooth profiles *average* over it. Thus, spike profiles should lead to more overdisperson than smooth ones. 
 
 ### Setup
+
+When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $R_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\psi$), and (iii) the infection time. Here we derive the distribution of $R_i$ for sinusoidal contacts.
 
 Suppose contacts vary sinusoidally: $c(t) = \bar{c}(1 + \varepsilon \sin(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_0$ has individual reproduction number:
 
