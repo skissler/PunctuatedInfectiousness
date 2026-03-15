@@ -5,7 +5,7 @@ Detect-and-isolate interventions reduce transmission by truncating each detected
 
 The key insight that unifies screening-based and symptom-triggered interventions: both truncate the profile at a detection time $\tau_{\text{det}}$, and the entire $\psi$-dependence flows through a single quantity:
 
-$$F_\psi(\tau_{\text{det}} - s_i) = \int_0^{\tau_{\text{det}} - s_i} f_\psi(u)\,du$$
+$$F_\psi(\tau_{\text{det}} - l_i) = \int_0^{\tau_{\text{det}} - l_i} f_\psi(u)\,du$$
 
 — the fraction of the biological profile's mass that has elapsed before detection. What differs between detection mechanisms is the **joint distribution of $\tau_{\text{det}}$ and the profile timing**.
 
@@ -13,9 +13,9 @@ $$F_\psi(\tau_{\text{det}} - s_i) = \int_0^{\tau_{\text{det}} - s_i} f_\psi(u)\,
 
 Detection mechanisms sit on a spectrum of **biological anchoring** — the degree to which $\tau_{\text{det}}$ is correlated with the individual's profile timing:
 
-**Independent trigger ($\rho = 0$): regular screening.** Detection time is determined by an external process (periodic testing every $\Delta$ days, random phase) intersected with a positivity window. The screening clock runs independently of $s_i$, so $\tau_{\text{det}}$ is approximately uncorrelated with the profile. The $\psi$-dependence comes purely from the *shape* of $F_\psi$ — spike profiles have a step-function CDF (all-or-nothing), smooth profiles have a gradual sigmoid (partial aversion).
+**Independent trigger ($\rho = 0$): regular screening.** Detection time is determined by an external process (periodic testing every $\Delta$ days, random phase) intersected with a positivity window. The screening clock runs independently of $l_i$, so $\tau_{\text{det}}$ is approximately uncorrelated with the profile. The $\psi$-dependence comes purely from the *shape* of $F_\psi$ — spike profiles have a step-function CDF (all-or-nothing), smooth profiles have a gradual sigmoid (partial aversion).
 
-**Anchored trigger ($\rho = 1$): symptom onset.** Detection time is deterministically coupled to the profile: $\tau_{\text{det}}$ = $s_i$ + $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$, where $\delta_{\text{sym}}$ is the delay from infectiousness onset to symptoms and $\delta_{\text{iso}}$ is the delay from symptoms to effective isolation. Individuals with early onset (small $s_i$) are both early transmitters and early detectors. The $\psi$-dependence comes from both the shape of $F_\psi$ and the correlation between $\tau_{\text{det}}$ and $s_i$.
+**Anchored trigger ($\rho = 1$): symptom onset.** Detection time is deterministically coupled to the profile: $\tau_{\text{det}}$ = $l_i$ + $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$, where $\delta_{\text{sym}}$ is the delay from infectiousness onset to symptoms and $\delta_{\text{iso}}$ is the delay from symptoms to effective isolation. Individuals with early onset (small $l_i$) are both early transmitters and early detectors. The $\psi$-dependence comes from both the shape of $F_\psi$ and the correlation between $\tau_{\text{det}}$ and $l_i$.
 
 **Intermediate anchoring ($0 < \rho < 1$):** Hybrid scenarios such as screening that targets symptomatic individuals, or symptoms that are a noisy indicator of infectiousness timing. These interpolate between the independent and anchored extremes.
 
@@ -23,13 +23,13 @@ Detection mechanisms sit on a spectrum of **biological anchoring** — the degre
 
 For any detection mechanism, the fraction of individual $i$'s transmission averted is:
 
-$$1 - F_\psi(\tau_{\text{det}} - s_i)$$
+$$1 - F_\psi(\tau_{\text{det}} - l_i)$$
 
 The population-level $R_{\text{eff}}$ reduction is:
 
-$$R_{\text{eff}} = R_0 \cdot \left(1 - P(\text{det}) \cdot E\left[1 - F_\psi(\tau_{\text{det}} - s_i) \mid \text{detected}\right]\right)$$
+$$R_{\text{eff}} = R_0 \cdot \left(1 - P(\text{det}) \cdot E\left[1 - F_\psi(\tau_{\text{det}} - l_i) \mid \text{detected}\right]\right)$$
 
-The $\psi$-dependence enters through $F_\psi$ and, for anchored triggers, through the correlation between $\tau_{\text{det}}$ and $s_i$.
+The $\psi$-dependence enters through $F_\psi$ and, for anchored triggers, through the correlation between $\tau_{\text{det}}$ and $l_i$.
 
 ### Results for regular screening (implemented)
 
@@ -82,15 +82,15 @@ When $\psi$ is small, some individuals have early peaks ($t_{\text{peak}} < w_-$
 
 *Status: not yet implemented.*
 
-Symptom-triggered isolation replaces the independent screening clock with a biologically anchored trigger: $\tau_{\text{det}}$ = $s_i$ + $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$, deterministically coupled to the onset shift $s_i$.
+Symptom-triggered isolation replaces the independent screening clock with a biologically anchored trigger: $\tau_{\text{det}}$ = $l_i$ + $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$, deterministically coupled to the onset shift $l_i$.
 
 #### Why anchoring should sharpen the $\psi$-dependence
 
-With screening, $\tau_{\text{det}}$ is approximately independent of $s_i$, so detection can occur at any point relative to the profile. With symptoms, $\tau_{\text{det}}$ tracks the profile: individuals with early onset are detected early. This coupling means the analysis reduces to a single, clean question: **what fraction of the profile's mass falls before symptom onset?** That fraction is $F_\psi(\delta_{\text{sym}})$ — a property of the profile shape alone, without the noise introduced by the screening schedule.
+With screening, $\tau_{\text{det}}$ is approximately independent of $l_i$, so detection can occur at any point relative to the profile. With symptoms, $\tau_{\text{det}}$ tracks the profile: individuals with early onset are detected early. This coupling means the analysis reduces to a single, clean question: **what fraction of the profile's mass falls before symptom onset?** That fraction is $F_\psi(\delta_{\text{sym}})$ — a property of the profile shape alone, without the noise introduced by the screening schedule.
 
 #### Key predictions
 
-**Delta (small $\psi$):** Transmission occurs at $\tau^* \approx s_i + \varepsilon$ where $\varepsilon$ is small. Symptom onset at $s_i + \delta_{\text{sym}}$. If $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$ > $\varepsilon$ (symptoms + isolation delay exceeds the jitter), isolation arrives after the spike — nothing averted. If $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$ < $\varepsilon$, everything averted. The all-or-nothing structure is sharper than for screening because the detection time tracks the profile.
+**Delta (small $\psi$):** Transmission occurs at $\tau^* \approx l_i + \varepsilon$ where $\varepsilon$ is small. Symptom onset at $l_i + \delta_{\text{sym}}$. If $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$ > $\varepsilon$ (symptoms + isolation delay exceeds the jitter), isolation arrives after the spike — nothing averted. If $\delta_{\text{sym}}$ + $\delta_{\text{iso}}$ < $\varepsilon$, everything averted. The all-or-nothing structure is sharper than for screening because the detection time tracks the profile.
 
 **Smooth (large $\psi$):** Transmission is spread over a broad window. Symptom onset truncates the right tail. The fraction averted is $1 - F_\psi(\delta_{\text{sym}})$, a smooth function of $\delta_{\text{sym}}$.
 
@@ -100,7 +100,7 @@ With screening, $\tau_{\text{det}}$ is approximately independent of $s_i$, so de
 
 1. **Pre-symptomatic transmission is the key parameter.** The entire analysis reduces to one number: the fraction of transmission before symptoms. No test-performance parameters (sensitivity, specificity, screening interval).
 
-2. **Correlation between detection and profile.** Individuals with early $s_i$ are both early transmitters and early detectors. Whether this correlation amplifies or dampens the $\psi$-dependence (relative to screening) depends on where symptom onset falls relative to the transmission mass.
+2. **Correlation between detection and profile.** Individuals with early $l_i$ are both early transmitters and early detectors. Whether this correlation amplifies or dampens the $\psi$-dependence (relative to screening) depends on where symptom onset falls relative to the transmission mass.
 
 3. **No false positives or sensitivity parameters.** Only $\delta_{\text{sym}}$, $\delta_{\text{iso}}$, and $p_{\text{iso}}$ (compliance).
 
@@ -109,7 +109,7 @@ With screening, $\tau_{\text{det}}$ is approximately independent of $s_i$, so de
 - **Symptom onset model.** Where does $\tau_{\text{sym}}$ fall relative to $b_i$? Options:
   - At the mode of $f_\psi$ (symptoms at peak infectiousness). Mode of $\text{Gamma}(\psi, r)$ is $(\psi - 1)/r$ for $\psi \geq 1$; for $\psi < 1$, mode is at 0.
   - At a fixed fraction of the profile's CDF (e.g., symptoms when 30% of infectiousness mass has elapsed). This gives a $\psi$-dependent delay.
-  - At a fixed absolute delay $\delta_{\text{sym}}$ after $s_i$ (simplest, but least biologically motivated).
+  - At a fixed absolute delay $\delta_{\text{sym}}$ after $l_i$ (simplest, but least biologically motivated).
 
 - **Isolation delay $\delta_{\text{iso}}$:** 0, 0.5, 1, 2 days.
 
@@ -382,11 +382,11 @@ $$\text{TE} = \frac{\int_0^\infty \beta(\tau)\,F_D(\tau)\,d\tau}{\int_0^\infty \
 
 where $\beta(\tau)$ is the infectiousness profile (relative to infection time) and $F_D(\tau) = P(D \leq \tau)$ is the CDF of the diagnosis time $D$ (also relative to infection time). Equivalently, TE is the probability that a randomly chosen transmission event occurs after diagnosis: $\text{TE} = E_\varepsilon[F_D(\varepsilon)]$, where $\varepsilon \sim \beta$ is the timing of a random transmission attempt.
 
-In our Gamma convolutional model, the jitter component of transmission timing is $\varepsilon \sim \text{Gamma}(\psi\alpha, r)$, where $\alpha$ = `popshape` and $r = \alpha / T$ is the rate. (Recall that each individual's transmission attempts are at times $s_i + \varepsilon_j$, where $s_i$ is the shared onset shift. Because $s_i$ shifts both infectiousness and any biologically anchored trigger by the same amount, TE depends only on the jitter $\varepsilon$, not on $s_i$ directly.)
+In our Gamma convolutional model, the jitter component of transmission timing is $\varepsilon \sim \text{Gamma}(\psi\alpha, r)$, where $\alpha$ = `popshape` and $r = \alpha / T$ is the rate. (Recall that each individual's transmission attempts are at times $l_i + \varepsilon_j$, where $l_i$ is the shared onset shift. Because $l_i$ shifts both infectiousness and any biologically anchored trigger by the same amount, TE depends only on the jitter $\varepsilon$, not on $l_i$ directly.)
 
 ### Symptom-triggered isolation: the Beta function result
 
-Model symptom onset as occurring at time $s_i + D$ after infection, where $D$ ~ Gamma($a_{\text{sym}}$, $b_{\text{sym}}$) is the delay from biological onset to symptoms.
+Model symptom onset as occurring at time $l_i + D$ after infection, where $D$ ~ Gamma($a_{\text{sym}}$, $b_{\text{sym}}$) is the delay from biological onset to symptoms.
 
 **Same-rate case ($b_{\text{sym}} = r$).** When symptoms and jitter share the same rate parameter, the ratio $\varepsilon / (\varepsilon + D)$ has a clean distribution. Since $\varepsilon \sim \text{Gamma}(\psi\alpha, r)$ and $D \sim \text{Gamma}(a_{\text{sym}}, r)$ are independent with the same rate:
 
@@ -417,7 +417,7 @@ For regular screening every $\Delta$ days with random phase, the detection time 
 
 $$\text{mode}_\psi = \max\left(0,\; \frac{\psi\alpha - 1}{r}\right)$$
 
-The effective diagnosis time (relative to biological onset $s_i$) is approximately:
+The effective diagnosis time (relative to biological onset $l_i$) is approximately:
 
 $$D_{\text{screen}} \approx \max(0,\; \text{mode}_\psi - w_-) + \text{Uniform}(0, \Delta)$$
 
@@ -443,7 +443,7 @@ The reversal is best understood through the anchoring framework from §14:
 
 The reversal occurs because:
 
-- **Symptoms:** the trigger is anchored to biological onset, so it is approximately fixed relative to $s_i$ regardless of $\psi$. The fraction averted equals the tail of $f_\psi$ beyond the symptom time. Smoother profiles spread more mass into this tail.
+- **Symptoms:** the trigger is anchored to biological onset, so it is approximately fixed relative to $l_i$ regardless of $\psi$. The fraction averted equals the tail of $f_\psi$ beyond the symptom time. Smoother profiles spread more mass into this tail.
 - **Screening:** the trigger is anchored to peak infectiousness. Punctuated profiles concentrate their peak near onset, so the detectability window extends across nearly all transmission. Smooth profiles spread transmission well before and after the window centre.
 
 ### General detection distributions: three principles
