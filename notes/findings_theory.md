@@ -2,7 +2,7 @@
 
 In the renewal equation framework for infectious disease modeling, the force of infection is 
 
-$$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau)$$ 
+$$ F(t) = \int_0^\infty F(t-\tau) S(t-\tau) A(\tau) d\tau$$ 
 
 where $F(t)$ is the force of infection at time $t$, $S$ is the density of susceptible individuals, and $A(\tau)$ is the "infectiousness profile", capturing the contribution to the force of infection from an individual who was infected $\tau$ time units ago. $A(\tau)$ is thus the central object that defines the epidemic's deterministic trajectory. 
 
