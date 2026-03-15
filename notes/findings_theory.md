@@ -214,7 +214,7 @@ The variance of $\nu_i$ depends on how much the biological profile "averages ove
 
 - **Intermediate $\psi$**: the narrower $b_i$ is, the less it averages over $z$, and the more variable $\nu_i$ becomes. The punctuation parameter $\psi$ continuously controls the degree of overdispersion.
 
-**The mechanism in words:** when biological infectiousness is concentrated in a narrow window, the individual's total transmission depends on *when* that window falls relative to the contact landscape. Some individuals' narrow windows align with high-contact periods (weekdays, social events, crowded settings); others align with low-contact periods (nights, weekends, holidays). This "sampling" of the contact function creates between-individual variation in $\tilde{\nu}_i$ — i.e., superspreading — even without any intrinsic heterogeneity in contact rates or biological susceptibility.
+**The mechanism in words:** when biological infectiousness is concentrated in a narrow window, the individual's total transmission depends on *when* that window falls relative to the contact landscape. Some individuals' narrow windows align with high-contact periods (weekdays, social events, crowded settings); others align with low-contact periods (nights, weekends, holidays). This "sampling" of the contact function creates between-individual variation in $\nu_i$ — i.e., superspreading — even without any intrinsic heterogeneity in contact rates or biological susceptibility.
 
 This is distinct from the standard superspreading mechanisms (heterogeneous $\nu_i$ across individuals, heterogeneous susceptibility, stochastic contact networks). It requires only three ingredients:
 
