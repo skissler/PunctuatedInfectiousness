@@ -358,9 +358,9 @@ where $b_i(\tau)$ is the person's biological infectiousness profile.
 
 Expanding the sinusoidal contact term and integrating:
 
-$$\n_i(t_i) = xxx $$
+$$\nu_i(t_i) = xxx $$
 
-% $$R_i(t_0) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \sin(\omega t_0 + \varphi)\right)$$
+<!--- $$R_i(t_0) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \sin(\omega t_0 + \varphi)\right)$$ ---> 
 
 where $\rho = |\varphi_g(\omega)|$ is the modulus of the characteristic function of the generation interval distribution $g$, and $\varphi$ is the corresponding phase shift. The quantity $\rho \in [0, 1]$ measures how much the infectiousness profile *smooths out* the contact variation: a more spread-out profile averages over more of the contact cycle, reducing $\rho$.
 
