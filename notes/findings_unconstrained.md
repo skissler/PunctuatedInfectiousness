@@ -1,7 +1,3 @@
-## Extinction probability: identical for smooth vs. spike, elevated for stepwise
-
-Because the smooth and spike cases share the same offspring distribution (Poisson($R_0$)), they have *exactly* the same probability of stochastic extinction in the branching process approximation. This is not merely an empirical observation — it follows from the fact that the extinction probability depends on the offspring distribution, not on the timing of transmission events.
-
 ## Spike case takes off slower: a "minimum of order statistics" mechanism
 
 Conditional on establishing, the spike case takes ~0.8–1 day longer to reach early case-count thresholds than the smooth case. The mechanism is clean:
