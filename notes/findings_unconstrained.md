@@ -336,7 +336,7 @@ Estimates of the early-epidemic exponential growth rate $r$ have early identical
 We decompose individual infectiousness as $a_i(\tau) = b_i(\tau) \cdot R_0 z(t_i + \tau)$, where:
 
 - $b_i(\tau) = f_\psi(\tau - l_i)$ is the biological timing density (a Gamma($\psi \alpha$, $\beta$) density shifted by individual onset $`l_i \sim \text{Gamma}((1-\psi) \alpha, \beta)`$)
-- $z(t) = 1 + \epsilon \cos(2\pi t / P)$ is a periodic contact rate multiplier with period $P$ days and amplitude $\epsilon \in [0,1]$. 
+- $z(t) = 1 - \epsilon \cos(2\pi t / P)$ is a periodic contact rate multiplier with period $P$ days and amplitude $\epsilon \in [0,1]$ (nadir at the start of each period, peak at the midpoint). 
 
 The parameter $\psi$ controls punctuation: $\psi \rightarrow 0$ gives narrow, spike-like individual profiles; $\psi \rightarrow 1$ gives broad profiles that resemble the population average.
 
@@ -348,7 +348,7 @@ The hypothesis: when the biological profile $b_i$ is a narrow spike (small $\psi
 
 When contacts are constant, every individual has the same reproduction number $R_0$. With time-varying contacts, the individual reproduction number $\nu_i$ becomes a random variable whose distribution depends on (i) the contact pattern, (ii) the infectiousness profile (parametrised by $\psi$), and (iii) the infection time. Here we derive the distribution of $\nu_i$ for sinusoidal contacts.
 
-Suppose contacts vary sinusoidally: $c(t) = R_0 (1 + \varepsilon \cos(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_i$ has individual reproduction number:
+Suppose contacts vary sinusoidally: $c(t) = R_0 (1 - \varepsilon \cos(\omega t))$, where $\varepsilon \in [0, 1)$ is the contact amplitude and $\omega = 2\pi / P$ is the angular frequency for a period $P$. A person infected at time $t_i$ has individual reproduction number:
 
 $$\nu_i(t_i) = \int_0^\infty b_i(\tau) \cdot c(t_i + \tau) d\tau$$
 
@@ -358,7 +358,7 @@ where $b_i(\tau)$ is the person's biological infectiousness profile.
 
 Expanding the cosine contact term and integrating:
 
-$$\nu_i(t_i) = R_0 \left(1 + \varepsilon \cdot \rho \cdot \cos(\omega t_i + \omega l_i + \varphi)\right)$$
+$$\nu_i(t_i) = R_0 \left(1 - \varepsilon \cdot \rho \cdot \cos(\omega t_i + \omega l_i + \varphi)\right)$$
 
 where $\rho = |\varphi_{f_\psi}(\omega)|$ is the modulus of the characteristic function of the individual biological profile $f_\psi = \text{Gamma}(\psi\alpha, \beta)$, and $\varphi$ is the corresponding phase shift. The quantity $\rho \in [0, 1]$ measures how much the infectiousness profile *smooths out* the contact variation: a more spread-out profile averages over more of the contact cycle, reducing $\rho$.
 
@@ -396,4 +396,4 @@ The contact frequency $\omega$ interacts with $\psi$ through $\rho(\psi) = (\bet
 
 ### Extension to non-sinusoidal contacts
 
-For a general periodic contact pattern $c(t) = R_0 (1 + \sum_k \varepsilon_k \cos(k\omega t + \phi_k))$, each Fourier harmonic is smoothed independently by $\rho(\psi)$ evaluated at frequency $k\omega$. The marginal distribution of $\nu_i$ is then the distribution of a sum of weighted arcsine random variables (which is no longer arcsine in general). For complex contact patterns, simulation is more practical than analytical computation.
+For a general periodic contact pattern $c(t) = R_0 (1 - \sum_k \varepsilon_k \cos(k\omega t + \phi_k))$, each Fourier harmonic is smoothed independently by $\rho(\psi)$ evaluated at frequency $k\omega$. The marginal distribution of $\nu_i$ is then the distribution of a sum of weighted arcsine random variables (which is no longer arcsine in general). For complex contact patterns, simulation is more practical than analytical computation.
