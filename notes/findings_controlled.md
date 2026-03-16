@@ -58,6 +58,24 @@ $$\text{TE} = E[\theta_i] = P(\text{det}) \cdot E[\theta_i \mid \text{det}] + P(
 
 $$R_{\text{eff}} = R_0 (1 - \text{TE})$$
 
+### The Gamma convolution invariance
+
+**Theorem.** If individual $i$ is detected at a time $\tau_{\text{det}}$ that is independent of the individual's profile parameters $(l_i, \varepsilon_j)$ — for example, at a fixed time after infection — then with perfect immediate isolation ($\eta = 1$, $\delta_{\text{act}} = 0$):
+
+$$E[\theta_i] = S_\alpha(\tau_{\text{det}}) = P(\text{Gamma}(\alpha, \beta) > \tau_{\text{det}})$$
+
+which is independent of $\psi$.
+
+**Proof.** $\theta_i = S_\psi(\tau_{\text{det}} - l_i) = P(\varepsilon > \tau_{\text{det}} - l_i)$ where $\varepsilon \sim \text{Gamma}(\psi\alpha, \beta)$ is independent of $l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)$. Taking expectations over $l_i$:
+
+$$E[\theta_i] = P(\varepsilon + l_i > \tau_{\text{det}}) = P(\text{Gamma}(\alpha, \beta) > \tau_{\text{det}})$$
+
+by the Gamma convolution property $\text{Gamma}(\psi\alpha, \beta) + \text{Gamma}((1-\psi)\alpha, \beta) \stackrel{d}{=} \text{Gamma}(\alpha, \beta)$. $\square$
+
+**Interpretation.** The population-level infectiousness profile $A(\tau) = \text{Gamma}(\alpha, \beta)$ is invariant across $\psi$. If detection does not "see" the individual's profile shape — i.e., $\tau_{\text{det}}$ is the same regardless of whether the individual is spiky or smooth — then the fraction averted is simply the fraction of the population profile remaining, which is $\psi$-invariant by construction.
+
+**Corollary.** Any $\psi$-dependence of TE must arise from detection-time dependence on the individual's profile. In particular, detection mechanisms anchored to the individual's biology — the mode of $a_i(\tau)$, symptom onset, or infection times of contacts — break this invariance by coupling $\tau_{\text{det}}$ to $l_i$.
+
 ### Connection to Middleton & Larremore (2024)
 
 Middleton & Larremore (M&L) define testing effectiveness as
@@ -113,15 +131,30 @@ Given detection at time $`\tau_{\text{det}} \in \mathcal{W}_i`$, isolation begin
 
 $$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i)$$
 
-### How $\psi$ enters
+### How $\psi$ enters: breaking the convolution invariance
 
-The $\psi$-dependence flows through $S_\psi$, the survival function of $\text{Gamma}(\psi\alpha, \beta)$:
+By the Gamma convolution invariance (above), $\psi$ can only matter because the detection time $\tau_{\text{det}}$ is anchored to the individual's biology. Specifically, $\tau_{\text{det}} \in \mathcal{W}_i = [l_i + m_\psi - d_{\text{pre}},\; l_i + m_\psi + d_{\text{post}}]$, so writing $\tau_{\text{det}} = l_i + m_\psi + V$ where $V \in [-d_{\text{pre}}, d_{\text{post}}]$ is the offset of the first positive test within the window, the onset shift $l_i$ cancels:
 
-- **Spike ($\psi \to 0$):** $S_\psi$ is approximately a step function at 0. If $\tau_{\text{iso}} - l_i < 0$ (isolation before onset), $\theta = \eta$; if $\tau_{\text{iso}} - l_i > 0$, $\theta = 0$. Outcome is **all-or-nothing**: either the test catches the person before their spike fires, averting everything, or it doesn't, averting nothing.
+$$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i) = \eta \cdot S_\psi(m_\psi + V + \delta_{\text{act}})$$
 
-- **Smooth ($\psi \to 1$):** $S_\psi$ is a gradual sigmoid. Detection at any time averts a partial fraction of the remaining transmission. The outcome is **graded**: even detection near the peak averts the tail.
+The expected fraction averted conditional on detection is therefore
 
-- **Direction of $\psi$-effect for screening.** The key observation is that the detectability window is anchored to the mode $\tau_i^* = l_i + m_\psi$. For spike profiles, $m_\psi \approx 0$ and all transmission is near $l_i$, so the window starts near the beginning of infectiousness — the person is detectable (and catchable) from the start. For smooth profiles, $m_\psi$ is large, and a substantial fraction of transmission occurs before the mode (and hence before or during the window). So **screening tends to benefit spike profiles more**.
+$$E[\theta_i \mid \text{det}] = \eta \cdot E_V[S_\psi(m_\psi + V + \delta_{\text{act}})]$$
+
+where $V$ depends on the screening schedule but not on $\psi$. The entire $\psi$-dependence is through the evaluation of $S_\psi$ at its own mode plus an offset.
+
+**Proposition (monotonicity of the supra-modal mass).** Let $a = \psi\alpha$. Then $S_\psi(m_\psi) = P(\text{Gamma}(a, \beta) > \text{mode})$ is strictly decreasing in $a$ for $a > 1$, from $S_\psi(m_\psi) = 1$ at $a \leq 1$ to $S_\psi(m_\psi) \to 1/2$ as $a \to \infty$.
+
+*Proof sketch (integer $a$).* For integer $a$, $P(\text{Gamma}(a, 1) > a - 1) = P(\text{Poisson}(a - 1) \leq a - 1)$ by the Gamma–Poisson duality. This is $P(\text{Poisson}(\lambda) \leq \lambda)$ with $\lambda = a - 1$, which is known to be strictly decreasing in $\lambda$ for $\lambda > 0$, converging to $1/2$ by the CLT. Extends to non-integer $a$ by log-concavity of the Gamma CDF in its shape parameter.
+
+**Consequence: the direction depends on detection timing relative to the mode.** Define $v = V + \delta_{\text{act}}$ (the total offset from the mode at which isolation occurs). Then:
+
+- For $v \leq 0$ (isolation at or before the mode): $S_\psi(m_\psi + v) \geq S_\psi(m_\psi)$, and this is **decreasing in $\psi$** — spike profiles benefit more.
+- For $v > 0$ sufficiently large (isolation well after the mode): $S_\psi(m_\psi + v)$ is **increasing in $\psi$** — smooth profiles benefit more, because their tails contain substantial residual mass.
+
+The crossover occurs near $v = 0$. In the spike limit ($\psi \to 0$), $S_\psi$ approaches a step function at 0, giving all-or-nothing outcomes. In the smooth limit ($\psi \to 1$), $S_\psi$ is a gradual sigmoid, giving graded partial benefit at every detection time.
+
+**Net screening effect.** Since $V$ ranges over $[-d_{\text{pre}}, d_{\text{post}}]$, the net $\psi$-effect depends on the balance of pre-mode versus post-mode detection opportunities. When $d_{\text{pre}}$ is large (the assay can detect infection well before peak infectiousness), most detections occur at $v \leq 0$, and **screening benefits spike profiles more**. When $d_{\text{post}}$ dominates (detection mostly after the peak), smooth profiles can benefit more. For most realistic assays — where detectability begins before or near peak infectiousness — the former regime applies.
 
 ---
 
