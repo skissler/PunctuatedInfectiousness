@@ -133,7 +133,7 @@ $$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i)$$
 
 ### How $\psi$ enters: breaking the convolution invariance
 
-By the Gamma convolution invariance (above), $\psi$ can only matter because the detection time $\tau_{\text{det}}$ is anchored to the individual's biology. Specifically, $\tau_{\text{det}} \in \mathcal{W}_i = [l_i + m_\psi - d_{\text{pre}},\; l_i + m_\psi + d_{\text{post}}]$, so writing $\tau_{\text{det}} = l_i + m_\psi + V$ where $V \in [-d_{\text{pre}}, d_{\text{post}}]$ is the offset of the first positive test within the window, the onset shift $l_i$ cancels:
+By the Gamma convolution invariance (above), $\psi$ can only matter because the detection time $\tau_{\text{det}}$ is anchored to the individual's biology. Specifically, $`\tau_{\text{det}} \in \mathcal{W}_i = [l_i + m_\psi - d_{\text{pre}}, l_i + m_\psi + d_{\text{post}}]`$, so writing $`\tau_{\text{det}} = l_i + m_\psi + V``$ where $`V \in [-d_{\text{pre}}, d_{\text{post}}]`$ is the offset of the first positive test within the window, the onset shift $l_i$ cancels:
 
 $$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i) = \eta \cdot S_\psi(m_\psi + V + \delta_{\text{act}})$$
 
