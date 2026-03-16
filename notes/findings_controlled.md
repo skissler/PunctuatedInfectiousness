@@ -25,9 +25,11 @@ with $F_\psi(x) = 0$ and $S_\psi(x) = 1$ for $x \leq 0$.
 
 ### The general isolation model
 
-Suppose individual $i$ is detected at time $\tau_{\text{det}}$ after their infection. After detection, isolation begins with a delay $\delta_{\text{act}}$ (capturing imperfect temporal adherence):
+Suppose individual $i$ is detected at time $\tau_{\text{det}}$ after their infection. After detection, isolation begins with a delay $\delta_{\text{act}}$ (capturing test turnaround time and imperfect temporal adherence):
 
 $$\tau_{\text{iso}} = \tau_{\text{det}} + \delta_{\text{act}}$$
+
+We adopt the convention $\tau_{\text{det}} = \infty$ (and hence $\tau_{\text{iso}} = \infty$) when detection never occurs.
 
 Perfect temporal adherence corresponds to $\delta_{\text{act}} = 0$. Imperfect adherence can be modelled as $\delta_{\text{act}} \sim$ some non-negative distribution (e.g., $\text{Exp}(\lambda_{\text{act}})$ or a point mass).
 
@@ -44,13 +46,13 @@ where $\eta = 1$ is perfect isolation and $\eta = 0$ is no effect.
 
 The **fraction of individual $i$'s transmission averted** is
 
-$$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i) \cdot \mathbf{1}[\text{detected}]$$
+$$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i)$$
 
-This is the product of three factors: (1) the quality of isolation, (2) the fraction of the biological profile that remains after isolation begins, and (3) whether the person was detected at all.
+Since $S_\psi(\infty) = 0$, undetected individuals (for whom $\tau_{\text{iso}} = \infty$) automatically contribute $\theta_i = 0$. For detected individuals, $\theta_i$ is the product of the isolation quality $\eta$ and the fraction of the biological profile remaining after isolation begins.
 
 **Testing effectiveness** (population-level fraction of transmission averted):
 
-$$\text{TE} = E[\theta_i] = P(\text{det}) \cdot E[\theta_i \mid \text{det}]$$
+$$\text{TE} = E[\theta_i] = P(\text{det}) \cdot E[\theta_i \mid \text{det}] + P(\text{not det}) \cdot 0 = P(\text{det}) \cdot E[\theta_i \mid \text{det}]$$
 
 **Effective reproduction number:**
 
