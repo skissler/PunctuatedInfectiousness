@@ -95,7 +95,7 @@ This models a person who tests regularly (every $\Delta$ days) with a phase that
 
 Each test that falls within $`\mathcal{W}_i`$ independently detects the person with probability $p_{\text{sens}}$ (test sensitivity). The detection time is the first positive test:
 
-$$\tau_{\text{det}} = \min\{\phi_i + n\Delta : \phi_i + n\Delta \in \mathcal{W}_i,\; U_n < p_{\text{sens}},\; n = 0, 1, 2, \ldots\}$$
+$$\tau_{\text{det}} = \min\\{\phi_i + n\Delta : \phi_i + n\Delta \in \mathcal{W}_i, U_n < p_{\text{sens}}, n = 0, 1, 2, \ldots\\}$$
 
 where $U_n \overset{\mathrm{iid}}{\sim} \text{Uniform}(0,1)$. If no test yields a positive, the person is undetected.
 
