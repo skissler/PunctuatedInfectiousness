@@ -971,6 +971,67 @@ $$P(\text{Gamma}(a, 1) > a - 1) = P(\text{Poisson}(a-1) \leq a - 1)$$
 
 <p>The crossover occurs near \(v = 0\). The net screening effect averages over \(V \in [-d_{\text{pre}}, d_{\text{post}}]\), so the balance of pre-mode vs post-mode detection determines which profile type benefits more overall.</p>
 
+<hr>
+
+<div class="prompt">The overlap rule: a unified TE formulation across all triggers</div>
+
+<h1>The overlap rule</h1>
+
+<h2>Unified formulation</h2>
+
+<p>Define the <strong>isolation offset</strong> \(D = \tau_{\text{iso}} - l_i\) (time from biological onset to isolation) and a <strong>transmission quantum</strong> \(\varepsilon \sim \text{Gamma}(\psi\alpha, \beta)\), drawn independently from the individual biological profile. Then:</p>
+
+<div class="highlight">
+$$\text{TE} = \eta \cdot P(\text{det}) \cdot P(\varepsilon > D)$$
+</div>
+
+<p><strong>TE is the probability that a random quantum of transmission falls after isolation.</strong></p>
+
+<h2>Mode-anchored triggers (screening, symptoms)</h2>
+
+<p>For these triggers, \(l_i\) cancels from \(D\), giving \(D = m_\psi + D_0\) where \(D_0\) is \(\psi\)-free. Defining the <strong>mode-centred profile</strong> \(\tilde{\varepsilon} = \varepsilon - m_\psi\):</p>
+
+$$\text{TE} = \eta \cdot P(\text{det}) \cdot P(\tilde{\varepsilon} > D_0)$$
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;"><th style="padding: 4px 12px;">Trigger</th><th style="padding: 4px 12px;">\(D_0\) (isolation offset from mode)</th></tr>
+<tr><td style="padding: 4px 12px;">Screening</td><td style="padding: 4px 12px;">\(V + \delta_{\text{act}}\), where \(V \in [-d_{\text{pre}}, d_{\text{post}}]\)</td></tr>
+<tr><td style="padding: 4px 12px;">Symptoms</td><td style="padding: 4px 12px;">\(\delta_{\text{sym}} + \delta_{\text{act}}\)</td></tr>
+</table>
+
+<h2>The pithy rule</h2>
+
+<p>As \(\psi \to 0\), the mode-centred profile \(\tilde{\varepsilon}\) concentrates at 0 (all transmission at the peak):</p>
+
+<div class="highlight">
+$$\text{TE}_{\text{spike}} \;\approx\; \eta \cdot P(\text{det}) \cdot P(D_0 < 0)$$
+</div>
+
+<p><strong>Spike profiles convert TE into a binary bet: was isolation before the peak?</strong> Smooth profiles give a graded overlap \(E[S_\psi(m_\psi + D_0)]\) that always captures some tail.</p>
+
+<ul>
+<li><strong>Spikes win</strong> when \(P(D_0 < 0)\) is large (isolation typically before the mode).</li>
+<li><strong>Smooth wins</strong> when \(P(D_0 < 0)\) is small (isolation typically after the mode).</li>
+</ul>
+
+<p>This explains the screening–symptom reversal in one line: screening with large \(d_{\text{pre}}\) puts \(D_0\) mostly negative → spikes benefit. Symptoms with \(\mu_{\text{sym}} > 0\) put \(D_0\) entirely positive → smooth benefits.</p>
+
+<h2>Contact tracing: convolution absorption</h2>
+
+<p>For a traced contact \(j\), the Gamma convolution absorbs \(l_j\):</p>
+
+$$E_{l_j, \varepsilon_j'}[\theta_j] = \eta \cdot P(\varepsilon_j' + l_j > \tau_{\text{iso}}^{(j)}) = \eta \cdot S_\alpha(\tau_{\text{iso}}^{(j)})$$
+
+<p>replacing \(S_\psi\) with the \(\psi\)-independent population survival function \(S_\alpha\). All \(\psi\)-dependence enters through the isolation timing \(D^{\text{CT}} = \max(0,\, m_\psi + \delta_{\text{sym}}^A + \delta_{\text{trace}} - \varepsilon_j) + \delta_{\text{act}}\), not through the profile. Structurally:</p>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;"><th style="padding: 4px 12px;">Component</th><th style="padding: 4px 12px;">Screening / Symptoms</th><th style="padding: 4px 12px;">Contact tracing</th></tr>
+<tr><td style="padding: 4px 12px;">Survival function</td><td style="padding: 4px 12px;">\(S_\psi\) (\(\psi\)-dependent)</td><td style="padding: 4px 12px;">\(S_\alpha\) (\(\psi\)-independent)</td></tr>
+<tr><td style="padding: 4px 12px;">Argument</td><td style="padding: 4px 12px;">\(m_\psi + D_0\) (\(D_0\) \(\psi\)-free)</td><td style="padding: 4px 12px;">\(D^{\text{CT}}\) (\(\psi\)-dependent)</td></tr>
+</table>
+
+<p>In both cases, the Gamma convolution absorbs one \(\psi\)-dependent component, and the other remains.</p>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

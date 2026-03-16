@@ -76,6 +76,40 @@ by the Gamma convolution property $\text{Gamma}(\psi\alpha, \beta) + \text{Gamma
 
 **Corollary.** Any $\psi$-dependence of TE must arise from detection-time dependence on the individual's profile. In particular, detection mechanisms anchored to the individual's biology — the mode of $a_i(\tau)$, symptom onset, or infection times of contacts — break this invariance by coupling $\tau_{\text{det}}$ to $l_i$.
 
+### The overlap rule
+
+Define the **isolation offset** $D = \tau_{\text{iso}} - l_i$ (time from biological onset to isolation) and a random **transmission quantum** $\varepsilon \sim \text{Gamma}(\psi\alpha, \beta)$, drawn independently from the individual biological profile $f_\psi$. Then the fraction averted is
+
+$$\theta_i = \eta \cdot P(\varepsilon > D)$$
+
+and the population-level testing effectiveness is
+
+$$\text{TE} = \eta \cdot P(\text{det}) \cdot P(\varepsilon > D)$$
+
+where the probability is over both $\varepsilon$ and $D$. In words: **TE is the probability that a random quantum of transmission falls after isolation.**
+
+For mode-anchored triggers (screening, symptoms), $l_i$ cancels from $D$, giving $D = m_\psi + D_0$ where $D_0$ does not depend on $\psi$:
+
+| Trigger | $D_0$ (isolation offset from mode) |
+|---|---|
+| Screening | $V + \delta_{\text{act}}$, where $V \in [-d_{\text{pre}}, d_{\text{post}}]$ is the test offset within the window |
+| Symptoms | $\delta_{\text{sym}} + \delta_{\text{act}}$ |
+
+Defining the **mode-centred profile** $\tilde{\varepsilon} = \varepsilon - m_\psi$ (time from peak infectiousness to a random transmission quantum):
+
+$$\text{TE} = \eta \cdot P(\text{det}) \cdot P(\tilde{\varepsilon} > D_0)$$
+
+**The pithy rule.** As $\psi \to 0$, the mode-centred profile $\tilde{\varepsilon}$ concentrates at 0 (all transmission at the peak), so
+
+$$\text{TE}_{\text{spike}} \;\approx\; \eta \cdot P(\text{det}) \cdot P(D_0 < 0)$$
+
+Spike profiles convert TE into a binary bet on whether isolation falls before the peak. Smooth profiles give a graded overlap integral $E[S_\psi(m_\psi + D_0)]$ that always captures some tail. The $\psi$-direction is determined by comparing $P(D_0 < 0)$ to the smooth overlap:
+
+- **Spikes benefit more** when $P(D_0 < 0)$ is large — i.e., when isolation typically precedes the mode (large $d_{\text{pre}}$ for screening, or $\mu_{\text{sym}} < 0$ for symptoms).
+- **Smooth profiles benefit more** when $P(D_0 < 0)$ is small — i.e., when isolation typically follows the mode (small $d_{\text{pre}}$ for screening, or $\mu_{\text{sym}} > 0$ for symptoms).
+
+**Contact tracing.** The structure is different: the Gamma convolution absorbs the traced contact's onset shift $l_j$, replacing $S_\psi$ with $S_\alpha$ (the population-level survival function, which is $\psi$-independent). The $\psi$-dependence enters entirely through the isolation timing $D^{\text{CT}}$ (via the index case's mode $m_\psi$ and jitter $\varepsilon_j$). See Trigger 3 below.
+
 ### Connection to Middleton & Larremore (2024)
 
 Middleton & Larremore (M&L) define testing effectiveness as
@@ -288,11 +322,17 @@ $$\text{TE}_{\text{CT}} = p_{\text{trace}} \cdot E\left[\eta \cdot S_\psi\left(\
 
 where the expectation is over $\delta_{\text{sym}}^A$, $\delta_{\text{trace}}$, $\varepsilon_j \sim \text{Gamma}(\psi\alpha, \beta)$, $l_j \sim \text{Gamma}((1-\psi)\alpha, \beta)$, and $\delta_{\text{act}}$; and $p_{\text{trace}} \in [0, 1]$ is the probability that a contact is successfully traced.
 
-**Simplification for perfect immediate isolation** ($\eta = 1$, $\delta_{\text{act}} = 0$) **and deterministic** $\delta_{\text{sym}}^A = \mu_{\text{sym}}$:
+**Convolution absorption.** By the overlap rule, $\theta_j = \eta \cdot P(\varepsilon_j' > \tau_{\text{iso}}^{(j)} - l_j)$ where $\varepsilon_j' \sim \text{Gamma}(\psi\alpha, \beta)$ is contact $j$'s own transmission quantum, independent of $l_j$. Since $\varepsilon_j' + l_j \sim \text{Gamma}(\alpha, \beta)$ by the convolution property:
 
-$$\text{TE}_{\text{CT}} = p_{\text{trace}} \cdot E\left[S_\psi\left(\max\left(0,\, m_\psi + \mu_{\text{sym}} + \delta_{\text{trace}} - \varepsilon_j\right) - l_j\right)\right]$$
+$$E_{l_j, \varepsilon_j'}[\theta_j] = \eta \cdot P(\varepsilon_j' + l_j > \tau_{\text{iso}}^{(j)}) = \eta \cdot S_\alpha\!\left(\tau_{\text{iso}}^{(j)}\right)$$
 
-The expectation is over three independent random variables: $\delta_{\text{trace}}$, $\varepsilon_j$, and $l_j$.
+The contact's onset shift $l_j$ is absorbed, replacing $S_\psi$ with the **population-level** survival function $S_\alpha$ (which does not depend on $\psi$). Substituting $\tau_{\text{iso}}^{(j)}$ and defining $D^{\text{CT}} = \max(0,\, m_\psi + \delta_{\text{sym}}^A + \delta_{\text{trace}} - \varepsilon_j) + \delta_{\text{act}}$:
+
+$$\text{TE}_{\text{CT}} = p_{\text{trace}} \cdot \eta \cdot E\!\left[S_\alpha(D^{\text{CT}})\right]$$
+
+where the expectation is over $\delta_{\text{sym}}^A$, $\delta_{\text{trace}}$, $\varepsilon_j \sim \text{Gamma}(\psi\alpha, \beta)$, and $\delta_{\text{act}}$. Note: $l_j$ no longer appears. The $\psi$-dependence enters entirely through $D^{\text{CT}}$ (via $m_\psi$ and $\varepsilon_j$), not through the survival function.
+
+This is the structural difference from screening and symptoms: for those triggers, the survival function is $S_\psi$ ($\psi$-dependent) evaluated at a $\psi$-independent argument $D_0$; for contact tracing, the survival function is $S_\alpha$ ($\psi$-independent) evaluated at a $\psi$-dependent argument $D^{\text{CT}}$.
 
 ### How $\psi$ enters: three pathways
 
@@ -317,9 +357,9 @@ The expectation is over three independent random variables: $\delta_{\text{trace
 | Symptoms ($\mu_{\text{sym}} < 0$) | Symptoms precede spike | Benefits: all transmission averted | Benefits (less): most transmission averted |
 | Contact tracing | Clustered vs dispersed infection times | All contacts have similar head starts | Contacts have variable head starts |
 
-The key insight is that screening and symptom-triggered isolation have **opposite $\psi$-dependence** (when $\mu_{\text{sym}} \geq 0$): screening benefits spike profiles more, while symptom-triggered isolation benefits smooth profiles more. This reversal arises because screening is anchored to the detectability window (which tracks peak infectiousness), while symptoms are anchored to a biological clock that doesn't speed up when the profile narrows.
+**The unified view (overlap rule).** For screening and symptoms, TE = $\eta \cdot P(\text{det}) \cdot P(\tilde{\varepsilon} > D_0)$ where $\tilde{\varepsilon}$ is the mode-centred individual profile ($\psi$-dependent) and $D_0$ is the isolation offset from the mode ($\psi$-free). As $\psi \to 0$, $\tilde{\varepsilon} \to 0$, converting TE into the binary $P(D_0 < 0)$. The $\psi$-direction is determined by whether isolation typically falls before the mode ($D_0 < 0$: spikes benefit) or after ($D_0 > 0$: smooth benefits). This explains the reversal between screening (large $d_{\text{pre}}$ puts $D_0$ mostly negative) and symptoms with $\mu_{\text{sym}} > 0$ (which puts $D_0$ entirely positive).
 
-Contact tracing inherits the $\psi$-dependence of the index case's detection mechanism (pathway 1) and adds the contact's own profile shape (pathway 2). The net effect depends on both.
+For contact tracing, the Gamma convolution absorbs the contact's $l_j$, giving TE = $\eta \cdot p_{\text{trace}} \cdot E[S_\alpha(D^{\text{CT}})]$ with $S_\alpha$ $\psi$-independent. The $\psi$-dependence enters solely through $D^{\text{CT}}$ (via the index case's mode $m_\psi$ and jitter $\varepsilon_j$).
 
 ---
 
