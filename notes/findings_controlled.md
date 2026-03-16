@@ -105,21 +105,13 @@ where $U_n \overset{\mathrm{iid}}{\sim} \text{Uniform}(0,1)$. If no test yields 
 
 $$P(\text{det}) = 1 - (1 - p_{\text{sens}})^k$$
 
-For $p_{\text{sens}} = 1$, detection is certain whenever $w \geq \Delta$ (at least one test falls in the window, and it's always positive). When $w < \Delta$, there is a probability $w / \Delta$ that any test falls in the window at all.
+For $p_{\text{sens}} = 1$, detection is certain whenever $w \geq \Delta$ (at least one test falls in the window, and it's always positive). When $w < \Delta$, there is a probability $1 - w / \Delta$ that no test falls in the window at all.
 
 ### Fraction averted conditional on detection
 
-Given detection at time $`\tau_{\text{det}} \in \mathcal{W}_i`$, isolation begins at $`\tau_{\text{iso}} = \tau_{\text{det}} + \delta_{\text{act}}`$. The fraction averted is
+Given detection at time $`\tau_{\text{det}} \in \mathcal{W}_i`$, isolation begins at $`\tau_{\text{iso}} = \tau_{\text{det}} + \delta_{\text{act}}`$. The fraction of person $i$'s infectiousness averted is
 
 $$\theta_i = \eta \cdot S_\psi(\tau_{\text{iso}} - l_i)$$
-
-The random quantity $\tau_{\text{det}} - l_i$ (time from biological onset to detection) is approximately
-
-$$\tau_{\text{det}} - l_i \approx m_\psi - d_{\text{pre}} + U$$
-
-where $U$ is the offset of the first positive test within the window. For $p_{\text{sens}} = 1$ and $\Delta \leq w$, $U$ is approximately $\text{Uniform}(0, \Delta)$, so
-
-$$\tau_{\text{det}} - l_i \approx m_\psi - d_{\text{pre}} + \text{Uniform}(0, \Delta)$$
 
 ### How $\psi$ enters
 
