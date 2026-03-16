@@ -14,7 +14,8 @@
       "Bash(make clean:*)",
       "Bash(make:*)",
       "Bash(python3:*)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "Bash(cat:*)"
     ]
   }
 }

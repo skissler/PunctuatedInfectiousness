@@ -1032,6 +1032,435 @@ $$E_{l_j, \varepsilon_j'}[\theta_j] = \eta \cdot P(\varepsilon_j' + l_j > \tau_{
 
 <p>In both cases, the Gamma convolution absorbs one \(\psi\)-dependent component, and the other remains.</p>
 
+<h2>Key assumptions</h2>
+
+<p>The overlap rule and its consequences rest on the following assumptions. These are numbered for reference; violations of each are noted.</p>
+
+<h3>A1. Shifted Gamma model</h3>
+
+<p>The individual infectiousness profile is \(a_i(\tau) = R_0 \cdot f_\psi(\tau - l_i)\) with \(l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)\) and \(f_\psi = \text{Gamma}(\psi\alpha, \beta)\) density. This is the specific functional form that makes \(l_i + \varepsilon \sim \text{Gamma}(\alpha, \beta)\). Without Gamma additivity, the convolution invariance fails, and TE at fixed detection time would depend on \(\psi\).</p>
+
+<h3>A2. \(\psi\)-independent detectability window</h3>
+
+<p>The half-widths \(d_{\text{pre}}\) and \(d_{\text{post}}\) do not depend on \(\psi\). This is the most debatable assumption. In reality, spikier profiles have higher peak viral loads but shorter durations above the limit of detection, potentially narrowing the detectability window. If the window width \(w\) shrinks with \(\psi\), this reduces \(P(\text{det})\) for spikes, partially or fully offsetting their advantage. The overlap rule still holds formally (with \(\psi\)-dependent \(w\)), but the clean separation \(D_0 = V + \delta_{\text{act}}\) with \(\psi\)-free \(D_0\) would break.</p>
+
+<h3>A3. Detection anchored to the mode</h3>
+
+<p>The detectability window is centred on \(l_i + m_\psi\). This is what causes \(l_i\) to cancel from the isolation offset \(D\). If detection were anchored to a different feature — e.g., a fixed viral load threshold that doesn't track the mode, or the mean \(l_i + \psi\alpha/\beta\) instead of the mode \(l_i + (\psi\alpha - 1)/\beta\) — the cancellation would differ by an additive \(\psi\)-dependent shift \(1/\beta\). This is a minor effect (for the mode vs. mean distinction, the difference is \(1/\beta\), independent of \(\psi\)), but matters conceptually: the overlap rule requires that the anchor point shifts with \(l_i\) one-for-one.</p>
+
+<h3>A4. Independence of detection timing and transmission quanta</h3>
+
+<p>The offset \(V\) (position of the first positive test within the window) is independent of \(\varepsilon\) (the individual's own biological jitter). This holds because the screening schedule is external to the individual's profile. Similarly, \(\delta_{\text{sym}}\) is independent of \(\varepsilon\) (symptom timing doesn't depend on which specific quanta of transmission the individual produces). <strong>This assumption does not require perfect sensitivity</strong> (\(p_{\text{sens}} = 1\)). With imperfect sensitivity, \(V\) is stochastically larger (failed early tests push detection later in the window), but \(V\) remains \(\psi\)-independent. The distribution of \(D_0\) changes with \(p_{\text{sens}}\), but the overlap rule \(\text{TE} = \eta \cdot P(\text{det}) \cdot P(\tilde{\varepsilon} > D_0)\) holds for any \(p_{\text{sens}}\).</p>
+
+<h3>A5. Symptom onset anchored to the mode</h3>
+
+<p>\(\tau_{\text{sym}} = l_i + m_\psi + \delta_{\text{sym}}\). This is the symptom-trigger analogue of A3. It means symptoms track the individual's peak infectiousness, shifted by a \(\psi\)-independent random variable \(\delta_{\text{sym}}\). If symptoms were instead anchored to infection time (i.e., \(\tau_{\text{sym}} = t_i + \delta_{\text{sym}}'\)), then \(l_i\) would not cancel, the convolution invariance would apply, and TE would be \(\psi\)-independent — all the interesting structure would vanish.</p>
+
+<h3>Summary</h3>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #555;">
+  <th style="padding: 4px 14px;">Result</th>
+  <th style="padding: 4px 14px;">Requires</th>
+</tr>
+<tr>
+  <td style="padding: 4px 14px;">Convolution invariance (fixed-time TE is \(\psi\)-free)</td>
+  <td style="padding: 4px 14px;">A1</td>
+</tr>
+<tr>
+  <td style="padding: 4px 14px;">Overlap rule: \(\text{TE} = \eta \cdot P(\text{det}) \cdot P(\tilde{\varepsilon} > D_0)\)</td>
+  <td style="padding: 4px 14px;">A1, A3, A4</td>
+</tr>
+<tr>
+  <td style="padding: 4px 14px;">\(D_0\) is \(\psi\)-independent (clean separation)</td>
+  <td style="padding: 4px 14px;">A1, A2, A3, A4</td>
+</tr>
+<tr>
+  <td style="padding: 4px 14px;">Symptom-trigger \(l_i\) cancellation</td>
+  <td style="padding: 4px 14px;">A1, A5</td>
+</tr>
+<tr>
+  <td style="padding: 4px 14px;">Contact tracing \(l_j\) absorption (\(S_\psi \to S_\alpha\))</td>
+  <td style="padding: 4px 14px;">A1</td>
+</tr>
+</table>
+
+<hr>
+<h1>The equivalence point of the overlap rule</h1>
+<p class="prompt">Where exactly is the crossover — the isolation offset \(D_0^*\) at which neither spike nor smooth profiles are preferred?</p>
+
+<h2>The question</h2>
+
+<p>The overlap rule gives the fraction of transmission averted as</p>
+
+$$\frac{\theta}{\eta} = S_\psi(m_\psi + D_0) = \Pr\!\bigl(\varepsilon > m_\psi + D_0\bigr), \qquad \varepsilon \sim \text{Gamma}(\psi\alpha,\,\beta).$$
+
+<p>where \(m_\psi = (\psi\alpha - 1)/\beta\) is the mode. Equivalently, writing \(\tilde\varepsilon = \varepsilon - m_\psi\) for the mode-centred profile:</p>
+
+$$\frac{\theta}{\eta} = \Pr(\tilde\varepsilon > D_0).$$
+
+<p>The crossover \(D_0^*\) is the value at which this probability is <strong>independent of \(\psi\)</strong> — i.e. the isolation offset at which spikes and smooth profiles avert the same fraction.</p>
+
+<h2>Why \(D_0 = 0\) is not the answer</h2>
+
+<p>At \(D_0 = 0\), we evaluate \(\Pr(\varepsilon > m_\psi) = \Pr\!\bigl(\text{Gamma}(\psi\alpha, \beta) > \text{mode}\bigr)\). The Gamma density is right-skewed, so <strong>more than half the mass lies above the mode</strong>. The degree of skewness depends on the shape parameter \(a = \psi\alpha\):</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\psi\)</th><th style="padding: 4px 12px;">\(a = \psi\alpha\)</th><th style="padding: 4px 12px;">\(\Pr(\varepsilon > \text{mode})\)</th></tr>
+<tr><td style="padding: 4px 12px;">0.1</td><td style="padding: 4px 12px;">1</td><td style="padding: 4px 12px;">1.000 (exponential: mode = 0)</td></tr>
+<tr><td style="padding: 4px 12px;">0.3</td><td style="padding: 4px 12px;">3</td><td style="padding: 4px 12px;">0.677</td></tr>
+<tr><td style="padding: 4px 12px;">0.5</td><td style="padding: 4px 12px;">5</td><td style="padding: 4px 12px;">0.629</td></tr>
+<tr><td style="padding: 4px 12px;">1.0</td><td style="padding: 4px 12px;">10</td><td style="padding: 4px 12px;">0.587</td></tr>
+</table>
+
+<p>At \(D_0 = 0\), spike profiles still have a large advantage (S ranges from 1.0 down to 0.59). This makes sense: the exponential has all its mass to the right of its mode (which is zero), while more symmetric bell curves have progressively less.</p>
+
+<h2>The median–mode gap</h2>
+
+<p>The natural 50-50 split point of any distribution is its <strong>median</strong>, not its mode. If we set \(D_0\) equal to the median–mode gap, then \(\Pr(\tilde\varepsilon > D_0) = \Pr(\varepsilon > \text{median}) = \tfrac{1}{2}\) regardless of shape.</p>
+
+<p>For a \(\text{Gamma}(a, \beta)\) distribution, a classical asymptotic expansion gives:</p>
+
+$$\text{median} \;=\; \frac{a - \tfrac{1}{3} + O(a^{-1})}{\beta}$$
+
+<p>while the mode is \((a-1)/\beta\). The gap is therefore:</p>
+
+<div class="highlight">
+$$\boxed{\;D_0^* \;=\; \text{median} - \text{mode} \;\approx\; \frac{2}{3\beta}\;}$$
+</div>
+
+<p>with corrections of order \(O(1/(a\beta)) = O(1/(\psi\alpha\beta))\). The key point: <strong>this gap is approximately independent of the shape parameter</strong> \(a = \psi\alpha\), so it serves as an (approximate) universal crossover.</p>
+
+<h2>Numerical verification (\(\alpha = 10, \beta = 2\))</h2>
+
+<p>With our standard parameters, \(D_0^* = 2/(3 \cdot 2) = 1/3 \approx 0.333\).</p>
+
+<p><strong>Median–mode gap</strong> (exact, via <code>qgamma</code>):</p>
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\psi\)</th><th style="padding: 4px 12px;">\(a\)</th><th style="padding: 4px 12px;">mode</th><th style="padding: 4px 12px;">median</th><th style="padding: 4px 12px;">gap</th><th style="padding: 4px 12px;">\(2/(3\beta)\)</th></tr>
+<tr><td style="padding: 4px 12px;">0.1</td><td style="padding: 4px 12px;">1</td><td style="padding: 4px 12px;">0.000</td><td style="padding: 4px 12px;">0.347</td><td style="padding: 4px 12px;">0.347</td><td style="padding: 4px 12px;">0.333</td></tr>
+<tr><td style="padding: 4px 12px;">0.3</td><td style="padding: 4px 12px;">3</td><td style="padding: 4px 12px;">1.000</td><td style="padding: 4px 12px;">1.337</td><td style="padding: 4px 12px;">0.337</td><td style="padding: 4px 12px;">0.333</td></tr>
+<tr><td style="padding: 4px 12px;">0.5</td><td style="padding: 4px 12px;">5</td><td style="padding: 4px 12px;">2.000</td><td style="padding: 4px 12px;">2.336</td><td style="padding: 4px 12px;">0.336</td><td style="padding: 4px 12px;">0.333</td></tr>
+<tr><td style="padding: 4px 12px;">1.0</td><td style="padding: 4px 12px;">10</td><td style="padding: 4px 12px;">4.500</td><td style="padding: 4px 12px;">4.834</td><td style="padding: 4px 12px;">0.334</td><td style="padding: 4px 12px;">0.333</td></tr>
+</table>
+
+<p>The gap is remarkably stable (0.334–0.347), confirming the \(2/(3\beta)\) approximation.</p>
+
+<p><strong>Survival function at \(D_0 = 1/3\)</strong>:</p>
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\psi\)</th><th style="padding: 4px 12px;">\(S_\psi(m_\psi + 1/3)\)</th></tr>
+<tr><td style="padding: 4px 12px;">0.1</td><td style="padding: 4px 12px;">0.513</td></tr>
+<tr><td style="padding: 4px 12px;">0.3</td><td style="padding: 4px 12px;">0.502</td></tr>
+<tr><td style="padding: 4px 12px;">0.5</td><td style="padding: 4px 12px;">0.501</td></tr>
+<tr><td style="padding: 4px 12px;">1.0</td><td style="padding: 4px 12px;">0.500</td></tr>
+</table>
+
+<p>All values cluster tightly around 0.50, confirming that at \(D_0 = 1/3\) neither spike nor smooth is preferred.</p>
+
+<p><strong>Exact pairwise crossings</strong> (found numerically by bisection):</p>
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">Pair</th><th style="padding: 4px 12px;">\(D_0^*\) (exact)</th><th style="padding: 4px 12px;">\(S\) at crossing</th></tr>
+<tr><td style="padding: 4px 12px;">\(\psi = 0.1\) vs \(\psi = 1.0\)</td><td style="padding: 4px 12px;">0.351</td><td style="padding: 4px 12px;">0.496</td></tr>
+<tr><td style="padding: 4px 12px;">\(\psi = 0.1\) vs \(\psi = 0.5\)</td><td style="padding: 4px 12px;">0.353</td><td style="padding: 4px 12px;">0.493</td></tr>
+<tr><td style="padding: 4px 12px;">\(\psi = 0.3\) vs \(\psi = 1.0\)</td><td style="padding: 4px 12px;">0.340</td><td style="padding: 4px 12px;">0.499</td></tr>
+<tr><td style="padding: 4px 12px;">\(\psi = 0.5\) vs \(\psi = 1.0\)</td><td style="padding: 4px 12px;">0.338</td><td style="padding: 4px 12px;">0.499</td></tr>
+</table>
+
+<p>All crossings fall in the narrow band \(D_0^* \in [0.338, 0.353]\), bracketing the prediction \(2/(3\beta) = 0.333\).</p>
+
+<h2>Why the mean doesn't work</h2>
+
+<p>One might guess the crossover is at the <strong>mean</strong>–mode gap, which is exactly \(1/\beta\) for all Gamma shapes. But at \(D_0 = 1/\beta = 0.5\), we evaluate \(\Pr(\varepsilon > \text{mean})\), and this quantity is <em>not</em> shape-independent:</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\psi\)</th><th style="padding: 4px 12px;">\(\Pr(\varepsilon > \text{mean})\)</th></tr>
+<tr><td style="padding: 4px 12px;">0.1</td><td style="padding: 4px 12px;">0.368 \(\;(= e^{-1})\)</td></tr>
+<tr><td style="padding: 4px 12px;">0.5</td><td style="padding: 4px 12px;">0.440</td></tr>
+<tr><td style="padding: 4px 12px;">1.0</td><td style="padding: 4px 12px;">0.458</td></tr>
+</table>
+
+<p>The mean sits too far to the right of the mode, well into smooth-preferred territory. The mean–mode gap \(1/\beta\) overestimates the crossover; the median–mode gap \(2/(3\beta)\) nails it.</p>
+
+<h2>Summary</h2>
+
+<div class="highlight">
+<p>The spike–smooth equivalence point is <strong>not</strong> at \(D_0 = 0\) (the mode) but at</p>
+
+$$D_0^* \;\approx\; \frac{2}{3\beta}$$
+
+<p>i.e. the <strong>median–mode gap</strong> of the Gamma distribution. This gap is approximately independent of shape, with corrections \(O(1/(\psi\alpha\beta))\).</p>
+
+<p><strong>Interpretation:</strong> The mode splits the Gamma density asymmetrically — the right tail is always heavier. You must go slightly past the mode (to the median) before the tail fraction reaches 50% and becomes shape-independent. For our standard parameters (\(\beta = 2\)): \(D_0^* \approx 1/3\) day. In biological terms, isolation must begin about <strong>8 hours after the peak</strong> for punctuation to be irrelevant.</p>
+</div>
+
+<hr>
+<h1>General crossover theorem: beyond the Gamma</h1>
+<p class="prompt">Does the median–mode crossover hold for any biological profile, not just the Gamma? If we used a Normal, would D₀* = 0? If left-skewed, would D₀* &lt; 0?</p>
+
+<h2>Setup</h2>
+
+<p>Consider <em>any</em> unimodal distribution family \(\{F_\psi\}\) for the individual biological profile \(\varepsilon\), parameterized by a concentration parameter \(\psi\). As \(\psi \to 0\), the profile concentrates into a spike at its mode \(m_\psi\). The overlap rule gives the fraction of transmission averted as</p>
+
+$$\frac{\theta}{\eta} = S_\psi(m_\psi + D_0) \;=\; \Pr(\varepsilon > m_\psi + D_0), \qquad \varepsilon \sim F_\psi.$$
+
+<p>The crossover \(D_0^*\) is the offset where this quantity is independent of \(\psi\).</p>
+
+<h2>The theorem</h2>
+
+<p>The argument is elementary. For each \(\psi\):</p>
+<ul>
+  <li>\(S_\psi(m_\psi + D_0)\) is a continuous, strictly decreasing function of \(D_0\), dropping from \(\approx 1\) to \(0\).</li>
+  <li>It passes through \(\tfrac{1}{2}\) at exactly \(D_0 = \text{median}_\psi - m_\psi\).</li>
+</ul>
+
+<div class="highlight">
+<p><strong>Theorem.</strong> If the median–mode gap \(\Delta_\psi := \text{median}_\psi - \text{mode}_\psi\) is approximately independent of \(\psi\), then all survival curves pass through a common point</p>
+$$\bigl(D_0^*,\;\tfrac{1}{2}\bigr), \qquad D_0^* = \Delta_\psi \approx \text{const},$$
+<p>and this is the universal spike–smooth crossover. The sign of \(D_0^*\) equals the sign of the skewness:</p>
+<ul>
+  <li><strong>Right-skewed</strong> (mode &lt; median): \(D_0^* > 0\). Spikes preferred for early isolation.</li>
+  <li><strong>Symmetric</strong> (mode = median): \(D_0^* = 0\). Crossover exactly at the peak.</li>
+  <li><strong>Left-skewed</strong> (mode &gt; median): \(D_0^* < 0\). Spikes preferred for late isolation.</li>
+</ul>
+</div>
+
+<p>If \(\Delta_\psi\) depends on \(\psi\), the pairwise crossings scatter over a range of \(D_0\) values and no single clean crossover exists.</p>
+
+<h2>Why the Gamma has a clean crossover</h2>
+
+<p>For \(\text{Gamma}(a, \beta)\), the <strong>mean–mode gap</strong> is</p>
+
+$$\text{mean} - \text{mode} = \frac{a}{\beta} - \frac{a-1}{\beta} = \frac{1}{\beta} \qquad \text{(exactly shape-independent).}$$
+
+<p>Pearson's classical relation \(\text{mean} - \text{mode} \approx 3(\text{mean} - \text{median})\) then gives</p>
+
+$$\text{median} - \text{mode} \;\approx\; \tfrac{2}{3}(\text{mean} - \text{mode}) \;=\; \frac{2}{3\beta}$$
+
+<p>with corrections \(O(1/(a\beta))\). The leading term is independent of \(a = \psi\alpha\), giving the clean crossover. Numerically:</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(a = \psi\alpha\)</th><th style="padding: 4px 12px;">median − mode</th><th style="padding: 4px 12px;">\(2/(3\beta)\)</th></tr>
+<tr><td style="padding: 4px 12px;">1</td><td style="padding: 4px 12px;">0.347</td><td style="padding: 4px 12px;">0.333</td></tr>
+<tr><td style="padding: 4px 12px;">5</td><td style="padding: 4px 12px;">0.335</td><td style="padding: 4px 12px;">0.333</td></tr>
+<tr><td style="padding: 4px 12px;">10</td><td style="padding: 4px 12px;">0.334</td><td style="padding: 4px 12px;">0.333</td></tr>
+<tr><td style="padding: 4px 12px;">50</td><td style="padding: 4px 12px;">0.334</td><td style="padding: 4px 12px;">0.333</td></tr>
+</table>
+
+<p>Stable to three significant figures across a 50-fold range in shape.</p>
+
+<h2>Counterexample: the log-normal has no clean crossover</h2>
+
+<p>For comparison, consider a log-normal family with the same first two moments as the Gamma (\(\text{mean} = a/\beta\), \(\text{var} = a/\beta^2\)). This requires \(\sigma^2 = \log(1 + 1/a)\).</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(a\)</th><th style="padding: 4px 12px;">median − mode</th></tr>
+<tr><td style="padding: 4px 12px;">1</td><td style="padding: 4px 12px;">0.177</td></tr>
+<tr><td style="padding: 4px 12px;">5</td><td style="padding: 4px 12px;">0.380</td></tr>
+<tr><td style="padding: 4px 12px;">10</td><td style="padding: 4px 12px;">0.433</td></tr>
+<tr><td style="padding: 4px 12px;">50</td><td style="padding: 4px 12px;">0.485</td></tr>
+</table>
+
+<p>The gap varies by nearly 3×. The pairwise crossings scatter accordingly:</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">Pair</th><th style="padding: 4px 12px;">\(D_0^*\)</th></tr>
+<tr><td style="padding: 4px 12px;">\(a = 2\) vs \(a = 10\)</td><td style="padding: 4px 12px;">0.188</td></tr>
+<tr><td style="padding: 4px 12px;">\(a = 5\) vs \(a = 20\)</td><td style="padding: 4px 12px;">0.312</td></tr>
+<tr><td style="padding: 4px 12px;">\(a = 10\) vs \(a = 20\)</td><td style="padding: 4px 12px;">0.366</td></tr>
+</table>
+
+<p>No single crossover exists — the "equivalence offset" depends on which pair of profiles you compare.</p>
+
+<h2>Left-skewed verification: reflected Gamma</h2>
+
+<p>A reflected Gamma (\(X = C - \text{Gamma}(a, \beta)\)) is left-skewed. By reflection, its median–mode gap is</p>
+
+$$\Delta = (C - \text{median}_{\text{Gamma}}) - (C - \text{mode}_{\text{Gamma}}) = -(\text{median}_\text{Gamma} - \text{mode}_\text{Gamma}) = -\frac{2}{3\beta}$$
+
+<p>Confirmed numerically: the gap is \(\approx -0.334\) for all \(a\). So for left-skewed profiles, the crossover is at \(D_0^* \approx -1/3\) — isolation must begin slightly <em>before</em> the peak for punctuation to be irrelevant.</p>
+
+<h2>Summary</h2>
+
+<div class="highlight">
+<p><strong>General result:</strong> The spike–smooth crossover occurs at \(D_0^* = \text{median} - \text{mode}\) of the biological infectiousness profile. The sign tracks the skewness:</p>
+
+$$D_0^* \begin{cases} > 0 & \text{right-skewed (e.g. Gamma)} \\ = 0 & \text{symmetric (e.g. Normal)} \\ < 0 & \text{left-skewed} \end{cases}$$
+
+<p><strong>The Gamma is special:</strong> A <em>clean</em> crossover (single \(D_0^*\) for all concentration levels) requires \(\text{median} - \text{mode}\) to be approximately shape-independent. The Gamma has this property because its mean–mode gap is exactly \(1/\beta\), and by Pearson's relation, the median–mode gap is \(\approx 2/(3\beta)\). Other skewed families (log-normal, Weibull) lack this and have no single crossover.</p>
+
+<p><strong>Physical interpretation:</strong> Because real infectiousness profiles are right-skewed (fast rise, slow decay), the crossover lies slightly past the peak — isolation must begin after the mode (by \(\approx 2/(3\beta)\) days) for punctuation to be irrelevant. This is ultimately a consequence of the asymmetry between the rising and falling phases of infectiousness.</p>
+</div>
+
+<hr>
+<h1>Random detection times: variance helps spikes</h1>
+<p class="prompt">What if \(D_0\) is random? Is the condition for spike preference simply \(E[D_0] < D_0^*\)?</p>
+
+<h2>Setup</h2>
+
+<p>When detection timing is uncertain, \(D_0 \sim G\) with mean \(\mu\) and variance \(\sigma^2\), and the expected fraction averted becomes</p>
+
+$$h(\psi) \;=\; E_{D_0}\!\bigl[\tilde S_\psi(D_0)\bigr] \;=\; \int \tilde S_\psi(d)\, g(d)\,\mathrm{d}d \;=\; \Pr(\tilde\varepsilon > D_0)$$
+
+<p>where \(\tilde\varepsilon \perp\!\!\!\perp D_0\). Spikes are preferred when \(h(\psi_{\text{spike}}) > h(\psi_{\text{smooth}})\).</p>
+
+<h2>Leading-order answer: yes, \(E[D_0] < D_0^*\)</h2>
+
+<p>For small variance, expand about the mean:</p>
+
+$$h(\psi) \;\approx\; \tilde S_\psi(\mu) + \tfrac{\sigma^2}{2}\,\tilde S_\psi''(\mu)$$
+
+<p>The first term gives the deterministic result: spike wins iff \(\mu < D_0^*\). So to leading order, the user's intuition is correct — <strong>the mean detection offset must fall before the median–mode gap</strong>.</p>
+
+<h2>The variance correction: spikes benefit from noise</h2>
+
+<p>The second-order term reveals a surprise. Since \(\tilde S'' = -\tilde f'\), and the density \(\tilde f\) is decreasing past the mode (at \(D_0^* > 0\)), we have \(\tilde f'(D_0^*) < 0\) and therefore \(\tilde S''(D_0^*) > 0\) — the survival function is <strong>convex</strong> in this region.</p>
+
+<p>By Jensen's inequality: \(E[\tilde S(D_0)] > \tilde S(E[D_0])\). Both spike and smooth benefit from this convexity uplift, but the spike benefits <strong>far more</strong> because its survival function is steeper (more convex):</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;"></th><th style="padding: 4px 12px;">\(\tilde S(E[D_0])\)</th><th style="padding: 4px 12px;">\(E[\tilde S(D_0)]\)</th><th style="padding: 4px 12px;">Jensen boost</th></tr>
+<tr><td style="padding: 4px 12px;">\(\psi = 0.1\) (spike)</td><td style="padding: 4px 12px;">0.513</td><td style="padding: 4px 12px;">0.551</td><td style="padding: 4px 12px;"><strong>+0.037</strong></td></tr>
+<tr><td style="padding: 4px 12px;">\(\psi = 1.0\) (smooth)</td><td style="padding: 4px 12px;">0.500</td><td style="padding: 4px 12px;">0.511</td><td style="padding: 4px 12px;">+0.011</td></tr>
+</table>
+<p style="text-align: center; font-size: 0.9em; color: #999;">(At \(E[D_0] = D_0^*,\; \sigma = 1,\; D_0 \sim \mathcal{N}(\mu, \sigma^2)\))</p>
+
+<p>The spike's Jensen boost is 3.5× larger than the smooth's. So at the deterministic crossover \(E[D_0] = D_0^*\), the spike is <em>still winning</em> when \(\sigma > 0\).</p>
+
+<h2>The effective crossover shifts rightward</h2>
+
+<p>Setting \(h(\psi_1) = h(\psi_2)\) and Taylor-expanding around \(D_0^*\) gives</p>
+
+$$D_0^{*,\text{eff}} \;\approx\; D_0^* + c\,\sigma^2, \qquad c \;=\; \frac{\tilde f'_{\text{smooth}}(D_0^*) - \tilde f'_{\text{spike}}(D_0^*)}{2\bigl[\tilde f_{\text{spike}}(D_0^*) - \tilde f_{\text{smooth}}(D_0^*)\bigr]}$$
+
+<p>Since the spike density is steeper (\(|\tilde f'_{\text{spike}}| \gg |\tilde f'_{\text{smooth}}|\)) and taller (\(\tilde f_{\text{spike}} > \tilde f_{\text{smooth}}\)) at \(D_0^*\), we get \(c > 0\). Numerically, \(c \approx 1.3\) for our standard parameters, and:</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\sigma\)</th><th style="padding: 4px 12px;">\(D_0^{*,\text{eff}}\)</th><th style="padding: 4px 12px;">Shift from \(D_0^*\)</th></tr>
+<tr><td style="padding: 4px 12px;">0 (deterministic)</td><td style="padding: 4px 12px;">0.333</td><td style="padding: 4px 12px;">—</td></tr>
+<tr><td style="padding: 4px 12px;">0.25</td><td style="padding: 4px 12px;">0.417</td><td style="padding: 4px 12px;">+0.084</td></tr>
+<tr><td style="padding: 4px 12px;">0.50</td><td style="padding: 4px 12px;">0.496</td><td style="padding: 4px 12px;">+0.162</td></tr>
+<tr><td style="padding: 4px 12px;">1.00</td><td style="padding: 4px 12px;">0.604</td><td style="padding: 4px 12px;">+0.270</td></tr>
+<tr><td style="padding: 4px 12px;">1.50</td><td style="padding: 4px 12px;">0.674</td><td style="padding: 4px 12px;">+0.340</td></tr>
+<tr><td style="padding: 4px 12px;">2.00</td><td style="padding: 4px 12px;">0.719</td><td style="padding: 4px 12px;">+0.386</td></tr>
+</table>
+
+<p>The crossover shifts <em>rightward</em> with increasing variance — <strong>noise in detection timing favours spikes</strong>.</p>
+
+<h2>Physical interpretation</h2>
+
+<div class="highlight">
+<p>The condition for spike preference is:</p>
+$$\boxed{\;E[D_0] \;\lesssim\; \frac{2}{3\beta} + c\,\sigma^2_{D_0}\;}$$
+<p>which is <em>more lenient</em> than the deterministic condition \(D_0 < 2/(3\beta)\).</p>
+
+<p><strong>Why does noise help spikes?</strong> The spike's transmission is an all-or-nothing bet. When detection timing is noisy:</p>
+<ul>
+  <li>Lucky early detections (\(D_0 \ll 0\)) capture the spike's <em>entire</em> burst — a windfall.</li>
+  <li>Unlucky late detections (\(D_0 \gg 0\)) miss nothing extra — the spike already fired.</li>
+</ul>
+<p>The payoff is asymmetric: the upside of early detection (avert everything) exceeds the downside of late detection (miss everything, but you'd have missed most of it anyway). For smooth profiles, the payoff is more linear — early or late detection matters proportionally. This asymmetry is Jensen's inequality at work: the spike's step-like survival function is convex, making it the natural beneficiary of randomness.</p>
+</div>
+
+<hr>
+<h1>General variance–skewness theorem</h1>
+<p class="prompt">Does the "variance helps spikes" result hold for arbitrary unimodal profiles, not just the Gamma? Can we make a distribution-free argument?</p>
+
+<h2>The argument</h2>
+
+<p>Yes — and the argument requires only one fact from elementary calculus: <strong>a unimodal density increases before its mode and decreases after</strong>.</p>
+
+<p>Consider any unimodal, mode-centred profile \(\tilde\varepsilon\) with density \(\tilde f\) having its mode at \(d = 0\). The survival function \(\tilde S(d) = \Pr(\tilde\varepsilon > d)\) satisfies</p>
+
+$$\tilde S''(d) = -\tilde f'(d) \;=\; \begin{cases} < 0 & d < 0 \;\;\text{(concave: density still rising)} \\[3pt] > 0 & d > 0 \;\;\text{(convex: density falling)} \end{cases}$$
+
+<p>The inflection point is at \(d = 0\) (the mode), and every unimodal distribution has this structure regardless of parametric form.</p>
+
+<h3>Step 1: Where does the crossover sit?</h3>
+
+<p>The crossover \(D_0^* = \text{median} - \text{mode}\). For right-skewed profiles, \(D_0^* > 0\) — the crossover lies in the <strong>convex region</strong>. For left-skewed, \(D_0^* < 0\) — the crossover lies in the <strong>concave region</strong>.</p>
+
+<h3>Step 2: Which profile has more curvature?</h3>
+
+<p>For a density with scale \(\sigma_\psi\) (standard deviation), dimensional analysis gives</p>
+
+$$\tilde f \sim \frac{1}{\sigma_\psi}, \qquad |\tilde f'| \sim \frac{1}{\sigma_\psi^2}, \qquad |\tilde S''| = |\tilde f'| \sim \frac{1}{\sigma_\psi^2}$$
+
+<p>A more concentrated profile (smaller \(\sigma_\psi\)) has <strong>greater curvature</strong> \(|\tilde S''|\) at any fixed point near the mode. In particular, at \(D_0^*\):</p>
+
+$$|\tilde S_{\text{spike}}''(D_0^*)| \;\gg\; |\tilde S_{\text{smooth}}''(D_0^*)|$$
+
+<p>Verified numerically: for our Gamma parameters, \(|\tilde S''(D_0^*)| = 2.05\) (spike) vs \(0.04\) (smooth) — a 50-fold ratio.</p>
+
+<h3>Step 3: Jensen's inequality decides the sign</h3>
+
+<p>Define \(\Delta(d) = \tilde S_{\text{spike}}(d) - \tilde S_{\text{smooth}}(d)\), which crosses zero at \(D_0^*\). By Taylor expansion around \(D_0^*\):</p>
+
+$$\Delta(D_0^* \pm t) \;\approx\; \frac{t^2}{2}\,\Delta''(D_0^*)$$
+
+<p>For \(D_0\) centred at \(D_0^*\) with variance \(\sigma^2\):</p>
+
+$$E\bigl[\Delta(D_0)\bigr] \;\approx\; \frac{\sigma^2}{2}\,\Delta''(D_0^*) \;=\; \frac{\sigma^2}{2}\bigl[\tilde S_{\text{spike}}''(D_0^*) - \tilde S_{\text{smooth}}''(D_0^*)\bigr]$$
+
+<p>Now everything clicks together:</p>
+
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 6px 14px;">Profile skewness</th><th style="padding: 6px 14px;">\(D_0^*\)</th><th style="padding: 6px 14px;">Region</th><th style="padding: 6px 14px;">\(\tilde S''_{\text{spike}}\) vs \(\tilde S''_{\text{smooth}}\)</th><th style="padding: 6px 14px;">\(E[\Delta]\)</th><th style="padding: 6px 14px;">Verdict</th></tr>
+<tr><td style="padding: 6px 14px;">Right-skewed</td><td style="padding: 6px 14px;">\(> 0\)</td><td style="padding: 6px 14px;">Convex</td><td style="padding: 6px 14px;">\(+2.05 \gg +0.04\)</td><td style="padding: 6px 14px;">\(> 0\)</td><td style="padding: 6px 14px;"><strong>Variance helps spikes</strong></td></tr>
+<tr><td style="padding: 6px 14px;">Left-skewed</td><td style="padding: 6px 14px;">\(< 0\)</td><td style="padding: 6px 14px;">Concave</td><td style="padding: 6px 14px;">\(-2.05 \ll -0.04\)</td><td style="padding: 6px 14px;">\(< 0\)</td><td style="padding: 6px 14px;"><strong>Variance hurts spikes</strong></td></tr>
+<tr><td style="padding: 6px 14px;">Symmetric</td><td style="padding: 6px 14px;">\(= 0\)</td><td style="padding: 6px 14px;">Inflection</td><td style="padding: 6px 14px;">\(0 = 0\)</td><td style="padding: 6px 14px;">\(= 0\)</td><td style="padding: 6px 14px;"><strong>No effect</strong></td></tr>
+</table>
+
+<h2>Numerical verification</h2>
+
+<p>Three distribution families, each at \(E[D_0] = D_0^*\), comparing \(h_{\text{spike}}\) vs \(h_{\text{smooth}}\):</p>
+
+<p><strong>Right-skewed (Gamma)</strong>, \(D_0^* = +1/3\):</p>
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\sigma\)</th><th style="padding: 4px 12px;">\(h_{\text{spike}}\)</th><th style="padding: 4px 12px;">\(h_{\text{smooth}}\)</th><th style="padding: 4px 12px;">Winner</th></tr>
+<tr><td style="padding: 4px 12px;">0</td><td style="padding: 4px 12px;">0.513</td><td style="padding: 4px 12px;">0.500</td><td style="padding: 4px 12px;">Spike (+0.013)</td></tr>
+<tr><td style="padding: 4px 12px;">0.5</td><td style="padding: 4px 12px;">0.565</td><td style="padding: 4px 12px;">0.504</td><td style="padding: 4px 12px;">Spike (+0.061)</td></tr>
+<tr><td style="padding: 4px 12px;">1.0</td><td style="padding: 4px 12px;">0.551</td><td style="padding: 4px 12px;">0.511</td><td style="padding: 4px 12px;">Spike (+0.040)</td></tr>
+</table>
+
+<p><strong>Left-skewed (Reflected Gamma)</strong>, \(D_0^* = -1/3\):</p>
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\sigma\)</th><th style="padding: 4px 12px;">\(h_{\text{spike}}\)</th><th style="padding: 4px 12px;">\(h_{\text{smooth}}\)</th><th style="padding: 4px 12px;">Winner</th></tr>
+<tr><td style="padding: 4px 12px;">0</td><td style="padding: 4px 12px;">0.487</td><td style="padding: 4px 12px;">0.500</td><td style="padding: 4px 12px;">Smooth (+0.013)</td></tr>
+<tr><td style="padding: 4px 12px;">0.5</td><td style="padding: 4px 12px;">0.435</td><td style="padding: 4px 12px;">0.496</td><td style="padding: 4px 12px;">Smooth (+0.061)</td></tr>
+<tr><td style="padding: 4px 12px;">1.0</td><td style="padding: 4px 12px;">0.449</td><td style="padding: 4px 12px;">0.489</td><td style="padding: 4px 12px;">Smooth (+0.040)</td></tr>
+</table>
+
+<p><strong>Symmetric (Normal)</strong>, \(D_0^* = 0\):</p>
+<table style="margin: 1em auto; border-collapse: collapse;">
+<tr><th style="padding: 4px 12px;">\(\sigma\)</th><th style="padding: 4px 12px;">\(h_{\text{spike}}\)</th><th style="padding: 4px 12px;">\(h_{\text{smooth}}\)</th><th style="padding: 4px 12px;">Winner</th></tr>
+<tr><td style="padding: 4px 12px;">0</td><td style="padding: 4px 12px;">0.5000</td><td style="padding: 4px 12px;">0.5000</td><td style="padding: 4px 12px;">Tie</td></tr>
+<tr><td style="padding: 4px 12px;">0.5</td><td style="padding: 4px 12px;">0.5000</td><td style="padding: 4px 12px;">0.5000</td><td style="padding: 4px 12px;">Tie</td></tr>
+<tr><td style="padding: 4px 12px;">1.0</td><td style="padding: 4px 12px;">0.5000</td><td style="padding: 4px 12px;">0.5000</td><td style="padding: 4px 12px;">Tie</td></tr>
+</table>
+
+<p>All three cases match the theorem's predictions exactly.</p>
+
+<h2>The result</h2>
+
+<div class="highlight">
+<p><strong>Theorem (distribution-free).</strong> For <em>any</em> unimodal biological profile, the effect of variance in detection timing on the spike–smooth comparison is determined by the <strong>skewness of the profile</strong>:</p>
+
+<p>Writing \(D_0^{*,\text{eff}}\) for the effective crossover (the value of \(E[D_0]\) at which spike and smooth avert equally), the shift relative to the deterministic crossover \(D_0^*\) is</p>
+
+$$D_0^{*,\text{eff}} = D_0^* + \delta, \qquad \delta \approx \frac{\sigma^2}{2} \cdot \frac{\tilde S''_{\text{spike}}(D_0^*) - \tilde S''_{\text{smooth}}(D_0^*)}{\tilde f_{\text{spike}}(D_0^*) - \tilde f_{\text{smooth}}(D_0^*)}$$
+
+<p>and the sign of \(\delta\) equals the sign of the skewness:</p>
+<ul>
+  <li><strong>Right-skewed</strong> (\(D_0^* > 0\)): \(\delta > 0\). Variance <em>helps</em> spikes. The crossover shifts right.</li>
+  <li><strong>Left-skewed</strong> (\(D_0^* < 0\)): \(\delta < 0\). Variance <em>hurts</em> spikes. The crossover shifts left.</li>
+  <li><strong>Symmetric</strong> (\(D_0^* = 0\)): \(\delta = 0\). Variance has no leading-order effect.</li>
+</ul>
+
+<p>The mechanism is Jensen's inequality applied to the survival function's curvature. Past the mode (\(d > 0\)), every unimodal \(\tilde S\) is convex, and more concentrated profiles are <em>more</em> convex — so they benefit more from averaging over random \(D_0\). Before the mode (\(d < 0\)), the inequality reverses: \(\tilde S\) is concave, and concentration amplifies the penalty.</p>
+
+<p>Since real infectiousness profiles are universally right-skewed (fast viral rise, slow immune-mediated decline), the practical consequence is unambiguous: <strong>noisy detection timing always favours punctuated transmission</strong>.</p>
+</div>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
