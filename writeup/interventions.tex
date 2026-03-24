@@ -7,9 +7,18 @@
 % Detection and isolation is more effective for punctuated kernels
 % Detect-and-isolate policies shift the overall generation interval distribution in a way that depends on kappa -- leading to a partially self-defeating intervention.
 
-\subsection{Contact tracing}
+\begin{itemize}
+	\item The general detection distribution framework
+	\item Narrower infectiousness profiles transfer detection into an all-or-nothing proposition 
+	\item Detection and isolation shorten the generation interval distribution, moreso for smoooth profiles, which means that epidemics may grow (and shrink) faster than a naive application of TE would suggest...
+	\item while detection and isolation increases overdispersion in secondary infections, moreso for spike profiles, so that epidemics are less likely to take off (but more explosive) than would be expected with a naive application of TE. 
+	\item The takehome: detection and isolation reduce $R_{eff}$ via TE, but a simple application of TE won't tell us everything we need to know: instead, we need to know something about the individual infectiousness profile to properly anticipate how detect-and-isolate interventions will impact epidemic dynamics. 
+	\item Furthermore: narrower infectiousness profiles make detect-and-isolate interventions sensitive to small shifts, especially near the infectiousnesss profile itself. So, if symptoms move from slightly after to slighlty before infectiousness on average, this will have an outsize impact on narrow profiles vs. smooth ones. Similarly, if a small increase in testing cadence could have a huge impact for spike profiles, if we shift the mean of D from slightly after to slightly before peak infectiousness; but in other areas, it'll hardly have any impact on spike profiles, whereas the change in effectiveness for smooth profiles should be more gradual. 
+	\item This last point is relevant for when detection is anchored to the mode (or otherwise anchored to the individual infectiousness profile); otherwise, using the population average I think should be fine (e.g. if detection depends only on time of infection but not subsequent infectiousness). 
+	\item The takeaway from this: if we want to know the impact of shifting biology (changes in the symptom timing) or shifts in recommendations (changes in the cadence of testing), we should know something about the individual infectiousness profile (and how it relates to detectability). 
+	\item Adding in delays/turnaround time will also impact all this. 
+\end{itemize}
 
-% Amidst all-same and kappa-variable scenarios, with tracing delays.
 
 \subsection{Gathering size restrictions}
 

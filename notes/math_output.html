@@ -1461,6 +1461,712 @@ $$D_0^{*,\text{eff}} = D_0^* + \delta, \qquad \delta \approx \frac{\sigma^2}{2} 
 <p>Since real infectiousness profiles are universally right-skewed (fast viral rise, slow immune-mediated decline), the practical consequence is unambiguous: <strong>noisy detection timing always favours punctuated transmission</strong>.</p>
 </div>
 
+<hr>
+
+<div class="prompt">Generation interval distortion under isolation: analytical derivation</div>
+
+<h1>GI distortion and the tilted Euler-Lotka equation</h1>
+
+<p>The overlap rule gives \(\text{TE} = \eta \cdot P(\text{det}) \cdot P(\tilde\varepsilon > D_0)\), which determines \(R_{\text{eff}} = R_0(1 - \text{TE})\). But translating \(R_{\text{eff}}\) to a growth rate \(r\) via the Euler-Lotka equation requires knowledge of the <strong>generation interval</strong> (GI). Isolation preferentially removes late transmissions from smooth profiles, shortening the effective GI. A shorter GI inflates the growth rate for a given \(R_{\text{eff}}\), partially undermining the intervention. Here we derive this effect analytically.</p>
+
+<h2>1. Setup and notation</h2>
+
+<p>An individual infected at time 0 has infectiousness profile decomposed as:</p>
+
+$$\tau = \ell + \varepsilon, \qquad \ell \sim \text{Gamma}((1-\psi)\alpha,\, \beta), \quad \varepsilon \sim \text{Gamma}(\psi\alpha,\, \beta)$$
+
+<p>where \(\ell\) is the latent period, \(\varepsilon\) is the time from onset to a given transmission event, and \(\psi \in (0,1]\) controls punctuation. The population-level generation interval is \(\tau \sim \text{Gamma}(\alpha, \beta)\) with mean \(T = \alpha/\beta\). We write \(a = \psi\alpha\) and \(b = (1-\psi)\alpha\) for brevity.</p>
+
+<p>Isolation occurs at time \(D = m_\psi + D_0\) after onset, where \(m_\psi = \max(0, (a-1)/\beta)\) is the mode of the onset-to-transmission density and \(D_0\) is the offset. A transmission at time \(\varepsilon\) after onset survives isolation iff \(\varepsilon < D\).</p>
+
+<h2>2. The naive Euler-Lotka equation</h2>
+
+<p>Without GI distortion, one solves the <strong>naive</strong> Euler-Lotka equation using the natural GI density \(g(\tau) = f_{\text{Gamma}}(\tau;\, \alpha,\, \beta)\):</p>
+
+$$1 = R_{\text{eff}} \int_0^\infty e^{-r\tau} \, g(\tau) \, d\tau = R_{\text{eff}} \left(\frac{\beta}{\beta + r}\right)^\alpha$$
+
+<p>which yields the closed-form solution:</p>
+
+$$r_{\text{naive}} = \beta \left(R_{\text{eff}}^{1/\alpha} - 1\right)$$
+
+<h2>3. Deriving the tilted Euler-Lotka equation</h2>
+
+<p>Under isolation, a transmission at generation time \(\tau = \ell + \varepsilon\) contributes to epidemic growth only if it is <strong>not averted</strong>. For the fraction \(1-\eta\) of individuals who are never isolated, all transmissions survive. For the fraction \(\eta\) who are subject to isolation, transmission at time \(\varepsilon\) after onset survives iff \(\varepsilon < D\). The Euler-Lotka equation becomes:</p>
+
+$$1 = R_0 \int_0^\infty e^{-r\tau} \, g^*(\tau;\, r) \, d\tau$$
+
+<p>where \(g^*\) is the <strong>effective</strong> generation interval density (accounting for both surviving and averted transmissions). We can decompose:</p>
+
+$$1 = R_0 \int_0^\infty \int_0^\infty e^{-r(\ell + \varepsilon)} \, f_\ell(\ell) \left[(1 - \eta) f_\varepsilon(\varepsilon) + \eta \, f_\varepsilon(\varepsilon) \, \mathbf{1}(\varepsilon < D)\right] d\varepsilon \, d\ell$$
+
+<p>The \(\ell\)-integral factors out since \(\ell\) and \(\varepsilon\) are independent:</p>
+
+$$\int_0^\infty e^{-r\ell} f_\ell(\ell) \, d\ell = \left(\frac{\beta}{\beta + r}\right)^{b}$$
+
+<p>where \(b = (1-\psi)\alpha\). The \(\varepsilon\)-integral splits into two terms:</p>
+
+$$(1 - \eta) \int_0^\infty e^{-r\varepsilon} f_\varepsilon(\varepsilon) \, d\varepsilon + \eta \int_0^D e^{-r\varepsilon} f_\varepsilon(\varepsilon) \, d\varepsilon$$
+
+<p>The first integral is \(\left(\frac{\beta}{\beta + r}\right)^a\). For the second, we use the identity for the truncated Laplace transform of a Gamma:</p>
+
+$$\int_0^D e^{-r\varepsilon} f_{\text{Gamma}}(\varepsilon;\, a,\, \beta) \, d\varepsilon = \left(\frac{\beta}{\beta + r}\right)^a \, F_{\text{Gamma}}(D;\, a,\, \beta + r)$$
+
+<p>where \(F_{\text{Gamma}}(D; a, \beta+r) = \texttt{pgamma}(D, a, \beta+r)\) is the CDF of a \(\text{Gamma}(a, \beta+r)\). This is the key "exponential tilting" identity: multiplying a Gamma density by \(e^{-r\varepsilon}\) and renormalising gives a Gamma with rate \(\beta + r\).</p>
+
+<p>Combining everything:</p>
+
+$$1 = R_0 \left(\frac{\beta}{\beta + r}\right)^{\alpha} \left[(1 - \eta) + \eta \, F_{\text{Gamma}}(D;\, a,\, \beta + r)\right]$$
+
+<p>Or equivalently, using the survival function \(\bar{F} = 1 - F\):</p>
+
+<div class="highlight">
+$$\boxed{1 = R_0 \left(\frac{\beta}{\beta + r}\right)^{\alpha} \left[1 - \eta \, \bar{F}_{\text{Gamma}}(D;\, a,\, \beta + r)\right]}$$
+</div>
+
+<p>where \(\bar{F}_{\text{Gamma}}(D; a, \beta+r) = \texttt{pgamma}(D, a, \beta+r, \text{lower}=\text{FALSE})\). This is the <strong>tilted Euler-Lotka equation</strong>.</p>
+
+<h2>4. The exponential tilting mechanism</h2>
+
+<p>Comparing the tilted equation with the naive one reveals the key insight. The naive equation uses \(R_{\text{eff}} = R_0[1 - \eta \, \bar{F}_{\text{Gamma}}(D;\, a,\, \beta)]\) and the natural GI. The tilted equation evaluates the survival function at rate \(\beta + r\) instead of \(\beta\).</p>
+
+<p>For \(r > 0\) (growing epidemic), \(\beta + r > \beta\), so the tilted Gamma has a <strong>shorter mean</strong> (\(a/(\beta+r) < a/\beta\)). This means more of its mass is concentrated below \(D\), so \(\bar{F}(D; a, \beta+r) < \bar{F}(D; a, \beta)\). In words: <strong>from the perspective of the growth rate equation, fewer transmissions appear to be averted</strong> because the exponential discounting \(e^{-r\tau}\) already downweights late transmissions. The isolation truncation at \(D\) is thus partially redundant with the natural discounting.</p>
+
+<p>This means \(r_{\text{actual}} > r_{\text{naive}}\): the epidemic grows faster than the naive prediction from \(R_{\text{eff}}\) alone.</p>
+
+<h2>5. Distorted generation interval density</h2>
+
+<p>The effective GI density among surviving transmissions is:</p>
+
+$$w^*(\tau) = \frac{(1 - \eta) g(\tau) + \eta \int_0^{\min(\tau, D)} f_\ell(\tau - \varepsilon) f_\varepsilon(\varepsilon) \, d\varepsilon}{1 - \text{TE}}$$
+
+<p>For the non-isolated fraction \((1-\eta)\), the GI is unchanged. For the isolated fraction, only transmissions with \(\varepsilon < D\) survive, giving a truncated convolution of \(f_\ell\) and the truncated \(f_\varepsilon\). The denominator \(1 - \text{TE} = 1 - \eta \, \bar{F}_{\text{Gamma}}(D; a, \beta)\) normalises to a proper density.</p>
+
+<h2>6. Mean generation interval under isolation</h2>
+
+<p>For the isolated fraction, the mean generation time of surviving transmissions is:</p>
+
+$$E[\tau^* \mid \text{isolated, surviving}] = E[\ell] + E[\varepsilon \mid \varepsilon < D]$$
+
+$$= \frac{b}{\beta} + \frac{\int_0^D \varepsilon \, f_{\text{Gamma}}(\varepsilon;\, a,\, \beta) \, d\varepsilon}{F_{\text{Gamma}}(D;\, a,\, \beta)}$$
+
+<p>The truncated mean of \(\varepsilon\) uses the identity:</p>
+
+$$\int_0^D \varepsilon \, f_{\text{Gamma}}(\varepsilon;\, a,\, \beta) \, d\varepsilon = \frac{a}{\beta} \, F_{\text{Gamma}}(D;\, a+1,\, \beta)$$
+
+<p>so:</p>
+
+$$E[\varepsilon \mid \varepsilon < D] = \frac{a}{\beta} \cdot \frac{F_{\text{Gamma}}(D;\, a+1,\, \beta)}{F_{\text{Gamma}}(D;\, a,\, \beta)}$$
+
+<p>The overall mean GI under isolation, mixing isolated and non-isolated individuals weighted by their transmission contributions:</p>
+
+$$E[\tau^*] = \frac{(1 - \eta) \cdot \frac{\alpha}{\beta} + \eta \cdot F_{\text{Gamma}}(D; a, \beta) \cdot \left[\frac{b}{\beta} + \frac{a}{\beta} \cdot \frac{F_{\text{Gamma}}(D; a+1, \beta)}{F_{\text{Gamma}}(D; a, \beta)}\right]}{1 - \eta \, \bar{F}_{\text{Gamma}}(D; a, \beta)}$$
+
+<p>Simplifying:</p>
+
+<div class="highlight">
+$$E[\tau^*] = \frac{(1 - \eta) \cdot \frac{\alpha}{\beta} + \eta \left[\frac{b}{\beta} \cdot F_{\text{Gamma}}(D; a, \beta) + \frac{a}{\beta} \cdot F_{\text{Gamma}}(D; a+1, \beta)\right]}{1 - \eta \, \bar{F}_{\text{Gamma}}(D; a, \beta)}$$
+</div>
+
+<h2>7. Limiting cases</h2>
+
+<h3>\(\psi \to 0\) (spike limit)</h3>
+
+<p>When \(\psi \to 0\), \(a = \psi\alpha \to 0\) and \(b \to \alpha\). The individual infectious period \(\varepsilon \sim \text{Gamma}(a, \beta)\) degenerates to a point mass at 0. Isolation cannot truncate a zero-duration event: \(\bar{F}_{\text{Gamma}}(D; 0, \beta+r) = 0\) for \(D > 0\). The tilted Euler-Lotka reduces to the naive equation. <strong>No GI distortion for spikes.</strong></p>
+
+<h3>\(\psi = 1\) (smooth limit)</h3>
+
+<p>When \(\psi = 1\), \(a = \alpha\) and \(b = 0\). The entire generation interval is the infectious period \(\varepsilon\); there is no latent period. The tilting effect is maximal: \(\bar{F}_{\text{Gamma}}(D; \alpha, \beta+r)\) can differ substantially from \(\bar{F}_{\text{Gamma}}(D; \alpha, \beta)\). <strong>Maximal GI distortion for smooth profiles.</strong></p>
+
+<h3>\(\eta = 0\) (no intervention)</h3>
+
+<p>With \(\eta = 0\), the bracketed term in the tilted Euler-Lotka is 1, recovering the standard equation \(1 = R_0 (\beta/(\beta+r))^\alpha\). The naive and actual growth rates coincide. <strong>No distortion without intervention.</strong></p>
+
+<h3>\(D \to \infty\) (late isolation)</h3>
+
+<p>As \(D \to \infty\), \(\bar{F}_{\text{Gamma}}(D; a, \beta+r) \to 0\), so no transmissions are averted. The tilted Euler-Lotka again reduces to the standard equation.</p>
+
+<h3>\(D \to 0\) (immediate isolation)</h3>
+
+<p>As \(D \to 0\), \(\bar{F}_{\text{Gamma}}(D; a, \beta+r) \to 1\) (for \(a > 0\)), so \(1 = R_0 (\beta/(\beta+r))^\alpha [1 - \eta]\), i.e. \(R_{\text{eff}} = R_0(1-\eta)\) and the GI is unchanged (all post-onset transmissions are removed equally in the tilted and untilted versions). In this case, naive and actual agree because truncation at the onset is so aggressive that the GI shape doesn't matter.</p>
+
+<h2>8. Growth rate bias</h2>
+
+<p>Define:</p>
+<ul>
+  <li>\(r_{\text{naive}} = \beta(R_{\text{eff}}^{1/\alpha} - 1)\) from the standard Euler-Lotka with the natural GI</li>
+  <li>\(r_{\text{actual}}\) = root of the tilted Euler-Lotka: \(R_0 (\beta/(\beta+r))^\alpha [1 - \eta \, \bar{F}(D; a, \beta+r)] = 1\)</li>
+</ul>
+
+<p>The <strong>growth rate bias</strong> is:</p>
+
+$$\Delta r = r_{\text{actual}} - r_{\text{naive}} \geq 0$$
+
+<p>with equality when \(\psi = 0\), \(\eta = 0\), or \(D \to \infty\). The bias is largest when \(\psi\) is large (smooth profiles), \(\eta\) is large (high intervention coverage), and \(D\) is moderate (truncation in the body of the distribution).</p>
+
+<p>For the relative bias, consider:</p>
+
+$$\text{Relative bias} = \frac{r_{\text{actual}} - r_{\text{naive}}}{r_{\text{naive}}} \times 100\%$$
+
+<p>This quantifies the percentage overestimate of intervention effectiveness when GI distortion is ignored.</p>
+
+<hr>
+
+<h1>Detection Survival and Punctuation: General Theory</h1>
+<p><em>2026-03-23</em></p>
+
+<div class="prompt">
+Setup: \(S(\tau)\) is a detection survival function (continuous, \(S(0) = 1\), monotonically decreasing) and \(\{a_\psi(\tau)\}\) is a family of infectiousness profiles indexed by a punctuation parameter \(\psi\), all unimodal and integrating to \(R_0\). More punctuated profiles are narrower/peakier. We want to understand the sign of
+$$\Delta = \int_0^\infty S(\tau)\bigl[a_{\psi_1}(\tau) - a_{\psi_2}(\tau)\bigr]\,d\tau$$
+where \(\psi_1\) is more punctuated than \(\psi_2\).
+</div>
+
+<h2>1. The escaped-transmission functional</h2>
+
+<p>The quantity \(\int S(\tau)\,a_\psi(\tau)\,d\tau\) represents the <strong>expected infectiousness that escapes detection</strong>. Without detection, total infectiousness is \(R_0 = \int a_\psi\,d\tau\). With detection, it is reduced to \(\int S \cdot a_\psi\). Defining \(f_\psi = a_\psi / R_0\) as the normalised density of transmission timing, the escaped fraction is:</p>
+
+$$\frac{1}{R_0}\int S(\tau)\,a_\psi(\tau)\,d\tau = \mathbb{E}_{f_\psi}[S(\tau)]$$
+
+<p>So the question reduces to: <strong>how does the expected value of a decreasing function \(S\) change as we concentrate the distribution \(f_\psi\)?</strong></p>
+
+<h2>2. Proposition (Single-crossing lemma)</h2>
+
+<p>Before considering mean-preserving contractions, there is a simpler result for the case where the difference \(\delta(\tau) = a_{\psi_1}(\tau) - a_{\psi_2}(\tau)\) crosses zero exactly once.</p>
+
+<div class="highlight">
+<strong>Lemma (Chebyshev-type).</strong> Suppose \(\delta(\tau)\) changes sign from \(+\) to \(-\) at a unique crossing point \(\tau^*\), and \(\int \delta\,d\tau = 0\). If \(S\) is decreasing, then
+$$\int_0^\infty S(\tau)\,\delta(\tau)\,d\tau \geq 0.$$
+</div>
+
+<p><em>Proof.</em> On \([0, \tau^*]\), we have \(\delta(\tau) \geq 0\) and \(S(\tau) \geq S(\tau^*)\). On \([\tau^*, \infty)\), we have \(\delta(\tau) \leq 0\) and \(S(\tau) \leq S(\tau^*)\). Therefore:</p>
+
+$$\int_0^\infty S\,\delta\,d\tau \geq S(\tau^*)\int_0^{\tau^*}\delta\,d\tau + S(\tau^*)\int_{\tau^*}^{\infty}\delta\,d\tau = S(\tau^*)\underbrace{\int_0^\infty \delta\,d\tau}_{=\,0} = 0. \quad\square$$
+
+<p><strong>Interpretation:</strong> If profile \(\psi_1\) has more early mass and less late mass than \(\psi_2\), with a single crossing, then \(\psi_1\) always has <em>more</em> transmission escaping detection. Monotone decreasing \(S\) always weights early mass more heavily. This is a <strong>first-order</strong> (location) effect.</p>
+
+<p>But for comparing profiles that differ primarily in <em>spread</em> (not location), the difference \(\delta\) typically has <strong>two</strong> sign changes: negative in the left tail, positive near the mode, negative in the right tail (or the reverse). This is where Jensen's inequality enters.</p>
+
+<h2>3. Proposition (Jensen / convex-order effect)</h2>
+
+<div class="highlight">
+<strong>Proposition.</strong> Suppose \(f_{\psi_1}\) and \(f_{\psi_2}\) have the same mean \(\mu\), but \(f_{\psi_1}\) is a <strong>mean-preserving contraction</strong> of \(f_{\psi_2}\) (i.e., \(f_{\psi_1} \leq_{\text{cx}} f_{\psi_2}\) in convex order, meaning \(\text{Var}_{\psi_1} < \text{Var}_{\psi_2}\)). Then:
+<ul>
+  <li>\(S\) <strong>convex</strong> on the support \(\Longrightarrow \mathbb{E}_{\psi_1}[S] \leq \mathbb{E}_{\psi_2}[S]\) &mdash; <strong>punctuation reduces escape, helps detection.</strong></li>
+  <li>\(S\) <strong>concave</strong> on the support \(\Longrightarrow \mathbb{E}_{\psi_1}[S] \geq \mathbb{E}_{\psi_2}[S]\) &mdash; <strong>punctuation increases escape, hurts detection.</strong></li>
+  <li>\(S\) <strong>linear</strong> on the support \(\Longrightarrow \mathbb{E}_{\psi_1}[S] = \mathbb{E}_{\psi_2}[S]\) &mdash; <strong>punctuation irrelevant.</strong></li>
+</ul>
+</div>
+
+<p>This follows directly from Jensen's inequality. To leading order in the variance difference:</p>
+
+$$\mathbb{E}_{\psi_1}[S] - \mathbb{E}_{\psi_2}[S] \;\approx\; \tfrac{1}{2}\,S''(\mu)\bigl(\text{Var}_{\psi_1} - \text{Var}_{\psi_2}\bigr)$$
+
+<p>Since \(\text{Var}_{\psi_1} < \text{Var}_{\psi_2}\) (more punctuated = less spread), the sign of \(\Delta\) is determined by \(S''(\mu)\):</p>
+
+$$\boxed{\;\text{sign}(\Delta) = -\text{sign}\bigl(S''(\mu)\bigr)\;}$$
+
+<p>(where \(\Delta > 0\) means the more punctuated profile has more escape).</p>
+
+<h2>4. Interpretation via the detection hazard</h2>
+
+<p>Writing \(S(\tau) = \exp\!\bigl(-\int_0^\tau h(u)\,du\bigr)\) where \(h(\tau) = -S'(\tau)/S(\tau) \geq 0\) is the detection hazard, the second derivative of \(S\) is:</p>
+
+$$S''(\tau) = \bigl[h(\tau)^2 - h'(\tau)\bigr]\,S(\tau)$$
+
+<p>Since \(S > 0\), the curvature condition becomes:</p>
+
+$$S \text{ convex at } \tau \iff h'(\tau) < h(\tau)^2 \qquad\qquad S \text{ concave at } \tau \iff h'(\tau) > h(\tau)^2$$
+
+<p>In words:</p>
+<ul>
+  <li><strong>\(S\) is convex</strong> when the hazard is constant or slowly increasing (detection is "steady-state"). The paradigm case is exponential \(S\) (constant hazard).</li>
+  <li><strong>\(S\) is concave</strong> when the hazard is rapidly increasing (detection is "ramping up"). This happens during the onset of a detection regime &mdash; e.g., the period where symptom awareness is kicking in, or where test sensitivity is climbing.</li>
+</ul>
+
+<div class="highlight">
+<strong>Rule of thumb:</strong> Punctuation helps detection when the detection hazard is <em>mature</em> (steady or slowly growing), and hurts detection when the hazard is <em>ramping up</em> (rapidly accelerating). The key quantity is whether \(h'/h^2 \lessgtr 1\) at the infectiousness peak.
+</div>
+
+<h2>5. Examples</h2>
+
+<h3>5a. Constant-hazard detection: \(S(\tau) = e^{-h\tau}\)</h3>
+
+<p>\(S'' = h^2 e^{-h\tau} > 0\) everywhere (convex). So <strong>punctuation always helps detection</strong>. Intuitively: a constant hazard means that each moment of delay costs the same proportional detection rate. Concentrating infectiousness in a short window gives that infectiousness less total "exposure" to the cumulative hazard.</p>
+
+<p>Wait &mdash; that intuition may seem backwards; let's be precise. With exponential \(S\) and a symmetric profile centred at \(\mu\):</p>
+
+$$\mathbb{E}[e^{-h\tau}] = e^{-h\mu}\,M_f(h)$$
+
+<p>where \(M_f(h) = \mathbb{E}[e^{-h(\tau - \mu)}]\) is the centred moment generating function. Since \(e^{-hx}\) is convex, \(M_f(h) \geq 1\), with equality iff \(f\) is degenerate. More spread \(\Rightarrow\) higher \(M_f(h)\) \(\Rightarrow\) <em>more</em> escape. So the more punctuated (less spread) profile has <em>less</em> escape &mdash; punctuation helps detection. &#10004;</p>
+
+<h3>5b. Step-function detection: \(S(\tau) = \mathbf{1}[\tau < T]\)</h3>
+
+<p>\(S\) is flat (linear, with \(S'' = 0\)) everywhere except at \(\tau = T\), where it has a concave kink. The integral is simply:</p>
+
+$$\mathbb{E}_f[S] = F_f(T) = P(\tau < T)$$
+
+<p>For mean-preserving contractions: concentrating the profile around \(\mu\) pulls mass away from the tails. If \(T > \mu\), there is more right-tail mass that gets pulled in below \(T\), so \(F(T)\) increases &mdash; <strong>punctuation increases escape</strong> (hurts detection). If \(T < \mu\), mass gets pulled away from the left tail below \(T\), so \(F(T)\) decreases &mdash; <strong>punctuation decreases escape</strong> (helps detection).</p>
+
+<p>In short: a step-function \(S\) favours the profile whose mass is most concentrated in the pre-detection window. If detection comes after the peak, punctuation is bad for detection (the peak is fully "inside" the window). If detection comes before the peak, punctuation is good (less tail leaks into the early window).</p>
+
+<h3>5c. Weibull-type detection: \(S(\tau) = e^{-(\tau/\lambda)^k}\)</h3>
+
+<p>The curvature transition occurs where \(S'' = 0\), which gives:</p>
+
+$$\tau^* = \lambda\left(\frac{k-1}{k}\right)^{1/k} \qquad (k > 1)$$
+
+<p>For \(\tau < \tau^*\): \(S\) is concave (ramping-up phase). For \(\tau > \tau^*\): \(S\) is convex (mature phase). So:</p>
+<ul>
+  <li>Infectiousness peak in the <strong>early</strong> (concave) region: punctuation <strong>hurts</strong> detection.</li>
+  <li>Infectiousness peak in the <strong>late</strong> (convex) region: punctuation <strong>helps</strong> detection.</li>
+</ul>
+
+<p>For \(k = 2\) (Rayleigh-type survival): \(\tau^* = \lambda / \sqrt{2}\). For \(k \leq 1\), \(S\) is convex everywhere &mdash; same qualitative behaviour as exponential.</p>
+
+<h2>6. The general case: mean shift + spread change</h2>
+
+<p>In many parameterisations of punctuation (including the shifted-Gamma model), changing punctuation shifts both the mean and the spread of the individual profile. If profile \(\psi_1\) has mean \(\mu_1\) and variance \(\sigma_1^2\), and profile \(\psi_2\) has mean \(\mu_2\) and variance \(\sigma_2^2\), then to second order:</p>
+
+$$\Delta \approx R_0\Bigl[S'(\bar\mu)\,\underbrace{(\mu_1 - \mu_2)}_{\text{location shift}} + \tfrac{1}{2}\,S''(\bar\mu)\,\underbrace{(\sigma_1^2 - \sigma_2^2)}_{\text{spread change}}\Bigr]$$
+
+<p>where \(\bar\mu = (\mu_1 + \mu_2)/2\). The two effects can reinforce or oppose each other. In the shifted-Gamma model, for a given individual with onset \(l\), the individual profile \(f_\psi(\cdot - l)\) has mean \(l + \psi\alpha/\beta\) and variance \(\psi\alpha/\beta^2\), so more punctuation (lower \(\psi\)) both <strong>shifts the mean earlier</strong> (towards higher \(S\), increasing escape) and <strong>reduces variance</strong> (effect depends on \(S''\)).</p>
+
+<h2>7. Critical caveat: population-level invariance for exogenous \(S\)</h2>
+
+<p>This is crucial for connecting to the punctuation model. In the shifted-Gamma framework, each individual has profile \(a_i(\tau) = R_0\,f_\psi(\tau - l_i)\), where \(l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)\) and \(f_\psi = \text{Gamma}(\psi\alpha, \beta)\). The population-level profile is:</p>
+
+$$A(\tau) = \mathbb{E}_{l}\bigl[R_0\,f_\psi(\tau - l)\bigr] = R_0 \cdot \text{Gamma}(\alpha, \beta)$$
+
+<p>which is <strong>\(\psi\)-invariant</strong> (by the Gamma convolution property). Therefore, if \(S(\tau)\) depends only on time-since-infection and is the <strong>same for all individuals</strong>, then:</p>
+
+$$\mathbb{E}_l\!\left[\int S(\tau)\,a_i(\tau; l)\,d\tau\right] = \int S(\tau)\,A(\tau)\,d\tau$$
+
+<div class="highlight">
+<strong>Invariance result:</strong> If \(S(\tau)\) is exogenous (not coupled to individual biology), the population-level escaped transmission \(\int S\,A\,d\tau\) does not depend on \(\psi\). The individual-level Jensen effects (Section 3) average out perfectly over the distribution of onset times \(l_i\).
+</div>
+
+<p>This means that for the punctuation parameter \(\psi\) to matter at the population level, we need <strong>\(S\) to be endogenous</strong> &mdash; coupled to the individual's infectiousness profile. Natural mechanisms include:</p>
+<ol>
+  <li><strong>Symptom-triggered detection:</strong> Symptom onset correlates with the infectiousness peak. For a more punctuated individual, symptom onset is more tightly linked to the (narrower) infectious period, creating a different \(S_i(\tau)\) than for a smooth individual.</li>
+  <li><strong>Viral-load-triggered detection:</strong> Test sensitivity depends on viral load, which tracks infectiousness. The effective \(S_i(\tau)\) depends on the shape of \(a_i(\tau)\) itself.</li>
+  <li><strong>Contact-trace-triggered detection:</strong> Detection of individual \(i\) depends on when their infector was detected, which depends on the infector's profile.</li>
+</ol>
+
+<p>In all these cases, \(S_i\) and \(a_i\) are positively correlated (high infectiousness \(\Leftrightarrow\) high detectability), which tends to make detection more effective against smooth profiles (whose detectable window overlaps more with their infectious window).</p>
+
+<h2>8. Summary table</h2>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Detection regime</th>
+    <th>\(S(\tau)\) curvature</th>
+    <th>Hazard condition</th>
+    <th>Punctuation effect on escape</th>
+  </tr>
+  <tr>
+    <td>Constant hazard (exponential)</td>
+    <td>Convex</td>
+    <td>\(h' = 0\)</td>
+    <td>Decreases escape (helps detection)</td>
+  </tr>
+  <tr>
+    <td>Slowly increasing hazard</td>
+    <td>Convex</td>
+    <td>\(h' < h^2\)</td>
+    <td>Decreases escape (helps detection)</td>
+  </tr>
+  <tr>
+    <td>Rapidly increasing hazard</td>
+    <td>Concave</td>
+    <td>\(h' > h^2\)</td>
+    <td>Increases escape (hurts detection)</td>
+  </tr>
+  <tr>
+    <td>Linear \(S\)</td>
+    <td>Zero</td>
+    <td>&mdash;</td>
+    <td>No effect (to second order)</td>
+  </tr>
+  <tr>
+    <td>Step function at \(T\)</td>
+    <td>Concave kink at \(T\)</td>
+    <td>&mdash;</td>
+    <td>Depends on \(T\) vs \(\mu\)</td>
+  </tr>
+</table>
+
+<p>The overarching message: <strong>the curvature of the detection survival function at the infectiousness peak determines whether punctuation helps or hurts detection.</strong> But at the population level in the shifted-profile model, exogenous \(S\) produces no net effect &mdash; the individual-level effects integrate to zero. To get a population-level effect, detection must couple to individual biology.</p>
+
+<hr>
+
+<h1>Mode-Anchored Detection: Breaking the Invariance</h1>
+<p><em>2026-03-23</em></p>
+
+<div class="prompt">
+We now consider the case where the detection survival function is <strong>anchored to the mode</strong> of each individual's infectiousness profile. That is, each individual \(i\) has survival function \(S_i(\tau) = \tilde{S}(\tau - \tau_{\text{mode},i})\), where \(\tau_{\text{mode},i}\) is the time at which individual \(i\)'s infectiousness peaks and \(\tilde{S}\) is a canonical survival function defined relative to the mode.
+</div>
+
+<h2>9. The mode-anchoring transformation</h2>
+
+<p>In the shifted-Gamma framework, individual \(i\) has infectiousness profile \(a_i(\tau) = R_0\,f_\psi(\tau - l_i)\), where \(f_\psi = \text{Gamma}(\psi\alpha, \beta)\) has mode at \(m_\psi = (\psi\alpha - 1)/\beta\). The individual's peak infectiousness occurs at time:</p>
+
+$$\tau_{\text{mode},i} = l_i + m_\psi$$
+
+<p>With mode-anchored detection, individual \(i\)'s survival function is \(S_i(\tau) = \tilde{S}(\tau - l_i - m_\psi)\). Substituting into the escaped-transmission integral:</p>
+
+$$\int_0^\infty S_i(\tau)\,a_i(\tau)\,d\tau = R_0\int_0^\infty \tilde{S}(\tau - l_i - m_\psi)\,f_\psi(\tau - l_i)\,d\tau$$
+
+<p>Setting \(u = \tau - l_i\):</p>
+
+$$= R_0 \int_0^\infty \tilde{S}(u - m_\psi)\,f_\psi(u)\,du$$
+
+<div class="highlight">
+<strong>Key cancellation:</strong> The onset shift \(l_i\) has dropped out entirely. The escaped transmission depends only on \(\psi\) (which determines both the profile shape \(f_\psi\) and the mode \(m_\psi\)), not on the individual's random onset time. This quantity is <strong>identical for all individuals</strong> sharing the same \(\psi\), and therefore the population average equals the individual-level quantity. The invariance is broken.
+</div>
+
+<h2>10. The mode-centred residual</h2>
+
+<p>Define the <strong>mode-centred residual</strong> \(\tilde\varepsilon = u - m_\psi\), representing the timing of a transmission event relative to the individual's infectiousness peak. Then:</p>
+
+$$\frac{1}{R_0}\int S_i(\tau)\,a_i(\tau)\,d\tau = \mathbb{E}_{\tilde\varepsilon \sim \tilde{f}_\psi}\!\bigl[\tilde{S}(\tilde\varepsilon)\bigr]$$
+
+<p>where \(\tilde{f}_\psi\) is the density of \(\tilde\varepsilon\). The properties of \(\tilde\varepsilon\) are:</p>
+
+<ul>
+  <li><strong>Mode:</strong> \(\tilde\varepsilon\) has its mode at \(0\) by construction.</li>
+  <li><strong>Support:</strong> \(\tilde\varepsilon \in [-m_\psi, \infty)\). For \(\psi\alpha > 1\), there is mass to the left of the mode; for \(\psi\alpha \leq 1\), the mode is at the left boundary and \(\tilde\varepsilon \geq 0\).</li>
+  <li><strong>Mean:</strong> \(\mathbb{E}[\tilde\varepsilon] = \underbrace{\psi\alpha/\beta}_{\text{mean of } f_\psi} - \underbrace{(\psi\alpha - 1)/\beta}_{m_\psi} = 1/\beta\), which is <strong>constant across \(\psi\)</strong>.</li>
+  <li><strong>Variance:</strong> \(\text{Var}(\tilde\varepsilon) = \psi\alpha/\beta^2\), which <strong>decreases linearly in \(\psi\)</strong> (more punctuated \(\to\) less variance).</li>
+  <li><strong>Skewness:</strong> \(\text{skew}(\tilde\varepsilon) = 2/\sqrt{\psi\alpha}\), which increases with punctuation.</li>
+</ul>
+
+<p>The constancy of \(\mathbb{E}[\tilde\varepsilon] = 1/\beta\) is important: it means that as \(\psi\) varies, the mode-centred profile undergoes a <strong>mean-preserving contraction</strong>. The mean of a Gamma always exceeds its mode by exactly \(1/\beta\), regardless of the shape parameter. So the only effect of changing \(\psi\) (to leading order) is a change in variance.</p>
+
+<h2>11. Main result: curvature of \(\tilde{S}\) at the mode</h2>
+
+<p>Since \(\tilde\varepsilon\) undergoes a mean-preserving contraction as \(\psi\) decreases, the Jensen result from Section 3 applies directly. Writing the escaped fraction as a Taylor expansion around the mean \(\mu_{\tilde\varepsilon} = 1/\beta\):</p>
+
+$$\mathbb{E}\bigl[\tilde{S}(\tilde\varepsilon)\bigr] = \tilde{S}(1/\beta) + \tfrac{1}{2}\,\tilde{S}''(1/\beta)\,\text{Var}(\tilde\varepsilon) + O\bigl(\text{Kurt} \cdot \text{Var}^2\bigr)$$
+
+<p>Since \(\text{Var}(\tilde\varepsilon) = \psi\alpha/\beta^2\):</p>
+
+$$\boxed{\;\frac{\partial}{\partial\psi}\,\mathbb{E}\bigl[\tilde{S}(\tilde\varepsilon)\bigr] \;\approx\; \frac{\alpha}{2\beta^2}\,\tilde{S}''\!\!\left(\frac{1}{\beta}\right)\;}$$
+
+<div class="highlight">
+<strong>Direction rule:</strong> The sign of the \(\psi\)-effect on escaped transmission is determined by the curvature of \(\tilde{S}\) evaluated at \(1/\beta\) &mdash; the <strong>mean&ndash;mode gap</strong> of the individual profile. Specifically:
+<ul>
+  <li>\(\tilde{S}''(1/\beta) > 0\) (convex): increasing \(\psi\) (less punctuated, more spread) <strong>increases</strong> escape. Equivalently, <strong>punctuation helps detection</strong>.</li>
+  <li>\(\tilde{S}''(1/\beta) < 0\) (concave): increasing \(\psi\) <strong>decreases</strong> escape. <strong>Punctuation hurts detection.</strong></li>
+  <li>\(\tilde{S}''(1/\beta) = 0\) (linear): no second-order effect of punctuation.</li>
+</ul>
+Note: this is the curvature of \(\tilde{S}\) at the <em>mean</em> of \(\tilde\varepsilon\) (i.e., at one mean&ndash;mode gap to the right of the mode), not at the mode itself.
+</div>
+
+<h2>12. Why \(1/\beta\), not \(0\)?</h2>
+
+<p>It may be surprising that the relevant evaluation point is \(\tilde{S}(1/\beta)\) rather than \(\tilde{S}(0)\). The reason is that the Jensen expansion is around the <em>mean</em> of the distribution, not its mode. For a right-skewed distribution (Gamma), the mean lies to the right of the mode by exactly \(1/\beta\). So the relevant curvature is the curvature of \(\tilde{S}\) at the point "one mean&ndash;mode gap to the right of peak infectiousness."</p>
+
+<p>In our parameterisation with \(\beta = \alpha/T\) (where \(T\) is the mean generation interval), the mean&ndash;mode gap is:</p>
+
+$$\frac{1}{\beta} = \frac{T}{\alpha}$$
+
+<p>With \(T = 5\) days and \(\alpha = 10\): the gap is \(0.5\) days. So we evaluate \(\tilde{S}''\) half a day after peak infectiousness. As \(\alpha \to \infty\) (the GI distribution sharpens), this gap shrinks to zero and we recover evaluation at the mode.</p>
+
+<h2>13. Geometric interpretation: supra-modal mass</h2>
+
+<p>The supra-modal mass \(P(\tilde\varepsilon > 0) = P(\text{Gamma}(\psi\alpha, \beta) > m_\psi)\) gives a concrete geometric quantity related to the step-function limit of \(\tilde{S}\). Recall from earlier work:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;"><th>\(\psi\alpha\)</th><th>Supra-modal mass</th><th>Infra-modal mass</th></tr>
+  <tr><td>\(\leq 1\)</td><td>1.000</td><td>0.000</td></tr>
+  <tr><td>2</td><td>0.736</td><td>0.264</td></tr>
+  <tr><td>5</td><td>0.616</td><td>0.384</td></tr>
+  <tr><td>10</td><td>0.571</td><td>0.429</td></tr>
+  <tr><td>\(\to\infty\)</td><td>0.500</td><td>0.500</td></tr>
+</table>
+
+<p>For a step-function \(\tilde{S}\) that drops from 1 to 0 at \(\tilde\varepsilon = 0\) (i.e., instantaneous detection at the mode), the escaped transmission equals the <strong>infra-modal mass</strong>. This is strictly increasing in \(\psi\alpha\), confirming that <strong>more punctuated profiles escape less</strong> under mode-triggered detection. The step function has a concave kink at 0, but since all the mass to the left of 0 survives and all the mass to the right doesn't, what matters is how much mass is packed before vs after the mode &mdash; and spike profiles pack almost everything after.</p>
+
+<p>But notice: the <em>prevented</em> transmission (supra-modal mass) is large for <em>all</em> values of \(\psi\alpha\) (always above 50%). This means mode-anchored detection is inherently effective regardless of punctuation. The question is only about the <em>marginal</em> effect of punctuation.</p>
+
+<h2>14. The general framework (beyond shifted-Gamma)</h2>
+
+<p>The results above rely on two properties of the Gamma distribution:</p>
+<ol>
+  <li>The mean&ndash;mode gap \(1/\beta\) is constant across shape parameters.</li>
+  <li>The family is ordered by convex order (mean-preserving contraction as shape decreases).</li>
+</ol>
+
+<p>For a <strong>general unimodal family</strong> \(f_\psi\) with mode \(m_\psi\) and mean \(\mu_\psi\), the escaped transmission under mode-anchored \(\tilde{S}\) is:</p>
+
+$$\mathbb{E}[\tilde{S}(\tilde\varepsilon_\psi)] \;\approx\; \tilde{S}(\mu_\psi - m_\psi) + \tfrac{1}{2}\,\tilde{S}''(\mu_\psi - m_\psi)\,\text{Var}_\psi(\tilde\varepsilon) + \cdots$$
+
+<p>If both the mean&ndash;mode gap \(g_\psi = \mu_\psi - m_\psi\) and the variance change with \(\psi\), we have two effects:</p>
+
+$$\frac{d}{d\psi}\,\mathbb{E}[\tilde{S}(\tilde\varepsilon_\psi)] \;\approx\; \tilde{S}'(g_\psi)\,\frac{dg_\psi}{d\psi} + \tfrac{1}{2}\,\tilde{S}''(g_\psi)\,\frac{d\text{Var}_\psi}{d\psi}$$
+
+<p>The first term is a <strong>location effect</strong>: if the mean&ndash;mode gap changes with punctuation, \(\tilde{S}\) is evaluated at a different point, creating a first-order effect. The second term is the familiar <strong>curvature/Jensen effect</strong>. For the Gamma family, \(dg/d\psi = 0\), so the location effect vanishes and the curvature effect is the whole story.</p>
+
+<h2>15. Connection to the detection hazard</h2>
+
+<p>Writing \(\tilde{S}(t) = \exp\!\bigl(-\int_0^t \tilde{h}(u)\,du\bigr)\), where now \(\tilde{h}(t)\) is the detection hazard as a function of time-since-mode:</p>
+
+$$\tilde{S}''(t) = \bigl[\tilde{h}(t)^2 - \tilde{h}'(t)\bigr]\,\tilde{S}(t)$$
+
+<p>So the curvature condition at the evaluation point \(t_0 = 1/\beta\) is:</p>
+
+$$\tilde{S}''(t_0) > 0 \;\iff\; \tilde{h}'(t_0) < \tilde{h}(t_0)^2$$
+
+<p>In words: <strong>punctuation helps detection when the detection hazard is "mature" (not accelerating too fast) one mean&ndash;mode gap after the infectiousness peak.</strong></p>
+
+<p>For the specific mechanisms the user has in mind:</p>
+
+<h3>15a. Regular testing in a detectability window</h3>
+
+<p>Suppose an individual is detectable in the window \([m - d_l,\; m + d_r]\) (i.e., \(\tilde\varepsilon \in [-d_l, d_r]\)), and tests arrive as a Poisson process with rate \(\lambda\). Then:</p>
+
+$$\tilde{S}(t) = \begin{cases} 1 & t < -d_l \\ e^{-\lambda(t + d_l)} & -d_l \leq t \leq d_r \\ e^{-\lambda(d_l + d_r)} & t > d_r \end{cases}$$
+
+<p>Within the detectability window, \(\tilde{S}\) is exponential &mdash; <strong>convex</strong>. So \(\tilde{S}''(1/\beta) > 0\) whenever \(1/\beta\) falls within \([-d_l, d_r]\), and <strong>punctuation helps detection</strong>.</p>
+
+<p>If instead tests arrive at a regular cadence with random phase (uniform on \([0, c]\)), then within the window \(\tilde{S}(t) \approx \max(0, 1 - (t + d_l)/c)\), which is <strong>linear</strong>: \(\tilde{S}'' = 0\). In this case, <strong>the second-order punctuation effect vanishes</strong>, and one must look to higher-order terms (skewness).</p>
+
+<h3>15b. Symptom-triggered detection</h3>
+
+<p>If symptoms appear at time \(m + \delta\) where \(\delta\) has density \(p(\delta)\), and isolation occurs immediately upon symptoms, then:</p>
+
+$$\tilde{S}(t) = P(\delta > t) = 1 - F_\delta(t)$$
+
+<p>so \(\tilde{S}'(t) = -p(t)\) and \(\tilde{S}''(t) = -p'(t)\). Therefore:</p>
+
+$$\tilde{S}''(1/\beta) > 0 \;\iff\; p'(1/\beta) < 0$$
+
+<p>That is, <strong>punctuation helps detection iff the symptom-onset density is decreasing</strong> at one mean&ndash;mode gap after the infectiousness peak. If the symptom density is still ramping up at that point (many people become symptomatic shortly after peak infectiousness), punctuation hurts. If symptoms are most likely at or before the peak and the density is declining by \(1/\beta\), punctuation helps.</p>
+
+<h2>16. Summary</h2>
+
+<div class="highlight">
+<p><strong>Mode-anchored detection breaks the \(\psi\)-invariance</strong> because the onset shift \(l_i\) cancels between the detection and infectiousness processes. The escaped transmission becomes:</p>
+
+$$R_{\text{eff}} = R_0 \cdot \mathbb{E}_{\tilde\varepsilon \sim \tilde{f}_\psi}\!\bigl[\tilde{S}(\tilde\varepsilon)\bigr]$$
+
+<p>where \(\tilde\varepsilon\) is the mode-centred residual (mean \(1/\beta\), variance \(\psi\alpha/\beta^2\)). The \(\psi\)-sensitivity is:</p>
+
+$$\frac{\partial R_{\text{eff}}}{\partial\psi} \approx \frac{R_0\,\alpha}{2\beta^2}\;\tilde{S}''\!\!\left(\frac{1}{\beta}\right)$$
+
+<p>Punctuation helps detection when \(\tilde{S}\) is <strong>convex</strong> at \(1/\beta\) (detection hazard mature / slowly growing), and hurts when \(\tilde{S}\) is <strong>concave</strong> (hazard ramping up). The evaluation point \(1/\beta = T/\alpha\) is the mean&ndash;mode gap of the Gamma distribution &mdash; typically a fraction of a day for realistic parameters.</p>
+</div>
+
+<hr>
+
+<h1>Connecting the median&ndash;mode and mean&ndash;mode results</h1>
+<p><em>2026-03-23</em></p>
+
+<div class="prompt">
+The earlier analysis (Sections on "The equivalence point of the overlap rule") found that the spike&ndash;smooth crossover for step-function detection occurs at \(D_0^* = \text{median} - \text{mode} \approx 2/(3\beta)\). The current analysis (Section 11) finds that the \(\psi\)-sensitivity of escaped transmission under general \(\tilde{S}\) depends on \(\tilde{S}''(1/\beta)\) &mdash; the curvature at the <em>mean</em>&ndash;mode gap. How do these relate?
+</div>
+
+<h2>17. The two reference points</h2>
+
+<p>Both results identify a special point in mode-relative time where punctuation "doesn't matter." But they do so at different levels of generality:</p>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th></th>
+    <th>Earlier result</th>
+    <th>Current result</th>
+  </tr>
+  <tr>
+    <td><strong>Detection model</strong></td>
+    <td>Step function at \(D_0\): instant isolation at a fixed offset from the mode</td>
+    <td>General smooth \(\tilde{S}(\tilde\varepsilon)\)</td>
+  </tr>
+  <tr>
+    <td><strong>Question asked</strong></td>
+    <td>At what \(D_0\) is escaped transmission \(\psi\)-independent?</td>
+    <td>In which direction does \(\psi\) push escaped transmission?</td>
+  </tr>
+  <tr>
+    <td><strong>Answer</strong></td>
+    <td>\(D_0^* = \text{median} - \text{mode} \approx 2/(3\beta)\)</td>
+    <td>\(\text{sign}(\partial R_{\text{eff}}/\partial\psi) = \text{sign}(\tilde{S}''(1/\beta))\)</td>
+  </tr>
+  <tr>
+    <td><strong>Reference point</strong></td>
+    <td>Median of \(\tilde\varepsilon\) &ensp;(\(\approx 2/(3\beta)\))</td>
+    <td>Mean of \(\tilde\varepsilon\) &ensp;(\(= 1/\beta\))</td>
+  </tr>
+  <tr>
+    <td><strong>Exactness</strong></td>
+    <td>Exact (for step-function \(\tilde{S}\))</td>
+    <td>Second-order approximation (for smooth \(\tilde{S}\))</td>
+  </tr>
+</table>
+
+<h2>18. Why the median is exact for step functions</h2>
+
+<p>For a step function \(\tilde{S}(t) = \mathbf{1}[t < D_0]\), the escaped transmission is simply the CDF:</p>
+
+$$\mathbb{E}[\tilde{S}(\tilde\varepsilon)] = P(\tilde\varepsilon < D_0) = \tilde{F}_\psi(D_0)$$
+
+<p>The crossover requires \(\tilde{F}_\psi(D_0)\) to be independent of \(\psi\). By definition, <strong>the median is the unique point where \(\tilde{F}_\psi = \tfrac{1}{2}\)</strong> for any distribution. So if the median&ndash;mode gap is approximately \(\psi\)-independent (as it is for the Gamma), then \(\tilde{F}_\psi(D_0^*) \approx \frac{1}{2}\) for all \(\psi\), and the crossover is exact.</p>
+
+<p>By contrast, the <em>mean</em> does not split the distribution 50-50. For a right-skewed distribution like the Gamma:</p>
+
+$$P(\tilde\varepsilon > 1/\beta) = P\!\bigl(\text{Gamma}(\psi\alpha, \beta) > \text{mean}\bigr)$$
+
+<p>ranges from \(e^{-1} \approx 0.368\) (exponential, \(\psi\alpha = 1\)) to \(0.5\) (Gaussian limit, \(\psi\alpha \to \infty\)). The CDF at the mean is <em>not</em> \(\psi\)-independent &mdash; so \(D_0 = 1/\beta\) is <em>not</em> the exact crossover for step-function detection.</p>
+
+<h2>19. Why the mean appears in the Taylor expansion</h2>
+
+<p>The current result uses the cumulant expansion of \(\mathbb{E}[\tilde{S}(\tilde\varepsilon)]\) around the mean of \(\tilde\varepsilon\):</p>
+
+$$\mathbb{E}[\tilde{S}(\tilde\varepsilon)] = \tilde{S}(\mu) + \underbrace{\tilde{S}'(\mu) \cdot 0}_{\text{1st central moment}} + \frac{1}{2}\tilde{S}''(\mu)\,\sigma^2 + \frac{1}{6}\tilde{S}'''(\mu)\,\kappa_3 + \cdots$$
+
+<p>where \(\mu = 1/\beta\), \(\sigma^2 = \psi\alpha/\beta^2\), and \(\kappa_3 = 2\psi\alpha/\beta^3\) is the third central moment. The mean is the natural expansion point because the first-order term vanishes, making the <strong>second-order (variance) term the leading \(\psi\)-dependent contribution</strong>.</p>
+
+<p>Taking the \(\psi\)-derivative:</p>
+
+$$\frac{\partial}{\partial\psi}\,\mathbb{E}[\tilde{S}(\tilde\varepsilon)] = \frac{\alpha}{\beta^2}\left[\frac{1}{2}\,\tilde{S}''\!\!\left(\frac{1}{\beta}\right) + \frac{1}{3\beta}\,\tilde{S}'''\!\!\left(\frac{1}{\beta}\right) + \cdots\right]$$
+
+<p>The leading term gives the direction rule from Section 11: \(\text{sign} = \text{sign}(\tilde{S}''(1/\beta))\). But the <strong>third-order correction</strong> (weighted by the skewness \(\kappa_3/\sigma^3 = 2/\sqrt{\psi\alpha}\)) shifts the effective crossover.</p>
+
+<h2>20. The skewness correction: from mean to median</h2>
+
+<p>Setting the full \(\psi\)-derivative to zero (including the third-order term) gives the crossover condition:</p>
+
+$$\frac{1}{2}\,\tilde{S}''\!\!\left(\frac{1}{\beta}\right) + \frac{1}{3\beta}\,\tilde{S}'''\!\!\left(\frac{1}{\beta}\right) \approx 0$$
+
+<p>For a sigmoid-like \(\tilde{S}\) transitioning at some point \(D_0\), the second-order-only condition \(\tilde{S}''(1/\beta) = 0\) gives \(D_0 = 1/\beta\). Including the third-order term shifts the solution to a smaller value. For a sharp sigmoid, the corrected crossover converges to:</p>
+
+$$D_0^* \;\to\; \frac{2}{3\beta} \qquad\text{(the median&ndash;mode gap)}$$
+
+<p>recovering the exact step-function result. The gap between the two reference points is:</p>
+
+$$\underbrace{\frac{1}{\beta}}_{\text{mean&ndash;mode}} - \underbrace{\frac{2}{3\beta}}_{\text{median&ndash;mode}} = \frac{1}{3\beta}$$
+
+<p>This is precisely <strong>one-third of the mean&ndash;mode gap</strong>, consistent with Pearson's classical relation:</p>
+
+$$\text{mean} - \text{mode} \approx 3\,(\text{mean} - \text{median})$$
+
+<p>which gives \(\text{median} - \text{mode} \approx \frac{2}{3}(\text{mean} - \text{mode})\).</p>
+
+<h2>21. Unified picture</h2>
+
+<div class="highlight">
+
+<p>The three reference points of the Gamma profile, in mode-relative coordinates:</p>
+
+$$\underbrace{0}_{\text{mode}} \quad<\quad \underbrace{\frac{2}{3\beta}}_{\substack{\text{median} \\ \text{exact crossover}}} \quad<\quad \underbrace{\frac{1}{\beta}}_{\substack{\text{mean} \\ \text{Jensen reference}}}$$
+
+<p>For any detection survival function \(\tilde{S}\):</p>
+<ul>
+  <li><strong>Exact crossover</strong> (step-function \(\tilde{S}\)): punctuation helps detection iff \(D_0 < \frac{2}{3\beta}\). This is where \(P(\tilde\varepsilon > D_0) = \frac{1}{2}\), independent of \(\psi\).</li>
+  <li><strong>Second-order direction rule</strong> (smooth \(\tilde{S}\)): punctuation helps detection iff \(\tilde{S}''\!\!\left(\frac{1}{\beta}\right) > 0\) (convex at the mean). This is a quick diagnostic that gets the <em>direction</em> right for smooth \(\tilde{S}\), but slightly overestimates the "neutral zone."</li>
+  <li><strong>Third-order refinement</strong>: including the Gamma's right-skewness pulls the effective evaluation point from \(\frac{1}{\beta}\) toward \(\frac{2}{3\beta}\), sharpening the prediction.</li>
+</ul>
+
+<p><strong>Practical rule:</strong> For right-skewed infectiousness profiles (the biologically realistic case), the Jensen approximation at the mean is <em>conservative</em> &mdash; it predicts a slightly wider regime where punctuation helps detection than actually exists. The median gives the tighter, more accurate boundary. For our standard parameters (\(\beta = 2\)): the mean gives \(0.5\) days; the median gives \(0.33\) days; the true crossover is in between, closer to the median.</p>
+</div>
+
+<h2>22. When does the distinction matter?</h2>
+
+<p>The gap between mean and median (\(1/(3\beta) = T/(3\alpha)\)) is small when \(\alpha\) is large (sharp generation interval). For our parameters (\(T = 5, \alpha = 10, \beta = 2\)):</p>
+
+$$\frac{1}{3\beta} = \frac{1}{6} \text{ day} \approx 4 \text{ hours}$$
+
+<p>So the mean&ndash;mode diagnostic (\(1/\beta = 0.5\) days) and the exact median&ndash;mode crossover (\(2/(3\beta) = 0.33\) days) differ by only 4 hours. For a smooth detection survival \(\tilde{S}\) that transitions over a time scale much longer than 4 hours, evaluating \(\tilde{S}''\) at either point gives essentially the same answer. The distinction only matters when \(\tilde{S}\) changes rapidly near the mode &mdash; i.e., when the detection process is sharp enough to be well-approximated by a step function, which is exactly when the median result becomes the right one to use.</p>
+
+<p>In other words: <strong>the two reference points are complements, not competitors.</strong> Use the mean (\(1/\beta\)) for smooth \(\tilde{S}\) where the curvature diagnostic is natural. Use the median (\(2/(3\beta)\)) for sharp \(\tilde{S}\) where the step-function crossover is the right framework. They agree within \(T/(3\alpha)\) days.</p>
+
+<hr>
+
+<h1>Step functions vs smooth \(\tilde{S}\): which is the right framework?</h1>
+<p><em>2026-03-23</em></p>
+
+<div class="prompt">
+At the individual level, detection happens at a specific time &mdash; after which the person isolates (perfectly, for now). So the individual's "survival function" is literally a step function: \(S_i(\tau) = \mathbf{1}[\tau < \tau_{\det,i}]\). The smooth \(\tilde{S}\) is an average over the randomness in detection timing. Which framework should we use?
+</div>
+
+<h2>23. The two representations are mathematically equivalent</h2>
+
+<p>For individual \(i\) with mode-anchored detection time \(D_{0,i}\) (relative to their mode), the escaped transmission is:</p>
+
+$$J_i = R_0 \int_{\tilde\varepsilon < D_{0,i}} \tilde{f}_\psi(\tilde\varepsilon)\,d\tilde\varepsilon = R_0\,\tilde{F}_\psi(D_{0,i})$$
+
+<p>The population average over the randomness in \(D_0\) is:</p>
+
+$$\bar{J} = R_0\,\mathbb{E}_{D_0}\!\bigl[\tilde{F}_\psi(D_0)\bigr] = R_0\int \tilde{F}_\psi(d)\,g(d)\,dd \qquad\qquad \textbf{[Step-function form]}$$
+
+<p>where \(g\) is the density of \(D_0\). Alternatively, defining the smooth survival function \(\tilde{S}(t) = P(D_0 > t) = 1 - G(t)\) and integrating against the infectiousness profile:</p>
+
+$$\bar{J} = R_0\,\mathbb{E}_{\tilde\varepsilon}\!\bigl[\tilde{S}(\tilde\varepsilon)\bigr] = R_0\int \tilde{S}(t)\,\tilde{f}_\psi(t)\,dt \qquad\qquad \textbf{[Smooth-\(\tilde{S}\) form]}$$
+
+<p>These are <strong>identical by Fubini's theorem</strong>:</p>
+
+$$\mathbb{E}_{\tilde\varepsilon}[\tilde{S}(\tilde\varepsilon)] = \mathbb{E}_{\tilde\varepsilon}\!\bigl[P(D_0 > \tilde\varepsilon)\bigr] = \mathbb{E}_{\tilde\varepsilon}\!\bigl[\mathbb{E}_{D_0}[\mathbf{1}_{D_0 > \tilde\varepsilon}]\bigr] = \mathbb{E}_{D_0}\!\bigl[\mathbb{E}_{\tilde\varepsilon}[\mathbf{1}_{\tilde\varepsilon < D_0}]\bigr] = \mathbb{E}_{D_0}\!\bigl[\tilde{F}_\psi(D_0)\bigr]$$
+
+<p>So the two representations always give the same numerical answer. The choice between them is about <strong>which source of randomness to average over first</strong>.</p>
+
+<h2>24. Why the step-function framework is more fundamental here</h2>
+
+<p>Although mathematically equivalent, the step-function / \(D_0\) representation has three advantages for understanding the \(\psi\)-effect:</p>
+
+<h3>24a. It separates the two sources of randomness</h3>
+
+<p>The escaped transmission depends on the interaction of two random variables:</p>
+<ul>
+  <li>\(\tilde\varepsilon \sim \tilde{f}_\psi\): <strong>when</strong> an individual transmits (relative to their mode). This is the biological source of randomness, controlled by \(\psi\).</li>
+  <li>\(D_0 \sim g\): <strong>when</strong> an individual is detected (relative to their mode). This is the detection source of randomness, independent of \(\psi\).</li>
+</ul>
+
+<p>The step-function framework keeps these separate: \(\tilde{F}_\psi(D_0)\) is the biological quantity, and averaging over \(g\) adds the detection noise. The smooth-\(\tilde{S}\) framework pre-averages over \(D_0\), collapsing the detection randomness into the shape of \(\tilde{S}\).</p>
+
+<h3>24b. The crossover is transparent</h3>
+
+<p>In the step-function framework, for each realisation of \(D_0\), there is a clean crossover at \(D_0^* = \text{median} - \text{mode} \approx 2/(3\beta)\): for \(D_0 < D_0^*\), spikes escape more; for \(D_0 > D_0^*\), smooth escapes more. The population-level \(\psi\)-effect is simply a matter of <strong>how much of the \(D_0\) distribution falls on each side</strong>:</p>
+
+$$\underbrace{\mathbb{E}_{D_0}[\tilde{F}_\psi(D_0)]}_{\text{escaped fraction}} \quad\text{favours spikes} \iff \text{most of } g(D_0) \text{ is to the left of } D_0^*$$
+
+<p>This is immediate and visual. The smooth-\(\tilde{S}\) framework gives the same answer via the curvature diagnostic \(\tilde{S}''(1/\beta)\), but that's a less transparent encoding of the same fact.</p>
+
+<h3>24c. It naturally handles the "variance helps spikes" effect</h3>
+
+<p>The earlier analysis (Sections on "Random detection times") showed that noise in \(D_0\) shifts the effective crossover <em>rightward</em>:</p>
+
+$$D_0^{*,\text{eff}} \approx \frac{2}{3\beta} + c\,\sigma^2_{D_0}$$
+
+<p>This is a statement about the distribution of \(D_0\), not about the shape of \(\tilde{S}\). It says: even if the average detection time is at the nominal crossover, randomness in detection timing tips the balance toward spikes (because spikes benefit asymmetrically from lucky early detections). In the smooth-\(\tilde{S}\) framework, this result is buried in the curvature of \(\tilde{S}\) and harder to interpret.</p>
+
+<h2>25. When is the smooth-\(\tilde{S}\) framework useful?</h2>
+
+<p>The smooth-\(\tilde{S}\) representation is still valuable in specific situations:</p>
+
+<ul>
+  <li><strong>Parametric convenience:</strong> If the detection process gives \(\tilde{S}\) a nice closed form (exponential, Weibull, etc.), the curvature diagnostic \(\tilde{S}''(1/\beta)\) is a quick one-line computation.</li>
+  <li><strong>Complex detection processes:</strong> When \(D_0\) doesn't have a simple distribution (e.g., it depends on multiple competing processes &mdash; symptom onset, scheduled tests, contact tracing &mdash; and isolation occurs at the first trigger), it may be easier to characterise the resultant \(\tilde{S}\) directly than to derive the distribution of \(D_0\).</li>
+  <li><strong>Imperfect isolation:</strong> If isolation is not all-or-nothing (e.g., transmission is reduced but not eliminated), the individual response is no longer a step function. Then \(\tilde{S}\) becomes the natural framework, encoding both the timing and the degree of isolation.</li>
+</ul>
+
+<h2>26. Synthesis: the \(D_0\) framework as the "master" approach</h2>
+
+<div class="highlight">
+<p><strong>For mode-anchored detection with perfect isolation:</strong></p>
+
+<p>The step-function / \(D_0\) framework is the more fundamental representation. The escaped transmission is:</p>
+
+$$R_{\text{eff}} = R_0\,\mathbb{E}_{D_0}\!\bigl[\tilde{F}_\psi(D_0)\bigr]$$
+
+<p>The \(\psi\)-effect is determined by where the distribution of \(D_0\) sits relative to the crossover \(D_0^* \approx 2/(3\beta)\):</p>
+<ul>
+  <li>\(\mathbb{E}[D_0] \lesssim 2/(3\beta) + c\,\sigma^2_{D_0}\): spikes escape more (punctuation helps detection)</li>
+  <li>\(\mathbb{E}[D_0] \gtrsim 2/(3\beta) + c\,\sigma^2_{D_0}\): smooth escapes more (punctuation hurts detection)</li>
+</ul>
+
+<p>The smooth-\(\tilde{S}\) representation (\(\tilde{S}(t) = P(D_0 > t)\)) gives the same answer via \(\tilde{S}''(1/\beta)\), and is useful as a computational shortcut or when detection is complex. But the conceptual content lives in the \(D_0\) framework: <strong>the median&ndash;mode gap is the crossover, and detection noise favours spikes.</strong></p>
+
+<p>The smooth-\(\tilde{S}\) framework becomes the natural one when we relax perfect isolation &mdash; then the individual response is no longer a step function and \(\tilde{S}\) genuinely describes a graded process.</p>
+</div>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
