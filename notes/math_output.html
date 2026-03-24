@@ -2167,6 +2167,161 @@ $$R_{\text{eff}} = R_0\,\mathbb{E}_{D_0}\!\bigl[\tilde{F}_\psi(D_0)\bigr]$$
 <p>The smooth-\(\tilde{S}\) framework becomes the natural one when we relax perfect isolation &mdash; then the individual response is no longer a step function and \(\tilde{S}\) genuinely describes a graded process.</p>
 </div>
 
+<hr>
+
+<h1>Why the median? Clarifying the crossover logic</h1>
+<p><em>2026-03-23</em></p>
+
+<h2>27. The crossover requires two properties simultaneously</h2>
+
+<p>We seek \(D_0^*\) such that \(P(\tilde\varepsilon > D_0^*)\) is the same for all \(\psi\). This requires:</p>
+
+<ol>
+  <li><strong>A known value of the survival function.</strong> We need \(P(\tilde\varepsilon > D_0^*) = c\) for some constant \(c\), for all \(\psi\). The median has this by definition: \(P(X > \text{median}(X)) = \tfrac{1}{2}\) for any continuous distribution. No other summary statistic (mean, mode, etc.) has an analogous "by definition" property linking it to a fixed survival probability.</li>
+  <li><strong>A \(\psi\)-independent location.</strong> The median of \(\tilde\varepsilon\) must sit at (approximately) the same point for all \(\psi\). For the Gamma, the median&ndash;mode gap \(\approx 2/(3\beta)\) is approximately shape-independent. This is a specific property of the Gamma family, not a universal truth.</li>
+</ol>
+
+<p>The <strong>mean</strong>&ndash;mode gap satisfies (2) &mdash; it is exactly \(1/\beta\) for all \(\psi\alpha\) &mdash; but fails (1). At the mean, \(P(\tilde\varepsilon > 1/\beta) = P(\text{Gamma}(\psi\alpha, \beta) > \text{mean})\) ranges from \(e^{-1} \approx 0.368\) (exponential) to \(0.5\) (Gaussian limit). The mean is at a fixed location, but the survival function takes different values there for different \(\psi\), so it is not a crossover.</p>
+
+<h2>28. The median is the unique such quantile for the Gamma</h2>
+
+<p>Could some quantile other than the median have a \(\psi\)-independent mode-gap? In principle, any quantile \(Q_p\) satisfying \(P(\tilde\varepsilon > Q_p - m_\psi) = 1 - p\) would give a crossover at level \(1 - p\), provided \(Q_p - m_\psi\) is \(\psi\)-independent. But for the Gamma, the median is the <em>only</em> quantile with this property.</p>
+
+<p>The Wilson&ndash;Hilferty approximation gives the \(p\)-th quantile of \(\text{Gamma}(a, 1)\) as:</p>
+
+$$Q_p(a) \;\approx\; a - \tfrac{1}{3} + z_p\sqrt{a} + \tfrac{z_p^2}{3} + O(a^{-1/2})$$
+
+<p>where \(z_p = \Phi^{-1}(p)\) is the standard normal quantile. Subtracting the mode \((a - 1)\):</p>
+
+$$Q_p - \text{mode} \;\approx\; \frac{2}{3} + z_p\sqrt{a} + \frac{z_p^2}{3}$$
+
+<p>The \(\sqrt{a}\) term makes this strongly \(a\)-dependent for any \(z_p \neq 0\). The unique solution to \(z_p = 0\) is \(p = 1/2\): the median. So the median is singled out as the only Gamma quantile whose mode-gap is approximately shape-independent.</p>
+
+<h2>29. Generality beyond the Gamma</h2>
+
+<p>For a general unimodal family \(\{f_\psi\}\), the existence of a clean crossover is <strong>not guaranteed</strong>. The earlier log-normal counterexample (Section on "Counterexample: the log-normal has no clean crossover") showed that the median&ndash;mode gap can vary by nearly \(3\times\) across shapes, so no single \(D_0^*\) exists.</p>
+
+<p>A rough <strong>sufficient condition</strong> for the median to work: the family should have (a) a \(\psi\)-independent mean&ndash;mode gap and (b) Pearson's relation \(\text{mean} - \text{mode} \approx 3(\text{mean} - \text{median})\) holding reasonably well. Together these give median \(- \text{ mode} \approx \frac{2}{3}(\text{mean} - \text{mode}) = \text{const}\). The Gamma satisfies both; the log-normal violates (b) at low shape parameters.</p>
+
+<p>When no clean crossover exists, one falls back on the general \(D_0\) framework: study \(\mathbb{E}_{D_0}[\tilde{F}_\psi(D_0)]\) and its \(\psi\)-dependence directly, without relying on a universal crossover point.</p>
+
+<hr>
+
+<h1>Pairwise comparison of two profiles</h1>
+<p><em>2026-03-23</em></p>
+
+<div class="prompt">
+Instead of seeking a universal crossover that works for all \(\psi\) simultaneously, compare two specific profiles with shapes \(a_1 = \psi_1\alpha\) and \(a_2 = \psi_2\alpha\) (with \(a_1 < a_2\), so \(\psi_1\) is more punctuated). This relaxes the demanding requirement that the median&ndash;mode gap be \(\psi\)-independent, and works for any distribution family.
+</div>
+
+<h2>30. The pairwise crossover always exists</h2>
+
+<p>For any two continuous unimodal profiles centred at their modes, the mode-centred survival functions \(\tilde{S}_1(D_0)\) and \(\tilde{S}_2(D_0)\) both satisfy \(\tilde{S}_i(D_0) \to 1\) as \(D_0 \to -\infty\) and \(\tilde{S}_i(D_0) \to 0\) as \(D_0 \to +\infty\). Since the more punctuated profile has more supra-modal mass (i.e., \(\tilde{S}_1(0) > \tilde{S}_2(0)\)) but thinner tails (\(\tilde{S}_1(D_0) < \tilde{S}_2(D_0)\) for large \(D_0\)), the difference \(\Delta(D_0) = \tilde{S}_1(D_0) - \tilde{S}_2(D_0)\) must cross zero at least once. By the intermediate value theorem, a <strong>pairwise crossover \(D_0^*\)</strong> exists for any pair of unimodal profiles, regardless of the distribution family.</p>
+
+<p>This is weaker than (and doesn't require) the universal crossover. The log-normal has no universal crossover, but any two log-normal profiles still have a pairwise one.</p>
+
+<h2>31. Normal approximation for the pairwise difference</h2>
+
+<p>The Wilson&ndash;Hilferty approximation gives the mode-centred Gamma survival as:</p>
+
+$$\tilde{S}(D_0;\, a) \;\approx\; \Phi\!\left(\frac{2/(3\beta) - D_0}{\sqrt{a}/\beta}\right) = \Phi\!\left(\frac{D_0^{\text{univ}} - D_0}{\sigma_a}\right)$$
+
+<p>where \(D_0^{\text{univ}} = 2/(3\beta)\) is the universal crossover and \(\sigma_a = \sqrt{a}/\beta\) is the "detection-relevant scale" of the profile. In this approximation, the mode-centred survival is a probit (normal CDF) centred at \(D_0^{\text{univ}}\) with scale \(\sigma_a\).</p>
+
+<p>The pairwise difference is therefore:</p>
+
+$$\Delta(D_0) = \Phi\!\left(\frac{D_0^{\text{univ}} - D_0}{\sigma_{a_1}}\right) - \Phi\!\left(\frac{D_0^{\text{univ}} - D_0}{\sigma_{a_2}}\right)$$
+
+<p>Since \(a_1 < a_2\), we have \(\sigma_{a_1} < \sigma_{a_2}\): the more punctuated profile has a <em>steeper</em> probit (sharper transition from "all escapes" to "nothing escapes").</p>
+
+<h2>32. The factorisation near the crossover</h2>
+
+<p>Near the crossover (\(D_0 \approx D_0^{\text{univ}}\)), both probit arguments are near zero. Linearising \(\Phi\) around 0:</p>
+
+$$\Delta(D_0) \;\approx\; \varphi(0)\left(\frac{D_0^{\text{univ}} - D_0}{\sigma_{a_1}} - \frac{D_0^{\text{univ}} - D_0}{\sigma_{a_2}}\right) = \frac{1}{\sqrt{2\pi}}\,(D_0^{\text{univ}} - D_0)\!\left(\frac{1}{\sigma_{a_1}} - \frac{1}{\sigma_{a_2}}\right)$$
+
+<p>Substituting \(\sigma_a = \sqrt{a}/\beta\):</p>
+
+$$\boxed{\;\Delta(D_0) \;\approx\; \frac{\beta}{\sqrt{2\pi}}\left(\frac{1}{\sqrt{a_1}} - \frac{1}{\sqrt{a_2}}\right)\!\left(\frac{2}{3\beta} - D_0\right)\;}$$
+
+<p>This is the key result. The pairwise difference <strong>factorises</strong> into:</p>
+
+<ol>
+  <li>A <strong>biological sensitivity factor</strong> \(\;\displaystyle\frac{1}{\sqrt{a_1}} - \frac{1}{\sqrt{a_2}} = \frac{1}{\sqrt{\psi_1\alpha}} - \frac{1}{\sqrt{\psi_2\alpha}}\;\) that depends only on the two profiles being compared.</li>
+  <li>A <strong>detection offset factor</strong> \(\;2/(3\beta) - D_0\;\) that depends only on the detection timing.</li>
+</ol>
+
+<p>The sign is determined by the detection offset factor: \(\Delta > 0\) (punctuation has more supra-\(D_0\) mass, i.e., detection averts more from the punctuated profile) when \(D_0 < 2/(3\beta)\), and vice versa. The crossover is at \(D_0^* = 2/(3\beta)\) to this order, recovering the universal result.</p>
+
+<h2>33. Population-level effect: biology &times; detection</h2>
+
+<p>For a random detection time \(D_0 \sim g\), the population-level difference in escaped fraction between profiles \(\psi_1\) and \(\psi_2\) is:</p>
+
+$$\mathbb{E}_{D_0}[\Delta(D_0)] \;\approx\; \frac{\beta}{\sqrt{2\pi}}\left(\frac{1}{\sqrt{\psi_1\alpha}} - \frac{1}{\sqrt{\psi_2\alpha}}\right)\!\left(\frac{2}{3\beta} - \mathbb{E}[D_0]\right)$$
+
+<div class="highlight">
+<p><strong>Factorisation theorem</strong> (leading order). The difference in escaped transmission between two punctuation levels factorises as:</p>
+
+$$R_{\text{eff}}(\psi_1) - R_{\text{eff}}(\psi_2) \;\approx\; R_0 \cdot \underbrace{\frac{\beta}{\sqrt{2\pi}}\!\left(\frac{1}{\sqrt{\psi_1\alpha}} - \frac{1}{\sqrt{\psi_2\alpha}}\right)}_{\text{biological sensitivity}} \cdot \underbrace{\left(\frac{2}{3\beta} - \mathbb{E}[D_0]\right)}_{\text{detection gap}}$$
+
+<p>where \(\mathbb{E}[D_0]\) is the mean detection time relative to the mode.</p>
+</div>
+
+<p><strong>Interpretation:</strong></p>
+<ul>
+  <li>The <strong>biological sensitivity</strong> is always positive (since \(a_1 < a_2 \Rightarrow 1/\sqrt{a_1} > 1/\sqrt{a_2}\)). It measures how different the two profiles are in their "detection-relevant sharpness." It scales as \(1/\sqrt{a}\), so most of the sensitivity is between low shape parameters (spike-like profiles); the difference between \(a = 50\) and \(a = 100\) is tiny.</li>
+  <li>The <strong>detection gap</strong> \(2/(3\beta) - \mathbb{E}[D_0]\) is the signed distance from the mean detection time to the crossover. Positive means detection happens before the crossover (punctuation helps); negative means after (punctuation hurts).</li>
+  <li>The product determines which profile escapes more. If the detection gap is positive, the more punctuated profile (\(\psi_1\)) escapes <em>more</em> — it has more supra-\(D_0\) mass — so <em>more is averted</em> from it, meaning <strong>punctuation helps detection</strong>.</li>
+</ul>
+
+<h2>34. Large shape parameters: proportionality to \(\psi_2 - \psi_1\)</h2>
+
+<p>For large shape parameters (\(a_1, a_2 \gg 1\)), the biological sensitivity simplifies. Writing \(\bar{a} = \sqrt{a_1 a_2}\) (geometric mean):</p>
+
+$$\frac{1}{\sqrt{a_1}} - \frac{1}{\sqrt{a_2}} = \frac{\sqrt{a_2} - \sqrt{a_1}}{\bar{a}} \;\approx\; \frac{a_2 - a_1}{2\bar{a}^{3/2}} = \frac{(\psi_2 - \psi_1)\alpha}{2(\psi_1\psi_2)^{3/4}\alpha^{3/2}}$$
+
+<p>So for two profiles that are both moderately concentrated (large \(a\)):</p>
+
+$$\text{biological sensitivity} \;\propto\; \psi_2 - \psi_1$$
+
+<p>The difference in escaped transmission is <strong>approximately linear in the punctuation difference</strong> \(\psi_2 - \psi_1\). This breaks down for small \(a\) (spike-like profiles), where the \(1/\sqrt{a}\) nonlinearity matters — most of the sensitivity is concentrated in the spike end of the spectrum.</p>
+
+<h2>35. The pairwise crossover location</h2>
+
+<p>The leading-order factorisation places the pairwise crossover at \(D_0^{\text{univ}} = 2/(3\beta)\), the same as the universal crossover. At the next order (including the correction from the Wilson&ndash;Hilferty expansion), the pairwise crossover shifts slightly:</p>
+
+$$D_0^*(a_1, a_2) \;\approx\; \frac{2}{3\beta} + \frac{1}{\beta}\cdot\frac{a_1 + \sqrt{a_1 a_2} + a_2}{27\,a_1\,a_2}$$
+
+<p>The correction is \(O(1/(\beta a_1 a_2))\) and is always positive (the pairwise crossover is slightly to the right of the universal one). Numerically, for our standard parameters (\(\alpha = 10, \beta = 2\)):</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Pair \((a_1, a_2)\)</th>
+    <th>Formula</th>
+    <th>Numerical \(D_0^*\)</th>
+  </tr>
+  <tr><td>\((1, 10)\)</td><td>0.360</td><td>0.351</td></tr>
+  <tr><td>\((1, 5)\)</td><td>0.365</td><td>0.353</td></tr>
+  <tr><td>\((3, 10)\)</td><td>0.346</td><td>0.340</td></tr>
+  <tr><td>\((5, 10)\)</td><td>0.342</td><td>0.338</td></tr>
+  <tr><td>Universal</td><td>0.333</td><td>&mdash;</td></tr>
+</table>
+
+<p>The formula captures the right trend (pairwise crossovers are above the universal 0.333, and closer to it when both shapes are large), though it slightly overestimates for small \(a_1\) where the normal approximation is less accurate.</p>
+
+<h2>36. Summary: advantages of the pairwise framework</h2>
+
+<div class="highlight">
+<p>Comparing two specific profiles \(\psi_1\) and \(\psi_2\) instead of all \(\psi\) at once yields three simplifications:</p>
+<ol>
+  <li><strong>Existence is guaranteed:</strong> A pairwise crossover exists for any two unimodal profiles (by IVT), with no distributional assumptions.</li>
+  <li><strong>Factorisation:</strong> The population-level \(\psi\)-effect separates into (biology) \(\times\) (detection), allowing independent analysis of the infectiousness profile and the detection mechanism.</li>
+  <li><strong>Linearity in \(\Delta\psi\):</strong> For moderately concentrated profiles, the effect is approximately proportional to \(\psi_2 - \psi_1\), with a coefficient that depends on the detection mechanism through the single number \(\mathbb{E}[D_0] - 2/(3\beta)\).</li>
+</ol>
+
+<p>The universal crossover (\(D_0^* = 2/(3\beta)\) for all \(\psi\)) is a special feature of the Gamma family. The pairwise crossover is more general and more practical: it asks "for <em>this specific</em> comparison, when does punctuation matter?" rather than "for all comparisons simultaneously."</p>
+</div>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
