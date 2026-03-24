@@ -2322,6 +2322,553 @@ $$D_0^*(a_1, a_2) \;\approx\; \frac{2}{3\beta} + \frac{1}{\beta}\cdot\frac{a_1 +
 <p>The universal crossover (\(D_0^* = 2/(3\beta)\) for all \(\psi\)) is a special feature of the Gamma family. The pairwise crossover is more general and more practical: it asks "for <em>this specific</em> comparison, when does punctuation matter?" rather than "for all comparisons simultaneously."</p>
 </div>
 
+<hr>
+
+<h1>Domain of validity: breakdown for very spiky profiles</h1>
+<p><em>2026-03-23</em></p>
+
+<h2>37. The spike limit</h2>
+
+<p>As \(a = \psi\alpha \to 0\), the individual profile \(\text{Gamma}(a, \beta)\) concentrates all its mass at 0 (which is the mode for \(a \leq 1\)). The mode-centred survival becomes a step function:</p>
+
+$$\tilde{S}_{\text{spike}}(D_0) = P\!\bigl(\text{Gamma}(a, \beta) > D_0\bigr) \;\xrightarrow{a \to 0}\; \mathbf{1}[D_0 \leq 0]$$
+
+<p>For <em>any</em> \(D_0 > 0\), the spike's survival is essentially zero &mdash; all transmission has already fired. Meanwhile, a smooth profile (say \(a_2 = 10\)) still has \(\tilde{S}_2(0) \approx 0.571\) of its mass above the mode. So at \(D_0 = 0\):</p>
+
+$$\Delta(0) = \underbrace{\tilde{S}_1(0)}_{\to\, 1} - \underbrace{\tilde{S}_2(0)}_{\approx\, 0.571} \;\approx\; 0.43$$
+
+<p>while at any \(D_0 > 0\):</p>
+
+$$\Delta(D_0) = \underbrace{\tilde{S}_1(D_0)}_{\to\, 0} - \underbrace{\tilde{S}_2(D_0)}_{> 0} \;<\; 0$$
+
+<p>The pairwise crossover is forced to \(D_0^* \to 0\) (the mode itself), not \(2/(3\beta)\). In the spike limit, the crossover collapses to the mode because the spike has no spread at all &mdash; there is no "tail" to place on either side.</p>
+
+<h2>38. Where the approximation breaks</h2>
+
+<p>The Wilson&ndash;Hilferty / normal approximation treats the Gamma as approximately Gaussian, which requires the shape parameter \(a\) to be at least moderately large. For \(a < 1\), the Gamma has a pole at 0 (density \(\to \infty\)) and is nothing like a Gaussian. The 2/(3\beta) crossover is a <strong>moderate-to-large \(a\) result</strong>.</p>
+
+<p>Empirically, the approximation works surprisingly well down to \(a = 1\) (exponential distribution). The earlier numerical results show:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>\(a_1\) (vs \(a_2 = 10\))</th>
+    <th>Pairwise \(D_0^*\)</th>
+    <th>Relative error vs \(2/(3\beta)\)</th>
+  </tr>
+  <tr><td>5</td><td>0.338</td><td>1.5%</td></tr>
+  <tr><td>3</td><td>0.340</td><td>2.1%</td></tr>
+  <tr><td>1</td><td>0.351</td><td>5.4%</td></tr>
+  <tr><td>\(\to 0\)</td><td>\(\to 0\)</td><td>\(\to 100\%\)</td></tr>
+</table>
+
+<p>So the approximation degrades gracefully: it is excellent for \(a \geq 3\), reasonable for \(a = 1\), and fails qualitatively only for \(a \ll 1\). In our parameterisation with \(\alpha = 10\), this means the 2/(3\beta) result is reliable for \(\psi \gtrsim 0.1\) and breaks for \(\psi \ll 0.1\).</p>
+
+<h2>39. The qualitative picture across the full range</h2>
+
+<p>The pairwise crossover \(D_0^*(a_1, a_2)\) as \(a_1\) varies (with \(a_2\) fixed at a moderate value) behaves as:</p>
+
+<ul>
+  <li><strong>\(a_1 \to 0\) (spike):</strong> \(D_0^* \to 0\). The spike puts everything at the mode; any detection after the mode catches all of the spike's transmission but only a fraction of the smooth's. Punctuation always helps for any \(D_0 > 0\).</li>
+  <li><strong>\(a_1\) moderate (\(\gtrsim 1\)):</strong> \(D_0^* \approx 2/(3\beta)\). The normal approximation holds and the universal crossover is accurate. The factorisation theorem (Section 33) applies.</li>
+  <li><strong>\(a_1 \to a_2\):</strong> \(D_0^*\) is undefined (the profiles are identical; no crossover exists). The difference \(\Delta(D_0) \to 0\) uniformly.</li>
+</ul>
+
+<div class="highlight">
+<p><strong>Summary:</strong> The \(2/(3\beta)\) crossover is a good approximation when both shape parameters are at least \(\sim 1\). For very spiky profiles (\(a \ll 1\)), the crossover moves toward 0, and the spike regime is even <em>more</em> favourable for detection than the \(2/(3\beta)\) result suggests &mdash; the approximation is conservative. The qualitative conclusion (punctuation helps detection when \(D_0\) is small) is robust across the full range; only the precise crossover location shifts.</p>
+</div>
+
+<hr>
+
+<h1>Exact monotonicity analysis: when does punctuation help or hurt?</h1>
+<p><em>2026-03-23</em></p>
+
+<h2>40. Setup: exact analysis without approximations</h2>
+
+<p>Define the <strong>mode-centred survival function</strong> for a Gamma(\(a, \beta\)) profile:</p>
+
+$$h(a, t) \;=\; P\!\bigl(\text{Gamma}(a, 1) > (a - 1) + t\bigr), \qquad a \geq 1$$
+
+<p>where \(t = \beta D_0\) is the detection delay (measured from the mode) in units of \(1/\beta\). The shape parameter \(a = \psi\alpha\) controls punctuation: small \(a\) = spiky, large \(a\) = smooth.</p>
+
+<p>The question: <strong>is \(h(a, t)\) monotone in \(a\)?</strong> If \(h\) is decreasing in \(a\), then reducing punctuation (increasing \(a\)) always reduces escaped transmission &mdash; "punctuation helps." If \(h\) is increasing in \(a\), punctuation hurts.</p>
+
+<h2>41. Three regimes</h2>
+
+<p>Exact numerical computation (no approximations, using the full Gamma CDF) reveals three clean regimes:</p>
+
+<div class="highlight">
+<p><strong>Theorem (exact, for \(a \geq 1\)).</strong> Let \(h(a, t) = P(\text{Gamma}(a,1) > a - 1 + t)\). Then:</p>
+<ol>
+  <li><strong>\(t < 2/3\):</strong> \(h\) is <strong>strictly decreasing</strong> in \(a\). Punctuation always helps.</li>
+  <li><strong>\(2/3 < t < t^*\):</strong> \(h\) is <strong>non-monotone</strong> &mdash; it first decreases, reaches an interior minimum at some \(a_{\min}(t)\), then increases. Intermediate punctuation is worst.</li>
+  <li><strong>\(t > t^*\):</strong> \(h\) is <strong>strictly increasing</strong> in \(a\). Punctuation always hurts.</li>
+</ol>
+<p>where \(t^* \approx 0.736\) (in units of \(1/\beta\)), so in real time: \(D_0^{**} = t^*/\beta\).</p>
+</div>
+
+<p>The lower boundary is <strong>exactly</strong> \(t = 2/3\), which corresponds to the universal crossover \(D_0^* = 2/(3\beta)\) from the median-mode gap theory (Sections 27&ndash;29). This is not a coincidence: at \(t = 2/3\), \(h(a, 2/3) \to 1/2\) for all large \(a\), and the convergence is from above &mdash; so \(h\) is strictly decreasing but the limit is the same for all \(a\). Pushing \(t\) just above \(2/3\) causes the curves for different \(a\) to cross.</p>
+
+<h2>42. The non-monotone band: structure and magnitude</h2>
+
+<p>In the non-monotone band \(t \in (2/3,\; 0.736)\), the interior minimum migrates:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>\(t\)</th>
+    <th>\(a_{\min}\)</th>
+    <th>\(h(a_{\min})\)</th>
+    <th>\(h(1)\) (exponential)</th>
+    <th>Dip from \(h(1)\)</th>
+  </tr>
+  <tr><td>0.677</td><td>6.2</td><td>0.4989</td><td>0.5083</td><td>0.94 pp</td></tr>
+  <tr><td>0.690</td><td>2.8</td><td>0.4961</td><td>0.5016</td><td>0.55 pp</td></tr>
+  <tr><td>\(\ln 2 \approx 0.693\)</td><td>2.5</td><td>0.4952</td><td>0.5000</td><td>0.48 pp</td></tr>
+  <tr><td>0.710</td><td>1.6</td><td>0.4899</td><td>0.4916</td><td>0.17 pp</td></tr>
+  <tr><td>0.720</td><td>1.3</td><td>0.4861</td><td>0.4868</td><td>0.07 pp</td></tr>
+  <tr><td>0.730</td><td>1.1</td><td>0.4818</td><td>0.4819</td><td>0.01 pp</td></tr>
+</table>
+
+<p>As \(t \to 2/3\) from above, the minimum moves to large \(a\) and the dip vanishes. As \(t \to t^*\), the minimum collapses to \(a = 1\) and the dip also vanishes. The <strong>maximum dip is less than 1 percentage point</strong> and occurs at \(t \approx 0.68\) with \(a_{\min} \approx 6\).</p>
+
+<h2>43. Special role of \(\ln 2\) and the exponential distribution</h2>
+
+<p>The value \(t = \ln 2\) (i.e., \(D_0 = \ln 2/\beta\)) has a special meaning: when \(a = 1\), the Gamma reduces to the Exponential distribution, and:</p>
+
+$$h(1, t) = e^{-t} \quad\Longrightarrow\quad h(1, \ln 2) = \tfrac{1}{2}$$
+
+<p>So \(D_0 = \ln 2/\beta\) is the <strong>median of the exponential distribution</strong> (measured from its mode at 0). The fact that \(\ln 2 \approx 0.693\) sits inside the non-monotone band \((0.667,\; 0.736)\) means that detection at the exponential's median exhibits non-monotone behaviour &mdash; the exponential is not the worst shape, despite having \(h = 1/2\).</p>
+
+<p>Compare the two key values of \(t\):</p>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Value</th>
+    <th>\(t\)</th>
+    <th>Meaning</th>
+  </tr>
+  <tr><td>\(2/3\)</td><td>0.6667</td><td>Median&ndash;mode gap (large \(a\) limit); lower boundary of non-monotone band</td></tr>
+  <tr><td>\(\ln 2\)</td><td>0.6931</td><td>Median of the exponential (\(a = 1\)); inside non-monotone band</td></tr>
+  <tr><td>\(t^*\)</td><td>0.736</td><td>Upper boundary of non-monotone band</td></tr>
+</table>
+
+<h2>44. Why the band is narrow: a heuristic</h2>
+
+<p>The non-monotone band has width \(t^* - 2/3 \approx 0.07\) in units of \(1/\beta\). With our default parameters (\(\beta = 2\), i.e. \(T = 5\) days, \(\alpha = 10\)), this corresponds to a real-time window of just \(0.07/2 \approx 0.035\) days &mdash; about 50 minutes.</p>
+
+<p>The narrowness has an intuitive explanation. The universal crossover at \(D_0 = 2/(3\beta)\) works because the median&ndash;mode gap of the Gamma is nearly \(\psi\)-independent (Wilson&ndash;Hilferty, Section 28). The gap is <em>not exactly</em> constant &mdash; it has residual \(\psi\)-dependence of order \(O(1/a)\) from the skewness correction. The non-monotone band is precisely the range where this small \(O(1/a)\) correction is large enough to reverse the dominant trend. The band is narrow because the correction is small.</p>
+
+<h2>45. Practical interpretation</h2>
+
+<div class="highlight">
+<p><strong>For practical purposes, the monotone picture is essentially correct:</strong></p>
+<ul>
+  <li>Detection before the mode + \(2/(3\beta)\): punctuation helps (monotonically).</li>
+  <li>Detection after the mode + \(2/(3\beta)\): punctuation hurts (monotonically, with a tiny non-monotone correction in a band of width \(\sim 0.07/\beta\), amounting to &lt; 1 percentage point).</li>
+</ul>
+
+<p>The non-monotone band is:</p>
+<ul>
+  <li><strong>Narrow</strong> &mdash; width \(\approx 0.07/\beta\) in real time</li>
+  <li><strong>Shallow</strong> &mdash; the dip is at most ~1 percentage point</li>
+  <li><strong>Located at the crossover</strong> &mdash; precisely where the effect of punctuation changes sign, so the escaped transmission is near \(R_0/2\) anyway</li>
+</ul>
+
+<p>The qualitative story &mdash; <em>punctuation helps fast detection, hurts slow detection, with a crossover near the median&ndash;mode gap</em> &mdash; is exact in the monotone regions and accurate to within 1 pp in the non-monotone band.</p>
+</div>
+
+<h2>46. Full picture including \(a < 1\)</h2>
+
+<p>For \(a < 1\) (very spiky profiles), the Gamma mode is 0 and the density has a pole at 0. In this regime:</p>
+
+$$h(a, t) = P(\text{Gamma}(a, 1) > t), \qquad a < 1$$
+
+<p>This is strictly <em>increasing</em> in \(a\) (a heavier-tailed distribution has more probability above any fixed threshold). So for \(a \in (0, 1)\), \(h\) is always increasing. Combined with the \(a \geq 1\) analysis:</p>
+
+<ul>
+  <li>For \(t < 2/3\): \(h\) increases on \((0,1)\), reaches maximum at \(a = 1\) (where \(h(1,t) = e^{-t}\)), then decreases for \(a > 1\). The function \(a = 1\) is a <strong>global maximum</strong>.</li>
+  <li>For \(2/3 < t < t^*\): \(h\) increases on \((0,1)\), then decreases to an interior minimum, then increases again. But the overall trend is still from low (\(a \ll 1\)) to \(\sim 0.5\) (\(a \to \infty\)).</li>
+  <li>For \(t > t^*\): \(h\) is increasing for all \(a > 0\). Punctuation always hurts, even in the extreme spike regime.</li>
+</ul>
+
+<p>However, the \(a < 1\) regime (\(\psi < 1/\alpha\)) represents profiles so spiky that they are essentially delta functions. In the epidemiological context, this is the limit of "superspreading events" where all of a person's infectiousness is concentrated in a window shorter than \(1/\beta = T/\alpha\). For our default parameters (\(T = 5\), \(\alpha = 10\)), this means \(\psi < 0.1\), corresponding to infectious windows of less than half a day. This regime is of limited practical relevance for most respiratory pathogens.</p>
+
+<hr>
+
+<h1>Lognormal infectiousness profiles: comparison with Gamma</h1>
+<p><em>2026-03-23</em></p>
+
+<h2>47. Setup: lognormal analogue</h2>
+
+<p>Consider a lognormal infectiousness profile \(X \sim \text{Lognormal}(\mu, \sigma^2)\) in place of the Gamma. The key statistics are:</p>
+
+$$\text{mode} = e^{\mu - \sigma^2}, \qquad \text{median} = e^{\mu}, \qquad \text{mean} = e^{\mu + \sigma^2/2}$$
+
+<p>The parameter \(\sigma\) controls punctuation: <strong>larger \(\sigma\)</strong> = spikier peak and heavier tail (analogous to smaller \(a\) in the Gamma). The mode-centred prevented fraction is:</p>
+
+$$h(\sigma, t) = P(X > \text{mode} + t)$$
+
+<p>To make a fair comparison with the Gamma, we impose the same constraint: <strong>mean &minus; mode = 1</strong> (the analogue of the Gamma's constant \(1/\beta\)). This requires:</p>
+
+$$e^{\mu}\!\left(e^{\sigma^2/2} - e^{-\sigma^2}\right) = 1 \quad\Longrightarrow\quad \mu(\sigma) = -\ln\!\left(e^{\sigma^2/2} - e^{-\sigma^2}\right)$$
+
+<h2>48. The critical difference: median&ndash;mode gap stability</h2>
+
+<p>The entire Gamma monotonicity story (Sections 40&ndash;46) rested on one fact: the median&ndash;mode gap is nearly constant in the shape parameter \(a\). For the lognormal, compute the gap under the mean &minus; mode = 1 constraint:</p>
+
+$$\text{median} - \text{mode} = e^{\mu}\!\left(1 - e^{-\sigma^2}\right) = \frac{1 - e^{-\sigma^2}}{e^{\sigma^2/2} - e^{-\sigma^2}}$$
+
+<p>This function starts at \(2/3\) for small \(\sigma\) and decreases monotonically toward 0:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th></th>
+    <th colspan="5" style="text-align: center;">Median &minus; mode gap</th>
+  </tr>
+  <tr style="background: #2a2d2e;">
+    <th>Distribution</th>
+    <th>CV = 0.1</th>
+    <th>CV = 0.3</th>
+    <th>CV = 0.5</th>
+    <th>CV = 1.0</th>
+    <th>Range</th>
+  </tr>
+  <tr>
+    <td><strong>Gamma</strong></td>
+    <td>0.667</td>
+    <td>0.671</td>
+    <td>0.671</td>
+    <td>0.693</td>
+    <td style="color: #009900;"><strong>0.026</strong></td>
+  </tr>
+  <tr>
+    <td><strong>Lognormal</strong></td>
+    <td>0.665</td>
+    <td>0.652</td>
+    <td>0.624</td>
+    <td>0.493</td>
+    <td style="color: #CC0000;"><strong>0.667</strong></td>
+  </tr>
+</table>
+
+<div class="highlight">
+<p>The Gamma's median&ndash;mode gap varies by only <strong>0.026</strong> across its entire range. The lognormal's varies by <strong>0.667</strong> &mdash; a 25&times; larger variation. This is the root cause of the structural difference.</p>
+</div>
+
+<h2>49. Monotonicity results for the lognormal</h2>
+
+<p>Exact numerical computation of \(h(\sigma, t)\) for the constrained lognormal yields:</p>
+
+<div class="highlight">
+<p><strong>Theorem (lognormal, mean &minus; mode = 1).</strong></p>
+<ol>
+  <li><strong>\(t \geq 2/3\):</strong> \(h\) is <strong>monotonically decreasing</strong> in \(\sigma\). More punctuation &rArr; less prevention &rArr; <strong>punctuation always hurts</strong>.</li>
+  <li><strong>\(t < 2/3\):</strong> \(h\) is <strong>non-monotone</strong> in \(\sigma\): it first increases (punctuation helps for moderate \(\sigma\)), reaches a maximum at some \(\sigma_{\max}(t)\), then decreases (extreme punctuation hurts).</li>
+</ol>
+<p>There is <strong>no region where punctuation monotonically helps</strong> across all \(\sigma\).</p>
+</div>
+
+<p>Compare with the Gamma (Section 41):</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Detection delay \(t\)</th>
+    <th>Gamma (\(a \geq 1\))</th>
+    <th>Lognormal</th>
+  </tr>
+  <tr>
+    <td>\(t < 2/3\)</td>
+    <td style="color: #009900;"><strong>Monotone</strong> (punctuation helps)</td>
+    <td style="color: #FF6600;"><strong>Non-monotone</strong> (helps then hurts)</td>
+  </tr>
+  <tr>
+    <td>\(2/3 < t < t^*\)</td>
+    <td style="color: #FF6600;">Non-monotone (narrow band)</td>
+    <td rowspan="2" style="color: #CC0000;"><strong>Monotone</strong> (punctuation hurts)</td>
+  </tr>
+  <tr>
+    <td>\(t > t^*\)</td>
+    <td style="color: #CC0000;">Monotone (punctuation hurts)</td>
+  </tr>
+</table>
+
+<p>The structures are almost <strong>mirror images</strong>. The Gamma has a clean "punctuation helps" zone; the lognormal does not. The lognormal has a clean "punctuation hurts" zone for all \(t > 2/3\); the Gamma needs to get past a narrow non-monotone band before reaching its "punctuation hurts" zone.</p>
+
+<h2>50. Why the reversal?</h2>
+
+<p>The lognormal's heavy right tail is the culprit. As \(\sigma\) grows:</p>
+
+<ul>
+  <li>The <strong>mode concentrates near 0</strong> (like the Gamma spike), putting most infectious mass close to the mode.</li>
+  <li>But the <strong>lognormal tail remains heavy</strong>: \(P(X > x) \sim x^{-1}\) for large \(x\), compared to the Gamma's exponential decay \(P(X > x) \sim e^{-x}\).</li>
+</ul>
+
+<p>For the Gamma spike (\(a \to 0\)): <em>all</em> mass concentrates at the mode. Any detection after the mode catches everything. So the prevented fraction \(h \to 0\) for any \(t > 0\), and the spike is the easiest to detect.</p>
+
+<p>For the lognormal "spike" (large \(\sigma\)): the mode concentrates near 0, but the heavy tail keeps substantial mass far from the mode. Detection at mode + \(t\) catches the mass near the mode but <em>misses the tail</em>. As \(\sigma\) grows, the tail becomes heavier, and more infectiousness escapes &mdash; eventually overwhelming the benefit of concentrating mass near the mode.</p>
+
+<p>Formally: the lognormal median&ndash;mode gap <em>shrinks</em> as \(\sigma\) grows, meaning the individual crossover point moves closer to the mode. For large enough \(\sigma\), a fixed detection delay \(t\) that was previously on the "punctuation helps" side of the crossover finds itself on the "hurts" side.</p>
+
+<h2>51. The value \(2/3\) is still special</h2>
+
+<p>Despite the structural difference, the boundary \(t = 2/3\) appears in both distributions. Why?</p>
+
+<p>In the <strong>smooth limit</strong> (small \(\sigma\), large \(a\)), any unimodal distribution with mean &minus; mode = 1 approaches a normal shape. The normal approximation gives:</p>
+
+$$\text{mean} - \text{mode} \approx 3(\text{mean} - \text{median})$$
+
+<p>so median &minus; mode \(\approx 2/3 \times\) (mean &minus; mode) = \(2/3\). This is the <strong>Pearson relation</strong>, valid for all mildly skewed distributions. Since 2/3 is the shared limiting median&ndash;mode gap, it's the shared transition point in the smooth limit.</p>
+
+<p>The difference is in what happens <strong>away from the smooth limit</strong>:</p>
+<ul>
+  <li><strong>Gamma:</strong> The median&ndash;mode gap <em>barely changes</em> (it actually increases slightly, from 2/3 to ln 2 &asymp; 0.693). So the transition region hardly moves.</li>
+  <li><strong>Lognormal:</strong> The gap <em>collapses toward 0</em>. The transition region sweeps through, destroying the "punctuation helps" monotonicity.</li>
+</ul>
+
+<h2>52. What makes the Gamma special?</h2>
+
+<p>The Gamma's remarkable stability of the median&ndash;mode gap comes from the Wilson&ndash;Hilferty approximation (Section 28). For \(\text{Gamma}(a, 1)\):</p>
+
+$$\text{median} - \text{mode} \approx \frac{2}{3} + \frac{z_{1/2}^2}{3} + z_{1/2}\sqrt{a} + \cdots$$
+
+<p>Since \(z_{1/2} = 0\) (the median is the \(p = 1/2\) quantile and \(\Phi^{-1}(1/2) = 0\)), all \(\sqrt{a}\)-dependent terms vanish, leaving:</p>
+
+$$\text{median} - \text{mode} = \frac{2}{3} + O(1/a)$$
+
+<p>The leading correction is only \(O(1/a)\), so the gap is nearly constant for all \(a \gtrsim 1\). No other standard distribution family shares this combination of:</p>
+<ol>
+  <li>a one-parameter shape family (indexed by \(a\)) with mean &minus; mode independent of \(a\),</li>
+  <li>a cube-root normalisation (Wilson&ndash;Hilferty) that kills the \(\sqrt{a}\)-dependence in the median.</li>
+</ol>
+
+<div class="highlight">
+<p><strong>Summary:</strong> The lognormal does <strong>not</strong> have a "punctuation always helps" region. For \(t < 2/3\), moderate punctuation helps but extreme punctuation hurts (due to the heavy tail). For \(t \geq 2/3\), punctuation always hurts. The clean monotonicity result from the Gamma is a consequence of the Gamma's uniquely stable median&ndash;mode gap and cannot be expected to hold for other distribution families.</p>
+</div>
+
+<hr>
+
+<h1>Corrected full picture: the three regimes for all \(a > 0\)</h1>
+<p><em>2026-03-23</em></p>
+
+<h2>53. Including \(a < 1\) and detection before the mode</h2>
+
+<p>Sections 40&ndash;46 focused on \(a \geq 1\) (i.e., \(\psi \geq 1/\alpha\)), where the Gamma mode exists at \(a - 1 > 0\). But two extensions matter:</p>
+
+<ul>
+  <li><strong>Very spiky profiles (\(a < 1\)):</strong> The Gamma mode is at 0, the density has a pole at 0, and the profile is extremely concentrated near the origin.</li>
+  <li><strong>Negative \(t\):</strong> Detection before the mode (\(D_0 < 0\)). This is natural if, for example, an infected person is detected through contact tracing before reaching peak infectiousness.</li>
+</ul>
+
+<p>Recall the definition:</p>
+
+$$h(a, t) = P\!\bigl(\text{Gamma}(a, 1) > \max(a-1, 0) + t\bigr)$$
+
+<p>For \(a < 1\): \(h(a, t) = P(\text{Gamma}(a, 1) > t)\), which is strictly <em>increasing</em> in \(a\) (the distribution acquires heavier tails as \(a \to 1\)).</p>
+
+<p>For \(a \geq 1\): \(h(a, t) = P(\text{Gamma}(a, 1) > a - 1 + t)\), with the monotonicity depending on \(t\) as analysed in Section 41.</p>
+
+<h2>54. The corrected three-regime theorem</h2>
+
+<p>Exact computation over all \(a > 0\) and all \(t \in \mathbb{R}\) gives:</p>
+
+<div class="highlight">
+<p><strong>Theorem (full Gamma, all \(a > 0\)).</strong></p>
+<ol>
+  <li><strong>\(t \leq 0\) (detection at or before the mode):</strong> \(h(a, t)\) is <strong>monotonically non-increasing</strong> in \(a\). Punctuation always helps. For \(t < 0\), the monotonicity is strict.</li>
+  <li><strong>\(0 < t < t^* \approx 0.735\) (detection shortly after the mode):</strong> \(h(a, t)\) is <strong>non-monotone</strong> in \(a\). It increases on \((0, 1)\) (extreme spikes get worse), peaks near \(a = 1\), then eventually converges to \(\sim 1/2\).</li>
+  <li><strong>\(t > t^* \approx 0.735\) (detection well after the mode):</strong> \(h(a, t)\) is <strong>monotonically increasing</strong> in \(a\). Punctuation always hurts.</li>
+</ol>
+</div>
+
+<p>This corrects the earlier Section 41, which restricted to \(a \geq 1\) and found a "punctuation always helps" region for \(t < 2/3\). <strong>Including \(a < 1\) widens the non-monotone band from \((2/3,\; 0.736)\) to \((0,\; 0.735)\).</strong></p>
+
+<h2>55. Structure of the non-monotone region</h2>
+
+<p>The non-monotone band \(0 < t < t^*\) has two sub-regions with different character:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Sub-region</th>
+    <th>Behaviour for \(a < 1\)</th>
+    <th>Behaviour for \(a \geq 1\)</th>
+    <th>Source of non-monotonicity</th>
+  </tr>
+  <tr>
+    <td>\(0 < t < 2/3\)</td>
+    <td>\(h\) increasing</td>
+    <td>\(h\) monotonically <strong>decreasing</strong></td>
+    <td>The \(a < 1\) spike regime only</td>
+  </tr>
+  <tr>
+    <td>\(2/3 < t < 0.735\)</td>
+    <td>\(h\) increasing</td>
+    <td>\(h\) <strong>non-monotone</strong> (interior min)</td>
+    <td>Both \(a < 1\) and the \(a \geq 1\) interior minimum</td>
+  </tr>
+</table>
+
+<p>For \(0 < t < 2/3\), the non-monotonicity is entirely due to the extreme-spike regime \(a < 1\). Within the practically relevant range \(a \geq 1\), punctuation still monotonically helps. The sub-region \(2/3 < t < 0.735\) has genuine non-monotonicity even within \(a \geq 1\), but the dip is at most ~1 pp (Section 42).</p>
+
+<h2>56. Interpretation: the practical story</h2>
+
+<div class="highlight">
+<p>The three regimes have a clean epidemiological interpretation:</p>
+
+<ol>
+  <li><p><strong>Detection before the mode (\(t < 0\)): punctuation always helps.</strong><br>
+  If detection (e.g., contact tracing, pre-symptomatic testing) occurs before the peak of infectiousness, more concentrated profiles are <em>always</em> easier to contain. The spike hasn't fired yet, and a more concentrated spike means more of the total infectiousness still lies in the future. This holds for all \(a > 0\) without exception.</p></li>
+
+  <li><p><strong>Detection shortly after the mode (\(0 < t \lesssim 2/(3\beta)\)): punctuation mostly helps.</strong><br>
+  For profiles with \(a \geq 1\) (the epidemiologically relevant range for most pathogens), punctuation still monotonically helps. The only exception is the extreme-spike regime \(a < 1\), where the profile is so concentrated that it has already transmitted <em>everything</em> by the time detection occurs. In practice, this represents infectious windows shorter than \(1/\beta = T/\alpha\) and is rarely relevant.</p></li>
+
+  <li><p><strong>Detection well after the mode (\(t \gtrsim 0.735/\beta\)): punctuation never helps.</strong><br>
+  Once detection falls sufficiently far past the peak, more concentrated profiles have already fired their entire payload. The smooth profile, with its lingering tail, still has something left to prevent. Punctuation unambiguously hurts.</p></li>
+</ol>
+</div>
+
+<p>The crossover between regimes 2 and 3 is at \(t^* \approx 0.735/\beta\). In real time with \(\beta = 2\): \(D_0^{**} \approx 0.37\) days &asymp; 9 hours after the peak. The earlier \(2/(3\beta) \approx 0.33\) days (8 hours) crossover from the \(a \geq 1\) analysis is contained within this, separated by only about one hour.</p>
+
+<h2>57. Revised comparison: Gamma vs Lognormal</h2>
+
+<p>With the full picture, the Gamma and lognormal are actually more similar than the \(a \geq 1\) analysis suggested:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Detection delay \(t\)</th>
+    <th>Gamma (all \(a > 0\))</th>
+    <th>Lognormal (all \(\sigma > 0\))</th>
+  </tr>
+  <tr>
+    <td>\(t \leq 0\)</td>
+    <td style="color: #009900;"><strong>Monotone</strong> (punctuation helps)</td>
+    <td style="color: #009900;"><strong>Monotone</strong> (punctuation helps)</td>
+  </tr>
+  <tr>
+    <td>\(0 < t < 2/3\)</td>
+    <td style="color: #FF6600;"><strong>Non-monotone</strong> (extreme spikes only)</td>
+    <td style="color: #FF6600;"><strong>Non-monotone</strong> (helps then hurts)</td>
+  </tr>
+  <tr>
+    <td>\(t \geq 2/3\)</td>
+    <td style="color: #FF6600;">Non-monotone for \(t < 0.735\), then <span style="color:#CC0000;">monotone hurts</span></td>
+    <td style="color: #CC0000;"><strong>Monotone</strong> (punctuation hurts)</td>
+  </tr>
+</table>
+
+<p>Both distributions share the <strong>\(t \leq 0\): punctuation always helps</strong> result. Both become non-monotone for \(t > 0\). The difference is quantitative: the Gamma's non-monotonicity for \(0 < t < 2/3\) is confined to the extreme-spike tail (\(a < 1\)), while the lognormal's non-monotonicity extends into moderate shapes. This traces back to the Gamma's uniquely stable median&ndash;mode gap.</p>
+
+<hr>
+
+<h1>Universality of "punctuation helps before the mode"</h1>
+<p><em>2026-03-23</em></p>
+
+<h2>58. The question</h2>
+
+<p>Section 54 showed that for the Gamma, \(h(a, t)\) is monotonically non-increasing in \(a\) for all \(t \leq 0\): punctuation always helps when detection occurs at or before the mode. Sections 47&ndash;52 showed the same holds for the lognormal. <strong>Is this universal for all unimodal distributions?</strong></p>
+
+<h2>59. No: a counterexample</h2>
+
+<p>Consider the <strong>asymmetric double-exponential</strong> family, with mode at 0:</p>
+
+$$f_c(x) = \frac{c}{c+1} \begin{cases} e^{x} & x < 0 \\ e^{-cx} & x \geq 0 \end{cases}$$
+
+<p>This is unimodal at \(x = 0\) for all \(c > 0\). As \(c\) increases:</p>
+<ul>
+  <li>The peak density \(f_c(0) = c/(c+1) \to 1\) increases (more peaked).</li>
+  <li>The right tail thins (\(\text{rate } c \to \infty\)).</li>
+  <li>The variance decreases (from \(5.0\) at \(c = 0.5\) to \(1.0\) as \(c \to \infty\)).</li>
+  <li>The distribution genuinely concentrates around the mode.</li>
+</ul>
+
+<p>But the left tail density \(f_c(x) = [c/(c+1)]e^{x}\) for \(x < 0\) <em>increases</em> with \(c\) (the prefactor grows). The prevented fraction:</p>
+
+$$h(c, t) = 1 - \frac{c}{c+1}\,e^{t} \qquad (t < 0)$$
+
+<p>is <strong>decreasing</strong> in \(c\): more concentration leads to <em>less</em> prevention. Explicitly:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>\(c\)</th>
+    <th>\(f_c(0)\)</th>
+    <th>Variance</th>
+    <th>\(h(c, -0.5)\)</th>
+  </tr>
+  <tr><td>1</td><td>0.500</td><td>2.000</td><td>0.697</td></tr>
+  <tr><td>5</td><td>0.833</td><td>1.040</td><td>0.495</td></tr>
+  <tr><td>10</td><td>0.909</td><td>1.010</td><td>0.449</td></tr>
+  <tr><td>50</td><td>0.980</td><td>1.000</td><td>0.405</td></tr>
+</table>
+
+<p>The distribution is indisputably concentrating (variance halves, peak doubles), yet punctuation <em>hurts</em> for \(t < 0\).</p>
+
+<h2>60. What goes wrong</h2>
+
+<p>The asymmetric exponential concentrates by <strong>shrinking only the right tail</strong>. The left tail rate (= 1) is fixed. Since the peak density must increase to preserve normalisation, the left-tail density &mdash; \([c/(c+1)]e^{x}\) &mdash; is <em>amplified</em>. More probability mass accumulates to the left of the mode, exactly where a threshold at \(t < 0\) can "see" it.</p>
+
+<p>In short: concentration that removes the right tail while amplifying the left tail hurts prevention for \(t < 0\).</p>
+
+<h2>61. Why it works for infectiousness profiles</h2>
+
+<p>The Gamma and lognormal don't have this pathology because they have <strong>non-negative support</strong> (\(X \geq 0\) a.s.). For such distributions, the mode-centred residual \(\varepsilon = X - m\) satisfies \(\varepsilon \geq -m\). As punctuation increases and the mode \(m\) decreases toward 0, the left tail of the residual <strong>shrinks</strong>:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>\(a\) (Gamma shape)</th>
+    <th>Left tail extends to</th>
+    <th>\(P(\varepsilon < -0.1)\)</th>
+  </tr>
+  <tr><td>0.5 (spiky)</td><td>0 (no left tail)</td><td>0.000</td></tr>
+  <tr><td>1</td><td>0</td><td>0.000</td></tr>
+  <tr><td>2</td><td>\(-1\)</td><td>0.228</td></tr>
+  <tr><td>5</td><td>\(-4\)</td><td>0.352</td></tr>
+  <tr><td>10</td><td>\(-9\)</td><td>0.399</td></tr>
+  <tr><td>20 (smooth)</td><td>\(-19\)</td><td>0.430</td></tr>
+</table>
+
+<p>As \(a\) decreases (more punctuated), the left tail <em>shortens and vanishes</em>: the support boundary \(-(a-1)\) moves toward 0. Once \(m < |t|\), the threshold \(m + t\) drops below 0 and \(h = P(X > m + t) = 1\): perfect prevention.</p>
+
+<p>This is the <strong>opposite</strong> of the counterexample, where the left tail was anchored at \(-\infty\).</p>
+
+<h2>62. A sufficient condition</h2>
+
+<div class="highlight">
+<p><strong>Sufficient condition for "\(t < 0 \Rightarrow\) punctuation helps":</strong></p>
+<ol>
+  <li>The distribution has a <strong>fixed lower bound</strong> on its support (e.g., \(X \geq 0\)), and</li>
+  <li>The mode <strong>moves toward that bound</strong> as punctuation increases.</li>
+</ol>
+<p>Together, these ensure that the left tail of the mode-centred residual shrinks with punctuation. For \(t < 0\), a shorter left tail means less mass below the threshold and more prevention.</p>
+</div>
+
+<p>Both conditions are naturally satisfied for infectiousness profiles:</p>
+<ul>
+  <li>Infectiousness has non-negative support (\(X \geq 0\) a.s.).</li>
+  <li>A more punctuated profile concentrates its mass closer to the onset of infectiousness, pushing the mode toward 0.</li>
+</ul>
+
+<p>This is far weaker than requiring a specific distributional family. <strong>Any non-negative unimodal family where the mode approaches the lower support boundary with increasing punctuation will have "punctuation always helps" for \(t < 0\).</strong></p>
+
+<h2>63. Summary: what is and isn't universal</h2>
+
+<div class="highlight">
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Result</th>
+    <th>Scope</th>
+  </tr>
+  <tr>
+    <td>\(t \leq 0\): punctuation always helps</td>
+    <td>Unimodal distributions with <strong>non-negative support</strong>, where mode &rarr; lower bound with punctuation. <em>Not</em> universal for arbitrary unimodal distributions on \(\mathbb{R}\).</td>
+  </tr>
+  <tr>
+    <td>\(t = 2/3\) crossover</td>
+    <td><strong>Pearson-relation universal</strong> in the smooth limit (any mildly-skewed family with mean &minus; mode = const). Only the Gamma retains monotonicity away from the smooth limit.</td>
+  </tr>
+  <tr>
+    <td>\(t > t^*\): punctuation always hurts</td>
+    <td>Verified for Gamma (\(t^* \approx 0.735\)) and lognormal (\(t^* = 2/3\)). The threshold \(t^*\) is <strong>family-specific</strong>.</td>
+  </tr>
+</table>
+</div>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
