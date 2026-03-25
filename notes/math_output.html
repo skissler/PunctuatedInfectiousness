@@ -2869,6 +2869,264 @@ $$h(c, t) = 1 - \frac{c}{c+1}\,e^{t} \qquad (t < 0)$$
 </table>
 </div>
 
+<hr>
+
+<h1>Random detection times</h1>
+<p><em>2026-03-23</em></p>
+
+<h2>64. Setup</h2>
+
+<p>Replace the deterministic detection delay \(D_0\) with a <strong>random</strong> detection time \(D\) (measured from the mode), drawn from some distribution with density \(f_D\) and survival function \(S_D(t) = P(D > t)\). A unit of infectiousness at time \(\varepsilon\) after the mode escapes detection iff it occurs before detection: \(\varepsilon < D\). The prevented fraction is:</p>
+
+$$H(a) = P(\varepsilon > D) = \int_{-\infty}^{\infty} \underbrace{P(\varepsilon > d)}_{h(a,\,d)}\; f_D(d)\, dd = \mathbb{E}_D\!\bigl[h(a, D)\bigr]$$
+
+<p>This is a <strong>weighted average of the deterministic prevented fraction</strong> \(h(a, d)\) over the detection time distribution. Since the deterministic \(h(a, d)\) is decreasing in \(a\) for \(d < 0\) and increasing for \(d > t^*\approx 0.735\), the sign of the random \(H(a)\) depends on which region the detection mass favours.</p>
+
+<h2>65. E[D] &lt; 0 is not sufficient</h2>
+
+<p>A detection distribution with negative mean does <em>not</em> guarantee that punctuation helps. <strong>Counterexample:</strong> a bimodal detection time \(D = 0.4\cdot\delta(-10) + 0.6\cdot\delta(5)\) has \(\mathbb{E}[D] = -1\), but:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>\(a\)</th>
+    <th>1</th><th>5</th><th>10</th><th>50</th><th>100</th>
+  </tr>
+  <tr>
+    <td>\(H(a)\)</td>
+    <td>0.404</td><td>0.433</td><td>0.466</td><td>0.545</td><td>0.547</td>
+  </tr>
+</table>
+
+<p>\(H\) is <em>increasing</em> in \(a\) &mdash; punctuation hurts. The 60% mass at \(d = 5\) (well past the crossover \(t^* = 0.735\)) overwhelms the 40% at \(d = -10\).</p>
+
+<h2>66. What matters: mass past the crossover, not the mean</h2>
+
+<p>For a Normal detection distribution \(D \sim N(\mu, 0.3^2)\) (a reasonably concentrated detection window), the tipping point between "punctuation helps" and "punctuation hurts" occurs near \(\mu \approx 0.75\):</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>\(\mu\) (mean detection)</th>
+    <th>\(\mathbb{E}[D]\)</th>
+    <th>\(P(D > 0.735)\)</th>
+    <th>Punctuation effect</th>
+  </tr>
+  <tr><td>\(-0.50\)</td><td>\(-0.50\)</td><td>0.000</td><td style="color:#009900;"><strong>Helps</strong></td></tr>
+  <tr><td>\(0.00\)</td><td>\(0.00\)</td><td>0.007</td><td style="color:#009900;"><strong>Helps</strong></td></tr>
+  <tr><td>\(0.25\)</td><td>\(0.25\)</td><td>0.053</td><td style="color:#009900;"><strong>Helps</strong></td></tr>
+  <tr><td>\(0.50\)</td><td>\(0.50\)</td><td>0.217</td><td style="color:#009900;"><strong>Helps</strong></td></tr>
+  <tr><td>\(0.75\)</td><td>\(0.75\)</td><td>0.520</td><td style="color:#CC0000;"><strong>Hurts</strong></td></tr>
+  <tr><td>\(1.00\)</td><td>\(1.00\)</td><td>0.812</td><td style="color:#CC0000;"><strong>Hurts</strong></td></tr>
+</table>
+
+<p>The tipping point occurs when roughly <strong>half the detection mass falls past \(t^* \approx 0.735\)</strong>. Notably, punctuation still helps at \(\mathbb{E}[D] = 0.50\) (detection mean well <em>past</em> the mode), because only 22% of detections occur past the crossover.</p>
+
+<h2>67. Why E[D] is the wrong quantity</h2>
+
+<p>The prevented fraction \(H(a) = \mathbb{E}[h(a, D)]\) depends on \(D\) through the <strong>full distribution</strong>, not just its mean. The issue is that \(h(a, d)\) is not linear in \(d\) &mdash; it's a survival function with a specific shape. Two detection distributions with the same mean but different shapes (e.g., concentrated vs bimodal) can give opposite results.</p>
+
+<p>The relevant quantity is instead the <strong>fraction of detection probability in the "punctuation hurts" region</strong>: \(P(D > t^*)\). When this is small, the "punctuation helps" integrals dominate, regardless of \(\mathbb{E}[D]\).</p>
+
+<h2>68. A convexity perspective</h2>
+
+<p>There is a connection to the Jensen/curvature framework from Section 9. By Fubini, the escaped fraction can also be written as:</p>
+
+$$\text{Escaped}(a) = \mathbb{E}_\varepsilon\!\bigl[S_D(\varepsilon)\bigr]$$
+
+<p>where \(S_D(t) = P(D > t)\) is evaluated at the random residual \(\varepsilon\) (which has mean \(1/\beta = 1\) and variance \(a\)). The Jensen inequality gives:</p>
+
+<ul>
+  <li>If \(S_D\) is <strong>convex</strong> over the support of \(\varepsilon\): \(\mathbb{E}[S_D(\varepsilon)] \geq S_D(1)\). More variance (less punctuation) &rArr; more escaped &rArr; <strong>punctuation helps</strong>.</li>
+  <li>If \(S_D\) is <strong>concave</strong>: the opposite &rArr; <strong>punctuation hurts</strong>.</li>
+</ul>
+
+<p>Since \(S_D''(t) = -f_D'(t)\):</p>
+
+<div class="highlight">
+<p><strong>Rule of thumb:</strong> Punctuation helps when the detection density \(f_D\) is <strong>decreasing</strong> over the relevant range (making \(S_D\) convex). This includes:</p>
+<ul>
+  <li>Exponential detection (\(f_D(t) = \lambda e^{-\lambda t}\), constant hazard rate)</li>
+  <li>Any detection mechanism where early detection is more likely than late detection</li>
+</ul>
+<p>Punctuation hurts when the detection density is <strong>increasing</strong> (detection becomes more likely over time &mdash; e.g., a purely symptom-driven mechanism where symptoms build gradually).</p>
+</div>
+
+<p>However, this is a <strong>global</strong> convexity condition. In practice, \(S_D\) is rarely globally convex or concave (it has a flat region at 1 for \(t < \min(\text{supp}(D))\) and at 0 for \(t > \max(\text{supp}(D))\)). The deterministic crossover analysis (Sections 40&ndash;46), integrated over the detection distribution, gives more precise answers than the Jensen bound alone.</p>
+
+<h2>69. Sufficient conditions</h2>
+
+<div class="highlight">
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Condition on \(D\)</th>
+    <th>Guarantees</th>
+  </tr>
+  <tr>
+    <td>\(P(D \leq 0) = 1\) (all detection before mode)</td>
+    <td>Punctuation <strong>always helps</strong> (for non-negative-support profiles)</td>
+  </tr>
+  <tr>
+    <td>\(P(D \leq 2/(3\beta)) = 1\)</td>
+    <td>Punctuation helps <strong>for \(a \geq 1\)</strong> (Gamma-specific)</td>
+  </tr>
+  <tr>
+    <td>\(P(D > t^*) \lesssim 0.5\) (less than half past crossover)</td>
+    <td>Punctuation <strong>typically helps</strong> (empirical rule for unimodal \(f_D\))</td>
+  </tr>
+  <tr>
+    <td>\(f_D\) decreasing on support of \(\varepsilon\)</td>
+    <td>Punctuation helps (Jensen/convexity). Can hold even for \(\mathbb{E}[D] > 0\).</td>
+  </tr>
+  <tr>
+    <td>\(\mathbb{E}[D] < 0\) alone</td>
+    <td style="color: #CC0000;"><strong>NOT sufficient</strong> (counterexample in Section 65)</td>
+  </tr>
+</table>
+</div>
+
+<h2>70. Walkthrough: why the first-derivative term vanishes</h2>
+
+<p class="prompt">In the expansion \(h(\psi) \approx S_\psi(\mu) + \tfrac{\sigma^2}{2} S''_\psi(\mu)\), what are we expanding around, and why does the first-derivative term disappear?</p>
+
+<p>We are expanding the survival function \(\tilde S_\psi(x)\) around the <strong>mean of the detection distribution</strong>, \(\mu = \mathbb{E}[D_0]\). Here is the step-by-step derivation.</p>
+
+<h3>Step 1: Write \(h\) as an expectation</h3>
+
+<p>The expected fraction averted is</p>
+
+$$h(\psi) \;=\; \mathbb{E}_{D_0}\!\bigl[\tilde S_\psi(D_0)\bigr] \;=\; \int \tilde S_\psi(x)\, g(x)\,\mathrm{d}x$$
+
+<p>where \(D_0 \sim G\) with density \(g\), mean \(\mu\), and variance \(\sigma^2\). This is just a weighted average of the deterministic survival function over all possible detection times.</p>
+
+<h3>Step 2: Taylor-expand \(\tilde S_\psi(x)\) around \(x = \mu\)</h3>
+
+<p>Expand the integrand in a Taylor series around the point \(\mu\):</p>
+
+$$\tilde S_\psi(x) \;=\; \tilde S_\psi(\mu) \;+\; \tilde S'_\psi(\mu)\,(x - \mu) \;+\; \tfrac{1}{2}\,\tilde S''_\psi(\mu)\,(x - \mu)^2 \;+\; O\!\bigl((x-\mu)^3\bigr)$$
+
+<h3>Step 3: Take expectations term by term</h3>
+
+<p>Substitute into the integral and take expectations:</p>
+
+\begin{align}
+h(\psi) &= \mathbb{E}\!\bigl[\tilde S_\psi(D_0)\bigr] \\[6pt]
+&\approx\; \tilde S_\psi(\mu)\,\underbrace{\mathbb{E}[1]}_{=\,1} \;+\; \tilde S'_\psi(\mu)\,\underbrace{\mathbb{E}[D_0 - \mu]}_{=\,0} \;+\; \tfrac{1}{2}\,\tilde S''_\psi(\mu)\,\underbrace{\mathbb{E}\!\bigl[(D_0 - \mu)^2\bigr]}_{=\,\sigma^2}
+\end{align}
+
+<h3>Step 4: Why the first-derivative term vanishes</h3>
+
+<p>The first-derivative coefficient is</p>
+
+$$\tilde S'_\psi(\mu) \cdot \mathbb{E}[D_0 - \mu]$$
+
+<p>and \(\mathbb{E}[D_0 - \mu] = \mathbb{E}[D_0] - \mu = \mu - \mu = 0\) by the <strong>definition of \(\mu\) as the mean</strong>. This is not a special property of \(\tilde S\) — it holds for the Taylor expansion of <em>any</em> smooth function evaluated at a random variable and expanded around that variable's mean. The first central moment is always zero.</p>
+
+<div class="highlight">
+<p><strong>Summary.</strong> The expansion is a standard "delta method" calculation:</p>
+<ol>
+  <li>We want \(\mathbb{E}[f(X)]\) where \(X\) has mean \(\mu\) and variance \(\sigma^2\).</li>
+  <li>Taylor-expand \(f\) around \(\mu\): \(f(X) \approx f(\mu) + f'(\mu)(X - \mu) + \tfrac{1}{2}f''(\mu)(X-\mu)^2\).</li>
+  <li>Take expectations: \(\mathbb{E}[f(X)] \approx f(\mu) + \tfrac{\sigma^2}{2}f''(\mu)\).</li>
+  <li>The first-derivative term drops because \(\mathbb{E}[X - \mu] = 0\) (always, by definition).</li>
+  <li>The second-derivative term is the <strong>Jensen correction</strong>: it captures the curvature of \(f\), and its sign depends on whether \(f\) is convex (\(f'' > 0\), expectation exceeds \(f(\mu)\)) or concave (\(f'' < 0\), expectation falls below \(f(\mu)\)).</li>
+</ol>
+<p>In our case \(f = \tilde S_\psi\), and whether \(\tilde S''_\psi(\mu) \gtrless 0\) depends on whether \(\mu\) is past the mode (density falling → \(S''\!> 0\), convex) or before the mode (density rising → \(S''\!< 0\), concave).</p>
+</div>
+
+<h2>71. Does variation help before the mode and hurt after?</h2>
+
+<p class="prompt">Does variation in detection only help (and help punctuated profiles more) when \(\mu &lt; 0\), and hurt when \(\mu &gt; 0\)?</p>
+
+<p>No — the signs are actually <strong>reversed</strong> from this intuition, and the relative effect (spike vs smooth) has additional structure. There are two separate questions here:</p>
+
+<ol style="list-style-type: upper-alpha;">
+  <li><strong>Absolute effect:</strong> does variation increase or decrease \(h\) (the fraction averted)?</li>
+  <li><strong>Relative effect:</strong> does variation favour spikes or smooth profiles?</li>
+</ol>
+
+<h3>A. The absolute effect: determined by curvature of \(\tilde S\)</h3>
+
+<p>From the delta-method expansion, the leading correction is \(\tfrac{\sigma^2}{2}\tilde S''_\psi(\mu)\). Since \(\tilde S'' = -\tilde f'\):</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>Detection mean \(\mu\)</th>
+    <th>Density slope \(\tilde f'(\mu)\)</th>
+    <th>\(\tilde S''(\mu)\)</th>
+    <th>Curvature</th>
+    <th>Effect of variation on \(h\)</th>
+  </tr>
+  <tr>
+    <td>\(\mu &lt; 0\) (before mode)</td>
+    <td>\(> 0\) (rising toward peak)</td>
+    <td>\(&lt; 0\)</td>
+    <td>Concave</td>
+    <td style="color:#CC0000;"><strong>Hurts</strong> (reduces \(h\))</td>
+  </tr>
+  <tr>
+    <td>\(\mu &gt; 0\) (after mode)</td>
+    <td>\(&lt; 0\) (falling from peak)</td>
+    <td>\(&gt; 0\)</td>
+    <td>Convex</td>
+    <td style="color:#009900;"><strong>Helps</strong> (increases \(h\))</td>
+  </tr>
+</table>
+
+<p><strong>Physical intuition:</strong></p>
+<ul>
+  <li>\(\mu &lt; 0\) (detection before mode): you're already catching most transmission. Variation introduces some unlucky late detections that miss more — the downside exceeds the upside. <em>Variation hurts.</em></li>
+  <li>\(\mu &gt; 0\) (detection after mode): you're already missing a lot. Variation gives some lucky early detections that catch more — the upside exceeds the downside. <em>Variation helps.</em></li>
+</ul>
+
+<p>This is just Jensen's inequality: when \(\tilde S\) is concave (before the mode), \(\mathbb{E}[\tilde S(D_0)] &lt; \tilde S(\mu)\); when convex (after), \(\mathbb{E}[\tilde S(D_0)] &gt; \tilde S(\mu)\).</p>
+
+<h3>B. The relative effect: who benefits more?</h3>
+
+<p>The change in the spike advantage due to variation is:</p>
+
+$$\Delta_{\text{var}} = \bigl[h_{\text{spike}}(\mu,\sigma) - h_{\text{smooth}}(\mu,\sigma)\bigr] - \bigl[h_{\text{spike}}(\mu,0) - h_{\text{smooth}}(\mu,0)\bigr]$$
+
+<p>This has a more complex sign pattern than the absolute effect:</p>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; margin: 1em 0;">
+  <tr style="background: #2a2d2e;">
+    <th>\(\mu\)</th>
+    <th>Spike \(h\) change</th>
+    <th>Smooth \(h\) change</th>
+    <th>Net: variation favours…</th>
+  </tr>
+  <tr><td>\(-2\)</td><td>\(\approx 0\) (spike already at \(h = 1\))</td><td>\(-0.004\) (concave)</td><td style="color:#009900;">Spikes (+0.004)</td></tr>
+  <tr><td>\(-0.5\)</td><td>\(-0.034\) (kink effect)</td><td>\(-0.001\)</td><td style="color:#CC0000;">Smooth (\(-0.033\))</td></tr>
+  <tr><td>\(0\)</td><td>\(-0.150\) (devastating kink)</td><td>\(\approx 0\)</td><td style="color:#CC0000;"><strong>Smooth (\(-0.150\))</strong></td></tr>
+  <tr><td>\(0.5\)</td><td>\(+0.027\)</td><td>\(+0.001\)</td><td style="color:#009900;">Spikes (+0.027)</td></tr>
+  <tr><td>\(1.0\)</td><td>\(+0.044\)</td><td>\(+0.002\)</td><td style="color:#009900;"><strong>Spikes (+0.042)</strong></td></tr>
+  <tr><td>\(2.0\)</td><td>\(+0.018\)</td><td>\(+0.002\)</td><td style="color:#009900;">Spikes (+0.016)</td></tr>
+</table>
+
+<p style="text-align: center; font-size: 0.9em; color: #999;">(Spike: \(a = 1\); Smooth: \(a = 10\); \(\sigma = 0.5\))</p>
+
+<h3>C. Why the mode is a danger zone for spikes</h3>
+
+<p>The surprising result is that near \(\mu = 0\) (detection right at the mode), variation <strong>devastates</strong> spikes. Here's why:</p>
+
+<p>At \(\mu = 0\) deterministically, the spike averts <strong>everything</strong> (\(h_{\text{spike}} = 1.00\), since all of a concentrated profile's mass sits at or just past the mode). The smooth profile averts only 59% (\(h_{\text{smooth}} = 0.59\)). The spike has a huge advantage.</p>
+
+<p>But the spike's survival function has a <strong>sharp kink</strong> at \(d = 0\): it equals 1 for all \(d \leq 0\) and drops as \(e^{-d}\) for \(d > 0\). Any rightward noise sends detection past the spike's burst — and the spike's transmission is all-or-nothing, so even slight rightward shifts lose nearly everything. With \(\sigma = 0.5\), the spike drops from \(h = 1.00\) to \(h = 0.85\), a loss of 15 percentage points.</p>
+
+<p>The smooth profile, by contrast, has a gently curving \(\tilde S\) near \(d = 0\), so it barely notices the variation (\(h\) changes by &lt; 0.1%).</p>
+
+<h3>D. Synthesis</h3>
+
+<div class="highlight">
+<p><strong>Three regimes for the relative effect of detection variation:</strong></p>
+<ol>
+  <li>\(\mu \ll 0\) (detection well before mode): Variation <strong>slightly favours spikes</strong>. Smooth profiles are hurt by concavity; spikes are insulated (already at \(h \approx 1\)).</li>
+  <li>\(\mu \approx 0\) (detection near the mode): Variation <strong>strongly favours smooth profiles</strong>. The spike's kink makes it catastrophically vulnerable to rightward noise.</li>
+  <li>\(\mu &gt; 0\) (detection after mode): Variation <strong>favours spikes</strong>. Both profiles benefit from convexity, but the spike benefits far more (steeper curvature). This is the regime analysed in the "variance helps spikes" section.</li>
+</ol>
+
+<p>The operationally relevant regime is typically (3): detection happens some time after peak infectiousness, and the question is whether the spike's concentrated burst has already been missed. In this regime, noise in detection timing reliably favours spikes — they benefit more from lucky early catches. The "variance helps spikes" result holds where it matters most, but it is not universal across all \(\mu\).</p>
+</div>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

@@ -1,8 +1,26 @@
 \clearpage
 
-\section{The impact of the individual infectiousness profile on interventions}
+\section{The impact of the individual infectiousness profile on epidemic control}
 
 \subsection{Detection and isolation}
+
+We first consider the detect-and-isolate interventions. Detection may occur through various mechanisms, e.g., the onset of symptoms or a positive diagnostic test. 
+
+We can express the effectiveness of a detect-and-isolate intervention in terms of the {\it test effectiveness} \citep{middleton_modeling_2024}.
+
+If the detection mechanism is independent of the individual infectiousness profile (e.g., detection is anchored to the infection time but does not depend on what happens thereafter), the imapct of the individual infectiousness profile washes out ({\bf Supplementary Text}). However, if detectability is anchored somehow to the infectiousness profile -- which is likely to be the case in general -- the individual profile begins to matter. 
+
+Here, we consider detection strategies that are anchored to the mode of the individual infectiousness profile (i.e., the time of peak infectiousness). Let $D(\tau)$ be the cumulative probability that a person has been detected by time $\tau$. 
+
+To begin, we consider a fixed, deterministic detection time relative to the mean - this might correspond to symptoms arriving deterministically some amount of time prior to (or after) peak infectiousness. 
+
+Maybe: just show a TE profile for a spike, smooth, and $\psi = 0.5$ profile for a deterministic offset (size of offset on the horizontal axis, TE on the vertical); and then show the analogous curves for when the detection profile is random (say, normal, where now the horizontal axis captures the mean of the distribution, and we pick some reasonable standard deviation). This should illustrate how the timing of detection (with variation) interplays with the punctuation of the infectiousness profile. That might be enough here. 
+
+Then we can focus on the implications for the generation interval distribution and secondary infection distribution. 
+
+I want to try my hand at making this figure: what do we need? 
+
+
 
 % Detection and isolation is more effective for punctuated kernels
 % Detect-and-isolate policies shift the overall generation interval distribution in a way that depends on kappa -- leading to a partially self-defeating intervention.

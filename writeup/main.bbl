@@ -1,4 +1,4 @@
-\begin{thebibliography}{5}
+\begin{thebibliography}{8}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -39,6 +39,26 @@ William~Ogilvy Kermack and A.~G. McKendrick.
 \newblock URL
   \url{https://royalsocietypublishing.org/rspa/article/115/772/700/2165/A-contribution-to-the-mathematical-theory-of}.
 
+\bibitem[Lloyd-Smith et~al.(2005)Lloyd-Smith, Schreiber, Kopp, and
+  Getz]{lloyd-smith_superspreading_2005}
+J.~O. Lloyd-Smith, S.~J. Schreiber, P.~E. Kopp, and W.~M. Getz.
+\newblock Superspreading and the effect of individual variation on disease
+  emergence.
+\newblock \emph{Nature}, 438\penalty0 (7066):\penalty0 355--359, November 2005.
+\newblock ISSN 0028-0836, 1476-4687.
+\newblock \doi{10.1038/nature04153}.
+\newblock URL \url{https://www.nature.com/articles/nature04153}.
+
+\bibitem[Middleton and Larremore(2024)]{middleton_modeling_2024}
+Casey Middleton and Daniel~B. Larremore.
+\newblock Modeling the transmission mitigation impact of testing for infectious
+  diseases.
+\newblock \emph{Science Advances}, 10\penalty0 (24):\penalty0 eadk5108, June
+  2024.
+\newblock ISSN 2375-2548.
+\newblock \doi{10.1126/sciadv.adk5108}.
+\newblock URL \url{https://www.science.org/doi/10.1126/sciadv.adk5108}.
+
 \bibitem[Morris et~al.(2024)Morris, Maclean, and
   Black]{morris_computation_2024}
 Dylan Morris, John Maclean, and Andrew~J. Black.
@@ -59,5 +79,16 @@ Dylan Morris, John Maclean, and Andrew~J. Black.
 \newblock \doi{10.1016/j.mbs.2006.10.010}.
 \newblock URL
   \url{https://linkinghub.elsevier.com/retrieve/pii/S0025556406002094}.
+
+\bibitem[Wallinga and Lipsitch(2007)]{wallinga_how_2007}
+J~Wallinga and M~Lipsitch.
+\newblock How generation intervals shape the relationship between growth rates
+  and reproductive numbers.
+\newblock \emph{Proceedings of the Royal Society B: Biological Sciences},
+  274\penalty0 (1609):\penalty0 599--604, February 2007.
+\newblock ISSN 0962-8452, 1471-2954.
+\newblock \doi{10.1098/rspb.2006.3754}.
+\newblock URL
+  \url{https://royalsocietypublishing.org/doi/10.1098/rspb.2006.3754}.
 
 \end{thebibliography}
