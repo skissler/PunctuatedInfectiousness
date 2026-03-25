@@ -120,26 +120,26 @@ gen_inf_attempts_spike <- function(e_dur, i_dur, R0){
 	}
 }
 
-#' Infection attempt generator for gamma profiles 
-#' 
+#' Infection attempt generator for gamma profiles
+#'
 #' Generates attempted infection times for a single person, themselves infected
-#' at time tinf, using the Gamma-distributed individual infectiousness profile 
-#' with punctuation parameter kappa. 
-#' 
-#' @param T Mean generation interval 
-#' @param R0 Basic reproduction number 
-#' @param popshape Shape parameter for the Gamma-distributed population 
+#' at time tinf, using the Gamma-distributed individual infectiousness profile
+#' with punctuation parameter psi.
+#'
+#' @param T Mean generation interval
+#' @param R0 Basic reproduction number
+#' @param popshape Shape parameter for the Gamma-distributed population
 #'   infectiousness profile (A(tau) ~ Gamma(popshape, popshape/T))
-#' @param kappa Parameter governing punctuation of the individual
-#'   infectiousness profile (kappa \in [0, 1], with kappa -> 0 giving sharp
-#'   infectiousness profiles and kappa -> 1 giving smooth ones equivalent to 
+#' @param psi Parameter governing punctuation of the individual
+#'   infectiousness profile (psi \in [0, 1], with psi -> 0 giving sharp
+#'   infectiousness profiles and psi -> 1 giving smooth ones equivalent to
 #'   the population generation interval distribution)
 #' @return A function(t_inf) that returns sorted infection attempt times
-gen_inf_attempts_gamma <- function(T, R0, popshape, kappa){
-	stopifnot(kappa>=0, kappa<=1)
+gen_inf_attempts_gamma <- function(T, R0, popshape, psi){
+	stopifnot(psi>=0, psi<=1)
 	r <- popshape/T
 
-	if(kappa < 1e-6){ # spike implementation
+	if(psi < 1e-6){ # spike implementation
 		shiftshape <- popshape 
 		function(tinf){
 			nattempts <- rpois(1,R0)
@@ -148,7 +148,7 @@ gen_inf_attempts_gamma <- function(T, R0, popshape, kappa){
 			attempt_times <- rep(tinf + shift, nattempts)
 			return(sort(attempt_times))
 		}
-	} else if(kappa > 1-1e-6){ # smooth implementation
+	} else if(psi > 1-1e-6){ # smooth implementation
 		function(tinf){
 			nattempts <- rpois(1,R0)
 			if(nattempts==0L) return(numeric(0))
@@ -156,31 +156,31 @@ gen_inf_attempts_gamma <- function(T, R0, popshape, kappa){
 			return(sort(attempt_times))
 		}
 	} else { # regular implementation
-		shiftshape <- (1-kappa)*popshape
+		shiftshape <- (1-psi)*popshape
 		function(tinf){
 			nattempts <- rpois(1,R0)
 			if(nattempts==0L) return(numeric(0))
 			shift <- rgamma(1, shape=shiftshape, rate=r)
-			attempt_times <- tinf + shift + rgamma(nattempts, shape=kappa*popshape, rate=r)
+			attempt_times <- tinf + shift + rgamma(nattempts, shape=psi*popshape, rate=r)
 			return(sort(attempt_times))
 		}
 	}
 	
 }
 
-gen_inf_attempts_gamma_contacts <- function(T, z, z_max, popshape, kappa){
+gen_inf_attempts_gamma_contacts <- function(T, z, z_max, popshape, psi){
 
-	stopifnot(kappa>0, kappa<1)
-	stopifnot(z_max>0) 
+	stopifnot(psi>0, psi<1)
+	stopifnot(z_max>0)
 
-	r <- popshape/T 
-	shiftshape <- (1-kappa)*popshape 
+	r <- popshape/T
+	shiftshape <- (1-psi)*popshape
 
 	function(tinf){
 		nproposals <- rpois(1, z_max)
 		if(nproposals == 0L) return(numeric(0))
 		shift <- rgamma(1, shape=shiftshape, rate=r)
-		proposals <- tinf + shift + rgamma(nproposals, shape=kappa*popshape, rate=r)
+		proposals <- tinf + shift + rgamma(nproposals, shape=psi*popshape, rate=r)
 		accept_prob <- z(proposals)/z_max
 		keep <- runif(nproposals) < accept_prob
 		if(!any(keep)) return(numeric(0))
@@ -231,5 +231,11 @@ sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
 		}
 	}
 	return(tinf_vec)
+}
+
+# Helper: save a ggplot as both .png and .pdf in figures/
+save_fig <- function(plot, name, width = 10, height = 5) {
+	ggsave(file.path("figures", paste0(name, ".pdf")), plot, width = width, height = height)
+	ggsave(file.path("figures", paste0(name, ".png")), plot, width = width, height = height, dpi = 300)
 }
 
