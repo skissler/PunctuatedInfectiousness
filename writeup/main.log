@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  25 MAR 2026 06:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  25 MAR 2026 07:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -524,21 +524,12 @@ File: figures/stock.png Graphic file (type png)
 Package pdftex.def Info: figures/stock.png  used on input line 61.
 (pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
  [4 <./figures/stock.png>] [5]
-File: figures/stock.png Graphic file (type png)
-<use figures/stock.png>
-Package pdftex.def Info: figures/stock.png  used on input line 128.
-(pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
-
-
-Package natbib Warning: Citation `lloydsmith2005' on page 6 undefined on input 
-line 137.
-
 LaTeX Font Info:    Trying to load font information for TS1+phv on input line 1
-41.
-(/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1phv.fd
+42.
+ (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1phv.fd
 File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
-) [6])
-(./uncontrolled.tex [7]
+))
+(./uncontrolled.tex [6]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 9.
 
@@ -547,18 +538,19 @@ Overfull \hbox (6.6302pt too wide) in paragraph at lines 29--29
 greater un-cer-tainty in epi-demic growth
  []
 
-[8
+[7
 
 ]
 File: figures/stock.png Graphic file (type png)
 <use figures/stock.png>
 Package pdftex.def Info: figures/stock.png  used on input line 43.
 (pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
-) (./controlled.tex [9] [10
+) (./controlled.tex [8] [9
 
-]) (./identifiability.tex [11]) (./discussion.tex [12
+]) (./identifiability.tex [10]) (./discussion.tex
+[11
 
-]) [13
+]) [12
 
 ] (./main.bbl
 Underfull \hbox (badness 4846) in paragraph at lines 32--41
@@ -590,25 +582,21 @@ Underfull \hbox (badness 5417) in paragraph at lines 32--41
  . org / rspa / article / 115 / 772 / 700 / 2165 /
  []
 
-) [14
+) [13
 
-] (./acknowledgements.tex) [15
+] (./acknowledgements.tex) [14
 
-] (./supplementary.tex)
-
-Package natbib Warning: There were undefined citations.
-
-[16
+] (./supplementary.tex) [15
 
 ] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 752C4F84F97BB55887B7A67041DF4736;5606.
  ) 
 Here is how much of TeX's memory you used:
- 12479 strings out of 478994
- 182657 string characters out of 5858184
- 504054 words of memory out of 5000000
- 29680 multiletter control sequences out of 15000+600000
+ 12468 strings out of 478994
+ 182529 string characters out of 5858184
+ 504524 words of memory out of 5000000
+ 29675 multiletter control sequences out of 15000+600000
  438465 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,10n,77p,1596b,410s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -628,10 +616,10 @@ ts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type
 1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/
 helvetic/uhvr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/helveti
 c/uhvro8a.pfb>
-Output written on main.pdf (16 pages, 360289 bytes).
+Output written on main.pdf (15 pages, 358970 bytes).
 PDF statistics:
- 301 PDF objects out of 1000 (max. 8388607)
- 264 compressed objects within 3 object streams
- 66 named destinations out of 1000 (max. 500000)
+ 295 PDF objects out of 1000 (max. 8388607)
+ 259 compressed objects within 3 object streams
+ 60 named destinations out of 1000 (max. 500000)
  126 words of extra memory for PDF output out of 10000 (max. 10000000)
 

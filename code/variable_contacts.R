@@ -1,0 +1,440 @@
+library(tidyverse)
+library(patchwork)
+source("code/utils.R")
+
+# ==============================================================================
+# Overdispersion from punctuated infectiousness x periodic contacts 
+# 
+# Corresponds to writeup sections: 
+#   - "The impact of the individual infectiousness profile on uncontrolled 
+#      epidemic dynamics 
+# 
+# - Computes offspring distribution for a bunch of one-step transmissions 
+# - Plots a heatmap of k as a function of punctuation (kappa) and contact
+#   amplitude
+# - Plots a line plot of k as a function of punctuation (kappa) for a few 
+#   contact amplitudes 
+# - Plots histograms of offspring distributions across punctuation (kappa)
+#   values with a Poisson reference 
+# - Plots epidemic trajectories and computes extinction probability, final 
+#   size, and time to 100 infected/time to peak 
+# ==============================================================================
+
+# ==============================================================================
+# 1. Parameters
+# ==============================================================================
+
+T <- 5              # Mean generation interval 
+popshape <- 10      # Shape parameter for pop. generation interval distribution
+r <- popshape/T     # Rate for generation interval distribution 
+z_per <- 1          # Contact function period 
+
+make_contact_fn <- function(z_mean, z_amp, z_per){
+	stopifnot(z_amp <= z_mean)
+	function(t) z_mean - z_amp*cos(2*pi*t/z_per)
+}
+
+# ==============================================================================
+# 2. Overdispersion (k) vs kappa for three values of z_mean
+# ==============================================================================
+
+omega <- 2*pi/z_per # pre-compute period factor 
+n_index <- 1000     # number of index cases per simulation replicate
+n_reps  <- 10       # number of replicates per (kappa, z_mean) pair
+
+z_mean_vals <- c(2, 5, 12)
+kappa_vals <- seq(from=0.01, to=0.2, by=0.01)
+kappa_vals_fine <- seq(0.01, 0.2, length.out = 200)
+
+theory_df <- expand_grid(kappa = kappa_vals_fine, z_mean = z_mean_vals) %>%
+	mutate(
+		z_amp = z_mean - 1,
+		eps = z_amp / z_mean,
+		rho = (r / sqrt(r^2 + omega^2))^(kappa * popshape),
+		var_nu = z_mean^2 * eps^2 * rho^2 / 2,
+		k_theory = z_mean^2 / var_nu
+	)
+
+# --- Simulation points ---
+sim_k_df <- expand_grid(
+	kappa = kappa_vals,
+	z_mean_sim = z_mean_vals,
+	rep = 1:n_reps
+) %>% mutate(k_sim = NA_real_)
+
+for(idx in seq_len(nrow(sim_k_df))){
+
+	kappa   <- sim_k_df$kappa[idx]
+	z_mean  <- sim_k_df$z_mean_sim[idx]
+	z_amp   <- z_mean - 1
+	z       <- make_contact_fn(z_mean, z_amp, z_per)
+	gfun    <- gen_inf_attempts_gamma_contacts(T=T, z=z, z_max=z_mean + z_amp,
+	                                           popshape=popshape, kappa=kappa)
+	
+	tinfs       <- z_per * runif(n_index)
+	noffspring  <- sapply(lapply(tinfs, gfun), length)
+
+	m_sim <- mean(noffspring)
+	v_sim <- var(noffspring)
+
+	sim_k_df$k_sim[idx] <- if(v_sim>m_sim){m_sim^2/(v_sim-m_sim)} else {Inf}
+	if(idx %% 20 == 0) cat(sprintf("  %d / %d\n", idx, nrow(sim_k_df)))
+}
+
+# --- Plot ---
+k_cap <- 50
+
+fig_k_vs_kappa <- ggplot() +
+	geom_line(data = theory_df,
+		aes(x = kappa, y = k_theory, col = factor(z_mean)),
+		linewidth = 1, alpha = 0.7) +
+	geom_point(data = filter(sim_k_df, k_sim <= k_cap),
+		aes(x = kappa, y = k_sim, col = factor(z_mean_sim)),
+		alpha = 0.4, size = 0.8) +
+	geom_point(data = filter(sim_k_df, k_sim > k_cap) %>%
+			group_by(kappa, z_mean_sim) %>%
+			mutate(idx = seq_along(k_sim),
+			       row = (idx - 1) %/% 5,
+			       col = (idx - 1) %% 5) %>%
+			group_by(kappa, z_mean_sim, row) %>%
+			mutate(n_in_row = n(),
+			       kappa_spread = kappa + (col - (n_in_row - 1)/2) * 0.01,
+			       k_plot = k_cap - row * 1.5) %>%
+			ungroup(),
+		aes(x = kappa_spread, y = k_plot, col = factor(z_mean_sim)),
+		shape = 4, alpha = 0.5, size = 1.5) +
+	scale_color_manual(
+		values = c("2" = "black", "5" = "blue", "12" = "red"),
+		name = expression(bar(z) ~ "(~ R"[0] * ")")) +
+	scale_y_continuous(limits = c(0, k_cap), expand = expansion(mult = c(0.02, 0))) +
+	coord_cartesian(clip = "off") +
+	theme_classic() +
+	labs(x = expression(kappa ~ "(0 = punctuated, 1 = smooth)"),
+	     y = "Dispersion parameter k")
+
+# ==============================================================================
+# 3. Heatmaps of k over (kappa, z_amp) for z_mean = 2, 5, 12
+# ==============================================================================
+
+n_index_heat <- 10000
+kappa_vals_heat   <- seq(0.01, 0.2, by = 0.01)
+
+heatmap_list <- list()
+sim_grid_all <- list()
+
+for(z_mean in z_mean_vals){
+
+	z_amp_max <- z_mean - 1
+	z_amp_vals <- seq(0, z_amp_max, length.out = 20)
+
+	# --- Simulation grid ---
+	sim_grid <- expand_grid(kappa = kappa_vals_heat, z_amp = z_amp_vals) %>%
+		mutate(k_sim = NA_real_)
+
+	for(idx in seq_len(nrow(sim_grid))){
+		kappa  <- sim_grid$kappa[idx]
+		z_amp   <- sim_grid$z_amp[idx]
+		z <- make_contact_fn(z_mean, z_amp, z_per)
+		gfun <- gen_inf_attempts_gamma_contacts(T=T, z=z, z_max=z_mean + z_amp,
+		                                        popshape=popshape, kappa=kappa)
+		tinfs <- z_per * runif(n_index_heat)
+		noffspring  <- sapply(lapply(tinfs, gfun), length)
+		m_s <- mean(noffspring)
+		v_s <- var(noffspring)
+		sim_grid$k_sim[idx] <- if(v_s>m_s){m_s^2/(v_s-m_s)} else {Inf}
+	}
+	cat(sprintf("  Done simulations for z_mean = %g\n", z_mean))
+	sim_grid_all[[as.character(z_mean)]] <- sim_grid
+
+	sim_means <- sim_grid %>%
+		mutate(z_mean = z_mean)
+
+	# --- Theoretical contours ---
+	theory_heat <- expand_grid(kappa = seq(0.01, 0.2, length.out = 100),
+	                           z_amp = seq(0.01, z_amp_max, length.out = 100)) %>%
+		mutate(
+			eps = z_amp / z_mean,
+			rho = (r / sqrt(r^2 + omega^2))^(kappa * popshape),
+			var_nu = z_mean^2 * eps^2 * rho^2 / 2,
+			k_theory = z_mean^2 / var_nu,
+			z_mean = z_mean
+		)
+
+	# --- Plot ---
+	heatmap_list[[as.character(z_mean)]] <- ggplot() +
+		geom_tile(data = sim_means, aes(x = kappa, y = z_amp, fill = k_sim)) +
+		geom_contour(data = theory_heat,
+			aes(x = kappa, y = z_amp, z = k_theory),
+			col = "white", alpha = 0.6, breaks = c(1, 2, 5, 10, 20, 50, 100)) +
+		scale_fill_viridis_c(option = "inferno", name = "k",
+		                     trans = "log10", limits = c(1, NA)) +
+		theme_classic() +
+		labs(x = expression(kappa),
+		     y = "Contact amplitude",
+		     title = bquote(bar(z) == .(z_mean)))
+}
+
+fig_heatmaps <- patchwork::wrap_plots(heatmap_list, nrow = 1) +
+	patchwork::plot_annotation(
+		title = "Offspring overdispersion (NB k) across punctuation and contact amplitude"
+	)
+
+# Same heatmaps with k capped at 50, linear scale
+heatmap_capped_list <- list()
+for(z_mean in z_mean_vals){
+	z_amp_max <- z_mean - 1
+	z_amp_vals <- seq(0, z_amp_max, length.out = 20)
+
+	sim_means <- sim_grid_all[[as.character(z_mean)]] %>%
+		mutate(k_capped = pmin(k_sim, 50), z_mean = z_mean)
+
+	theory_heat <- expand_grid(kappa = seq(0.01, 0.2, length.out = 500),
+	                           z_amp = seq(0.01, z_amp_max, length.out = 500)) %>%
+		mutate(
+			eps = z_amp / z_mean,
+			rho = (r / sqrt(r^2 + omega^2))^(kappa * popshape),
+			var_nu = z_mean^2 * eps^2 * rho^2 / 2,
+			k_theory = pmin(z_mean^2 / var_nu, 50)
+		)
+
+	heatmap_capped_list[[as.character(z_mean)]] <- ggplot() +
+		geom_tile(data = sim_means, aes(x = kappa, y = z_amp, fill = k_capped)) +
+		geom_contour(data = theory_heat,
+			aes(x = kappa, y = z_amp, z = k_theory),
+			col = "black", linewidth = 1.0, breaks = c(1, 2, 5, 10, 20, 50)) +
+		geom_contour(data = theory_heat,
+			aes(x = kappa, y = z_amp, z = k_theory),
+			col = "white", linewidth = 0.4, breaks = c(1, 2, 5, 10, 20, 50)) +
+		scale_fill_viridis_c(option = "inferno", name = "k\n(capped\nat 50)",
+		                     limits = c(0, 50)) +
+		theme_classic() +
+		labs(x = expression(kappa),
+		     y = "Contact amplitude",
+		     title = bquote(bar(z) == .(z_mean)))
+}
+
+fig_heatmaps_capped <- patchwork::wrap_plots(heatmap_capped_list, nrow = 1) +
+	patchwork::plot_annotation(
+		title = "Offspring overdispersion (NB k, capped at 50)"
+	)
+
+
+# ==============================================================================
+# 3b. Heatmaps of k over (kappa, z_per) for z_mean = 2, 5, 12
+# ==============================================================================
+
+z_per_vals <- seq(0.5, 20, length.out = 20)
+
+heatmap_period_list <- list()
+heatmap_period_capped_list <- list()
+sim_grid_period_all <- list()
+
+for(z_mean in z_mean_vals){
+
+	z_amp   <- z_mean - 1
+	eps     <- z_amp / z_mean
+
+	# --- Simulation grid ---
+	sim_grid <- expand_grid(kappa = kappa_vals_heat, z_per = z_per_vals) %>%
+		mutate(k_sim = NA_real_)
+
+	for(idx in seq_len(nrow(sim_grid))){
+		kp     <- sim_grid$kappa[idx]
+		zp     <- sim_grid$z_per[idx]
+		z      <- make_contact_fn(z_mean, z_amp, zp)
+		gfun   <- gen_inf_attempts_gamma_contacts(T=T, z=z, z_max=z_mean + z_amp,
+		                                          popshape=popshape, kappa=kp)
+		tinfs      <- zp * runif(n_index_heat)
+		noffspring <- sapply(lapply(tinfs, gfun), length)
+		m_s <- mean(noffspring)
+		v_s <- var(noffspring)
+		sim_grid$k_sim[idx] <- if(v_s > m_s){ m_s^2 / (v_s - m_s) } else { Inf }
+	}
+	cat(sprintf("  Done period simulations for z_mean = %g\n", z_mean))
+	sim_grid_period_all[[as.character(z_mean)]] <- sim_grid
+
+	sim_means <- sim_grid %>% mutate(z_mean = z_mean)
+
+	# --- Theoretical contours ---
+	theory_heat <- expand_grid(kappa = seq(0.01, 0.2, length.out = 100),
+	                           z_per = seq(0.5, 20, length.out = 100)) %>%
+		mutate(
+			omega    = 2 * pi / z_per,
+			rho      = (r / sqrt(r^2 + omega^2))^(kappa * popshape),
+			var_nu   = z_mean^2 * eps^2 * rho^2 / 2,
+			k_theory = z_mean^2 / var_nu
+		)
+
+	# --- Log-scale heatmap ---
+	heatmap_period_list[[as.character(z_mean)]] <- ggplot() +
+		geom_tile(data = sim_means, aes(x = kappa, y = z_per, fill = k_sim)) +
+		geom_contour(data = theory_heat,
+			aes(x = kappa, y = z_per, z = k_theory),
+			col = "white", alpha = 0.6, breaks = c(1, 2, 5, 10, 20, 50, 100)) +
+		scale_fill_viridis_c(option = "viridis", name = "k",
+		                     trans = "log10", limits = c(1, NA)) +
+		theme_classic() +
+		labs(x = expression(kappa),
+		     y = "Contact period (days)",
+		     title = bquote(bar(z) == .(z_mean)))
+
+	# --- Capped linear heatmap ---
+	theory_heat_capped <- expand_grid(kappa = seq(0.01, 0.2, length.out = 500),
+	                                  z_per = seq(0.5, 20, length.out = 500)) %>%
+		mutate(
+			omega    = 2 * pi / z_per,
+			rho      = (r / sqrt(r^2 + omega^2))^(kappa * popshape),
+			var_nu   = z_mean^2 * eps^2 * rho^2 / 2,
+			k_theory = pmin(z_mean^2 / var_nu, 50)
+		)
+
+	sim_means_capped <- sim_grid %>%
+		mutate(k_capped = pmin(k_sim, 50), z_mean = z_mean)
+
+	heatmap_period_capped_list[[as.character(z_mean)]] <- ggplot() +
+		geom_tile(data = sim_means_capped, aes(x = kappa, y = z_per, fill = k_capped)) +
+		geom_contour(data = theory_heat_capped,
+			aes(x = kappa, y = z_per, z = k_theory),
+			col = "black", linewidth = 1.0, breaks = c(1, 2, 5, 10, 20, 50)) +
+		geom_contour(data = theory_heat_capped,
+			aes(x = kappa, y = z_per, z = k_theory),
+			col = "white", linewidth = 0.4, breaks = c(1, 2, 5, 10, 20, 50)) +
+		scale_fill_viridis_c(option = "inferno", name = "k\n(capped\nat 50)",
+		                     limits = c(0, 50)) +
+		theme_classic() +
+		labs(x = expression(kappa),
+		     y = "Contact period (days)",
+		     title = bquote(bar(z) == .(z_mean)))
+}
+
+fig_heatmaps_period <- patchwork::wrap_plots(heatmap_period_list, nrow = 1) +
+	patchwork::plot_annotation(
+		title = "Offspring overdispersion (NB k) across punctuation and contact period"
+	)
+
+fig_heatmaps_period_capped <- patchwork::wrap_plots(heatmap_period_capped_list, nrow = 1) +
+	patchwork::plot_annotation(
+		title = "Offspring overdispersion (NB k, capped at 50) across punctuation and contact period"
+	)
+
+ggsave("figures/fig_overdispersion_heatmap_period.pdf",
+       fig_heatmaps_period, width = 14, height = 5)
+cat("Saved figures/fig_overdispersion_heatmap_period.pdf\n")
+
+ggsave("figures/fig_overdispersion_heatmap_period_capped.pdf",
+       fig_heatmaps_period_capped, width = 14, height = 5)
+cat("Saved figures/fig_overdispersion_heatmap_period_capped.pdf\n")
+
+
+# ==============================================================================
+# 4. Full epidemic simulations
+# ==============================================================================
+
+popsize <- 1000
+nsim <- 200 
+
+scenarios <- list(
+	list(kappa=0.25, z_mean=5, z_amp=0, label="Smooth + constant"),
+	list(kappa=0.05, z_mean=5, z_amp=0, label="Punctuated + constant"),
+	list(kappa=0.25, z_mean=5, z_amp=4, label="Smooth + periodic"),
+	list(kappa=0.05, z_mean=5, z_amp=4, label="Punctuated + periodic")
+	)
+
+epi_df <- tibble() 
+
+for(sc in scenarios){
+
+	z <- make_contact_fn(z_mean=sc$z_mean, z_amp=sc$z_amp, z_per=z_per)
+	z_max <- sc$z_mean + sc$z_amp
+
+	gfun <- gen_inf_attempts_gamma_contacts(T=T, z=z, z_max=z_max,
+	                                        popshape=popshape, kappa=sc$kappa)
+
+	for(sim in seq_len(nsim)){
+		tinf <- sim_stochastic_fast(n=popsize, gen_inf_attempts=gfun)
+		n_infected <- sum(tinf<Inf)
+		epi_df <- bind_rows(epi_df, tibble(
+			sim=sim,
+			kappa=sc$kappa,
+			z_mean=sc$z_mean,
+			z_amp=sc$z_amp,
+			label=sc$label,
+			final_size=n_infected,
+			tinf_sorted=list(sort(tinf[tinf<Inf]))
+		))
+		if(sim %% 20 == 0) cat(sprintf("  %d / %d\n", sim, nsim))
+	}
+
+}
+
+epi_df <- epi_df %>% 
+	mutate(established=as.integer(final_size>=0.1*popsize))
+
+fig_final_size <- epi_df %>%
+	filter(established==1) %>% 
+	ggplot(aes(x = final_size)) +
+	geom_histogram(binwidth = 1, fill = "steelblue", col = "white", alpha = 0.7) +
+	facet_wrap(~label, ncol = 2) +
+	theme_classic() +
+	labs(x = "Final epidemic size",
+	     y = "Count",
+	     title = "Final size distributions across scenarios",
+	     subtitle = sprintf("N = %d, z_mean = 5, %d simulations per scenario",
+	                        popsize, nsim))
+
+fs_table <- epi_df %>%
+	group_by(label) %>%
+	summarise(
+		mean_fs = mean(final_size),
+		sd_fs   = sd(final_size),
+		median_fs = median(final_size),
+		p_established = mean(established),
+		.groups = "drop"
+	)
+
+
+fs_table_established <- epi_df %>%
+	filter(established==1) %>%
+	group_by(label) %>%
+	summarise(
+		n = n(),
+		mean_fs = mean(final_size),
+		sd_fs   = sd(final_size),
+		.groups = "drop"
+	) %>%
+	print()
+
+
+curve_df <- tibble()
+for (idx in seq_len(nrow(epi_df))) {
+	row <- epi_df[idx, ]
+	if (!row$established) next
+	ts <- row$tinf_sorted[[1]]
+	curve_df <- bind_rows(curve_df, tibble(
+		sim = row$sim,
+		label = row$label,
+		tinf = ts,
+		cuminf = seq_along(ts)
+	))
+}
+
+# Keep first 10 established epidemics per scenario for plotting
+if (nrow(curve_df) > 0) {
+	plot_sims <- curve_df %>%
+		group_by(label) %>%
+		distinct(sim) #%>%
+		#slice_head(n = 10)
+
+	fig_curves <- curve_df %>%
+		semi_join(plot_sims, by = c("label", "sim")) %>%
+		ggplot(aes(x = tinf, y = cuminf, group = interaction(label, sim))) +
+		geom_line(alpha = 0.2, linewidth=0.2) +
+		facet_wrap(~label, ncol = 2) +
+		theme_classic() +
+		labs(x = "Time (days)", y = "Cumulative infections",
+		     title = "Example epidemic trajectories (established epidemics)")
+
+	# ggsave("figures/fig_epidemic_curves.pdf", fig_curves, width = 10, height = 7)
+	# cat("Saved figures/fig_epidemic_curves.pdf\n")
+}
+
