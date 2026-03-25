@@ -9,7 +9,7 @@ Early work by Hudson, and later by Kermack and McKendrick \citep{kermack_contrib
 F(t) = \int_0^\infty F(t-\tau)\, S(t-\tau)\, A(\tau)\, d\tau
 \label{eq:foi}
 \end{equation}
-where $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level ``infectiousness profile'', a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection and the susceptible density, $F(t) \cdot S(t)$; thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds.
+where $F(t)$ is the force of infection at time $t$, $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the population-level ``infectiousness profile'', a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease ($-\frac{dS}{dt}$)is simply the product of the force of infection and the susceptible density, $F(t) \cdot S(t)$; thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds.
 
 The infectiousness profile is related to the basic reproduction number, $R_0$, and the generation interval, $g(\tau)$ \citep{breda_formulation_2012}:
 \begin{equation}
