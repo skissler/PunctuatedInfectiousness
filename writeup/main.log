@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  25 MAR 2026 06:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  25 MAR 2026 06:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -384,11 +384,7 @@ File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count291
 \l__pdf_internal_box=\box51
 )
-(./main.aux
-
-LaTeX Warning: Label `fig:episims' multiply defined.
-
-)
+(./main.aux)
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 43.
@@ -522,28 +518,26 @@ LaTeX Font Info:    Font shape `T1/phv/b/it' in size <10.95> not available
  [3
 
 ]
-<figures/stock.png, id=120, 716.6775pt x 417.56pt>
+<figures/stock.png, id=121, 716.6775pt x 417.56pt>
 File: figures/stock.png Graphic file (type png)
 <use figures/stock.png>
-Package pdftex.def Info: figures/stock.png  used on input line 71.
+Package pdftex.def Info: figures/stock.png  used on input line 61.
+(pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
+ [4 <./figures/stock.png>] [5]
+File: figures/stock.png Graphic file (type png)
+<use figures/stock.png>
+Package pdftex.def Info: figures/stock.png  used on input line 128.
 (pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
 
 
-Package natbib Warning: Citation `lloydsmith2005' on page 4 undefined on input 
-line 79.
+Package natbib Warning: Citation `lloydsmith2005' on page 6 undefined on input 
+line 137.
 
-[4 <./figures/stock.png>]
-LaTeX Font Info:    Trying to load font information for TS1+phv on input line 8
-3.
-
+LaTeX Font Info:    Trying to load font information for TS1+phv on input line 1
+41.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1phv.fd
 File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
-) [5] [6]
-File: figures/stock.png Graphic file (type png)
-<use figures/stock.png>
-Package pdftex.def Info: figures/stock.png  used on input line 154.
-(pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
-)
+) [6])
 (./uncontrolled.tex [7]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 9.
@@ -607,17 +601,14 @@ Package natbib Warning: There were undefined citations.
 [16
 
 ] (./main.aux)
-
-LaTeX Warning: There were multiply-defined labels.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: BED19215D16CE12352520CF6C94F7040;5679.
+(rerunfilecheck)             Checksum: 752C4F84F97BB55887B7A67041DF4736;5606.
  ) 
 Here is how much of TeX's memory you used:
- 12478 strings out of 478994
- 182639 string characters out of 5858184
- 503901 words of memory out of 5000000
- 29679 multiletter control sequences out of 15000+600000
+ 12479 strings out of 478994
+ 182657 string characters out of 5858184
+ 504054 words of memory out of 5000000
+ 29680 multiletter control sequences out of 15000+600000
  438465 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,10n,77p,1596b,410s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -637,10 +628,10 @@ ts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type
 1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/
 helvetic/uhvr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/helveti
 c/uhvro8a.pfb>
-Output written on main.pdf (16 pages, 359468 bytes).
+Output written on main.pdf (16 pages, 360289 bytes).
 PDF statistics:
- 300 PDF objects out of 1000 (max. 8388607)
- 263 compressed objects within 3 object streams
+ 301 PDF objects out of 1000 (max. 8388607)
+ 264 compressed objects within 3 object streams
  66 named destinations out of 1000 (max. 500000)
  126 words of extra memory for PDF output out of 10000 (max. 10000000)
 
