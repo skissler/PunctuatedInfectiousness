@@ -3127,6 +3127,234 @@ $$\Delta_{\text{var}} = \bigl[h_{\text{spike}}(\mu,\sigma) - h_{\text{smooth}}(\
 <p>The operationally relevant regime is typically (3): detection happens some time after peak infectiousness, and the question is whether the spike's concentrated burst has already been missed. In this regime, noise in detection timing reliably favours spikes — they benefit more from lucky early catches. The "variance helps spikes" result holds where it matters most, but it is not universal across all \(\mu\).</p>
 </div>
 
+<hr>
+<h2>Does \(\psi\) affect the final size distribution? Miller's test-individual framework and its limits</h2>
+<p><em>2026-03-25</em></p>
+
+<h3>1. Miller's result: the expected final size is \(\psi\)-independent</h3>
+
+<p>Miller's test-individual argument is beautifully simple. Take a random test individual \(u\) and prevent it from transmitting. In a well-mixed population of size \(N\), each infected person transmits to \(u\) with probability \(\mathcal{R}_0/N\), independently. If a fraction \(\pi\) of the population is ultimately infected, then \(u\) escapes all \(\pi N\) potential transmissions with probability:</p>
+
+$$P(u \text{ escapes}) = \left(1 - \frac{\mathcal{R}_0}{N}\right)^{\pi N} \xrightarrow{N \to \infty} e^{-\mathcal{R}_0 \pi}$$
+
+<p>Since \(P(u \text{ infected}) = \pi\) by consistency, we get the classical final size relation:</p>
+
+$$\pi = 1 - e^{-\mathcal{R}_0 \pi}$$
+
+<p>The key insight Miller emphasises (p. 2): <em>"The derivation does not depend on the dynamics of the infection process, but just the final probability that one individual will transmit to another if infected."</em> In our model, each infector makes \(N \sim \text{Pois}(\mathcal{R}_0)\) attempts targeting uniformly random individuals. The probability any given person is targeted is \(\mathcal{R}_0/N\), regardless of \(\psi\). So the expected final size is \(\psi\)-independent. Full stop.</p>
+
+<h3>2. Why Miller's framework can't capture the variance</h3>
+
+<p>Miller's derivation <em>assumes</em> the final size concentrates. Quoting (p. 3): <em>"If it makes sense to discuss <b>the</b> final size of the epidemic, then the variation in the final sizes of an ensemble of epidemic realizations must be small compared to the final size."</em></p>
+
+<p>This is a law-of-large-numbers statement. It tells us \(Z_N / N \xrightarrow{p} \pi\) as \(N \to \infty\). But it doesn't tell us about the \(O(\sqrt{N})\) fluctuations around \(\pi\) — and that's exactly where \(\psi\) lives.</p>
+
+<h3>3. The W time-shift doesn't help either</h3>
+
+<p>Our branching-process approximation gives stochastic trajectories of the form:</p>
+
+$$C(t) \approx N \cdot z_{\det}(t + \tau), \quad \tau = -\frac{\log W}{r}$$
+
+<p>where \(z_{\det}\) is the deterministic epidemic fraction and \(W\) captures the stochastic head-start. Since \(\text{Var}(W)\) depends on \(\psi\), the timing of the epidemic depends on \(\psi\). But as \(t \to \infty\), \(z_{\det}(t + \tau) \to \pi\) regardless of \(\tau\). The time shift delays or advances the epidemic but doesn't change where it ends up. So the \(W\) framework captures variation in <em>timing</em> but not in <em>final size</em>.</p>
+
+<h3>4. Where the variance actually comes from</h3>
+
+<p>The final size variance comes from demographic stochasticity <em>throughout</em> the epidemic — the \(O(\sqrt{N})\) fluctuations in the depletion trajectory \(S(t)\). By CLT-type results for stochastic epidemics (Barbour 1975, Andersson &amp; Britton 2000), we expect:</p>
+
+$$\sqrt{N}\left(\frac{Z_N}{N} - \pi\right) \xrightarrow{d} \mathcal{N}(0, \sigma^2)$$
+
+<p>where \(\sigma^2\) depends on \(\psi\). The mechanism: consider how individual-level transmission feeds into the variance of the infection process.</p>
+
+<p>For a <b>smooth</b> profile (\(\psi = 1\)): person \(i\)'s infection attempts occur at times \(\tau_1, \ldots, \tau_N\) drawn independently from \(\text{Gamma}(\alpha, \beta)\). Each attempt encounters the susceptible fraction \(S(\tau_j)\) at its own time. The outcomes are nearly independent, giving low variance in person \(i\)'s total contribution.</p>
+
+<p>For a <b>spike</b> profile (\(\psi = 0\)): person \(i\)'s attempts all occur at time \(\tau \sim \text{Gamma}(\alpha, \beta)\). All attempts encounter the <em>same</em> \(S(\tau)\). If \(\tau\) happens to fall when \(S\) is high, all attempts benefit; if \(S\) is low, all suffer. This positive correlation inflates the variance of the per-person transmission contribution.</p>
+
+<p>More precisely, the per-person infection count \(\nu_i\) (successful transmissions from person \(i\)) has the same mean under both profiles — approximately \(\mathcal{R}_0 \cdot S(t_i)\) where \(t_i\) is person \(i\)'s infection time. But the <b>variance</b> of \(\nu_i\) is higher for spike profiles because:</p>
+
+$$\text{Var}(\nu_i \mid \text{spike}) \approx \underbrace{\mathcal{R}_0 \cdot S}_{\text{Poisson variance}} + \underbrace{\mathcal{R}_0^2 \cdot \text{Var}(S(\tau))}_{\text{synchronisation penalty}}$$
+
+$$\text{Var}(\nu_i \mid \text{smooth}) \approx \underbrace{\mathcal{R}_0 \cdot S}_{\text{Poisson variance}}$$
+
+<p>The extra term for spike profiles arises because all attempts see the <em>same random</em> \(S(\tau)\), while for smooth profiles the variation in \(S(\tau_j)\) across attempts averages out.</p>
+
+<p>These per-person variance contributions accumulate over the \(\sim N\pi\) infectors throughout the epidemic, giving \(\text{Var}(Z_N) = O(N)\) with a prefactor that increases as \(\psi \to 0\).</p>
+
+<h3>5. What would an analytical approach look like?</h3>
+
+<p>To actually compute \(\sigma^2(\psi)\), one would need a <b>diffusion approximation</b> (system-size expansion) of the stochastic epidemic around the deterministic trajectory. The idea:</p>
+
+<ol>
+<li>Write the infection process as \(C(t) = N z_{\det}(t) + \sqrt{N} \cdot \xi(t)\) where \(\xi\) is the fluctuation process.</li>
+<li>Derive the SDE for \(\xi(t)\), whose diffusion coefficient involves the per-person offspring variance — which depends on \(\psi\).</li>
+<li>Propagate to \(t \to \infty\) to get \(\text{Var}(\xi(\infty)) = \sigma^2(\psi)\).</li>
+</ol>
+
+<p>This is a meaningfully harder calculation than either the Miller final-size relation or the W-distribution calculation, because it requires tracking the full epidemic trajectory, not just the early-phase branching process or the final state. It's a viable path but goes beyond what the test-individual framework can offer.</p>
+
+<h3>6. Summary</h3>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em 0;">
+<tr><th>Framework</th><th>What it captures</th><th>\(\psi\)-dependent?</th></tr>
+<tr><td>Miller test individual</td><td>Expected final size \(\pi\)</td><td>No</td></tr>
+<tr><td>W time-shift</td><td>Epidemic timing variability</td><td>Yes</td></tr>
+<tr><td>Diffusion approximation</td><td>Final size variance \(\sigma^2\)</td><td>Yes (needed)</td></tr>
+</table>
+
+<p>The punchline: the expected final size is \(\psi\)-independent by Miller's argument (and this is exact, not an approximation). The final size <em>variance</em> is \(\psi\)-dependent, but capturing it requires a diffusion/CLT approach that tracks demographic stochasticity throughout the epidemic — not just the early-phase branching process or the final transmission probability. The test-individual framework elegantly explains <em>why</em> the mean doesn't depend on \(\psi\), but its very premise (that the final size concentrates) is what we'd need to relax to study the variance.</p>
+
+<hr>
+
+<div class="prompt">Could we compute the effective overdispersion of secondary infections as a function of &psi;, and use that to approximate the final size variance? (cf. Lloyd-Smith et al. 2005)</div>
+
+<h1>Effective overdispersion from punctuated infectiousness</h1>
+
+<p>This is a productive approach. We can derive an <b>effective negative-binomial dispersion parameter</b> \(k_{\text{eff}}(\psi, t)\) that varies both with the punctuation parameter and with the stage of the epidemic. The key result is clean and connects directly to the diffusion coefficient needed for the final size variance.</p>
+
+<h2>1. Setup</h2>
+
+<p>Consider person \(i\), infected at time \(t\). They generate \(N_i \sim \text{Poisson}(R_0)\) infection attempts. Each attempt \(j\) occurs at time \(t + l_i + \epsilon_j\), where:</p>
+
+$$l_i \sim \text{Gamma}\bigl((1-\psi)\alpha,\; \beta\bigr) \qquad \text{(shared shift)}$$
+$$\epsilon_j \sim \text{Gamma}\bigl(\psi\alpha,\; \beta\bigr) \qquad \text{(independent jitter)}$$
+
+<p>Each attempt contacts a uniformly random individual. In a population of size \(N\) with deterministic susceptible fraction \(S(t)\), the probability that attempt \(j\) succeeds is:</p>
+
+$$p(l_i, \epsilon_j) \;=\; \frac{S(t + l_i + \epsilon_j)}{N}$$
+
+<p>The total number of successful secondary infections is:</p>
+
+$$Z_i = \sum_{j=1}^{N_i} B_j, \qquad B_j \sim \text{Bernoulli}\bigl(p(l_i, \epsilon_j)\bigr)$$
+
+<p>with \(B_j\) conditionally independent given the timing realizations (since they contact different random targets).</p>
+
+<h2>2. Mean offspring count (&#968;-independent)</h2>
+
+<p>The mean number of secondary infections is:</p>
+
+$$E[Z_i] = E[N_i] \cdot E_\tau\!\left[\frac{S(t + \tau)}{N}\right] = R_0 \,\bar{p}(t)$$
+
+<p>where \(\tau = l + \epsilon \sim \text{Gamma}(\alpha, \beta)\) regardless of \(\psi\), and \(\bar{p}(t) = E_\tau[S(t+\tau)/N]\). Since the marginal distribution of \(\tau\) is the same for all \(\psi\), the <b>mean offspring count is \(\psi\)-independent</b> — consistent with the Miller final size result.</p>
+
+<h2>3. Offspring variance: the tower calculation</h2>
+
+<p>Define the <b>conditional mean success probability</b> given the shared shift:</p>
+
+$$\bar{p}(l) \;=\; E_\epsilon\!\left[\frac{S(t + l + \epsilon)}{N}\right], \qquad \epsilon \sim \text{Gamma}(\psi\alpha, \beta)$$
+
+<p>This is the per-attempt success probability, averaged over the jitter \(\epsilon\), for a person whose shared shift takes value \(l\). Now we apply the law of total variance in stages.</p>
+
+<h3>Step 1: Variance given \(N_i = n\) and \(l_i = l\)</h3>
+
+<p>Conditioning on the shared shift \(l\), the attempts have independent jitters \(\epsilon_j\). By the same tower argument applied to \(\epsilon\):</p>
+
+$$\text{Var}(Z_i \mid N_i = n,\, l_i = l) = n\,\bar{p}(l)\bigl(1 - \bar{p}(l)\bigr)$$
+
+<p><em>Proof sketch:</em> Given \(l\), the \(B_j\) are conditionally independent Bernoullis with random probabilities \(p(l, \epsilon_j)\). The variance decomposes as:</p>
+
+$$n\,E_\epsilon[p(1-p)] + n\,\text{Var}_\epsilon(p) = n\bigl(\bar{p}(l) - E[p^2] + E[p^2] - \bar{p}(l)^2\bigr) = n\,\bar{p}(l)(1-\bar{p}(l))$$
+
+<p>So given the shared shift, the offspring count has a <b>binomial-like</b> variance — the independent jitters "smooth out" any within-person variation from the changing susceptible fraction.</p>
+
+<h3>Step 2: Integrate over \(l\)</h3>
+
+<p>Using \(E[Z_i \mid l] = R_0\,\bar{p}(l)\) and \(\text{Var}(Z_i \mid l) = R_0\,\bar{p}(l)\) (the latter from combining Step 1 with the Poisson \(N_i\)):</p>
+
+$$\text{Var}(Z_i) = E_l\bigl[R_0\,\bar{p}(l)\bigr] + \text{Var}_l\bigl[R_0\,\bar{p}(l)\bigr]$$
+
+<div class="highlight">
+$$\boxed{\text{Var}(Z_i) \;=\; R_0\,\bar{p} \;+\; R_0^2\,\text{Var}_l\!\bigl(\bar{p}(l)\bigr)}$$
+</div>
+
+<p>where \(l \sim \text{Gamma}((1-\psi)\alpha,\,\beta)\).</p>
+
+<p>The first term, \(R_0\bar{p} = E[Z_i]\), is the Poisson baseline. The second term is the <b>synchronization-induced overdispersion</b>.</p>
+
+<h2>4. Limiting cases</h2>
+
+<ul>
+<li><b>\(\psi = 1\) (smooth):</b> The shared shift has shape \((1-\psi)\alpha = 0\), so \(l = 0\) a.s.  Then \(\bar{p}(l)\) is constant, \(\text{Var}_l = 0\), and \(\text{Var}(Z_i) = R_0\bar{p}\). <b>Exactly Poisson</b> — no overdispersion at any stage of the epidemic.</li>
+
+<li><b>\(\psi = 0\) (spike):</b> The shared shift is \(l \sim \text{Gamma}(\alpha, \beta)\) (the full generation interval), and jitter vanishes (\(\epsilon = 0\)), so \(\bar{p}(l) = S(t+l)/N\). The overdispersion is \(R_0^2 \text{Var}_l(S(t+l)/N)\), which depends on how much the susceptible fraction varies over the timescale of the generation interval.</li>
+
+<li><b>Early epidemic (\(S \approx N\)):</b> \(\bar{p}(l) \approx 1\) for all \(l\), so \(\text{Var}_l(\bar{p}(l)) \approx 0\). <b>All \(\psi\) values give Poisson offspring in the early phase</b>. This confirms that the branching process approximation (with Poisson offspring) is valid for all \(\psi\).</li>
+
+<li><b>Mid-epidemic (\(S\) changing rapidly):</b> The variance \(\text{Var}_l(\bar{p}(l))\) is largest, since different values of \(l\) map to very different susceptible fractions. This is where punctuation has its greatest effect.</li>
+</ul>
+
+<h2>5. Effective negative binomial dispersion</h2>
+
+<p>The negative binomial with mean \(\mu\) and dispersion \(k\) has variance \(\mu + \mu^2/k\). Matching to our result:</p>
+
+$$R_0\bar{p} + R_0^2\,\text{Var}_l(\bar{p}(l)) = R_0\bar{p} + \frac{(R_0\bar{p})^2}{k_{\text{eff}}}$$
+
+<p>gives the <b>effective dispersion parameter</b>:</p>
+
+<div class="highlight">
+$$\boxed{k_{\text{eff}}(\psi, t) \;=\; \frac{\bar{p}(t)^2}{\text{Var}_l\!\bigl(\bar{p}(l;\, t)\bigr)}}$$
+</div>
+
+<p>where the dependence on \(\psi\) enters through both:</p>
+<ol>
+<li>The distribution of \(l \sim \text{Gamma}((1-\psi)\alpha, \beta)\) — smaller \(\psi\) means more variable shifts</li>
+<li>The smoothing in \(\bar{p}(l) = E_\epsilon[S(t+l+\epsilon)/N]\) — smaller \(\psi\) means less smoothing by jitter</li>
+</ol>
+
+<p><b>Interpretation:</b> \(k_{\text{eff}}(\psi, t)\) measures how much the shared shift \(l\) creates variability in the "effective environment" faced by a person's infection attempts. When \(\psi \to 0\), the environment is fully determined by a single random time point; when \(\psi \to 1\), attempts independently sample the susceptible pool at different times, averaging out environmental variation.</p>
+
+<h2>6. Computing \(k_{\text{eff}}(\psi, t)\) numerically</h2>
+
+<p>All ingredients are available from existing code:</p>
+
+<ol>
+<li>The deterministic trajectory \(S(t)\) comes from <code>renewal_epidemic()</code></li>
+<li>For each time \(t\), compute \(\bar{p}(l) = E_\epsilon[S(t + l + \epsilon)/N]\) by numerical integration (or Monte Carlo) over \(\epsilon \sim \text{Gamma}(\psi\alpha, \beta)\)</li>
+<li>Compute \(\bar{p}(t) = E_l[\bar{p}(l)]\) and \(\text{Var}_l(\bar{p}(l))\) by integrating over \(l \sim \text{Gamma}((1-\psi)\alpha, \beta)\)</li>
+<li>Take the ratio \(k_{\text{eff}} = \bar{p}^2 / \text{Var}_l(\bar{p}(l))\)</li>
+</ol>
+
+<p>This gives a <b>time-varying effective dispersion</b> that starts at \(k_{\text{eff}} \to \infty\) (Poisson, early epidemic), decreases to a minimum around the epidemic peak (maximum overdispersion), and increases again as the epidemic wanes.</p>
+
+<h2>7. Connection to final size variance</h2>
+
+<p>The offspring variance \(\text{Var}(Z_i)\) is exactly the quantity that enters the <b>diffusion coefficient</b> in the system-size expansion. The idea (Ethier &amp; Kurtz 1986, Barbour 1975):</p>
+
+<p>Write the cumulative incidence as \(C(t) = N\,c_{\det}(t) + \sqrt{N}\,\xi(t)\), where \(c_{\det}\) is the deterministic (renewal equation) trajectory and \(\xi\) is the fluctuation process. The variance of \(\xi\) evolves as:</p>
+
+$$\frac{d}{dt}\text{Var}(\xi) \;\approx\; j_{\det}(t) \cdot \frac{\text{Var}(Z_i)}{E[Z_i]} \;=\; j_{\det}(t)\left(1 + \frac{R_0\,\text{Var}_l(\bar{p}(l))}{\bar{p}(t)}\right)$$
+
+<p>where \(j_{\det}(t)\) is the deterministic incidence rate. The final size variance is then:</p>
+
+$$\text{Var}(C(\infty)/N) \;\approx\; \frac{1}{N} \int_0^\infty j_{\det}(t)\left(1 + \frac{R_0\,\text{Var}_l(\bar{p}(l;\,t))}{\bar{p}(t)}\right) dt$$
+
+<p>The first term (integrating \(j_{\det}\)) gives the Poisson contribution to final size variance — this is the same for all \(\psi\). The second term is the <b>\(\psi\)-dependent overdispersion contribution</b>:</p>
+
+<div class="highlight">
+$$\Delta\sigma^2(\psi) \;=\; \frac{R_0}{N}\int_0^\infty j_{\det}(t)\,\frac{\text{Var}_l(\bar{p}(l;\,t))}{\bar{p}(t)}\,dt$$
+</div>
+
+<p>This integral weighs the instantaneous overdispersion by the incidence rate. Since overdispersion peaks near the epidemic peak (where \(S\) changes most rapidly) and incidence is also highest there, the contributions reinforce.</p>
+
+<h2>8. Summary and next steps</h2>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em 0;">
+<tr><th>Quantity</th><th>Formula</th><th>\(\psi\)-dependent?</th></tr>
+<tr><td>Mean offspring \(E[Z_i]\)</td><td>\(R_0\,\bar{p}(t)\)</td><td>No</td></tr>
+<tr><td>Offspring variance</td><td>\(R_0\bar{p} + R_0^2\text{Var}_l(\bar{p}(l))\)</td><td>Yes</td></tr>
+<tr><td>Effective dispersion \(k_{\text{eff}}\)</td><td>\(\bar{p}^2 / \text{Var}_l(\bar{p}(l))\)</td><td>Yes</td></tr>
+<tr><td>Early epidemic</td><td>\(k_{\text{eff}} \to \infty\) (Poisson for all \(\psi\))</td><td>No</td></tr>
+<tr><td>Final size mean</td><td>Miller: \(\pi = 1 - e^{-R_0\pi}\)</td><td>No</td></tr>
+<tr><td>Final size variance</td><td>Diffusion integral of overdispersion</td><td>Yes</td></tr>
+</table>
+
+<p><b>Key insight:</b> Punctuation (\(\psi < 1\)) creates overdispersion in the offspring distribution, but <em>only during the phase of the epidemic when the susceptible fraction is changing</em>. In the early (branching process) phase, all \(\psi\) give Poisson offspring. The effective dispersion \(k_{\text{eff}}(\psi, t)\) quantifies this: it starts infinite, drops to a minimum near the epidemic peak (especially for small \(\psi\)), and rises again. This time-varying overdispersion integrates to give the \(\psi\)-dependent final size variance via the diffusion approximation.</p>
+
+<p><b>Implementable next steps:</b></p>
+<ol>
+<li>Numerically compute \(k_{\text{eff}}(\psi, t)\) for each pathogen using the renewal equation trajectory — plot this as a function of epidemic progress</li>
+<li>Evaluate the diffusion integral to predict \(\text{Var}(Z_\infty)\) as a function of \(\psi\)</li>
+<li>Compare the predicted final size variance with the empirical variance from simulations</li>
+</ol>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

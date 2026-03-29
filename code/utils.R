@@ -50,31 +50,31 @@ seir <- odin({
 #' to the renewal equation framework, with a Gamma-distributed infectiousness 
 #' profile and initalized with a single infectious person. 
 #'
-#' @param R0        Basic reproduction number
-#' @param popshape  Shape parameter of Gamma generation interval distribution
-#' @param T_gen     Mean generation interval (days)
-#' @param N         Population size, used to set initial conditions
-#' @param dt    '   Time step for discretization (default 0.01 days)
-#' @param tmax      Maximum simulation length (default 100 days)
+#' @param R0     Basic reproduction number
+#' @param alpha  Shape parameter of Gamma generation interval distribution
+#' @param T_gen  Mean generation interval (days)
+#' @param N      Population size, used to set initial conditions
+#' @param dt     Time step for discretization (default 0.01 days)
+#' @param tmax   Maximum simulation length (default 100 days)
 
-renewal_epidemic <- function(R0, popshape, T_gen, N, dt = 0.01, tmax = 100) {
+renewal_epidemic <- function(R0, alpha, T_gen, N, dt = 0.01, tmax = 100) {
 
 	# Set rate parameter of the generation interval distribution
-  r <- popshape / T_gen
+  beta <- alpha / T_gen
 
-  # Initalize time vectors 
+  # Initalize time vectors
   times <- seq(0, tmax, by = dt)
   nt <- length(times)
-  
-  # Initialize incidence and cumulative infections 
+
+  # Initialize incidence and cumulative infections
   j <- numeric(nt)
   C <- numeric(nt)
   C[1] <- 1 / N
 
   # Generation interval weights (with dt baked in for the convolution)
-  g <- dgamma(times, shape = popshape, rate = r) * dt
+  g <- dgamma(times, shape = alpha, rate = beta) * dt
   # Index case kernel (no dt — it's a single person, not a rate)
-  g_index <- dgamma(times, shape = popshape, rate = r) / N
+  g_index <- dgamma(times, shape = alpha, rate = beta) / N
 
   for (i in 2:nt) {
     S <- 1 - C[i-1]
@@ -128,23 +128,23 @@ gen_inf_attempts_spike <- function(e_dur, i_dur, R0){
 #'
 #' @param T Mean generation interval
 #' @param R0 Basic reproduction number
-#' @param popshape Shape parameter for the Gamma-distributed population
-#'   infectiousness profile (A(tau) ~ Gamma(popshape, popshape/T))
+#' @param alpha Shape parameter for the Gamma-distributed population
+#'   infectiousness profile (A(tau) ~ Gamma(alpha, beta) where beta = alpha/T)
 #' @param psi Parameter governing punctuation of the individual
 #'   infectiousness profile (psi \in [0, 1], with psi -> 0 giving sharp
 #'   infectiousness profiles and psi -> 1 giving smooth ones equivalent to
 #'   the population generation interval distribution)
 #' @return A function(t_inf) that returns sorted infection attempt times
-gen_inf_attempts_gamma <- function(T, R0, popshape, psi){
+gen_inf_attempts_gamma <- function(T, R0, alpha, psi){
 	stopifnot(psi>=0, psi<=1)
-	r <- popshape/T
+	beta <- alpha/T
 
 	if(psi < 1e-6){ # spike implementation
-		shiftshape <- popshape 
+		shiftshape <- alpha
 		function(tinf){
 			nattempts <- rpois(1,R0)
 			if(nattempts==0L) return(numeric(0))
-			shift <- rgamma(1, shape=shiftshape, rate=r)
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
 			attempt_times <- rep(tinf + shift, nattempts)
 			return(sort(attempt_times))
 		}
@@ -152,35 +152,35 @@ gen_inf_attempts_gamma <- function(T, R0, popshape, psi){
 		function(tinf){
 			nattempts <- rpois(1,R0)
 			if(nattempts==0L) return(numeric(0))
-			attempt_times <- tinf + rgamma(nattempts, shape=popshape, rate=r)
+			attempt_times <- tinf + rgamma(nattempts, shape=alpha, rate=beta)
 			return(sort(attempt_times))
 		}
 	} else { # regular implementation
-		shiftshape <- (1-psi)*popshape
+		shiftshape <- (1-psi)*alpha
 		function(tinf){
 			nattempts <- rpois(1,R0)
 			if(nattempts==0L) return(numeric(0))
-			shift <- rgamma(1, shape=shiftshape, rate=r)
-			attempt_times <- tinf + shift + rgamma(nattempts, shape=psi*popshape, rate=r)
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
+			attempt_times <- tinf + shift + rgamma(nattempts, shape=psi*alpha, rate=beta)
 			return(sort(attempt_times))
 		}
 	}
-	
+
 }
 
-gen_inf_attempts_gamma_contacts <- function(T, z, z_max, popshape, psi){
+gen_inf_attempts_gamma_contacts <- function(T, z, z_max, alpha, psi){
 
 	stopifnot(psi>0, psi<1)
 	stopifnot(z_max>0)
 
-	r <- popshape/T
-	shiftshape <- (1-psi)*popshape
+	beta <- alpha/T
+	shiftshape <- (1-psi)*alpha
 
 	function(tinf){
 		nproposals <- rpois(1, z_max)
 		if(nproposals == 0L) return(numeric(0))
-		shift <- rgamma(1, shape=shiftshape, rate=r)
-		proposals <- tinf + shift + rgamma(nproposals, shape=psi*popshape, rate=r)
+		shift <- rgamma(1, shape=shiftshape, rate=beta)
+		proposals <- tinf + shift + rgamma(nproposals, shape=psi*alpha, rate=beta)
 		accept_prob <- z(proposals)/z_max
 		keep <- runif(nproposals) < accept_prob
 		if(!any(keep)) return(numeric(0))
@@ -189,9 +189,232 @@ gen_inf_attempts_gamma_contacts <- function(T, z, z_max, popshape, psi){
 
 }
 
+# --- Helpers for detection-and-isolation protocols ---
+
+# Determine isolation time under regular screening.
+# mode_time: absolute time of the infectiousness profile mode.
+# Returns Inf if undetected.
+.detect_screening <- function(mode_time, d_pre, w, Delta, p_sens, lambda_act){
+	window_start <- mode_time - d_pre
+	window_end <- window_start + w
+	U <- runif(1, 0, Delta)
+	first_test <- window_start + U
+	if(first_test > window_end) return(Inf)
+	test_times <- seq(first_test, window_end, by=Delta)
+	if(p_sens >= 1){
+		tau_det <- test_times[1]
+	} else {
+		detected <- runif(length(test_times)) < p_sens
+		if(!any(detected)) return(Inf)
+		tau_det <- test_times[which(detected)[1]]
+	}
+	tau_det + rexp(1, lambda_act)
+}
+
+# Determine isolation time under symptom-triggered isolation.
+# mode_time: absolute time of the infectiousness profile mode.
+# Returns Inf if asymptomatic or (implicitly) if delay is infinite.
+.detect_symptoms <- function(mode_time, mu_sym, sigma_sym, lambda_act, p_sym){
+	if(runif(1) > p_sym) return(Inf)
+	delta_sym <- if(sigma_sym > 0) rnorm(1, mu_sym, sigma_sym) else mu_sym
+	mode_time + delta_sym + rexp(1, lambda_act)
+}
+
+# Remove (or thin with probability eta) infection attempts after isolation.
+# Returns sorted surviving attempt times.
+.thin_attempts <- function(attempt_times, tau_iso, eta){
+	if(!is.finite(tau_iso) || length(attempt_times) == 0L) return(attempt_times)
+	pre <- attempt_times <= tau_iso
+	if(eta >= 1){
+		attempt_times <- attempt_times[pre]
+	} else {
+		npost <- sum(!pre)
+		if(npost > 0L){
+			post_keep <- runif(npost) >= eta
+			attempt_times <- c(attempt_times[pre], attempt_times[!pre][post_keep])
+		}
+	}
+	if(length(attempt_times) == 0L) return(numeric(0))
+	sort(attempt_times)
+}
+
+#' Infection attempt generator with fixed isolation time
+#'
+#' Like gen_inf_attempts_gamma, but isolates every individual at a fixed
+#' time offset relative to the mode of their infectiousness profile.
+#'
+#' @param T Mean generation interval
+#' @param R0 Basic reproduction number
+#' @param alpha Shape parameter for population infectiousness profile
+#' @param psi Punctuation parameter (0 = spike, 1 = smooth)
+#' @param tau_offset Isolation time relative to peak infectiousness (days);
+#'   negative = before peak, positive = after peak
+#' @param p_adhere Probability that an individual adheres to isolation
+#' @param eta Isolation effectiveness (1 = perfect, 0 = none)
+#' @return A function(t_inf) that returns sorted infection attempt times
+gen_inf_attempts_gamma_fixed_iso <- function(T, R0, alpha, psi, tau_offset,
+                                             p_adhere=1, eta=1){
+	stopifnot(psi>=0, psi<=1)
+	beta <- alpha/T
+
+	if(psi < 1e-6){ # spike implementation
+		shiftshape <- alpha
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
+			attempt_times <- rep(tinf + shift, nattempts)
+			tau_iso <- if(runif(1) < p_adhere) tinf + shift + tau_offset else Inf
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	} else if(psi > 1-1e-6){ # smooth implementation
+		mode_psi <- max(0, (alpha-1)/beta)
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			attempt_times <- tinf + rgamma(nattempts, shape=alpha, rate=beta)
+			tau_iso <- if(runif(1) < p_adhere) tinf + mode_psi + tau_offset else Inf
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	} else { # regular implementation
+		shiftshape <- (1-psi)*alpha
+		mode_psi <- max(0, (psi*alpha-1)/beta)
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
+			attempt_times <- tinf + shift + rgamma(nattempts, shape=psi*alpha, rate=beta)
+			tau_iso <- if(runif(1) < p_adhere) tinf + shift + mode_psi + tau_offset else Inf
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	}
+}
+
+#' Infection attempt generator with regular screening and isolation
+#'
+#' Like gen_inf_attempts_gamma, but after generating attempts, determines
+#' whether the individual is detected via regular screening (tests every
+#' Delta days with random phase, detection within a window around peak
+#' infectiousness) and removes post-isolation attempts.
+#'
+#' @param T Mean generation interval
+#' @param R0 Basic reproduction number
+#' @param alpha Shape parameter for population infectiousness profile
+#' @param psi Punctuation parameter (0 = spike, 1 = smooth)
+#' @param d_pre Days before peak that detectability window begins
+#' @param d_post Days after peak that detectability window ends
+#' @param Delta Gap between tests (days)
+#' @param lambda_act Rate of exponential delay from detection to isolation
+#'   (Inf = immediate isolation, the default)
+#' @param p_sens Test sensitivity (probability of detection per test)
+#' @param eta Isolation effectiveness (1 = perfect, 0 = none)
+#' @return A function(t_inf) that returns sorted infection attempt times
+gen_inf_attempts_gamma_screening <- function(T, R0, alpha, psi,
+                                             d_pre, d_post, Delta,
+                                             lambda_act=Inf, p_sens=1, eta=1){
+	stopifnot(psi>=0, psi<=1)
+	beta <- alpha/T
+	w <- d_pre + d_post
+
+	if(psi < 1e-6){ # spike implementation
+		shiftshape <- alpha
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
+			attempt_times <- rep(tinf + shift, nattempts)
+			mode_time <- tinf + shift
+			tau_iso <- .detect_screening(mode_time, d_pre, w, Delta, p_sens, lambda_act)
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	} else if(psi > 1-1e-6){ # smooth implementation
+		mode_psi <- max(0, (alpha-1)/beta)
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			attempt_times <- tinf + rgamma(nattempts, shape=alpha, rate=beta)
+			mode_time <- tinf + mode_psi
+			tau_iso <- .detect_screening(mode_time, d_pre, w, Delta, p_sens, lambda_act)
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	} else { # regular implementation
+		shiftshape <- (1-psi)*alpha
+		mode_psi <- max(0, (psi*alpha-1)/beta)
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
+			attempt_times <- tinf + shift + rgamma(nattempts, shape=psi*alpha, rate=beta)
+			mode_time <- tinf + shift + mode_psi
+			tau_iso <- .detect_screening(mode_time, d_pre, w, Delta, p_sens, lambda_act)
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	}
+}
+
+#' Infection attempt generator with symptom-triggered isolation
+#'
+#' Like gen_inf_attempts_gamma, but after generating attempts, determines
+#' whether the individual develops symptoms (probability p_sym) at a time
+#' anchored to peak infectiousness, and removes post-isolation attempts.
+#'
+#' @param T Mean generation interval
+#' @param R0 Basic reproduction number
+#' @param alpha Shape parameter for population infectiousness profile
+#' @param psi Punctuation parameter (0 = spike, 1 = smooth)
+#' @param mu_sym Mean symptom onset time relative to peak infectiousness
+#'   (positive = symptoms lag peak; negative = symptoms precede peak)
+#' @param sigma_sym SD of symptom onset time (0 = deterministic, the default)
+#' @param lambda_act Rate of exponential delay from symptom onset to isolation
+#'   (Inf = immediate isolation, the default)
+#' @param p_sym Probability of being symptomatic
+#' @param eta Isolation effectiveness (1 = perfect, 0 = none)
+#' @return A function(t_inf) that returns sorted infection attempt times
+gen_inf_attempts_gamma_symptoms <- function(T, R0, alpha, psi,
+                                            mu_sym, sigma_sym=0,
+                                            lambda_act=Inf, p_sym=1, eta=1){
+	stopifnot(psi>=0, psi<=1)
+	beta <- alpha/T
+
+	if(psi < 1e-6){ # spike implementation
+		shiftshape <- alpha
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
+			attempt_times <- rep(tinf + shift, nattempts)
+			mode_time <- tinf + shift
+			tau_iso <- .detect_symptoms(mode_time, mu_sym, sigma_sym, lambda_act, p_sym)
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	} else if(psi > 1-1e-6){ # smooth implementation
+		mode_psi <- max(0, (alpha-1)/beta)
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			attempt_times <- tinf + rgamma(nattempts, shape=alpha, rate=beta)
+			mode_time <- tinf + mode_psi
+			tau_iso <- .detect_symptoms(mode_time, mu_sym, sigma_sym, lambda_act, p_sym)
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	} else { # regular implementation
+		shiftshape <- (1-psi)*alpha
+		mode_psi <- max(0, (psi*alpha-1)/beta)
+		function(tinf){
+			nattempts <- rpois(1, R0)
+			if(nattempts==0L) return(numeric(0))
+			shift <- rgamma(1, shape=shiftshape, rate=beta)
+			attempt_times <- tinf + shift + rgamma(nattempts, shape=psi*alpha, rate=beta)
+			mode_time <- tinf + shift + mode_psi
+			tau_iso <- .detect_symptoms(mode_time, mu_sym, sigma_sym, lambda_act, p_sym)
+			.thin_attempts(attempt_times, tau_iso, eta)
+		}
+	}
+}
+
 #' Stochastic epidemic simulation
-#' 
-#' Generates the infection times for a population (size n) given individual 
+#'
+#' Generates the infection times for a population (size n) given individual
 #' infectiousness profiles specified by gen_inf_attempts
 #'
 #' @param n Population size (default 1000)
@@ -237,5 +460,30 @@ sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
 save_fig <- function(plot, name, width = 10, height = 5) {
 	ggsave(file.path("figures", paste0(name, ".pdf")), plot, width = width, height = height)
 	ggsave(file.path("figures", paste0(name, ".png")), plot, width = width, height = height, dpi = 300)
+}
+
+# Helper: construct cache file path encoding nsim and popsize
+cache_path <- function(pathogen, nsim, popsize) {
+	file.path("output", sprintf("cuminf_df_%s_n%d_s%d.csv", pathogen, popsize, nsim))
+}
+
+# Helper: load cached simulations, or return NULL if cache is missing/stale
+#
+# Returns the cached data frame if the file exists and contains all required
+# psi values. Returns NULL otherwise (caller should re-run simulations).
+load_cache <- function(pathogen, nsim, popsize, psivals) {
+	cache_file <- cache_path(pathogen, nsim, popsize)
+	if (!file.exists(cache_file)) return(NULL)
+
+	df <- read_csv(cache_file, show_col_types = FALSE)
+	cached_psi <- sort(unique(df$psi))
+	if (!all(psivals %in% cached_psi)) {
+		cat(sprintf("  %s: cache missing psi values %s, re-running\n",
+		    pathogen, paste(setdiff(psivals, cached_psi), collapse = ", ")))
+		return(NULL)
+	}
+
+	cat(sprintf("  %s: loading cached simulations from %s\n", pathogen, cache_file))
+	df %>% mutate(psi = factor(psi))
 }
 

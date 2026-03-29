@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  25 MAR 2026 07:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  27 MAR 2026 06:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -529,28 +529,27 @@ LaTeX Font Info:    Trying to load font information for TS1+phv on input line 1
  (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1phv.fd
 File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
 ))
-(./uncontrolled.tex [6]
-LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 9.
+(./uncontrolled.tex [6] [7
 
-Overfull \hbox (6.6302pt too wide) in paragraph at lines 29--29
+]
+Overfull \hbox (6.6302pt too wide) in paragraph at lines 67--67
 |[]\T1/phv/b/sl/10.95 Narrower in-di-vid-ual in-fec-tious-ness pro-files yield 
 greater un-cer-tainty in epi-demic growth
  []
 
-[7
-
-]
 File: figures/stock.png Graphic file (type png)
 <use figures/stock.png>
-Package pdftex.def Info: figures/stock.png  used on input line 43.
+Package pdftex.def Info: figures/stock.png  used on input line 81.
 (pdftex.def)             Requested size: 234.8775pt x 136.84587pt.
-) (./controlled.tex [8] [9
+) (./controlled.tex [8] [9]
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 26.
+ [10
 
-]) (./identifiability.tex [10]) (./discussion.tex
-[11
+] [11]) (./identifiability.tex [12])
+(./discussion.tex [13
 
-]) [12
+]) [14
 
 ] (./main.bbl
 Underfull \hbox (badness 4846) in paragraph at lines 32--41
@@ -582,24 +581,24 @@ Underfull \hbox (badness 5417) in paragraph at lines 32--41
  . org / rspa / article / 115 / 772 / 700 / 2165 /
  []
 
-) [13
+) [15
 
-] (./acknowledgements.tex) [14
+] (./acknowledgements.tex) [16
 
-] (./supplementary.tex) [15
+] (./supplementary.tex) [17
 
 ] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 752C4F84F97BB55887B7A67041DF4736;5606.
+(rerunfilecheck)             Checksum: E235F961ED7D95C10DC5C2A401C8A467;5917.
  ) 
 Here is how much of TeX's memory you used:
- 12468 strings out of 478994
- 182529 string characters out of 5858184
- 504524 words of memory out of 5000000
+ 12473 strings out of 478994
+ 182562 string characters out of 5858184
+ 504521 words of memory out of 5000000
  29675 multiletter control sequences out of 15000+600000
  438465 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,77p,1596b,410s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 75i,10n,77p,1596b,408s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
 live/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texl
@@ -616,10 +615,10 @@ ts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type
 1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/
 helvetic/uhvr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/helveti
 c/uhvro8a.pfb>
-Output written on main.pdf (15 pages, 358970 bytes).
+Output written on main.pdf (17 pages, 363937 bytes).
 PDF statistics:
- 295 PDF objects out of 1000 (max. 8388607)
- 259 compressed objects within 3 object streams
- 60 named destinations out of 1000 (max. 500000)
+ 307 PDF objects out of 1000 (max. 8388607)
+ 269 compressed objects within 3 object streams
+ 65 named destinations out of 1000 (max. 500000)
  126 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -17,16 +17,16 @@ parslist <- list(
 )
 
 # Compute moment-matched Gamma shape and rate for each pathogen
-# Gamma(shape, rate): mean = shape/rate, var = shape/rate^2
-#   => shape = mean^2 / var, rate = mean / var
+# Gamma(alpha, beta): mean = alpha/beta, var = alpha/beta^2
+#   => alpha = mean^2 / var, beta = mean / var
 for (i in seq_along(parslist)) {
-	parslist[[i]]$popshape <- parslist[[i]]$Tgen^2 / parslist[[i]]$Tvar
-	parslist[[i]]$poprate  <- parslist[[i]]$Tgen   / parslist[[i]]$Tvar
+	parslist[[i]]$alpha <- parslist[[i]]$Tgen^2 / parslist[[i]]$Tvar
+	parslist[[i]]$beta  <- parslist[[i]]$Tgen   / parslist[[i]]$Tvar
 }
 
 # Print summary
 for (p in parslist) {
-	cat(sprintf("%-12s  Tgen=%.2f  Tvar=%.2f  popshape=%.2f  poprate=%.3f\n",
-	    p$pathogen, p$Tgen, p$Tvar, p$popshape, p$poprate))
+	cat(sprintf("%-12s  Tgen=%.2f  Tvar=%.2f  alpha=%.2f  beta=%.3f\n",
+	    p$pathogen, p$Tgen, p$Tvar, p$alpha, p$beta))
 }
 

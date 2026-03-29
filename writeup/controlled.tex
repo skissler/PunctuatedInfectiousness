@@ -1,8 +1,25 @@
 \clearpage
 
-\section{The impact of the individual infectiousness profile on epidemic control}
+\section{The impact of the individual infectiousness profile on detect-and-isolate interventions}
 
-\subsection{Detection and isolation}
+\begin{itemize}
+	\item The biologically anchored detection model 
+	\item For fixed detection offset, TE depends on psi. Skewed profiles buy a bit of detection time after the peak where TE is still greater for spikier profiles (within reason). 
+	\item Symptoms arising somewhat randomly smooth out the effect. For spikier profiles, they boost TE when mean detection is after the peak infectiousness and reduce TE when mean detection is beffore peak infectiousness -- meaningfully. 
+	\item Regular screening: TE is sensitive to screening frequency and delays in response, especially in specific regions of sensitivitiy-frequency-window size combinations. 
+	\item TE is only part of the story: isolation shrinks generation intervals (moreso for smooth profiles), and increases overdispersion (moreso for spike profiles), which has an impact on epidemic dynamics that differ from what you'd expect if you simply ran an epidemic with $R_{\text{eff}} = R_0 (1-TE)$. Give some simulations to demonstrate. 
+\end{itemize}
+
+\section{The impact of individual infectiousness on gathering size restrictions}
+
+Briefly, we also consider epidemic control by restricting gathering sizes. 
+\begin{itemize}
+	\item The theory 
+	\item The model 
+	\item Like with detect-and-isolate, the reduction in $R_{\text{eff}}$ isn't the whole story: gathering size restrictions impact overdispersion, and again do so more for spike than for smooth profiles. 
+\end{itemize}
+
+\section{Notes on detect and isolate}
 
 We first consider the detect-and-isolate interventions. Detection may occur through various mechanisms, e.g., the onset of symptoms or a positive diagnostic test. 
 
@@ -42,6 +59,6 @@ I want to try my hand at making this figure: what do we need?
 
 
 
-\subsection{Gathering size restrictions}
+% \subsection{Gathering size restrictions}
 
 % More effective for smooth profiles, since they reduce mean transmission without losing the overdispersion that was suppressing outbreak probability for spiky profiles.

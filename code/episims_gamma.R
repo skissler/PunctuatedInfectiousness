@@ -35,19 +35,19 @@ for (pars in parslist) {
 
 pathogen <- pars$pathogen
 T        <- pars$Tgen
-popshape <- pars$popshape
-poprate  <- pars$poprate
+alpha    <- pars$alpha
+beta     <- pars$beta
 R0       <- pars$R0
 
-cat(sprintf("\n===== %s: T=%.2f, popshape=%.2f, R0=%.1f =====\n",
-            pathogen, T, popshape, R0))
+cat(sprintf("\n===== %s: T=%.2f, alpha=%.2f, R0=%.1f =====\n",
+            pathogen, T, alpha, R0))
 
 # ==============================================================================
 # 2a. Mean-field solution
 # ==============================================================================
 
 # Run the renewal equation model
-ren_out <- renewal_epidemic(R0, popshape, T, 1000)
+ren_out <- renewal_epidemic(R0, alpha, T, 1000)
 
 # Aggregate renewal equation output to daily and weekly new-infection counts
 ren_daily <- ren_out %>%
@@ -70,19 +70,15 @@ ren_weekly <- ren_out %>%
 # 2b. Stochastic simulations (cached)
 # ==============================================================================
 
-cache_file <- file.path("output", paste0("cuminf_df_", pathogen, ".csv"))
+cuminf_df <- load_cache(pathogen, nsim, popsize, psivals)
 
-if (file.exists(cache_file)) {
-	cat(sprintf("  %s: loading cached simulations from %s\n", pathogen, cache_file))
-	cuminf_df <- read_csv(cache_file, show_col_types = FALSE) %>%
-		mutate(psi = factor(psi))
-} else {
+if (is.null(cuminf_df)) {
 	# Run the simulations and store the output
 	cuminf_df <- tibble()
 	for(sim in 1:nsim){
 	    for(psi in psivals){
 	            tinf <- sim_stochastic_fast(n=popsize,
-	            	                        gen_inf_attempts=gen_inf_attempts_gamma(T, R0, popshape, psi))
+	            	                        gen_inf_attempts=gen_inf_attempts_gamma(T, R0, alpha, psi))
 	            cuminf_df <- bind_rows(cuminf_df,
 	                    tibble(tinf=sort(tinf[tinf<Inf])) %>%
 	                            mutate(cuminf=1:n(), sim=sim, psi=psi))
@@ -98,6 +94,7 @@ if (file.exists(cache_file)) {
 		ungroup()
 
 	# Save to cache
+	cache_file <- cache_path(pathogen, nsim, popsize)
 	write_csv(cuminf_df, cache_file)
 	cat(sprintf("  %s: simulations saved to %s\n", pathogen, cache_file))
 }
@@ -239,6 +236,62 @@ fig_survival_100 <- ggplot(survival_100_df, aes(x=t, y=prop_below, col=psi)) +
 	theme_classic()
 
 save_fig(fig_survival_100, paste0("fig_survival_100_", pathogen))
+
+# ==============================================================================
+# 2f. Epidemic growth rate (log-linear regression on first 10-100 cases)
+# ==============================================================================
+
+# Theoretical growth rate: solve R0 * (beta/(beta+r))^alpha = 1  (Lotka-Euler)
+r_malthusian <- uniroot(
+	function(r) R0 * (beta / (beta + r))^alpha - 1,
+	interval = c(0, 10))$root
+
+# For each established epidemic, fit log(case_number) ~ time using the first
+# 100 infection times. The slope is the empirical exponential growth rate.
+growth_threshold <- 100
+min_threshold <- 10
+
+growthrate_df <- cuminf_df %>%
+	filter(established == 1, cuminf >= min_threshold, cuminf <= growth_threshold) %>%
+	group_by(sim, psi) %>%
+	summarise(
+		growthrate = coef(lm(log(cuminf) ~ tinf))[2],
+		.groups = "drop")
+
+growthrate_table <- growthrate_df %>%
+	group_by(psi) %>%
+	summarise(mean = mean(growthrate), sd = sd(growthrate), .groups = "drop")
+
+cat(sprintf("  %s: theoretical growth rate = %.4f\n", pathogen, r_malthusian))
+print(growthrate_table)
+
+fig_growthrate_hists <- ggplot(growthrate_df, aes(x = growthrate)) +
+	geom_histogram(aes(y = after_stat(density)), bins = 40,
+	               fill = "white", col = "darkgrey") +
+	geom_density(adjust = 2) +
+	geom_vline(xintercept = r_malthusian, col = "blue", lty = "dashed", linewidth = 0.8) +
+	geom_vline(data = growthrate_table, aes(xintercept = mean), col = "red", linewidth = 0.8) +
+	theme_classic() +
+	facet_wrap(~psi, nrow = 1) +
+	labs(x = "Empirical growth rate (1/day)", y = "Density",
+	     title = pathogen)
+
+save_fig(fig_growthrate_hists, paste0("fig_growthrate_hists_", pathogen))
+
+fig_growthrate_lines <- cuminf_df %>%
+	filter(established == 1, cuminf <= growth_threshold, cuminf >= min_threshold) %>%
+	ggplot(aes(x = tinf, y = log(cuminf), group = factor(sim))) +
+		geom_point(alpha=0.1, size=0.2, col="grey") +
+		geom_line(alpha=0.1, linewidth=0.2, col="grey") +
+		geom_line(stat="smooth", method = "lm", alpha = 0.1, linewidth = 0.3) +
+		geom_abline(intercept = 0, slope = r_malthusian,
+		            col = "blue", linewidth = 0.8, lty = "dashed") +
+		theme_classic() +
+		facet_wrap(~psi, nrow = 1) +
+		labs(x = "Time (days)", y = "log(cumulative infections)",
+		     title = pathogen)
+
+save_fig(fig_growthrate_lines, paste0("fig_growthrate_lines_", pathogen))
 
 cat(sprintf("  %s: figures saved.\n", pathogen))
 
