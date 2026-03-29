@@ -1,56 +1,53 @@
-library(tidyverse) 
+library(tidyverse)
 
 source("code/utils.R")
-source("code/parameters.R") 
+source("code/parameters.R")
+
+# --- Shared parameters for sections 1-3 (influenza) ---
+alpha <- parslist[[1]]$alpha
+beta <- parslist[[1]]$beta
+psi_vals <- c(0, 0.2, 0.5, 0.8, 1)
 
 # ==============================================================================
-# Fixed isolation time 
+# Fixed isolation time
 # ==============================================================================
 
 # For psi \in {0, 0.2, 0.5, 0.8, 1}, plot S_\psi(\tau_{iso}), i.e., the remaining infectiousness as a function of isolation time. S_\psi(\tau_{iso}) should just be a Gamma(alpha*psi, beta) CDF, so this should be easy to compute. The lines for each psi value should be overlaid in a single plot. The goal of the plot is to demonstrate how, for a given isolation time, TE can vary widely depending on how spiky (psi -> 0) the infectiousness profile is. It has the added benefit of showing that the equivalence points for the curves pass through a common point where TE=0.5 and \tau_{iso} > 0, highlighting that for right-skewed infectiousness profils, we gain a bit of time after rpeak infectiousness where spike profiles still have higher TE (until we get to really incredibly spiked profiles when the equivalence breaks down). A rough sketch of how this might look is hashed out in code/te.R.
 
-# taum means "tau mode", i.e., time indexed by the mode of the infectiousness profile rather than the time of infection (which is indexed by tau)
+tau_offset <- seq(from=-5, to=5, by=0.1)
 
-taum_iso <- seq(from=-5, to=5, by=0.1)
-psi_vals <- c(0, 0.2, 0.5, 0.8, 1)
-alpha <- parslist[[1]]$alpha
-beta <- parslist[[1]]$beta
+te_fixed_df <- expand_grid(psi=psi_vals, tau_offset=tau_offset) %>%
+	mutate(mode=pmax(0,((alpha*psi-1)/beta))) %>%
+	mutate(TE=1-pgamma(tau_offset+mode, alpha*psi, beta))
 
-S_deterministic_df <- expand_grid(psi=psi_vals, taum_iso=taum_iso) %>% 
-	mutate(mode=pmax(0,((alpha*psi-1)/beta))) %>% 
-	mutate(S=1-pgamma(taum_iso+mode, alpha*psi, beta))
-
-fig_S_deterministic <- S_deterministic_df %>% 
-	ggplot(aes(x=taum_iso, y=S, col=factor(psi))) + 
-		geom_line(linewidth=0.8, alpha=0.8) + 
-		theme_classic() + 
+fig_te_fixed <- te_fixed_df %>%
+	ggplot(aes(x=tau_offset, y=TE, col=factor(psi))) +
+		geom_line(linewidth=0.8, alpha=0.8) +
+		theme_classic() +
 		labs(x="Isolation time (days relative to peak infectiousness)", y="Test effectiveness", col="psi")
 
 # ==============================================================================
 # Variable isolation time (symptoms)
 # ==============================================================================
 
-# Next, we can consider what happens when the detection time is a random variable, rather than fixed, and when there are potentially delays between detection and isolation. We'll begin with considering symptom onset, which follows a normal distribution with mean \mu_{symp} (relative to the peak of the infectiousness profile, so \mu_{symp} = 0 means the timing of symptoms corresponds with peak infectiousness on average, while \mu_{symp} < 0 means symptoms precede peak infectiousness) and variance \sigma^2_{symp}. The first task is to generate TE curves like in the previous section, but for the variable detection time. We assume initially that isolation is immediate. Then, we will generate another set of curves assumin isolation follows some exponentially-distributed waiting time after detection. We will use these plots to see how variation in the onset of symptoms and the delay before taking action impact TE as the infectiousness profile width varies from smooth to spike. The TE curves will have TE on the vertical axis and the mean symptom onset time on the horizontal axis. We can maybe consider \mu_{symp} between -3 and 3, and let's set \sigma^2_{symp} = 0.5 for now. 
+# Next, we can consider what happens when the detection time is a random variable, rather than fixed, and when there are potentially delays between detection and isolation. We'll begin with considering symptom onset, which follows a normal distribution with mean \mu_{symp} (relative to the peak of the infectiousness profile, so \mu_{symp} = 0 means the timing of symptoms corresponds with peak infectiousness on average, while \mu_{symp} < 0 means symptoms precede peak infectiousness) and variance \sigma^2_{symp}. The first task is to generate TE curves like in the previous section, but for the variable detection time. We assume initially that isolation is immediate. Then, we will generate another set of curves assumin isolation follows some exponentially-distributed waiting time after detection. We will use these plots to see how variation in the onset of symptoms and the delay before taking action impact TE as the infectiousness profile width varies from smooth to spike. The TE curves will have TE on the vertical axis and the mean symptom onset time on the horizontal axis. We can maybe consider \mu_{symp} between -3 and 3, and let's set \sigma^2_{symp} = 0.5 for now.
 
-taum_iso <- seq(from=-5, to=5, by=0.1)
-psi_vals <- c(0, 0.2, 0.5, 0.8, 1)
-alpha <- parslist[[1]]$alpha
-beta <- parslist[[1]]$beta
-sigma_det <- 0.5
+mu_sym <- seq(from=-5, to=5, by=0.1)
+sigma_sym <- 0.5
 
-S_symp_df <- expand_grid(psi=psi_vals, taum_iso=taum_iso) %>%
+te_symp_df <- expand_grid(psi=psi_vals, mu_sym=mu_sym) %>%
 	mutate(mode=pmax(0,((alpha*psi-1)/beta))) %>%
 	rowwise() %>%
-	mutate(S=integrate(function(t)
+	mutate(TE=integrate(function(t)
 		(1-pgamma(t+mode, alpha*psi, beta))*
-		dnorm(t, taum_iso, sigma_det),
-		lower=taum_iso-5*sigma_det, upper=taum_iso+5*sigma_det)$value) %>%
+		dnorm(t, mu_sym, sigma_sym),
+		lower=mu_sym-5*sigma_sym, upper=mu_sym+5*sigma_sym)$value) %>%
 	ungroup()
 
-fig_S_symp <- S_symp_df %>% 
-	ggplot(aes(x=taum_iso, y=S, col=factor(psi))) + 
-		geom_line(linewidth=0.8, alpha=0.8) + 
-		theme_classic() + 
+fig_te_symp <- te_symp_df %>%
+	ggplot(aes(x=mu_sym, y=TE, col=factor(psi))) +
+		geom_line(linewidth=0.8, alpha=0.8) +
+		theme_classic() +
 		labs(x="Mean symptom onset time (days relative to peak infectiousness)", y="Test effectiveness", col="psi")
 
 # ==============================================================================
@@ -63,9 +60,6 @@ d_pre <- 3
 d_post <- 7
 w <- d_pre + d_post
 Delta_vals <- seq(from=0.5, to=14, by=0.5)
-psi_vals <- c(0, 0.2, 0.5, 0.8, 1)
-alpha <- parslist[[1]]$alpha
-beta <- parslist[[1]]$beta
 
 # --- Perfect sensitivity, no delay to action ---
 # The first test in the window falls at offset U ~ Uniform(0, Delta) from the
@@ -74,16 +68,16 @@ beta <- parslist[[1]]$beta
 # TE = (1/Delta) * int_0^min(Delta,w) S_psi(mode + u - d_pre) du
 # This unifies Delta <= w (certain detection) and Delta > w (P(det) = w/Delta).
 
-S_testing_df <- expand_grid(psi=psi_vals, Delta=Delta_vals) %>%
+te_testing_df <- expand_grid(psi=psi_vals, Delta=Delta_vals) %>%
 	mutate(mode=pmax(0, ((alpha*psi-1)/beta))) %>%
 	rowwise() %>%
-	mutate(S=integrate(function(u)
+	mutate(TE=integrate(function(u)
 		(1-pgamma(u - d_pre + mode, alpha*psi, beta)),
 		lower=0, upper=min(Delta, w))$value / Delta) %>%
 	ungroup()
 
-fig_S_testing <- S_testing_df %>%
-	ggplot(aes(x=Delta, y=S, col=factor(psi))) +
+fig_te_testing <- te_testing_df %>%
+	ggplot(aes(x=Delta, y=TE, col=factor(psi))) +
 		geom_line(linewidth=0.8, alpha=0.8) +
 		theme_classic() +
 		labs(x="Gap between tests (days)", y="Test effectiveness", col="psi")
@@ -98,10 +92,10 @@ fig_S_testing <- S_testing_df %>%
 
 lambda_act <- 1  # rate parameter; mean delay = 1/lambda_act = 1 day
 
-S_testing_delay_df <- expand_grid(psi=psi_vals, Delta=Delta_vals) %>%
+te_testing_delay_df <- expand_grid(psi=psi_vals, Delta=Delta_vals) %>%
 	mutate(mode=pmax(0, ((alpha*psi-1)/beta))) %>%
 	rowwise() %>%
-	mutate(S={
+	mutate(TE={
 		a <- alpha*psi
 		cr <- (beta/(beta+lambda_act))^a
 		integrate(function(u) {
@@ -112,8 +106,8 @@ S_testing_delay_df <- expand_grid(psi=psi_vals, Delta=Delta_vals) %>%
 	}) %>%
 	ungroup()
 
-fig_S_testing_delay <- S_testing_delay_df %>%
-	ggplot(aes(x=Delta, y=S, col=factor(psi))) +
+fig_te_testing_delay <- te_testing_delay_df %>%
+	ggplot(aes(x=Delta, y=TE, col=factor(psi))) +
 		geom_line(linewidth=0.8, alpha=0.8) +
 		theme_classic() +
 		labs(x="Gap between tests (days)", y="Test effectiveness", col="psi")
@@ -249,9 +243,9 @@ if(nrow(growthrate_iso_df) == 0){
 			scale_fill_manual(values=c("isolation"="steelblue", "reduced_R0"="tomato"))
 }
 
-# To add: 
-# number of established epidemics in the output table 
-# Mean growth rate in the output table(?) 
+# To add:
+# number of established epidemics in the output table
+# Mean growth rate in the output table(?)
 
 
 # This script investigates how detect-and-isolate interventions interact with the punctuatedness (ψ) of the
