@@ -11,16 +11,19 @@ F(t) = \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau
 \end{equation}
 %
 where $F(t)$ is the force of infection at time $t$, $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the infectiousness profile describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is the product of the force of infection and the susceptible density (\ie, $-\frac{dS}{dt} = F(t) S(t)$); thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds. The infectiousness profile is related to the basic reproduction number $R_0$ and the generation interval distribution $g(\tau)$: 
+%
 \begin{equation}
 R_0 = \int_0^\infty A(\tau) d\tau
 \label{eq:R0}
 \end{equation}
+%
 \begin{equation}
 g(\tau) = \frac{A(\tau)}{R_0}
 \label{eq:gi}
 \end{equation}
 
 Since $A(\tau)$ is an expectation, it does not necessarily reflect any single person's infectiousness, just as $\nu_i$ can differ substantially from $R_0$. For example: the SEIR model is conceptually motivated by considering an individual who undergoes a latent period of length $x_i \sim \text{Exp}(\gamma)$ during which they are not infectious, followed by an infectious period of length $y_i \sim \text{Exp}(\alpha)$ during which they are infectious at level $\beta$. Mathematically, this ``stepwise'' individual infectiousness profile is expressed as 
+%
 \begin{equation}
 a_i(\tau) = \begin{cases}
     \beta & \tau \in [x_i, x_i + y_i] \\ 
@@ -28,72 +31,77 @@ a_i(\tau) = \begin{cases}
 \end{cases}
 \label{eq:a_seir_stepwise}
 \end{equation}
-\noindent This yields the population-level infectiousness kernel 
+%
+This yields the population-level infectiousness kernel 
+%
 \begin{equation}
 A(\tau) = E_i[a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha}(e^{-\alpha \tau} - e^{-\gamma \tau})
 \label{eq:A_seir}
 \end{equation}
-\noindent \ie, a smooth, bell-shaped curve that arises from a sum of discontinuous, stepwise $a_i(\tau)$ ({\bf Figure XX}). Furthermore, other choices of $a_i(\tau)$ can yield the same $A(\tau)$, including 
+%
+\ie, a smooth, bell-shaped curve that arises from a sum of discontinuous, stepwise $a_i(\tau)$ ({\bf Figure XX}). Furthermore, other choices of $a_i(\tau)$ can yield the same $A(\tau)$, including 
+%
 \begin{equation}
 a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau})
 \label{eq:a_seir_smooth}
 \end{equation}
-\noindent a ``smooth'' individual infectiousness profile where each person's infectiousness is identical to the population-level average, and 
-
+%
+a ``smooth'' individual infectiousness profile where each person's infectiousness is identical to the population-level average, and 
+%
 \begin{equation}
 a_i(\tau) = \frac{\beta}{\gamma} \delta_{t_i}(\tau)
 \label{eq:a_seir_spike}
 \end{equation}
-
-\noindent a ``spike'' infectiousness profile where $\delta_i(\tau)$ is a delta function with mass at time $t_i$, and $t_i$ is distributed according to the generation interval density $A(\tau) / R_0$ ({\bf Figure XX}). In this case, a person's infectiousness is concentrated at a single moment. In general, any definition of $a_i(\tau)$ such that $E_i[a_i(\tau)] = A(\tau)$ will yield the same mean-field population-level epidemic dynamics; however, they may have important stochastic consequences ({\bf Figure XX}), which are the main topic of this article. 
+%
+a ``spike'' infectiousness profile where $\delta_i(\tau)$ is a delta function with mass at time $t_i$, and $t_i$ is distributed according to the generation interval density $A(\tau) / R_0$ ({\bf Figure XX}). In this case, a person's infectiousness is concentrated at a single moment. In general, any definition of $a_i(\tau)$ such that $E_i[a_i(\tau)] = A(\tau)$ will yield the same mean-field population-level epidemic dynamics; however, they may have important stochastic consequences ({\bf Figure XX}), which are the main topic of this article. 
 
 %////////////////////////////////////////////////////////////////////////////////////////////
 
 \subsection{Properties and components of the individual infectiousness profile}
 
 Like $A(\tau)$, $a_i(\tau)$ is related to the individual reproduction number $\nu_i$ and the individual intrinsic generation interval distribution $\xi_i(\tau)$: 
-
+%
 \begin{equation}
     \nu_i = \int_0^\infty a_i(\tau) d\tau 
     \label{eq:nu_def}
 \end{equation}
-
+%
 \begin{equation}
     \xi_i(\tau) = a_i(\tau) / \nu_i
     \label{eq:indgi_def}
 \end{equation}
-
+%
 Re-arranging Eqs. \ref{eq:nu_def} - \ref{eq:indgi_def}, 
-
+%
 \begin{equation}
     a_i(\tau) = \nu_i \xi_i(\tau)
     \label{eq:ai_expression}
 \end{equation}
 
 So far, this assumes that interpersonal contacts are uniform over time and across the population -- or else that any non-uniformity is captured in $\nu_i$ and/or $\xi_i(\tau)$. A futher decomposition is possible by introducing an explicit contact process $c_i(t)$, defined with respect to the uniform reference contact process $\bar{c}$ against which both $R_0$ and $\nu_i$ are defined. Let $c_i(t)$ be a nonnegative function describing person $i$'s proportional deviations from $\bar{c}$ (so $c_i(t) \equiv 1$ represents the reference process), and let $b_i(\tau)$ be a density capturing the timing of person $i$'s secondary infection attempts under $\bar{c}$. Then, 
-
+%
 \begin{equation}
     a_i(t_i, \tau) = \nu_i b_i(\tau) c_i(t_i + \tau) 
     \label{eq:abc}
 \end{equation}
-
-\noindent where $t_i$ is person $i$'s infection time and $\tau$ represents time since infection. For $\nu_i$ to retain its meaning, we require $E_t[c_i(t)] = 1$, that is, for a randomly chosen time $t$, the expected value of person $i$'s contact modulator is 1. This is satisfied, for example, by a periodic function with average value 1 or by a stationary random process with mean 1. Another way of interpreting the contact modulator is that $\nu_i c_i(t)$ is the expected number of people that person $i$ would infect if all their infectiousness were concentrated at time $t$ (\ie, if $b_i$ were a delta function with mass at time $t$). The density $b_i(\tau)$ therefore reflects the ``biological'' component of a person's infectiousness timing, and $c_i(t)$ captures the ``contact-related'' component of a person's infectiousness timing, while $\nu_i$ modulates the person's total infectiousness. 
+%
+where $t_i$ is person $i$'s infection time and $\tau$ represents time since infection. For $\nu_i$ to retain its meaning, we require $E_t[c_i(t)] = 1$, that is, for a randomly chosen time $t$, the expected value of person $i$'s contact modulator is 1. This is satisfied, for example, by a periodic function with average value 1 or by a stationary random process with mean 1. Another way of interpreting the contact modulator is that $\nu_i c_i(t)$ is the expected number of people that person $i$ would infect if all their infectiousness were concentrated at time $t$ (\ie, if $b_i$ were a delta function with mass at time $t$). The density $b_i(\tau)$ therefore reflects the ``biological'' component of a person's infectiousness timing, and $c_i(t)$ captures the ``contact-related'' component of a person's infectiousness timing, while $\nu_i$ modulates the person's total infectiousness. 
 
 This extends back to the population-level model. If we assume that $c_i$ is independent of $\nu_i$ and $b_i$, but allow $\nu_i$ and $b_i$ to depend on one another (for example, we might expect a person with high overall infectiousness to also have a longer duration of infectiousness), then the population-level infectiousness profile is 
-
+%
 \begin{equation}
     A(t_i, \tau) = E_i[a_i(\tau)] = E_i[\nu_i b_i(\tau)] E_i[c_i(t_i + \tau)]
     \label{eq:A_def_general}
 \end{equation}
-
-\noindent with the expectation taken over the population indexed by $i$. We define $C(t) = E_i[c_i(t)]$ to be the population-mean contact modulator at calendar time $t$. We define $B(\tau) = E_i\Bigl[b_i(\tau) \frac{\nu_i}{R_0}\Bigr]$, \ie, the population-average biological infection timing density weighted by the person's infectiousness relative to the population mean. With these definitions, we obtain 
-
+%
+with the expectation taken over the population indexed by $i$. We define $C(t) = E_i[c_i(t)]$ to be the population-mean contact modulator at calendar time $t$. We define $B(\tau) = E_i\Bigl[b_i(\tau) \frac{\nu_i}{R_0}\Bigr]$, \ie, the population-average biological infection timing density weighted by the person's infectiousness relative to the population mean. With these definitions, we obtain 
+%
 \begin{equation}
     A(t_i, \tau) = R_0 B(\tau) C(t_i+\tau)
     \label{eq:ABC}
 \end{equation}
-
-\noindent Note that, like $c_i(t)$, $C(t)$ has time-average 1, since $E_t[C(t)] = E_t[E_i[c_i(t)]] = E_i[E_t[c_i(t)]] = 1$ (Fubini). If $C(t) \equiv 1$, we recover the original expression of $A(\tau) = R_0 B(\tau) = R_0 g(\tau)$, where $B(\tau)$ becomes the intrinsic generation interval distribution. 
+%
+Note that, like $c_i(t)$, $C(t)$ has time-average 1, since $E_t[C(t)] = E_t[E_i[c_i(t)]] = E_i[E_t[c_i(t)]] = 1$ (Fubini). If $C(t) \equiv 1$, we recover the original expression of $A(\tau) = R_0 B(\tau) = R_0 g(\tau)$, where $B(\tau)$ becomes the intrinsic generation interval distribution. 
 
 
 

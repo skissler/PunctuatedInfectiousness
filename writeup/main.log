@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  6 APR 2026 22:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  6 APR 2026 22:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -559,7 +559,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--55
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2
 
 ]) (./model.tex [3]
-Overfull \hbox (7.85895pt too wide) in paragraph at lines 40--42
+Overfull \hbox (7.85895pt too wide) in paragraph at lines 47--51
 \T1/ppl/m/n/10 a ``smooth'' in-di-vid-ual in-fec-tious-ness pro-file where each
  per-son's in-fec-tious-ness is iden-ti-cal to the population-
  []
@@ -567,7 +567,7 @@ Overfull \hbox (7.85895pt too wide) in paragraph at lines 40--42
 [4
 
 ]
-Overfull \hbox (0.27995pt too wide) in paragraph at lines 89--90
+Overfull \hbox (0.27995pt too wide) in paragraph at lines 95--99
 \T1/ppl/m/n/10 with the ex-pec-ta-tion taken over the pop-u-la-tion in-dexed by
  $\OML/zplm/m/it/10 i$\T1/ppl/m/n/10 . We de-fine $\OML/zplm/m/it/10 C\OT1/zplm
 /m/n/10 (\OML/zplm/m/it/10 t\OT1/zplm/m/n/10 ) = \OML/zplm/m/it/10 E[]\OT1/zplm
@@ -648,7 +648,7 @@ t/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts
 /type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1
 /urw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pa
 latino/uplri8a.pfb>
-Output written on main.pdf (15 pages, 332011 bytes).
+Output written on main.pdf (15 pages, 331724 bytes).
 PDF statistics:
  247 PDF objects out of 1000 (max. 8388607)
  215 compressed objects within 3 object streams
