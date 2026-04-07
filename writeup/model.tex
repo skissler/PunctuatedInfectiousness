@@ -78,7 +78,7 @@ Re-arranging Eqs. \ref{eq:nu_def} - \ref{eq:indgi_def},
     \label{eq:ai_expression}
 \end{equation}
 
-So far, this assumes that interpersonal contacts are uniform over time and across the population -- or else that any non-uniformity is captured in $\nu_i$ and/or $\xi_i(\tau)$. A futher decomposition is possible by introducing an explicit contact process $c_i(t)$, defined with respect to the uniform reference contact process $\bar{c}$ against which both $R_0$ and $\nu_i$ are defined. Let $c_i(t)$ be a nonnegative function describing person $i$'s proportional deviations from $\bar{c}$ (so $c_i(t) \equiv 1$ represents the reference process), and let $b_i(\tau)$ be a density capturing the timing of person $i$'s secondary infection attempts under $\bar{c}$. Then, 
+So far, this assumes that interpersonal contacts are uniform over time and across the population -- or else that any non-uniformity is captured in $\nu_i$ and/or $\xi_i(\tau)$. A futher decomposition is possible by introducing an explicit contact process $c_i(t)$, defined with respect to the reference contact process $\bar{c}$ against which both $R_0$ and $\nu_i$ are defined \citep{dietz_estimation_1993}. Let $c_i(t)$ be a nonnegative function describing person $i$'s proportional deviations from $\bar{c}$ (so $c_i(t) \equiv 1$ represents the reference process), and let $b_i(\tau)$ be a density capturing the timing of person $i$'s secondary infection attempts under $\bar{c}$. Then, 
 %
 \begin{equation}
     a_i(t_i, \tau) = \nu_i b_i(\tau) c_i(t_i + \tau) 
@@ -134,8 +134,6 @@ To investigate the impact of the punctuatedness of $a_i(\tau)$ on epidemic dynam
 
 % ////////////////////////////////////////////////////////////////////////////////////////////
 % SCRATCH 
-
-
 
 % population-level ``infectiousness profile'', a curve describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is simply the product of the force of infection and the susceptible density (i.e., $-\frac{dS}{dt} = F(t) \cdot S(t)$); thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds.
 

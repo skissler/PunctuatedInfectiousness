@@ -1,4 +1,4 @@
-\begin{thebibliography}{8}
+\begin{thebibliography}{9}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -28,8 +28,19 @@ David Champredon and Jonathan Dushoff.
 \newblock URL
   \url{https://royalsocietypublishing.org/doi/10.1098/rspb.2015.2026}.
 
+\bibitem[Dietz(1993)]{dietz_estimation_1993}
+K.~Dietz.
+\newblock The estimation of the basic reproduction number for infectious
+  diseases.
+\newblock \emph{Statistical Methods in Medical Research}, 2\penalty0
+  (1):\penalty0 23--41, March 1993.
+\newblock ISSN 0962-2802, 1477-0334.
+\newblock \doi{10.1177/096228029300200103}.
+\newblock URL
+  \url{https://journals.sagepub.com/doi/10.1177/096228029300200103}.
+
 \bibitem[Kermack and McKendrick(1927)]{kermack_contribution_1927}
-William~Ogilvy Kermack and A.~G. McKendrick.
+William~O. Kermack and A.G. McKendrick.
 \newblock A contribution to the mathematical theory of epidemics.
 \newblock \emph{Proceedings of the Royal Society of London. Series A,
   Containing Papers of a Mathematical and Physical Character}, 115\penalty0
@@ -37,7 +48,7 @@ William~Ogilvy Kermack and A.~G. McKendrick.
 \newblock ISSN 0950-1207, 2053-9150.
 \newblock \doi{10.1098/rspa.1927.0118}.
 \newblock URL
-  \url{https://royalsocietypublishing.org/rspa/article/115/772/700/2165/A-contribution-to-the-mathematical-theory-of}.
+  \url{https://royalsocietypublishing.org/doi/10.1098/rspa.1927.0118}.
 
 \bibitem[Lloyd-Smith et~al.(2005)Lloyd-Smith, Schreiber, Kopp, and
   Getz]{lloyd-smith_superspreading_2005}
