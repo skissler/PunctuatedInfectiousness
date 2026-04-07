@@ -3355,6 +3355,50 @@ $$\Delta\sigma^2(\psi) \;=\; \frac{R_0}{N}\int_0^\infty j_{\det}(t)\,\frac{\text
 <li>Compare the predicted final size variance with the empirical variance from simulations</li>
 </ol>
 
+<hr>
+<div class="prompt">Does the exponential delay in fig_te_testing_delay integrate out? i.e., would a fixed delay of \(1/\lambda\) give the same TE curves?</div>
+
+<h2>Does the delay distribution integrate out?</h2>
+
+<p>No. A fixed delay of \(1/\lambda\) gives different TE curves from an \(\text{Exp}(\lambda)\) delay with the same mean. The key reason is <strong>Jensen's inequality</strong>: the survival function \(S_\psi\) is not linear, so \(\mathbb{E}[S_\psi(t_0 + \delta)] \neq S_\psi(t_0 + \mathbb{E}[\delta])\) in general.</p>
+
+<h3>Setup</h3>
+
+<p>With detection at time \(t_0\) (relative to the infectiousness profile), the TE contribution is:</p>
+
+<ul>
+<li><strong>Fixed delay</strong> \(\delta_0 = 1/\lambda\): &nbsp; \(S_\psi(t_0 + 1/\lambda)\)</li>
+<li><strong>Random delay</strong> \(\delta \sim \text{Exp}(\lambda)\): &nbsp; \(\mathbb{E}_\delta[S_\psi(t_0 + \delta)]\)</li>
+</ul>
+
+<p>Jensen's inequality says these are equal iff \(S_\psi\) is linear (affine) on the support of \(t_0 + \delta\). Since \(S_\psi(t) = 1 - F_{\text{Gamma}(\alpha\psi,\,\beta)}(t)\) is generally nonlinear, they differ.</p>
+
+<h3>Direction of the bias</h3>
+
+<p>The second derivative of \(S_\psi\) is \(S''_\psi(t) = -f'_\psi(t)\), where \(f_\psi\) is the Gamma density. For shape \(\alpha\psi > 1\), the density is unimodal, so:</p>
+
+<ul>
+<li>Before the density mode: \(f'_\psi > 0\), so \(S''_\psi < 0\) (concave). Jensen gives \(\mathbb{E}[S(t_0+\delta)] < S(t_0 + 1/\lambda)\).</li>
+<li>After the density mode: \(f'_\psi < 0\), so \(S''_\psi > 0\) (convex). Jensen gives \(\mathbb{E}[S(t_0+\delta)] > S(t_0 + 1/\lambda)\).</li>
+</ul>
+
+<p>So the direction of the discrepancy depends on where isolation falls relative to the infectiousness mode. Early isolation (concave region): the random delay <em>reduces</em> TE relative to fixed. Late isolation (convex region): the random delay <em>increases</em> TE relative to fixed. The integrated TE over detection times averages over both regions, and the net effect depends on parameters.</p>
+
+<h3>The spike case is the starkest example</h3>
+
+<p>For \(\psi \to 0\), \(S_0(t)\) is a step function: \(S_0(t) = \mathbf{1}(t < 0)\). The distinction is clearest here:</p>
+
+<ul>
+<li><strong>Fixed delay:</strong> \(S_0(t_0 + 1/\lambda) = \mathbf{1}(t_0 < -1/\lambda)\). This is still a step function, just shifted left by \(1/\lambda\).</li>
+<li><strong>Random delay:</strong> \(\mathbb{E}[S_0(t_0 + \delta)] = P(\delta < -t_0) = \begin{cases} 0 & t_0 \geq 0 \\ 1 - e^{\lambda t_0} & t_0 < 0 \end{cases}\)</li>
+</ul>
+
+<p>The fixed delay shifts the step; the random delay <em>smooths</em> it into an exponential ramp. For \(t_0 \in (-1/\lambda,\, 0)\), the fixed delay gives \(S = 0\) (the delay pushed isolation past the spike) while the random delay gives \(S = 1 - e^{\lambda t_0} > 0\) (there's still a chance the delay was short enough). Conversely, for \(t_0 < -1/\lambda\), the fixed delay gives \(S = 1\) while the random delay gives \(S < 1\) (some probability the delay was long enough to miss).</p>
+
+<h3>Upshot</h3>
+
+<p>The distribution of the delay does <em>not</em> integrate out. The random delay smooths the TE curves relative to a fixed delay of the same mean. The effect is most dramatic for spike profiles and diminishes as \(\psi \to 1\) (where \(S_\psi\) becomes smoother and more nearly linear over the scale of the delay). If you wanted to verify numerically, you could add a fixed-delay comparison to section 3 — just evaluate \(S_\psi(u - d_{\text{pre}} + \text{mode} + 1/\lambda)\) in place of the closed-form expectation.</p>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

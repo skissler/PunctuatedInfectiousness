@@ -1,27 +1,27 @@
 % make -C writeup dark 
 
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}
 
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage[T1]{fontenc}
-\usepackage{helvet}
+\usepackage{mathpazo}
 \usepackage{courier}
-\renewcommand{\familydefault}{\sfdefault}
 \usepackage{xcolor}
 \usepackage{authblk}
 \renewcommand\Affilfont{\small}
 \usepackage{natbib}
 \usepackage{hyperref}
 \usepackage{setspace}
+\usepackage{xspace}
 \usepackage{lineno}
 \renewcommand\linenumberfont{\normalfont\footnotesize\ttfamily\color{gray}}
 
 % Dark mode: activated via \def\darkmode{} on the command line
 \ifdefined\darkmode
   \definecolor{darkbg}{HTML}{1D1E1E}
-  \definecolor{darkfg}{HTML}{9C9D9D}
+  \definecolor{darkfg}{HTML}{C8C8C8}
   \pagecolor{darkbg}
   \color{darkfg}
   \hypersetup{colorlinks=true, linkcolor=cyan, citecolor=cyan, urlcolor=cyan}
@@ -37,7 +37,13 @@
 \titleformat{\subsection}{\normalsize\bfseries\itshape}{\thesubsection}{1em}{}
 \titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
 
-\onehalfspacing
+% Abbreviations
+\newcommand{\ie}{\textit{i.e.}\@\xspace}
+\newcommand{\eg}{\textit{e.g.}\@\xspace}
+\newcommand{\vs}{\textit{vs.}\@\xspace}
+
+\setlength{\parskip}{0.5em}
+\setstretch{1.2}
 \linenumbers
 
 \begin{document}
