@@ -1,4 +1,4 @@
-\clearpage
+% \clearpage
 % ////////////////////////////////////////////////////////////////////////////////////////////
 \section{The individual infectiousness profile}
 \subsection{Expressing the Hudson--Kermack--McKendrick model in terms of individual infectiousness}
@@ -10,7 +10,9 @@ F(t) = \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau
 \label{eq:foi}
 \end{equation}
 %
-where $F(t)$ is the force of infection at time $t$, $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the infectiousness profile describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is the product of the force of infection and the susceptible density (\ie, $-\frac{dS}{dt} = F(t) S(t)$); thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds. The infectiousness profile is related to the basic reproduction number $R_0$ and the generation interval distribution $g(\tau)$: 
+where $F(t)$ is the force of infection at time $t$, $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the infectiousness profile describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is the product of the force of infection and the susceptible density (\ie, $-\frac{dS}{dt} = F(t) S(t)$); thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds. 
+
+The infectiousness profile is related to the basic reproduction number $R_0$ and the generation interval distribution $g(\tau)$: 
 %
 \begin{equation}
 R_0 = \int_0^\infty A(\tau) d\tau
@@ -22,7 +24,7 @@ g(\tau) = \frac{A(\tau)}{R_0}
 \label{eq:gi}
 \end{equation}
 
-Since $A(\tau)$ is an expectation, it does not necessarily reflect any single person's infectiousness, just as $\nu_i$ can differ substantially from $R_0$. For example: the SEIR model is conceptually motivated by considering an individual who undergoes a latent period of length $x_i \sim \text{Exp}(\gamma)$ during which they are not infectious, followed by an infectious period of length $y_i \sim \text{Exp}(\alpha)$ during which they are infectious at level $\beta$. Mathematically, this ``stepwise'' individual infectiousness profile is expressed as 
+Since $A(\tau)$ is an expectation over individuals, it does not necessarily reflect any single person's infectiousness. For example: the SEIR model is conceptually motivated by considering an individual who undergoes a latent period of length $x_i \sim \text{Exp}(\gamma)$ during which they are not infectious, followed by an infectious period of length $y_i \sim \text{Exp}(\alpha)$ during which they are infectious at level $\beta$. Mathematically, this ``stepwise'' individual infectiousness profile is expressed as 
 %
 \begin{equation}
 a_i(\tau) = \begin{cases}
@@ -39,21 +41,23 @@ A(\tau) = E_i[a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n 
 \label{eq:A_seir}
 \end{equation}
 %
-\ie, a smooth, bell-shaped curve that arises from a sum of discontinuous, stepwise $a_i(\tau)$ ({\bf Figure XX}). Furthermore, other choices of $a_i(\tau)$ can yield the same $A(\tau)$, including 
+\ie, a smooth, bell-shaped curve that arises from a sum of discontinuous, stepwise $a_i(\tau)$ ({\bf Figure XX}). Other choices of $a_i(\tau)$ can yield the same $A(\tau)$ in Eq.~\ref{eq:A_seir}, including 
 %
 \begin{equation}
 a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha} (e^{-\alpha \tau} - e^{-\gamma \tau})
 \label{eq:a_seir_smooth}
 \end{equation}
 %
-a ``smooth'' individual infectiousness profile where each person's infectiousness is identical to the population-level average, and 
+\ie, a ``smooth'' individual infectiousness profile where each person's infectiousness is identical to the population-level average, and 
 %
 \begin{equation}
 a_i(\tau) = \frac{\beta}{\gamma} \delta_{t_i}(\tau)
 \label{eq:a_seir_spike}
 \end{equation}
 %
-a ``spike'' infectiousness profile where $\delta_i(\tau)$ is a delta function with mass at time $t_i$, and $t_i$ is distributed according to the generation interval density $A(\tau) / R_0$ ({\bf Figure XX}). In this case, a person's infectiousness is concentrated at a single moment. In general, any definition of $a_i(\tau)$ such that $E_i[a_i(\tau)] = A(\tau)$ will yield the same mean-field population-level epidemic dynamics; however, they may have important stochastic consequences ({\bf Figure XX}), which are the main topic of this article. 
+\ie, a ``spike'' infectiousness profile where $\delta_i(\tau)$ is a delta function with mass at time $t_i$, and $t_i$ is distributed according to the generation interval density $g(\tau) = A(\tau) / R_0$ ({\bf Figure XX}), such that a person's infectiousness is concentrated at a single moment. 
+
+In general, any definition of $a_i(\tau)$ such that $E_i[a_i(\tau)] = A(\tau)$ will yield the same mean-field population-level epidemic dynamics; however, they may have important stochastic consequences ({\bf Figure XX}), which are the main topic of this article. 
 
 %////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -113,6 +117,7 @@ To achieve this, let us make the simplifying assumption that $g(\tau)$ follows a
 %
 \begin{equation}
     g(\tau) \sim \text{Gamma}(\alpha, \beta), \qquad \beta = \alpha / \mu 
+    \label{eq:gamma_gi}
 \end{equation}
 %
 where $\mu$ is the mean generation time, and $\alpha$ controls the shape of the generation interval distribution. The Gamma distribution is a common choice for modeling generation interval distributions in applied infectious disease epidemiology \citep{}. A key property of the Gamma distribution is that the sum of two Gamma-distributed random variables with shape parameters $\alpha_1$ and $\alpha_2$ and common rate $\beta$ is also Gamma-distributed with shape $\alpha_1 + \alpha_2$ and rate $\beta$. Let us assume now that the individual-level biological infectiousness profile $b_i(\tau)$ follows a shifted Gamma distribution preceded by a latent period $l_i$, which is also Gamma-distributed, \ie: 
@@ -122,15 +127,30 @@ where $\mu$ is the mean generation time, and $\alpha$ controls the shape of the 
       0 & \tau \leq l_i  \\ 
       f_\epsilon(\tau) & \tau > l_i 
     \end{cases}
+    \label{eq:gamma_timeshift}
 \end{equation}
 % 
-where $l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)$ and $f_\epsilon(tau)$ is a $\text{Gamma}(\psi \alpha, \beta)$ pdf. The parameter $\psi \in [0,1]$ determines the punctuatedness of $b_i(\tau)$, with $\psi \rightarrow 0$ making $b_i(\tau)$ a delta function concentrated at $\tau = l_i$, and $\psi \rightarrow 1$ making $b_i(\tau) = g(\tau)$. As such, this provides a continuum between the ``delta'' and ``smooth'' cases from before (Eqs.~\ref{eq:a_seir_smooth}-\ref{eq:a_seir_spike}). Due to the additive property of Gamma distributions with equal rate, these individual-level profiles are guaranteed to converge to the population-level $g(\tau) \sim \text{Gamma}(\alpha,\beta)$. Furthermore, this convergence does not depend on the entire population sharing the same $\psi$-value; indeed, unique $\psi_i$ may be chosen from any distribution with support on $[0,1]$ and the convergence holds ({\bf Supplementary Methods}). 
+where $l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)$ and $f_\epsilon(\tau)$ is a $\text{Gamma}(\psi \alpha, \beta)$ pdf. The parameter $\psi \in [0,1]$ determines the punctuatedness of $b_i(\tau)$, with $\psi \rightarrow 0$ making $b_i(\tau)$ a delta function concentrated at $\tau = l_i$, and $\psi \rightarrow 1$ making $b_i(\tau) = g(\tau)$. As such, this provides a continuum between the ``delta'' and ``smooth'' cases from before (Eqs.~\ref{eq:a_seir_smooth}-\ref{eq:a_seir_spike}). Due to the additive property of Gamma distributions with equal rate, these individual-level profiles are guaranteed to converge to the population-level $g(\tau) \sim \text{Gamma}(\alpha,\beta)$. Furthermore, this convergence does not depend on the entire population sharing the same $\psi$-value; indeed, unique $\psi_i$ may be chosen from any distribution with support on $[0,1]$ and the convergence holds ({\bf Supplementary Methods}). 
 
 % ////////////////////////////////////////////////////////////////////////////////////////////
 
 \subsection{Analytic approach}
 
 To investigate the impact of the punctuatedness of $a_i(\tau)$ on epidemic dynamics, we turn to both analytic results and stochastic simultions. Stochastic simulations are generated by assuming a fixed population size (10,000) and initial number of infectious individuals (1). For each person $i$, a biological and contact infectiousness potential ($b_i$ and $c_i$), and thus the full individual infectiousness profile ($a_i$), are generated {\it a priori}. Infection attempts are generated for each person by drawing a number of infections $X \sim \text{Poisson}(\nu_i)$, where $\nu_i = \int_0^\infty a_i(\tau) d\tau$. These infections are then distributed according to $a_i(\tau)$ using Gamma-distributed draws. Infection attempts are paired with ``recipients'' uniform-randomly: if the recipient is susceptible, infection succeeds, while if the person has already been infected, the infection attempt fails. Full deatils are given in the {\bf Supplementary Methods}. For illustration purposes, we focus on three sets of epidemiological parameters, roughly pertaining to influenza-like, SARS-CoV-2 omicron-like, and measles-like pathogens ({\bf Table XX}). 
+
+We normally keep the contact process fixed at the reference value ($c_i(t) \equiv 1$). However, to examine the interaction between $b_i(\tau)$ and $c_i(t)$, we introduce a ``periodic'' and a ``Pareto'' contact model. 
+
+For the periodic contact model, we assume 
+% 
+\begin{equation}
+    c_i(t) = 1 - \epsilon \cos(2 \pi t) \forall i 
+\end{equation}
+%
+This models a contact process with a period of one day, reflecting higher numbers of contacts during the day and lower numbers at night. The amplitude of the contact process is governed by the parameter $\epsilon \in [0,1]$, with $\epsilon=0$ recovering the reference contact proces $c_i(\tau) \equiv 1$. Note that this contact process also yields a periodic population-level contact modulator: $E_i[c_i(t)] = 1 - \epsilon \cos(2 \pi t)$. Here, there is no variation between individuals' contact processes, but there is variation over time. 
+
+For the Pareto contact model, we assume each person's contact modulator switches to a new level at times $t^* \sim \text{Exp}(\lambda)$, \ie, according to a Poisson process. The levels that are switched to are independently drawn from a $c^*\sim \text{Pareto}(xx,xx)$ distribution, which has mean 1. For this contact process, each person's infectiousness profile is unique, but the population-average infectiousness profile $C(t) = E_i[c_i(t)] = 1$, meaning the population-level, mean-field dynamics follow the reference contact process. 
+
+
 
 % ////////////////////////////////////////////////////////////////////////////////////////////
 % SCRATCH 

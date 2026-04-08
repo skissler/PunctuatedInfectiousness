@@ -4,45 +4,45 @@ The top-level auxiliary file: main.aux
 The style file: plainnat.bst
 Database file #1: zotero.bib
 Warning--I didn't find a database entry for ""
-You've used 9 entries,
+You've used 11 entries,
             2773 wiz_defined-function locations,
-            683 strings with 7367 characters,
-and the built_in function-call counts, 4610 in all, are:
-= -- 463
-> -- 221
+            699 strings with 8076 characters,
+and the built_in function-call counts, 6077 in all, are:
+= -- 589
+> -- 353
 < -- 6
-+ -- 75
-- -- 66
-* -- 425
-:= -- 731
-add.period$ -- 54
-call.type$ -- 9
-change.case$ -- 49
-chr.to.int$ -- 9
-cite$ -- 18
-duplicate$ -- 183
-empty$ -- 359
-format.name$ -- 83
-if$ -- 953
++ -- 119
+- -- 108
+* -- 578
+:= -- 973
+add.period$ -- 66
+call.type$ -- 11
+change.case$ -- 69
+chr.to.int$ -- 11
+cite$ -- 22
+duplicate$ -- 225
+empty$ -- 440
+format.name$ -- 127
+if$ -- 1246
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 9
-newline$ -- 80
-num.names$ -- 36
-pop$ -- 55
+missing$ -- 11
+newline$ -- 96
+num.names$ -- 44
+pop$ -- 85
 preamble$ -- 1
-purify$ -- 40
+purify$ -- 58
 quote$ -- 0
-skip$ -- 130
+skip$ -- 166
 stack$ -- 0
-substring$ -- 216
-swap$ -- 18
+substring$ -- 262
+swap$ -- 22
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 99
+type$ -- 121
 warning$ -- 0
-while$ -- 42
+while$ -- 50
 width$ -- 0
-write$ -- 178
+write$ -- 216
 (There was 1 warning)

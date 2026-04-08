@@ -1,44 +1,115 @@
 \clearpage 
 
-\section{The impact of the individual infectiousness profile on uncontrolled epidemics}
+\section{The impact of punctuated infectiousness profiles on uncontrolled epidemics}
 
 \subsection{Punctuated individual infectiousness profiles generate later and more variably-timed epidemics.}
 
-Even in large, well-mixed populations, stochasticity can durably impact the trajectory of an epidemic. One way this stochasticity enters is via a random time shift, where epidemics take a variable amount of time to reach the exponential growth phase \citep{morris_computation_2024}, leading to variation in the timing of the entire epidemic trajectory. Here, we address the question of how this time shift distribution depends on the shape of the individual infectiousness profile, holding all else equal. 
+Even in large popualations, early-outbreak stochasticity can impact when an epidemic becomes established and begins its exponential growth phase \citep{morris_computation_2024}. This time shift durably impacts the epidemic's full trajectory. The effect of this early-outbreak stochasticity can be modeled as a random time shift \citep{morris_computation_2024}. Here, we demonstrate that the distribution of this time shift --- both its mode and variance --- depend on $\psi$. 
 
-Simulations confirm that narrower infectiousness profiles ($\psi \rightarrow 0$) yield more variable and later-shifted epidemic timings ({\bf Figure XX}, {\bf Supplementary Table Sxx}). Across 10,000 simulated epidemics in a population of size 1000 using SARS-CoV-2 omicron-like parameters, the median time to reach 100 infections was XX days for $\psi = 0$ (IQR: [XX, XX]) vs. XX days for $\psi = 1$ (IQR: [XX, XX]). The impact of $\psi$ on epidemic timing was lessened with lower $R_0$ (influenza-like parameters, median time to 100 infections: XX days for $\psi=0$ [IQR: XX, XX] vs. XX days for $\psi=1$ [IQR: XX, XX]) and increased with higher $R_0$ (measles-like parameters, median time to 100 infections: XX days for $\psi=0$ [IQR: XX, XX] vs. XX days for $\psi=1$ [IQR: XX, XX]). From another perspective: by day XX of the simulated epidemic under measles-like parameters, XX\% of the outbreaks with $\psi = 1$ had reached 100 infections, while only XX\% of the outbreaks with $\psi=0$ had reached 100 infections ({\bf Figure XX}). 
-
-These observations are confirmed by the underlying theory. The cumulative incidence over time, $Z(t)$, during the early exponential growth phase of an epidemic can be approximated as a deterministic exponential growth function with a random initial condition scaling factor $W$: 
-
+Let the contact potential be constant in time and uniform across individuals ($c_i(t) = R_0$), and let $b_i(\tau) $ follow the time-shifted Gamma model (Eq.~\ref{eq:gamma_timeshift}). Drawing upon branching process theory, the cumulative incidence over time, $Z(t)$, during the exponential growth phase can be approximated as a deterministic exponential function with a random initial scaling factor $W$: 
+%
 \begin{equation}
-	Z(t) \approx W \cdot ce^{rt}
+	Z(t) \approx W \cdot e^{rt}
+	\label{eq:zt}
 \end{equation}
+%
+Here, $r$ is the exponential growth rate and $E[W]$ is the initial number of infectious individuals (for clarity of the derivation, we use $E[W]=1$ throughout). 
 
-with exponential growh rate $r$, and where $c$ is the mean-field initial condition (when $W = 1$). 
-
-With a change of variables, the cumulative incidence can be expressed as the same deterministic growht function with a random time shift $\varsigma$: 
-
+The random initial condition $W$ can, through a change of variables, be expressed as a random time shift: 
+%
 \begin{equation}
-	Z(t) \approx c e^{r(t+\varsigma)}
+	Z(t) \approx e^{r(t + \varsigma)}
+	\label{eq:zt_timeshift}
 \end{equation}
-
-where 
-
+%
+where
+%
 \begin{equation}
 	\varsigma = \frac{\log W - \log E[W]}{r}
+	\label{eq:timeshift}
+\end{equation}
+%
+Since $E[W]$ and $r$ are constants, $\varsigma$ and $W$ are monotonically related. 
+
+First, we derive an expression for $\text{Var}[W]$, noting that $\text{Var}[W] \propto \text{Var}[\varsigma]$. 
+
+[Setup]
+%
+\begin{equation}
+	\text{Var}[W] = \dots
+	\label{eq:varw}
+\end{equation}
+%
+Thus, narrower infectiousness profiles ($\psi \rightarrow 0$) yield more variable epidemic establishment times, and thus more variably-timed epidemics overall. This effect is magnified as $R_0$ increases. 
+
+We can also derive an expression for the mode of the distribution of $\varsigma$: 
+%
+\begin{equation}
+	\text{Mode}[\varsigma] = \dots
+	\label{eq:mode_timeshift}
+\end{equation}
+%
+Thus, narrower infectiousness profiles ($psi \rightarrow 0$) cause the typical (modal) epidemic to be shifted later in time. This efffect is also magnified as $R_0$ increases. 
+
+Stochastic simulations confirm the analytic results. The time to 100 infections varies with $\psi$, especially for pathogens with high $R_0$ (SARS-CoV-2 omicron, measles). For measles, by 28 days, only xx\% of simulated epidemics reached 100 infections by day 28 for the spike case, while xx\% reached the same threshold for the smooth case. Thus, punctuation of the individual infectiousness profile can substantially impact the timing of epidemic establishment, especially when $R_0$ is high. 
+
+% ////////////////////////////////////////////////////////////////////////////////////////////
+
+\subsection{Narrow individual infectiousness profiles yield greater uncertainty in epidemic growth rate estimates}
+
+Punctuated individual infectiousness profiles also make empirical estimates of the early-epidemic exponential growth rate $r$ more uncertain ({\bf Figure XX}). 
+
+% ////////////////////////////////////////////////////////////////////////////////////////////
+
+\subsection{Narrow biological infectiousness profiles interact with periodic contact patterns to generate overdispersion in secondary infections}
+
+\begin{equation}
+	k = \frac{2}{\bar{c}} A^2 \Bigr(1 + \frac{\omega^2}{r^2}\Bigl)^{\psi \alpha}
 \end{equation}
 
-Here, $E[W]$ is the initial condition and $r$ is the exponential growth rate, so $\varsigma \propto \log[W]$. 
 
-First, we consider the variance of the time shift, $Var[\varsigma]$. For ease of notation, we focus on $Var[W]$, noting that $Var[\varsigma]$ is monotonically related to $Var[W]$. It can be shown that {\bf Supplementary Text}
 
-\[ 
-Var[W] = m_2 + R_0^2 \rho^{2 \psi \alpha} [\rho_2^{(1-\psi)\alpha} - \rho^{2(1-\psi)\alpha}]
-\]
 
-which is maximized when $\psi = 0$ (the infectiousness profile is narrow) and becomes 0 when $\psi = 1$ (the infectiousness profile is maximally broad). (Can we say something about how this suggests that the variance of the time shift scales roughly linearly with $\psi$?)
 
-Next, we consider the typical time shift, which we obtain by studying the mode of the distribution of $W$. 
+
+
+
+
+% Even in large, well-mixed populations, stochasticity can durably impact the trajectory of an epidemic. One way this stochasticity enters is via a random time shift, where epidemics take a variable amount of time to reach the exponential growth phase \citep{morris_computation_2024}, leading to variation in the timing of the entire epidemic trajectory. Here, we address the question of how this time shift distribution depends on the shape of the individual infectiousness profile, holding all else equal. 
+
+% Simulations confirm that narrower infectiousness profiles ($\psi \rightarrow 0$) yield more variable and later-shifted epidemic timings ({\bf Figure XX}, {\bf Supplementary Table Sxx}). Across 10,000 simulated epidemics in a population of size 1000 using SARS-CoV-2 omicron-like parameters, the median time to reach 100 infections was XX days for $\psi = 0$ (IQR: [XX, XX]) vs. XX days for $\psi = 1$ (IQR: [XX, XX]). The impact of $\psi$ on epidemic timing was lessened with lower $R_0$ (influenza-like parameters, median time to 100 infections: XX days for $\psi=0$ [IQR: XX, XX] vs. XX days for $\psi=1$ [IQR: XX, XX]) and increased with higher $R_0$ (measles-like parameters, median time to 100 infections: XX days for $\psi=0$ [IQR: XX, XX] vs. XX days for $\psi=1$ [IQR: XX, XX]). From another perspective: by day XX of the simulated epidemic under measles-like parameters, XX\% of the outbreaks with $\psi = 1$ had reached 100 infections, while only XX\% of the outbreaks with $\psi=0$ had reached 100 infections ({\bf Figure XX}). 
+
+% These observations are confirmed by the underlying theory. The cumulative incidence over time, $Z(t)$, during the early exponential growth phase of an epidemic can be approximated as a deterministic exponential growth function with a random initial condition scaling factor $W$: 
+
+% \begin{equation}
+% 	Z(t) \approx W \cdot ce^{rt}
+% \end{equation}
+
+% with exponential growh rate $r$, and where $c$ is the mean-field initial condition (when $W = 1$). 
+
+% With a change of variables, the cumulative incidence can be expressed as the same deterministic growht function with a random time shift $\varsigma$: 
+
+% \begin{equation}
+% 	Z(t) \approx c e^{r(t+\varsigma)}
+% \end{equation}
+
+% where 
+
+% \begin{equation}
+% 	\varsigma = \frac{\log W - \log E[W]}{r}
+% \end{equation}
+
+% Here, $E[W]$ is the initial condition and $r$ is the exponential growth rate, so $\varsigma \propto \log[W]$. 
+
+% First, we consider the variance of the time shift, $Var[\varsigma]$. For ease of notation, we focus on $Var[W]$, noting that $Var[\varsigma]$ is monotonically related to $Var[W]$. It can be shown that {\bf Supplementary Text}
+
+% \[ 
+% Var[W] = m_2 + R_0^2 \rho^{2 \psi \alpha} [\rho_2^{(1-\psi)\alpha} - \rho^{2(1-\psi)\alpha}]
+% \]
+
+% which is maximized when $\psi = 0$ (the infectiousness profile is narrow) and becomes 0 when $\psi = 1$ (the infectiousness profile is maximally broad). (Can we say something about how this suggests that the variance of the time shift scales roughly linearly with $\psi$?)
+
+% Next, we consider the typical time shift, which we obtain by studying the mode of the distribution of $W$. 
 
 % Let $I_b(t)$ be the (stochastic) number of infections at time $t$ for a single epidemic realization, where the subscript ``b'' marks that it is a branching process. Let $I_d(t)$ be its mean-field deterministic counterpart. Then, we can approximate $I_b(t)$ as $I_d(t+\varsigma)$, {\it i.e.,} the branching process is approximately equal to the deterministic process with a random time shift. 
 
@@ -56,32 +127,32 @@ Next, we consider the typical time shift, which we obtain by studying the mode o
 
 % \noindent where $c$ depends on $R_0$ and $\alpha$ but not $\psi$. Thus, broad profiles ($\psi \rightarrow 1$) minimize $\text{Var}(W)$ and narrow profiles ($\psi \rightarrow 0$) maximize it. 
 
-We can approximate the distribution of $W$ using moment matching to a generalized Gamma distribution. With the Gamma-shaped individual infectiousness profiles, the moments have closed-form expressions. Using two-moment matching to a Gamma distribution, we find that 
+% We can approximate the distribution of $W$ using moment matching to a generalized Gamma distribution. With the Gamma-shaped individual infectiousness profiles, the moments have closed-form expressions. Using two-moment matching to a Gamma distribution, we find that 
 
-\[ \text{mode}_\varsigma = \frac{1}{r} \log(1 - \text{CV}^2_\text{cond})] \]
+% \[ \text{mode}_\varsigma = \frac{1}{r} \log(1 - \text{CV}^2_\text{cond})] \]
 
-Here, (description). Again, we see that the mode shifts later as $\psi \rightarrow 0$. 
+% Here, (description). Again, we see that the mode shifts later as $\psi \rightarrow 0$. 
 
-The theory aligns well with the simulations. Using generalized gamma distributions fit using moment matching to the first five moments of $W$, we get similar survival curves for the time to 100 infected ({\bf Figure XX}). 
+% The theory aligns well with the simulations. Using generalized gamma distributions fit using moment matching to the first five moments of $W$, we get similar survival curves for the time to 100 infected ({\bf Figure XX}). 
 
-\subsection{Narrower individual infectiousness profiles yield greater uncertainty in epidemic growth rate estimates.}
+% \subsection{Narrower individual infectiousness profiles yield greater uncertainty in epidemic growth rate estimates.}
 
-Based on simulations. 
+% Based on simulations. 
 
-\subsection{Narrower biological infectiousness profiles interact with periodic contact patterns to generate overdispersion in secondary infections.}
+% \subsection{Narrower biological infectiousness profiles interact with periodic contact patterns to generate overdispersion in secondary infections.}
 
-Closed-form solution: 
+% Closed-form solution: 
 
-\[ k = \frac{2}{\bar{c}^2}{A^2} \Bigl(1 + \frac{\omega^2}{r^2}\Bigr)^{\psi \alpha} = \frac{2}{\bar{c}^2}{A^2} \Bigl(1 + (\frac{z^*_{per}}{z_{per}})^2\Bigr)^{\psi \alpha} \]
+% \[ k = \frac{2}{\bar{c}^2}{A^2} \Bigl(1 + \frac{\omega^2}{r^2}\Bigr)^{\psi \alpha} = \frac{2}{\bar{c}^2}{A^2} \Bigl(1 + (\frac{z^*_{per}}{z_{per}})^2\Bigr)^{\psi \alpha} \]
 
 
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=.5\textwidth]{figures/stock.png}
-\caption{{\bf Impact of the individual infectiousness profile on epidemic timing.} Survival curves for time-to-100. growth rate estimate box-and-whiskers. Overdispersion/k vs psi heatmap.} 
-\label{fig:uncontrolled}
-\end{figure}
+% \begin{figure}[ht]
+% \centering
+% \includegraphics[width=.5\textwidth]{figures/stock.png}
+% \caption{{\bf Impact of the individual infectiousness profile on epidemic timing.} Survival curves for time-to-100. growth rate estimate box-and-whiskers. Overdispersion/k vs psi heatmap.} 
+% \label{fig:uncontrolled}
+% \end{figure}
 
 
 % Stepwise, smooth, and spike all yield the same mean dynamics

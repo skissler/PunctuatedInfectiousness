@@ -1,4 +1,4 @@
-\begin{thebibliography}{9}
+\begin{thebibliography}{11}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -39,8 +39,19 @@ K.~Dietz.
 \newblock URL
   \url{https://journals.sagepub.com/doi/10.1177/096228029300200103}.
 
+\bibitem[Goyal et~al.(2021)Goyal, Reeves, Cardozo-Ojeda, Schiffer, and
+  Mayer]{goyal_viral_2021}
+Ashish Goyal, Daniel~B Reeves, E~Fabian Cardozo-Ojeda, Joshua~T Schiffer, and
+  Bryan~T Mayer.
+\newblock Viral load and contact heterogeneity predict {SARS}-{CoV}-2
+  transmission and super-spreading events.
+\newblock \emph{eLife}, 10:\penalty0 e63537, February 2021.
+\newblock ISSN 2050-084X.
+\newblock \doi{10.7554/eLife.63537}.
+\newblock URL \url{https://elifesciences.org/articles/63537}.
+
 \bibitem[Kermack and McKendrick(1927)]{kermack_contribution_1927}
-William~O. Kermack and A.G. McKendrick.
+William~Ogilvy Kermack and A.~G. McKendrick.
 \newblock A contribution to the mathematical theory of epidemics.
 \newblock \emph{Proceedings of the Royal Society of London. Series A,
   Containing Papers of a Mathematical and Physical Character}, 115\penalty0
@@ -48,7 +59,19 @@ William~O. Kermack and A.G. McKendrick.
 \newblock ISSN 0950-1207, 2053-9150.
 \newblock \doi{10.1098/rspa.1927.0118}.
 \newblock URL
-  \url{https://royalsocietypublishing.org/doi/10.1098/rspa.1927.0118}.
+  \url{https://royalsocietypublishing.org/rspa/article/115/772/700/2165/A-contribution-to-the-mathematical-theory-of}.
+
+\bibitem[Larremore et~al.(2021)Larremore, Wilder, Lester, Shehata, Burke, Hay,
+  Tambe, Mina, and Parker]{larremore_test_2021}
+Daniel~B. Larremore, Bryan Wilder, Evan Lester, Soraya Shehata, James~M. Burke,
+  James~A. Hay, Milind Tambe, Michael~J. Mina, and Roy Parker.
+\newblock Test sensitivity is secondary to frequency and turnaround time for
+  {COVID}-19 screening.
+\newblock \emph{Science Advances}, 7\penalty0 (1):\penalty0 eabd5393, January
+  2021.
+\newblock ISSN 2375-2548.
+\newblock \doi{10.1126/sciadv.abd5393}.
+\newblock URL \url{https://www.science.org/doi/10.1126/sciadv.abd5393}.
 
 \bibitem[Lloyd-Smith et~al.(2005)Lloyd-Smith, Schreiber, Kopp, and
   Getz]{lloyd-smith_superspreading_2005}
