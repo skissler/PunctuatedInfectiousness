@@ -12,11 +12,13 @@
 
 \subsubsection*{Parameter structure}
 
-The punctuated Gamma model has four epidemiological parameters: the basic  reproduction number $R_0$, the Malthusian growth rate $r$, and the two  parameters of the generation interval distribution, $\alpha$ (shape) and  $\beta$ (rate), which together determine the mean generation time  $\bar{g} = \alpha/\beta$. These four parameters are not all free: the  Euler--Lotka equation,
+The punctuated Gamma model has four epidemiological parameters: the basic  reproduction number $R_0$, the early-epidemic growth rate $r$, and the two  parameters of the generation interval distribution, $\alpha$ (shape) and  $\beta$ (rate), which together determine the mean generation time  $\bar{g} = \alpha/\beta$. These four parameters are not all free: the  Euler--Lotka equation
 %
 \begin{equation}
-    R_0 \left(\frac{\beta}{\beta + r}\right)^\alpha = 1,
-    \label{eq:euler_lotka}
+	1  
+	=R_0 \int_{\tau=0}^\infty e^{-r\tau } \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{\alpha-1} e^{-\beta \tau} d\tau
+	= R_0 \left(\frac{\beta}{\beta + r}\right)^\alpha
+	\label{eq:euler_lotka}
 \end{equation}
 %
 provides one constraint among them, leaving three free parameters. We  choose to work with $(R_0, \bar{g}, \alpha)$ as the free parameters,  since each has a direct epidemiological interpretation:
@@ -24,7 +26,7 @@ provides one constraint among them, leaving three free parameters. We  choose to
 \begin{itemize}
     \item $R_0$: the basic reproduction number, measuring transmissibility;
     \item $\bar{g}$: the mean generation time;
-    \item $\alpha$: the shape parameter of the generation interval  distribution, where larger $\alpha$ corresponds to a more concentrated  (less variable) generation interval for fixed $\bar{g}$.
+    \item $\alpha$: the shape parameter of the generation interval  distribution, where larger $\alpha$ corresponds to a more concentrated  (less variable) generation interval distribution for fixed $\bar{g}$.
 \end{itemize}
 %
 Given $(R_0, \bar{g}, \alpha)$, the remaining parameters are fully  determined. The rate parameter $\beta$ follows immediately from the  definition of the mean:
@@ -33,7 +35,7 @@ Given $(R_0, \bar{g}, \alpha)$, the remaining parameters are fully  determined. 
     \beta = \frac{\alpha}{\bar{g}},
 \end{equation}
 %
-and the Malthusian growth rate $r$ follows from the Euler--Lotka equation:
+and the early-epidemic growth rate $r$ follows from the Euler--Lotka equation:
 %
 \begin{equation}
     r = \beta\left(R_0^{1/\alpha} - 1\right) 
@@ -41,23 +43,24 @@ and the Malthusian growth rate $r$ follows from the Euler--Lotka equation:
     \label{eq:r_from_params}
 \end{equation}
 %
-The dimensionless growth parameter $z = r/\beta = r\bar{g}/\alpha$ is 
-therefore also determined:
-%
-\begin{equation}
-    z = R_0^{1/\alpha} - 1,
-    \label{eq:z_from_R0}
-\end{equation}
-%
-confirming that $z$ depends on $R_0$ and $\alpha$ alone. The punctuation  parameter $\psi \in [0, 1]$ is the only remaining free parameter, and  it is the sole quantity that is not identifiable from population-level  epidemic data: since $A(\tau)$ is invariant across $\psi$ by  construction, the parameters $(R_0, \bar{g}, \alpha)$ can in principle  be estimated from the observed epidemic trajectory independently of  $\psi$. The consequences of varying $\psi$ while holding  $(R_0, \bar{g}, \alpha)$ fixed are therefore attributable purely to  changes in the individual-level temporal structure of infectiousness,  with no confounding from changes in the population-level transmission  kernel.
+% The dimensionless growth parameter $z = r/\beta = r\bar{g}/\alpha$ is 
+% therefore also determined:
+% %
+% \begin{equation}
+%     z = R_0^{1/\alpha} - 1,
+%     \label{eq:z_from_R0}
+% \end{equation}
+% %
+% confirming that $z$ depends on $R_0$ and $\alpha$ alone. 
+The punctuation  parameter $\psi \in [0, 1]$ is the only remaining free parameter, and  it is the sole quantity that is not identifiable from population-level  epidemic data: since $A(\tau)$ is invariant across $\psi$ by  construction, the parameters $(R_0, \bar{g}, \alpha)$ can in principle  be estimated from the observed epidemic trajectory independently of  $\psi$. The consequences of varying $\psi$ while holding  $(R_0, \bar{g}, \alpha)$ fixed are therefore attributable purely to  changes in the individual-level temporal structure of infectiousness, with no confounding from changes in the population-level transmission  kernel.
 
-For the analyses presented here, we fix $(R_0, \bar{g}, \alpha)$ and  vary $\psi \in [0, 1]$, computing $\text{Var}(W)$ and  $\text{Mode}[\varsigma]$ across this range. Representative parameter  values are chosen to reflect pathogens of public health interest,  with $\alpha$ and $\bar{g}$ matched to empirical generation interval  estimates where available.
+% For the analyses presented here, we fix $(R_0, \bar{g}, \alpha)$ and  vary $\psi \in [0, 1]$, computing $\text{Var}(W)$ and  $\text{Mode}[\varsigma]$ across this range. Representative parameter  values are chosen to reflect pathogens of public health interest,  with $\alpha$ and $\bar{g}$ matched to empirical generation interval  estimates where available.
 
 \clearpage
 
 \subsubsection*{Derivation of $\text{Var}[W]$}
 
-Branching process theory establishes that, for a branching process $Z(t)$ conditional on non-extinction, $e^{-rt} Z(t) \rightarrow W$ almost surely as $t \rightarrow \infty$. Here, $r$ is the early-epidemic exponential growth rate and $W$ is a random variable that effectively scales the branching process' initial condition, capturing stochastic fluctuations in the early-epidemic process. 
+For a branching process $Z(t)$ conditional on non-extinction, $e^{-rt} Z(t) \rightarrow W$ almost surely as $t \rightarrow \infty$. Here, $r$ is the early-epidemic exponential growth rate and $W$ is a random variable that effectively scales the branching process' initial condition, capturing stochastic fluctuations in the early-epidemic process. 
 
 With a change of variables, we can translate $W$ into a random initial time shift: 
 %
@@ -81,15 +84,17 @@ We can define some useful quantities that will arise later in the derivation. Fi
 %
 which simplifies to 
 %
-\[ 1 = R_0 \Bigl( \frac{\beta}{\beta+r }\Bigr )^\alpha \]
+\[ 1 = R_0 \Bigl( \frac{\beta}{\beta+r }\Bigr )^\alpha = R_0 \Bigl(\frac{1}{1+z}\Bigr)\]
 %
+where  $z = r/\beta = r \bar{g} / \alpha = R_0^{1/\alpha} - 1$, a dimensionless quantity that simplifies expressions and allows one to easily plug in different combinations of epidemiological parameters. Here, $\bar{g}$ is the mean of the generation interval distribution $g(\tau)$. 
 % Solving for $r$ gives 
 %
 % \[ r = \beta (R_0^{1/\alpha} - 1) \]
 %
-We define 
+Next, we define 
 %
-\[ \rho = \frac{\beta}{\beta + r}, \qquad \rho_2 = \frac{\beta}{\beta + 2r} \]
+% \[ \rho = , \qquad \rho_2 =  \]
+\[ \rho = \frac{\beta}{\beta + r} = \frac{1}{1+z}, \qquad \rho_2 = \frac{\beta}{\beta + 2r} = \frac{1}{1 + 2z} \]
 %
 This allows us to re-write the Euler-Lotka equation: 
 %
@@ -114,22 +119,19 @@ We now use this expression to calculate $\text{Var}[W]$. Since randomness enters
 %
 \[ \text{Var}[W] = E[\text{Var}\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] + \text{Var}[E\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] \]
 %
-Given $\tau_j$, $W_j$ are i.i.d.~with $E[W] = 1$ and variance $\text{Var}[W]$, so 
-%
+% \[
+% = E[\text{Var}\Bigl[W \sum_j e^{-r \tau_j} \Bigr]]  + 
+% \text{Var}[E\Bigl[W \sum_j e^{-r \tau_j}\Bigr]]
+% \]
 \[
-= E[\text{Var}\Bigl[W \sum_j e^{-r \tau_j} \Bigr]]  + 
-\text{Var}[E\Bigl[W \sum_j e^{-r \tau_j}\Bigr]]
-\]
-\[
-=E\Bigl[\sum_j e^{-2r\tau_j} \cdot \text{Var}[W]\Bigr] + 
-\text{Var}\Bigl[E[W] \cdot E[\sum_j e^{-r \tau_j}]\Bigr]
+=E\Bigl[ \sum_j e^{-2r\tau_j}  \cdot \text{Var}[W] \Bigr] + 
+\text{Var} \Bigl[\sum_j e^{-r \tau_j} \cdot E[W] \Bigr]
 \]
 \[
 = E\Bigl[\sum_j e^{-2 r \tau_j}\Bigr] \cdot \text{Var}[W] + 
 (E[W])^2 \cdot \text{Var}\Bigl[\sum_j e^{-r \tau_j}\Bigr]
 \]
 %
-(a little sloppy, clean this up, but we get to the right place). \\
 Since $E[W] = I_0 = 1$, we have 
 \[
 	\text{Var}[W] = \text{Var}[W] E\Bigl[\sum_j e^{-2 r \tau_j}\Bigr] + \text{Var}\Bigl[\sum_j e^{-r \tau_j}\Bigr]
@@ -175,6 +177,8 @@ Substituting in the $z$ expressions for the $\rho$ parameters gives
 	}
 \end{equation}
 which is Eq.~\ref{eq:var_W}. 
+
+\clearpage 
 
 \subsubsection*{Mode of the two-moment Gamma approximation for the time-shift distribution}
 
