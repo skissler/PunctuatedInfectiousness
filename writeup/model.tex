@@ -55,15 +55,34 @@ a_i(\tau) = \frac{\beta}{\gamma} \delta_{t_i}(\tau)
 \label{eq:a_seir_spike}
 \end{equation}
 %
-\ie, a ``spike'' infectiousness profile where $\delta_i(\tau)$ is a delta function with mass at time $t_i$, and $t_i$ is distributed according to the generation interval density $g(\tau) = A(\tau) / R_0$ ({\bf Figure XX}), such that a person's infectiousness is concentrated at a single moment. 
+\ie, a ``spike'' infectiousness profile where $\delta_i(\tau)$ is a delta function with mass at time $t_i$, and $t_i$ is distributed according to the generation interval density $g(\tau) = A(\tau) / R_0$, such that a person's infectiousness is concentrated at a single moment ({\bf Figure \ref{fig:seir_sims} A--C}).
 
-In general, any definition of $a_i(\tau)$ such that $E_i[a_i(\tau)] = A(\tau)$ will yield the same mean-field population-level epidemic dynamics; however, they may have important stochastic consequences ({\bf Figure XX}), which are the main topic of this article. 
+In general, any definition of $a_i(\tau)$ such that $E_i[a_i(\tau)] = A(\tau)$ will yield the same mean-field population-level epidemic dynamics; however, different choices of $a_i(\tau)$ may have important stochastic consequences ({\bf Figure \ref{fig:seir_sims} D--I}), which are the main topic of this article. 
+
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=.5\textwidth]{figures/stock.png}
+    \newcommand{\panelbox}[2]{\framebox{\begin{minipage}[c][3.2cm][c]{0.3\textwidth}\centering\textbf{#1}\\\smallskip\small #2\end{minipage}}}%
+    \begin{tabular}{@{}ccc@{}}
+    \panelbox{A}{Smooth profile\\schematic} &
+    \panelbox{B}{Stepwise profile\\schematic} &
+    \panelbox{C}{Spike profile\\schematic} \\[4pt]
+    \panelbox{D}{Cumulative infections\\(smooth)} &
+    \panelbox{E}{Cumulative infections\\(stepwise)} &
+    \panelbox{F}{Cumulative infections\\(spike)} \\[4pt]
+    \panelbox{G}{Daily new infections\\(smooth)} &
+    \panelbox{H}{Daily new infections\\(stepwise)} &
+    \panelbox{I}{Daily new infections\\(spike)}
+    \end{tabular}
+    \caption{{\bf The individual infectiousness profile impacts stochastic epidemic trajectories.} (A-C) Schematic diagrams of three individual infectiousness profile families that yield equivalent SEIR-type mean-field dynamics: the smooth (A), stepwise (B), and spike (C) profiles (Eqs.~\ref{eq:a_seir_stepwise}, \ref{eq:a_seir_smooth}, \ref{eq:a_seir_spike}). (D-I) Deterministic epidemic trajectories (blue) are numerical solutions of the mean-field renewal equation model (Eq.~\ref{eq:foi}), equivalent to a standard SEIR model with mean latent period $\gamma = XX$, mean infectious period $\alpha = XX$, and reproduction number $R_0 = 6$. For each individual infectiousness profile family, 1,000 stochastic simulations were generated (grey), with the cumulative infections (D-F) and daily new infection counts (G-I) depicted.} 
+    \label{fig:seir_sims}
+\end{figure}
 
 %////////////////////////////////////////////////////////////////////////////////////////////
 
 \subsection{Properties and components of the individual infectiousness profile}
 
-Like $A(\tau)$, $a_i(\tau)$ is related to the individual reproduction number $\nu_i$ and the individual intrinsic generation interval distribution $\xi_i(\tau)$: 
+Like $A(\tau)$, $a_i(\tau)$ is related to the individual reproduction number $\nu_i$ and the individual intrinsic generation interval distribution $\xi_i(\tau)$ (compare Eqs.~\ref{eq:R0}--\ref{eq:gi}): 
 %
 \begin{equation}
     \nu_i = \int_0^\infty a_i(\tau) d\tau 
@@ -71,25 +90,25 @@ Like $A(\tau)$, $a_i(\tau)$ is related to the individual reproduction number $\n
 \end{equation}
 %
 \begin{equation}
-    \xi_i(\tau) = a_i(\tau) / \nu_i
+    \xi_i(\tau) = \frac{a_i(\tau)}{\nu_i}
     \label{eq:indgi_def}
 \end{equation}
 %
-Re-arranging Eqs. \ref{eq:nu_def} - \ref{eq:indgi_def}, 
+Re-arranging Eq.~\ref{eq:indgi_def}, 
 %
 \begin{equation}
     a_i(\tau) = \nu_i \xi_i(\tau)
     \label{eq:ai_expression}
 \end{equation}
-
-So far, this assumes that interpersonal contacts are uniform over time and across the population -- or else that any non-uniformity is captured in $\nu_i$ and/or $\xi_i(\tau)$. A futher decomposition is possible by introducing an explicit contact process $c_i(t)$, defined with respect to the reference contact process $\bar{c}$ against which both $R_0$ and $\nu_i$ are defined \citep{dietz_estimation_1993}. Let $c_i(t)$ be a nonnegative function describing person $i$'s proportional deviations from $\bar{c}$ (so $c_i(t) \equiv 1$ represents the reference process), and let $b_i(\tau)$ be a density capturing the timing of person $i$'s secondary infection attempts under $\bar{c}$. Then, 
+%
+which is a decomposition of $a_i(\tau)$ into infection intensity ($\nu_i$) and timing ($\xi_i(\tau)$). This decomposition assumes that interpersonal contacts are uniform over time --- or else that any non-uniformity is captured implicitly in $\nu_i$ and/or $\xi_i(\tau)$. A futher decomposition is possible by introducing an explicit contact process $c_i(t)$, defined with respect to the reference contact process $\bar{c}$ against which both $R_0$ and $\nu_i$ are defined \citep{dietz_estimation_1993}. Let $c_i(t)$ be a nonnegative function describing person $i$'s proportional deviations from $\bar{c}$ (so $c_i(t) \equiv 1$ represents the reference process), and let $b_i(\tau)$ be a density capturing the timing of person $i$'s secondary infection attempts under $\bar{c}$. Then, we can define
 %
 \begin{equation}
     a_i(t_i, \tau) = \nu_i b_i(\tau) c_i(t_i + \tau) 
     \label{eq:abc}
 \end{equation}
 %
-where $t_i$ is person $i$'s infection time and $\tau$ represents time since infection. For $\nu_i$ to retain its meaning, we require $E_t[c_i(t)] = 1$, that is, for a randomly chosen time $t$, the expected value of person $i$'s contact modulator is 1. This is satisfied, for example, by a periodic function with average value 1 or by a stationary random process with mean 1. Another way of interpreting the contact modulator is that $\nu_i c_i(t)$ is the expected number of people that person $i$ would infect if all their infectiousness were concentrated at time $t$ (\ie, if $b_i$ were a delta function with mass at time $t$). The density $b_i(\tau)$ therefore reflects the ``biological'' component of a person's infectiousness timing, and $c_i(t)$ captures the ``contact-related'' component of a person's infectiousness timing, while $\nu_i$ modulates the person's total infectiousness. 
+where $t_i$ is person $i$'s infection time and $\tau$ represents time since infection. For $\nu_i$ to retain its meaning, we require $E_t[c_i(t)] = 1$, that is, for a randomly chosen time $t$, the expected value of person $i$'s contact modulator is 1. This is satisfied, for example, by a periodic function with average value 1 or by a stationary random process with mean 1. Another way of interpreting the contact modulator is that $\nu_i c_i(t)$ is the expected number of people that person $i$ would infect if all their infectiousness were concentrated at time $t$ (\ie, if $b_i$ were a delta function with mass at time $t$). The density $b_i(\tau)$ therefore reflects the ``biological'' component of a person's infectiousness timing (\ie, the timing of secondary infections under a time-uniform reference contact process), and $c_i(t)$ captures the ``contact-related'' component of a person's infectiousness timing, while $\nu_i$ modulates the person's total infectiousness, which may be composed of both biological (\eg, greater viral shedding) and contact-related (\eg, persons with many social contacts) factors. 
 
 This extends back to the population-level model. If we assume that $c_i$ is independent of $\nu_i$ and $b_i$, but allow $\nu_i$ and $b_i$ to depend on one another (for example, we might expect a person with high overall infectiousness to also have a longer duration of infectiousness), then the population-level infectiousness profile is 
 %
@@ -111,16 +130,16 @@ Note that, like $c_i(t)$, $C(t)$ has time-average 1, since $E_t[C(t)] = E_t[E_i[
 
 \subsection{A time-shifted Gamma model for biological infectiousness profiles with arbitrary punctuation}
 
-The ``stepwise'' expression for $a_i(\tau)$ in Eq.~\ref{eq:a_seir_stepwise} differs from the ``smooth'' and ``spike'' expressions in Eqs.~\ref{eq:a_seir_smooth}-\ref{eq:a_seir_spike} in a fundamental way: for the stepwise profile, $\nu_i$ differs across individuals ($\nu_i = \int_0^\infty a_i(\tau) d\tau \sim XX$), while for the smooth and spike profiles, $\nu_i$ is uniform across individuals ($\nu_i = R_0 \forall i$). Variation in $\nu_i$ creates overdispersion in the secondary infection distribution, which in turn affects stochastic epidemic dynamics, including the probability of epidemic establishment \citep{lloyd-smith_superspreading_2005}. The impact of variation in $\nu_i$ on stochastic epidemic dynamics has been studied extensively elsewhere \citep{lloyd-smith_superspreading_2005}. Our goal is to study how the timing and punctuation of individual infectiousnes $b_i(\tau)$ (and possibly its interaction with $c_i(t)$) impacts epidemic dynamics, holding all else constant. As such, we seek a family of functions that allow us to model individual-level intrinsic generation time distributions $b_i(\tau)$ that vary across individuals yet are guaranteed to yield the same population-level intrinsic generation interval distribution $g(\tau)$. 
+Our central goal is to examine how the shape of the individual infectiousness profile $a_i(\tau)$ impacts epidemic dynamics, holding all else (including $R_0$ and $g(\tau)$) constant. The ``stepwise'' expression for $a_i(\tau)$ in Eq.~\ref{eq:a_seir_stepwise} poses a difficulty: it introduces inherent overdispersion in the secondary infection distribution ($\nu_i = \int_0^\infty a_i(\tau) d\tau \sim XX$), while for the smooth and spike profiles, $\nu_i$ is uniform across individuals ($\nu_i = R_0 \forall i$). This overdispersion affects stochastic epidemic dynamics, including the probability of epidemic establishment \citep{lloyd-smith_superspreading_2005}. The impact of overdispersion on stochastic epidemic dynamics has been studied extensively elsewhere \citep{lloyd-smith_superspreading_2005}. Here, we seek a family of functions that do not feature this inherent overdispersion, using the smooth and spike infectiousness profiles as book-ends. 
 
-To achieve this, let us make the simplifying assumption that $g(\tau)$ follows a Gamma distribution: 
+Let us constrain the generation interval distribution $g(\tau)$ to be unimodal, and let us seek a family of functions $b_i(\tau)$ that are also unimodal with the narrowness of the function (variance of the distribution) modulated by a parameter $\psi \in [0,1]$, where $\psi \rightarrow 0$ yields a delta function (the spike case) and $\psi \rightarrow 1$ makes $b_i(\tau) \equiv g(\tau) \forall i$ (the smooth case). If we assume $g(\tau)$ is Gamma-distributed, which is a common choice for modeling generation interval distributions, the setup is straightforward. Specifically, let 
 %
 \begin{equation}
     g(\tau) \sim \text{Gamma}(\alpha, \beta), \qquad \beta = \alpha / \mu 
     \label{eq:gamma_gi}
 \end{equation}
 %
-where $\mu$ is the mean generation time, and $\alpha$ controls the shape of the generation interval distribution. The Gamma distribution is a common choice for modeling generation interval distributions in applied infectious disease epidemiology \citep{}. A key property of the Gamma distribution is that the sum of two Gamma-distributed random variables with shape parameters $\alpha_1$ and $\alpha_2$ and common rate $\beta$ is also Gamma-distributed with shape $\alpha_1 + \alpha_2$ and rate $\beta$. Let us assume now that the individual-level biological infectiousness profile $b_i(\tau)$ follows a shifted Gamma distribution preceded by a latent period $l_i$, which is also Gamma-distributed, \ie: 
+where $\mu$ is the mean generation time, and $\alpha$ controls the shape of the generation interval distribution. A key property of the Gamma distribution is that the sum of two Gamma-distributed random variables with shape parameters $\alpha_1$ and $\alpha_2$ and common rate $\beta$ is also Gamma-distributed with shape $\alpha_1 + \alpha_2$ and rate $\beta$. Let us assume now that the individual-level biological infectiousness profile $b_i(\tau)$ follows a shifted Gamma distribution preceded by a latent period $l_i$, which is also Gamma-distributed, \ie: 
 %
 \begin{equation}
     b_i(\tau) = \begin{cases}

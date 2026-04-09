@@ -24,32 +24,46 @@ The random initial condition $W$ can, through a change of variables, be expresse
 %
 where
 %
+% \begin{equation}
+% 	\varsigma = \frac{\log W - \log E[W]}{r}
+% 	\label{eq:timeshift}
+% \end{equation}
 \begin{equation}
-	\varsigma = \frac{\log W - \log E[W]}{r}
+	\varsigma = \frac{\log W - \log E[W]}{r} = \frac{\log W}{r}
 	\label{eq:timeshift}
 \end{equation}
 %
-Since $E[W]$ and $r$ are constants, $\varsigma$ and $W$ are monotonically related. 
+since, with a single index case, $\log E[W] = \log 1 = 0$. 
 
-First, we derive an expression for $\text{Var}[W]$, noting that $\text{Var}[W] \propto \text{Var}[\varsigma]$. 
-
-[Setup]
+Under the Gamma time-shift model for infectiousness profiles, It can be shown ({\bf Supplementary Methods}) that
 %
 \begin{equation}
-	\text{Var}[W] = \dots
-	\label{eq:varw}
+	\text{Var}[W] = \frac{
+		\Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha + \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha} - 1
+	}{
+		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
+	}
+	\label{eq:var_W}
 \end{equation}
 %
-Thus, narrower infectiousness profiles ($\psi \rightarrow 0$) yield more variable epidemic establishment times, and thus more variably-timed epidemics overall. This effect is magnified as $R_0$ increases. 
+where $z = r \bar{g} / \alpha$, and $\bar{g}$ is the mean of the generation interval distribution $g(\tau)$. Note that, from the Euler-Lotka equation, $z = R_0^{1/\alpha} - 1$, so increasing $z$ implies increasing $R_0$ (for fixed $\alpha$). The punctuation parameter $\psi$ enters the expression only once, in the middle term of the numerator, demonstrating that $\text{Var}[W]$ and $\psi$ are monotonically related: narrower profiles ($\psi \rightarrow 0$) maximize the variance, while broader profiles ($\psi \rightarrow 1$) minimize it. The parameter $z$ can be interpreted as the amount of epidemic growth per generation ($r \bar{g}$) multiplied by the generation interval distribution's coefficient of variation ($1/\alpha$). Thus, $z$ increases with faster-growing epidemics, longer mean generation times, and more variable generation interval distributions (under fixed $\bar{g}$). 
 
-We can also derive an expression for the mode of the distribution of $\varsigma$: 
+We can also derive an approximate expression for the mode of the distribution of $\varsigma$. Using a two-moment version of the moment matching approach of \citet{morris_computation_2024}, we can approximate the distribution of the time shift $\varsigma$. For tractability, we use only the first two moments here. It can be shown ({\bf Supplementary Methods}) that
 %
 \begin{equation}
-	\text{Mode}[\varsigma] = \dots
+	\text{Mode}[\varsigma] = \frac{1}{r} \log \Biggl( 
+	\frac{
+		2 \bigl[1 - \bigl(\frac{1 + z}{1 + 2z}\bigr)^\alpha\bigr] - p \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi)\alpha}
+	}{
+		p\bigl[1 - \bigl(\frac{1 + z}{1 + 2z}\bigr)^\alpha\bigr]
+	}
+	\Biggr)
 	\label{eq:mode_timeshift}
 \end{equation}
 %
-Thus, narrower infectiousness profiles ($psi \rightarrow 0$) cause the typical (modal) epidemic to be shifted later in time. This efffect is also magnified as $R_0$ increases. 
+provided the numerator within the logarithm is positive; when the numerator is zero or negative, no finite modal time shift exists and  $\text{Mode}[\varsigma]  \rightarrow -\infty$. Again, $\psi$ enters the expression only once, with narrow individual infectiousness profiles ($\psi \rightarrow 0$) minimizing the mode (making it more negative, \ie, causing the typical epidemic to be shifted later) and broad individual infectiousness profiles ($\psi \rightarrow 1$) maximizing it (causing the typical epidemic to be shifted earlier). 
+
+[A comment on intuition behind these results: narrower infectiousness profiles make it so that the offspring all inherit variation in the latent period(?), inflating the overall variance of the process. In a few epidemics, we have explosive spread early on, causing really fast take-offs; but often we also miss the early transmissions that trickle in causing lots of late take-offs. For the mode, we have a minimum of order statistics story, where the earliest offspring tends to come later the more punctuated the profile is.]
 
 Stochastic simulations confirm the analytic results. The time to 100 infections varies with $\psi$, especially for pathogens with high $R_0$ (SARS-CoV-2 omicron, measles). For measles, by 28 days, only xx\% of simulated epidemics reached 100 infections by day 28 for the spike case, while xx\% reached the same threshold for the smooth case. Thus, punctuation of the individual infectiousness profile can substantially impact the timing of epidemic establishment, especially when $R_0$ is high. 
 

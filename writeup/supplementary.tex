@@ -10,6 +10,173 @@
 
 \subsection*{Supplementary Methods}
 
+\clearpage 
+
+DERIVATION 
+
+Branching process theory establishes that, for a branching process $Z(t)$ conditional on non-extinction, $e^{-rt} Z(t) \rightarrow W$ almost surely as $t \rightarrow \infty$. Here, $r$ is the early-epidemic exponential growht rate and $W$ is a random variable that effectively describes a random initial condition for the branching process before it becomes ``established'', capturing stochastic fluctuations in ther early-epidemic process. 
+
+The time shift $\varsigma = \frac{\log W - \log E[W]}{r}$ is a change of variables translating the random initial condition $W$ into a random time shift $\varsigma$.  Our goal is to understand how $\text{Var}[\varsigma]$ depends on the punctuation parameter $\psi$. Since $\varsigma$ and $W$ are monotonically related ($\varsigma \propto \log[W]$), we will derive an expression for $\text{Var}[W]$ and interpret its implications for $\text{Var}[\varsigma]$ at the end. 
+
+{\bf Setup.} Each new infector produces $\chi_i \sim \text{Poisson}(R_0)$ offspring. Under the Gamma time-shift model, offspring $j$ is infected at time $\tau_j = l_i + \epsilon_j$, where $l_i$ is person $i$'s latent period and $\epsilon_j$ is the additional lag between $l_i$ and person $j$'s infection time, with 
+%
+\[l_i \sim \text{Gamma}((1-\psi)\alpha, \beta), \qquad \epsilon_j \sim \text{Gamma}(\psi \alpha, \beta) \]
+%
+The population-level generation interval distribution is thus 
+%
+\[ g(\tau) \sim \text{Gamma}(\alpha, \beta) \]
+%
+
+The early-epidemic exponential growth rate $r$ satisfies the Euler-Lotka equation \citep{wallinga_how_2007}:  
+%
+\[1 = R_0 \int_{\tau=0}^\infty e^{-r\tau } \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{\alpha-1} e^{-\beta \tau} d\tau\]
+%
+which simplifies to 
+%
+\[ 1 = R_0 \Bigl( \frac{\beta}{\beta+r }\Bigr )^\alpha \]
+%
+Solving for $r$ gives 
+%
+\[ r = \beta (R_0^{1/\alpha} - 1) \]
+%
+For notational simplicity, we define 
+%
+\[ \rho = \frac{\beta}{\beta + r}, \qquad \rho_2 = \frac{\beta}{\beta + 2r} \]
+%
+So, we can interpret the Euler-Lotka equation as saying 
+%
+\[ 1 = R_0 \rho^\alpha \]
+
+{\bf The distributional fixed-point equation.} The standard approach to computing moments of $W$ in the branching process literature is to exploit a self-similarity property of the process: the epidemic initiated by a single individual is, in distribution, a scaled and time-shifted copy of the whole epidemic. 
+
+Consider an epidemic seeded by a single index case $i$ at time $t = 0$. This person produces $\chi_i \sim \text{Poisson}(R_0)$ offspring at times $\tau_1, \tau_2, \dots, \tau_{\chi_i}$, measured from person $i$'s infection time ($\tau = 0$). Each offspring $j$, infected at time $\tau_j$, then seeds their own independent sub-epidemic. 
+
+Now, we ask: what does the epidemic look like at large $t$? The epidemic seeded by index case $i$ consists of the downstream epidemics caused by their offspring $j$. At time $t$, these offspring epidemics have grown approximately to size $Z_j(t) = e^{r(t-\tau_j)} W_j $. In other words, 
+%
+\[Z(t) \approx \sum_{j=1}^{\chi_i} e^{rt} e^{-r \tau_j}\]
+% 
+Multiplying through by $e^{-rt}$: 
+%
+\[  W \overset{d}{=} \sum_{j=1}^{\chi_i} e^{-r \tau_j} W_j \]
+
+We now use this expression to calculate $\text{Var}[W]$. To make things easier, we use the law of total variance so that we can condition on the offspring infection times $\tau_j$: 
+%
+\[ \text{Var}[W] = E[\text{Var}\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] + \text{Var}[E\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] \]
+%
+Given $\tau_j$, $W_j$ are i.i.d.~with $E[W] = 1$ and variance $\text{Var}[W]$, so 
+%
+\[
+= E[\text{Var}\Bigl[W \sum_j e^{-r \tau_j} \Bigr]]  + 
+\text{Var}[E\Bigl[W \sum_j e^{-r \tau_j}\Bigr]]
+\]
+\[
+=E\Bigl[\sum_j e^{-2r\tau_j} \cdot \text{Var}[W]\Bigr] + 
+\text{Var}\Bigl[E[W] \cdot E[\sum_j e^{-r \tau_j}]\Bigr]
+\]
+\[
+= E\Bigl[\sum_j e^{-2 r \tau_j}\Bigr] \cdot \text{Var}[W] + 
+(E[W])^2 \cdot \text{Var}\Bigl[\sum_j e^{-r \tau_j}\Bigr]
+\]
+%
+(a little sloppy, clean this up, but we get to the right place). \\
+Since $E[W] = 1$ when starting with a single infectious index case, we have 
+\[
+	\text{Var}[W] = \text{Var}[W] E\Bigl[\sum_j e^{-2 r \tau_j}\Bigr] + \text{Var}\Bigl[\sum_j e^{-r \tau_j}\Bigr]
+\]
+Solving for $\text{Var}[W]$, 
+\[
+	\text{Var}[W] = \frac{\text{Var}[\sum_j e^{-r \tau_j}]}{1 - E[\sum_j e^{-2 r \tau_j}]}
+\]
+To simplify the denominator, note that 
+\[ 
+E\Bigl[\sum_{j=1}^{\chi_i} e^{-2 r \tau_j}\Bigr] = E[\chi_i] E[e^{-2 r \tau_j}]
+ = R_0 E[e^{-2 r \tau_j}]
+ = R_0 \Bigl( \frac{\beta}{\beta + 2r}\Bigr )^\alpha 
+ = R_0 \rho_2^\alpha \equiv c 
+ \]
+Thus, the variance expression simplifies to 
+\[
+	\text{Var}[W] = \frac{\text{Var}[\sum_j e^{-r \tau_j}]}{1 - c}
+\]
+The denominator does not depend on $\psi$, so we proceed by examining the numerator: 
+\[
+	\text{Var}[\sum_j e^{-r \tau_j}]
+\]
+
+
+
+
+\clearpage
+
+\subsection*{Parameter structure}
+
+The punctuated Gamma model has four epidemiological parameters: the basic 
+reproduction number $R_0$, the Malthusian growth rate $r$, and the two 
+parameters of the generation interval distribution, $\alpha$ (shape) and 
+$\beta$ (rate), which together determine the mean generation time 
+$\bar{g} = \alpha/\beta$. These four parameters are not all free: the 
+Euler--Lotka equation,
+%
+\begin{equation}
+    R_0 \left(\frac{\beta}{\beta + r}\right)^\alpha = 1,
+    \label{eq:euler_lotka}
+\end{equation}
+%
+provides one constraint among them, leaving three free parameters. We 
+choose to work with $(R_0, \bar{g}, \alpha)$ as the free parameters, 
+since each has a direct epidemiological interpretation:
+%
+\begin{itemize}
+    \item $R_0$: the basic reproduction number, measuring transmissibility;
+    \item $\bar{g}$: the mean generation time;
+    \item $\alpha$: the shape parameter of the generation interval 
+    distribution, where larger $\alpha$ corresponds to a more concentrated 
+    (less variable) generation interval for fixed $\bar{g}$.
+\end{itemize}
+%
+Given $(R_0, \bar{g}, \alpha)$, the remaining parameters are fully 
+determined. The rate parameter $\beta$ follows immediately from the 
+definition of the mean:
+%
+\begin{equation}
+    \beta = \frac{\alpha}{\bar{g}},
+\end{equation}
+%
+and the Malthusian growth rate $r$ follows from the Euler--Lotka equation:
+%
+\begin{equation}
+    r = \beta\left(R_0^{1/\alpha} - 1\right) 
+      = \frac{\alpha}{\bar{g}}\left(R_0^{1/\alpha} - 1\right).
+    \label{eq:r_from_params}
+\end{equation}
+%
+The dimensionless growth parameter $z = r/\beta = r\bar{g}/\alpha$ is 
+therefore also determined:
+%
+\begin{equation}
+    z = R_0^{1/\alpha} - 1,
+    \label{eq:z_from_R0}
+\end{equation}
+%
+confirming that $z$ depends on $R_0$ and $\alpha$ alone. The punctuation 
+parameter $\psi \in [0, 1]$ is the only remaining free parameter, and 
+it is the sole quantity that is not identifiable from population-level 
+epidemic data: since $A(\tau)$ is invariant across $\psi$ by 
+construction, the parameters $(R_0, \bar{g}, \alpha)$ can in principle 
+be estimated from the observed epidemic trajectory independently of 
+$\psi$. The consequences of varying $\psi$ while holding 
+$(R_0, \bar{g}, \alpha)$ fixed are therefore attributable purely to 
+changes in the individual-level temporal structure of infectiousness, 
+with no confounding from changes in the population-level transmission 
+kernel.
+
+For the analyses presented here, we fix $(R_0, \bar{g}, \alpha)$ and 
+vary $\psi \in [0, 1]$, computing $\text{Var}(W)$ and 
+$\text{Mode}[\varsigma]$ across this range. Representative parameter 
+values are chosen to reflect pathogens of public health interest, 
+with $\alpha$ and $\bar{g}$ matched to empirical generation interval 
+estimates where available.
+
 \subsection*{Supplementary Figures}
 
 \subsection*{Supplementary Tables}

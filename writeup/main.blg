@@ -3,7 +3,6 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: plainnat.bst
 Database file #1: zotero.bib
-Warning--I didn't find a database entry for ""
 You've used 11 entries,
             2773 wiz_defined-function locations,
             699 strings with 8076 characters,
@@ -45,4 +44,3 @@ warning$ -- 0
 while$ -- 50
 width$ -- 0
 write$ -- 216
-(There was 1 warning)

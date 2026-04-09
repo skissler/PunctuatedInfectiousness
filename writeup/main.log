@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  7 APR 2026 21:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  8 APR 2026 21:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -558,8 +558,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--55
 
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2
 
-]) (./model.tex [3]
-Overfull \hbox (0.27995pt too wide) in paragraph at lines 99--103
+]) (./model.tex [3] [4]
+Overfull \hbox (0.27995pt too wide) in paragraph at lines 118--122
 \T1/ppl/m/n/10 with the ex-pec-ta-tion taken over the pop-u-la-tion in-dexed by
  $\OML/zplm/m/it/10 i$\T1/ppl/m/n/10 . We de-fine $\OML/zplm/m/it/10 C\OT1/zplm
 /m/n/10 (\OML/zplm/m/it/10 t\OT1/zplm/m/n/10 ) = \OML/zplm/m/it/10 E[]\OT1/zplm
@@ -567,14 +567,14 @@ Overfull \hbox (0.27995pt too wide) in paragraph at lines 99--103
 n/10 )]$ \T1/ppl/m/n/10 to be the population-
  []
 
-[4] [5]) (./uncontrolled.tex [6] [7
+[5] [6]) (./uncontrolled.tex [7] [8
 
-]) (./controlled.tex [8])
-(./identifiability.tex [9
+]) (./controlled.tex [9])
+(./identifiability.tex [10
 
-]) (./discussion.tex [10
+]) (./discussion.tex [11
 
-]) [11
+]) [12
 
 ] (./main.bbl
 Underfull \hbox (badness 1158) in paragraph at lines 54--63
@@ -589,24 +589,29 @@ the Royal So-ci-ety B: Bi-o-log-i-cal Sci-ences\T1/ppl/m/n/10 , 274(1609):599--
 
  []
 
-[12
+[13
 
-]) [13] (./acknowledgements.tex) [14
+]) [14] (./acknowledgements.tex) [15
 
-] (./supplementary.tex) [15
+] (./supplementary.tex [16
+
+] [17
+
+]
+[18]) [19
 
 ] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: B5ED738CF55DC39EA8933DD0A520C569;5766.
  ) 
 Here is how much of TeX's memory you used:
- 12590 strings out of 478994
- 184395 string characters out of 5858184
- 508038 words of memory out of 5000000
- 29778 multiletter control sequences out of 15000+600000
- 439715 words of font info for 110 fonts, out of 8000000 for 9000
+ 12608 strings out of 478994
+ 184602 string characters out of 5858184
+ 508859 words of memory out of 5000000
+ 29786 multiletter control sequences out of 15000+600000
+ 441541 words of font info for 115 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,9n,77p,1634b,477s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 75i,14n,77p,1634b,477s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
@@ -619,10 +624,10 @@ xmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist
 type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/
 urw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pal
 atino/uplri8a.pfb>
-Output written on main.pdf (15 pages, 175303 bytes).
+Output written on main.pdf (19 pages, 191216 bytes).
 PDF statistics:
- 291 PDF objects out of 1000 (max. 8388607)
- 260 compressed objects within 3 object streams
- 63 named destinations out of 1000 (max. 500000)
+ 324 PDF objects out of 1000 (max. 8388607)
+ 285 compressed objects within 3 object streams
+ 68 named destinations out of 1000 (max. 500000)
  113 words of extra memory for PDF output out of 10000 (max. 10000000)
 
