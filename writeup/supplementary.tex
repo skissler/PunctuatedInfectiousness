@@ -43,18 +43,7 @@ and the early-epidemic growth rate $r$ follows from the Euler--Lotka equation:
     \label{eq:r_from_params}
 \end{equation}
 %
-% The dimensionless growth parameter $z = r/\beta = r\bar{g}/\alpha$ is 
-% therefore also determined:
-% %
-% \begin{equation}
-%     z = R_0^{1/\alpha} - 1,
-%     \label{eq:z_from_R0}
-% \end{equation}
-% %
-% confirming that $z$ depends on $R_0$ and $\alpha$ alone. 
 The punctuation  parameter $\psi \in [0, 1]$ is the only remaining free parameter, and  it is the sole quantity that is not identifiable from population-level  epidemic data: since $A(\tau)$ is invariant across $\psi$ by  construction, the parameters $(R_0, \bar{g}, \alpha)$ can in principle  be estimated from the observed epidemic trajectory independently of  $\psi$. The consequences of varying $\psi$ while holding  $(R_0, \bar{g}, \alpha)$ fixed are therefore attributable purely to  changes in the individual-level temporal structure of infectiousness, with no confounding from changes in the population-level transmission  kernel.
-
-% For the analyses presented here, we fix $(R_0, \bar{g}, \alpha)$ and  vary $\psi \in [0, 1]$, computing $\text{Var}(W)$ and  $\text{Mode}[\varsigma]$ across this range. Representative parameter  values are chosen to reflect pathogens of public health interest,  with $\alpha$ and $\bar{g}$ matched to empirical generation interval  estimates where available.
 
 \clearpage
 
@@ -84,33 +73,22 @@ We can define some useful quantities that will arise later in the derivation. Fi
 %
 which simplifies to 
 %
-\[ 1 = R_0 \Bigl( \frac{\beta}{\beta+r }\Bigr )^\alpha = R_0 \Bigl(\frac{1}{1+z}\Bigr)\]
+\[ 1 = R_0 \Bigl( \frac{\beta}{\beta+r }\Bigr )^\alpha = R_0 \Bigl(\frac{1}{1+z}\Bigr)^\alpha\]
 %
 where  $z = r/\beta = r \bar{g} / \alpha = R_0^{1/\alpha} - 1$, a dimensionless quantity that simplifies expressions and allows one to easily plug in different combinations of epidemiological parameters. Here, $\bar{g}$ is the mean of the generation interval distribution $g(\tau)$. 
-% Solving for $r$ gives 
-%
-% \[ r = \beta (R_0^{1/\alpha} - 1) \]
-%
+
 Next, we define 
 %
-% \[ \rho = , \qquad \rho_2 =  \]
-\[ \rho = \frac{\beta}{\beta + r} = \frac{1}{1+z}, \qquad \rho_2 = \frac{\beta}{\beta + 2r} = \frac{1}{1 + 2z} \]
-%
+\[ \rho_k =  (E[e^{-k r \tau}])^{1/\alpha} = \frac{\beta}{\beta + k r}  = \frac{1 }{1 + kz}\]
 This allows us to re-write the Euler-Lotka equation: 
 %
-\[ 1 = R_0 \rho^\alpha \]
+\[ 1 = R_0 \rho_1^\alpha \]
 
 Next, we introduce the distributional fixed point equation, which is a standard starting point for computing moments of $W$. This equation exploits the self-similarity of the branching process, in which an epidemic initiated by a single individual is, in distribution, a scaled and time-shifted copy of the whole epidemic. At large $t$, the epidemic seeded by the index case $i$ consists of the downstream epidemics caused by their offspring $j$, which have grown approximately to size $Z_j(t) = W_j e^{r(t - \tau_j)}$. That is, 
 %
 \[
 	Z(t) \approx \sum_{j=1}^{\chi_i} W_j e^{rt} e^{-r \tau_j}
 \]
-%
-% Consider an epidemic seeded by a single index case $i$ at time $t = 0$. This person produces $\chi_i \sim \text{Poisson}(R_0)$ offspring at times $\tau_1, \tau_2, \dots, \tau_{\chi_i}$, measured from person $i$'s infection time ($\tau = 0$). Each offspring $j$, infected at time $\tau_j$, then seeds their own independent sub-epidemic. 
-% Now, we ask: what does the epidemic look like at large $t$? The epidemic seeded by index case $i$ consists of the downstream epidemics caused by their offspring $j$. At time $t$, these offspring epidemics have grown approximately to size $Z_j(t) = e^{r(t-\tau_j)} W_j $. In other words, 
-% %
-% \[Z(t) \approx \sum_{j=1}^{\chi_i} e^{rt} e^{-r \tau_j}\]
-% % 
 Multiplying through by $e^{-rt}$: 
 %
 \[  W \overset{d}{=} \sum_{j=1}^{\chi_i} e^{-r \tau_j} W_j \]
@@ -118,11 +96,6 @@ Multiplying through by $e^{-rt}$:
 We now use this expression to calculate $\text{Var}[W]$. Since randomness enters through both $W$ and $\tau$, we first condition on $\tau_j$ using the law of total variance: 
 %
 \[ \text{Var}[W] = E[\text{Var}\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] + \text{Var}[E\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] \]
-%
-% \[
-% = E[\text{Var}\Bigl[W \sum_j e^{-r \tau_j} \Bigr]]  + 
-% \text{Var}[E\Bigl[W \sum_j e^{-r \tau_j}\Bigr]]
-% \]
 \[
 =E\Bigl[ \sum_j e^{-2r\tau_j}  \cdot \text{Var}[W] \Bigr] + 
 \text{Var} \Bigl[\sum_j e^{-r \tau_j} \cdot E[W] \Bigr]
@@ -144,7 +117,7 @@ To simplify the denominator, note that
 \[ 
 E\Bigl[\sum_{j=1}^{\chi_i} e^{-2 r \tau_j}\Bigr] = E[\chi_i] E[e^{-2 r \tau_j}]
  = R_0 E[e^{-2 r \tau_j}]
- = R_0 \Bigl( \frac{\beta}{\beta + 2r}\Bigr )^\alpha 
+ % = R_0 \Bigl( \frac{\beta}{\beta + 2r}\Bigr )^\alpha 
  = R_0 \rho_2^\alpha 
  \]
 Thus, the variance expression simplifies to 
@@ -155,20 +128,25 @@ The denominator does not depend on $\psi$, so we proceed by examining the numera
 \[
 	\text{Var}[\sum_j e^{-r \tau_j}] = E[(\sum_j e^{-r \tau_j})^2] - E[\sum_j e^{-r \tau_j}]^2 = E[(\sum_j e^{- r \tau_j})^2] - 1
 \]
-(should the last term be $1/R_0$?)
 Then, 
 \[
 	E[(\sum_j e^{- r \tau_j})^2] = E[\sum_j e^{-2 r \tau_j}] + E[\sum_{j \neq k} e^{-r (\tau_j + \tau_k)}]
 \]
 \[= R_0 \rho_2^\alpha + E[\chi_i (\chi_i - 1)] E[e^{-r \tau_j} e^{-r \tau_k}]\]
 \[= R_0 \rho_2^\alpha + R_0^2 E[e^{-r \tau_j} e^{-r \tau_k}]\]
+Here, the $\chi_i (\chi_i - 1)$ term enters because there are this many terms in the sum over $j \neq k$. Also, 
+\[
+E[\chi_i (\chi_i - 1)] = E[\chi_i^2] - E[\chi_i] = Var[\chi_i] + E[\chi_i]^2 - E[\chi_i] = R_0 + R_0^2 - R_0 = R_0^2
+\]
+under the assumption that $\chi_i \sim \text{Poisson}(R_0)$. 
+
 Since $\tau_j = l_i + \epsilon_j$, and since $l_i$, $\epsilon_j$, and $\epsilon_k$ are independent, 
-\[ E[e^{-r \tau_j} e^{-r \tau_k}]  = E[e^{-2r l_i} e^{-r \epsilon_j} e^{-r \epsilon_k}] = E[e^{-2r l_i}] (E[e^{-r \epsilon}])^2 = \rho_2^{(1-\psi)\alpha} \cdot \rho ^{2 \psi \alpha}\]
+\[ E[e^{-r \tau_j} e^{-r \tau_k}]  = E[e^{-2r l_i} e^{-r \epsilon_j} e^{-r \epsilon_k}] = E[e^{-2r l_i}] (E[e^{-r \epsilon}])^2 = \rho_2^{(1-\psi)\alpha} \cdot \rho _1^{2 \psi \alpha}\]
 Finally, we can assemble $\text{Var}[W]$: 
 \[
-	\text{Var}[W] = R_0 \rho_2^\alpha + R_0^2 \rho_2^{(1-\psi)\alpha} \rho^{2 \psi \alpha} - 1
+	\text{Var}[\sum_j e^{-r \tau_j}] = R_0 \rho_2^\alpha + R_0^2 \rho_2^{(1-\psi)\alpha} \rho_1^{2 \psi \alpha} - 1
 \]
-Substituting in the $z$ expressions for the $\rho$ parameters gives 
+and thus, substituting in the $z$ expressions for $\rho_1$ and $\rho_2$, we obtain
 \begin{equation}
 	\text{Var}[W] = \frac{
 		\Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha + \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha} - 1
@@ -182,103 +160,78 @@ which is Eq.~\ref{eq:var_W}.
 
 \subsubsection*{Mode of the two-moment Gamma approximation for the time-shift distribution}
 
-Following a simplified version of the moment-matching approach of 
-\citet{morris_computation_2024}, we approximate the distribution of 
-$W \mid \text{survival}$ by a Gamma distribution matched to its first 
-two conditional moments. The unconditional moments of $W$ are:
+Following a simplified version of the moment-matching approach of  \citet{morris_computation_2024}, we approximate the distribution of $W$ conditional on survival by a Gamma distribution matched to its first two moments. The unconditional moments of $W$ are:
 %
 \begin{align}
     E[W] &= 1 \\[6pt]
-    E[W^2] &= \frac{\sigma^{(1-\psi)\alpha}}{1 - c^\alpha}
+    E[W^2] &= 
+    \text{Var}[W] + E[W]^2 = 
+    % \frac{\sigma^{(1-\psi)\alpha}}{1 - c^\alpha} = 
+    \frac{
+		\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
+	}{
+		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
+	}
 \end{align}
 %
-where the first follows from the Euler--Lotka equation ($E[S] = 1$ and 
-the fixed-point equation), and the second follows from the variance 
-calculation (since $E[W^2] = \text{Var}(W) + (E[W])^2 = \text{Var}(W) + 1$, 
-combined with the expression for $\text{Var}(W)$ derived above). Conditioning 
-on survival (i.e.\ on $W > 0$, which occurs with probability $p = 1 - q$ 
-where $q$ is the extinction probability), the conditional moments are:
+Conditioning on survival with probability $p$: 
 %
 \begin{align}
     E[W \mid \text{surv}] &= \frac{E[W]}{p} = \frac{1}{p} 
     \label{eq:W_cond_mean} \\[6pt]
     E[W^2 \mid \text{surv}] &= \frac{E[W^2]}{p} 
-    = \frac{\sigma^{(1-\psi)\alpha}}{p(1 - c^\alpha)}
+    % = \frac{\sigma^{(1-\psi)\alpha}}{p(1 - c^\alpha)}
+    = \frac{
+		\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
+	}{
+		p \Bigl(1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha\Bigr)
+	}
     \label{eq:W_cond_second_moment}
 \end{align}
 %
-from which the conditional variance and squared coefficient of variation 
-(CV$^2$) follow:
-%
-\begin{align}
-    \text{Var}(W \mid \text{surv}) 
-    &= E[W^2 \mid \text{surv}] - \bigl(E[W \mid \text{surv}]\bigr)^2 
-     = \frac{\sigma^{(1-\psi)\alpha} - p}{p^2(1-c^\alpha)} \\[10pt]
-    V \equiv \text{CV}^2(W \mid \text{surv}) 
-    &= \frac{\text{Var}(W \mid \text{surv})}{\bigl(E[W \mid \text{surv}]\bigr)^2} 
-     = \frac{p\,\sigma^{(1-\psi)\alpha}}{1 - c^\alpha} - 1
-    \label{eq:V_def}
-\end{align}
-%
-We approximate $W \mid \text{surv}$ by a $\text{Gamma}(k, \lambda)$ 
-distribution, matching its mean and CV$^2$ to those of $W \mid \text{surv}$. 
-The Gamma distribution has mean $k/\lambda$ and CV$^2$ equal to $1/k$, so 
-matching to Eqs.~\eqref{eq:W_cond_mean} and \eqref{eq:V_def} gives:
-%
-\begin{align}
-    k &= \frac{1}{V} = \frac{1 - c^\alpha}{p\,\sigma^{(1-\psi)\alpha} - (1-c^\alpha)}
-    \label{eq:k} \\[6pt]
-    \lambda &= \frac{k}{E[W \mid \text{surv}]} = \frac{p}{V}
-    \label{eq:lambda}
-\end{align}
-%
-Both parameters are fully determined by $R_0$ (through $p$, $c$, and 
-$\sigma$), $\alpha$, and $\psi$. The shape parameter $k = 1/V$ has a 
-natural interpretation: it is the reciprocal of the conditional CV$^2$ 
-of $W$, so that more variable epidemics (larger $V$, more punctuated 
-profiles) correspond to smaller $k$ and hence more right-skewed 
-approximating distributions. The approximation is valid as a proper 
-unimodal density when $k \geq 1$ (i.e.\ $V \leq 1$); when $k < 1$ the 
-approximating density is monotonically decreasing on $(0, \infty)$ with 
-no interior mode, indicating that the most probable surviving epidemic 
-is maximally delayed relative to the deterministic trajectory.
-
-The time-shift $\varsigma = \log(W)/r$ is a monotone increasing 
-transformation of $W$, so its modal value is obtained by transforming 
-the mode of the Gamma approximation. The mode of $\text{Gamma}(k, \lambda)$ 
-is $(k-1)/\lambda$ for $k \geq 1$, giving:
-%
+where the division by $p$ arises because 
 \begin{equation}
-    \text{mode}(W \mid \text{surv}) 
-    = \frac{k - 1}{\lambda} = \frac{1/V - 1}{p/V} = \frac{1 - V}{p}
+E[W^n] = E[W^n | \text{surv}] P(\text{surv}) + E[W^n | \text{extinct}] P(\text{extinct}) = E[W^n | \text{surv}] \cdot p 
 \end{equation}
-%
-and therefore:
+since $E[W^n | \text{extinct}] = 0$ almost surely since the epidemic fails to establish. Thus, $E[W^n | \text{surv}] = E[W^n] / p$. 
+
+Our goal is to approximate the distribution of $W$ with a $\text{Gamma}(k, \lambda)$ distribution, and specifically to estimate the mode of the distribution of $W | \text{surv}$ with the mode of the moment-matched $\text{Gamma}(k, \lambda)$ distribution. Note that the mode of a generic $\text{Gamma}(k,\lambda)$ distribution is $(k-1)/\lambda$, and that the distribution has a mean of $k/\lambda$ and a squared coefficient of variation of ($\text{CV}^2$) $1/k$. Thus, the parameters of the moment-matched Gamma distribution are 
+\begin{align}
+	k &= \frac{1}{\text{CV}^2[W|\text{surv}]}  \\ 
+	\lambda &= \frac{k}{E[W|\text{surv}]} = k p 
+\end{align}
+and the mode of the moment-matched distribution is 
+\begin{equation}
+	\text{mode}[W|\text{surv}] \approx \frac{k - 1}{\lambda} = \frac{k-1}{k p } = \frac{1 - 1/k}{p} = \frac{1 - \text{CV}^2[W|\text{surv}]}{p}
+\end{equation}
+The expression for $\text{CV}^2$ is  
+\begin{align}
+	\text{CV}^2(W|\text{surv})  &= \frac{\text{Var}(W|\text{surv})}{E[W|\text{surv}]^2} 
+	= \frac{E[W^2 | \text{surv}] - E[W| \text{surv}]^2}{E[W|\text{surv}]^2} \\ 
+	&= \frac{
+		p \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
+	}{
+		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
+	} - 1
+	\label{eq:cv2}
+\end{align}
+This moment-matched approximation is valid when $k \geq 1$ (\ie,\ $\text{CV}^2[W|\text{surv}] \leq 1$). When $k < 1$, the  approximating density is monotonically decreasing on $(0, \infty)$ with  no interior mode. 
+
+The time-shift $\varsigma = \log(W)/r$ is a monotone transformation of $W$, so its modal value is obtained by transforming  the mode of the Gamma approximation. Therefore:
 %
 \begin{equation}
     \text{Mode}[\varsigma] 
     = \frac{1}{r}\log\!\left(\frac{1-V}{p}\right)
-    = \frac{\log(1-V) - \log p}{r}
     \label{eq:mode_varsigma_split}
 \end{equation}
 %
-Substituting $V$ from Eq.~\eqref{eq:V_def} and expressing in terms of 
-$z = R_0^{1/\alpha} - 1$, this yields Eq.~\eqref{eq:mode_timeshift}. 
-The split form of Eq.~\eqref{eq:mode_varsigma_split} is interpretable: 
-the $\log(1-V)$ term carries all dependence on $\psi$, $\alpha$, and 
-$R_0$ through the conditional CV$^2$ $V$, while the $-\log p$ term is 
-a positive, $\psi$-independent correction arising from conditioning on 
-survival. For $R_0 \geq 2$, the extinction probability $q$ is small 
-($q \leq 0.20$) and $-\log p \leq 0.22$, so the survival correction 
-is modest and the $\psi$-dependence of $\text{Mode}[\varsigma]$ is 
-dominated by $\log(1-V)/r$.
+Substituting $V$ from Eq.~\eqref{eq:cv2} and expressing in terms of  $z = R_0^{1/\alpha} - 1$, this yields Eq.~\eqref{eq:mode_timeshift}.  
 
 \clearpage 
 
 \subsubsection*{Monotonicity in $R_0$}
 
-Differentiating Eq.~\eqref{eq:alpha_log_sigma} with respect to $R_0$,  holding $\alpha$ fixed, and using 
-$\frac{d}{dR_0}(2R_0^{1/\alpha}) = (2/\alpha)R_0^{1/\alpha - 1}$:
+Differentiating Eq.~\eqref{eq:alpha_log_sigma} with respect to $R_0$,  holding $\alpha$ fixed, and using  $\frac{d}{dR_0}(2R_0^{1/\alpha}) = (2/\alpha)R_0^{1/\alpha - 1}$:
 %
 \begin{equation}
     \frac{\partial(\alpha\log\sigma)}{\partial R_0} 

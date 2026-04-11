@@ -3399,6 +3399,242 @@ $$\Delta\sigma^2(\psi) \;=\; \frac{R_0}{N}\int_0^\infty j_{\det}(t)\,\frac{\text
 
 <p>The distribution of the delay does <em>not</em> integrate out. The random delay smooths the TE curves relative to a fixed delay of the same mean. The effect is most dramatic for spike profiles and diminishes as \(\psi \to 1\) (where \(S_\psi\) becomes smoother and more nearly linear over the scale of the delay). If you wanted to verify numerically, you could add a fixed-delay comparison to section 3 — just evaluate \(S_\psi(u - d_{\text{pre}} + \text{mode} + 1/\lambda)\) in place of the closed-form expectation.</p>
 
+<hr>
+
+<h1>Mathematical accuracy review of <code>writeup/main.tex</code> (2026-04-10)</h1>
+
+<p>Review of <code>main.tex</code> and its inputs (<code>model.tex</code>, <code>uncontrolled.tex</code>, <code>controlled.tex</code>, <code>identifiability.tex</code>, <code>supplementary.tex</code>) against the derivations themselves. Findings are grouped by severity.</p>
+
+<h2>A. Substantive mathematical errors</h2>
+
+<h3>A.1 Spike profile mass in <code>eq:a_seir_spike</code> (<code>model.tex</code>)</h3>
+
+<p>The SEIR parameters in the manuscript are:</p>
+<ul>
+<li>latent period \(x_i \sim \mathrm{Exp}(\gamma)\) — so \(\gamma\) is the latent <em>rate</em>,</li>
+<li>infectious period \(y_i \sim \mathrm{Exp}(\alpha)\) — so \(\alpha\) is the recovery <em>rate</em>,</li>
+<li>infectiousness level during the infectious period \(=\beta\).</li>
+</ul>
+
+<p>Integrating the population-level \(A(\tau)\) given in <code>eq:A_seir</code>,</p>
+
+$$
+R_0 = \int_0^\infty \beta\,\frac{\gamma}{\gamma-\alpha}\bigl(e^{-\alpha\tau}-e^{-\gamma\tau}\bigr)\,d\tau
+= \beta\,\frac{\gamma}{\gamma-\alpha}\left(\frac{1}{\alpha}-\frac{1}{\gamma}\right)
+= \frac{\beta}{\alpha}.
+$$
+
+<p>So for SEIR, \(R_0=\beta/\alpha\). For the spike profile to have the same individual reproduction number as the smooth profile (\(\nu_i = R_0\) for all \(i\)), its total mass must equal \(R_0=\beta/\alpha\). The writeup currently has</p>
+
+$$
+a_i(\tau) \;=\; \frac{\beta}{\gamma}\,\delta_{t_i}(\tau),
+$$
+
+<p>which gives \(\nu_i=\beta/\gamma\neq R_0\) whenever \(\gamma\neq\alpha\). This is a typo: the coefficient should be \(\beta/\alpha\), not \(\beta/\gamma\). (Equivalently, write it as \(a_i(\tau)=R_0\,\delta_{t_i}(\tau)\) with \(t_i\sim g(\tau)\), which is unambiguous.)</p>
+
+<h3>A.2 Time-shifted Gamma in <code>eq:gamma_timeshift</code> (<code>model.tex</code>)</h3>
+
+<p>As written,</p>
+
+$$
+b_i(\tau)=\begin{cases}0 & \tau\le l_i\\ f_\epsilon(\tau) & \tau > l_i\end{cases},
+\qquad f_\epsilon \sim \mathrm{Gamma}(\psi\alpha,\beta),\;\; l_i \sim \mathrm{Gamma}((1-\psi)\alpha,\beta).
+$$
+
+<p>This is not a valid density: the integral over \(\tau>l_i\) of a \(\mathrm{Gamma}(\psi\alpha,\beta)\) pdf evaluated at \(\tau\) (not at \(\tau-l_i\)) is \(1-F_\epsilon(l_i)\neq 1\). Also, the text explicitly describes \(b_i\) as "a shifted Gamma distribution preceded by a latent period \(l_i\)," and the Gamma-additivity argument (used throughout the supplement and for \(\mathrm{Var}[W]\)) only works if the lag beyond \(l_i\) is itself Gamma, i.e. \(\tau-l_i\mid l_i\sim\mathrm{Gamma}(\psi\alpha,\beta)\). The correct expression is</p>
+
+$$
+b_i(\tau)=\begin{cases}0 & \tau\le l_i\\ f_\epsilon(\tau-l_i) & \tau > l_i\end{cases}.
+$$
+
+<p>The supplementary derivation of \(\mathrm{Var}[W]\) already uses the correct decomposition \(\tau_j=l_i+\epsilon_j\), so this is a notational slip in <code>model.tex</code>, not a flaw in the downstream math.</p>
+
+<h2>B. Internal notation inconsistencies (the user asked specifically about this)</h2>
+
+<h3>B.1 <code>identifiability.tex</code> uses \(\kappa\) instead of \(\psi\)</h3>
+
+<p>The rest of the .tex uses \(\psi\) for the punctuation parameter, but <code>identifiability.tex</code> (§"Identifiability and inference…") repeatedly refers to "\(\kappa\) is shared across individuals and where \(\kappa\) comes from a beta distribution…". The user flagged that \(\kappa\) is legacy notation from <code>findings.md</code> and should be \(\psi\) inside the .tex. Rename all \(\kappa\)→\(\psi\) in this file.</p>
+
+<h3>B.2 Symbol collisions inside <code>model.tex</code></h3>
+
+<p>Several symbols are overloaded within the same file:</p>
+
+<ol>
+<li><strong>\(\alpha\)</strong>: SEIR recovery rate (in <code>eq:a_seir_stepwise</code>/<code>eq:A_seir</code>) <em>and</em> Gamma shape parameter of the generation interval (in <code>eq:gamma_gi</code>). These are physically different objects.</li>
+<li><strong>\(\beta\)</strong>: SEIR "infectiousness level" <em>and</em> Gamma rate parameter \(=\alpha/\mu\).</li>
+<li><strong>\(\gamma\)</strong>: SEIR latent rate.</li>
+<li><strong>\(\epsilon\)</strong>: the Gamma lag \(\epsilon_j\) / the density \(f_\epsilon\) in <code>eq:gamma_timeshift</code> <em>and</em> the cosine amplitude in the periodic contact model \(c_i(t)=1-\epsilon\cos(2\pi t)\).</li>
+<li><strong>\(t_i\)</strong>: the location of the spike on the \(\tau\)-axis in <code>eq:a_seir_spike</code> <em>and</em> person \(i\)'s <em>infection time</em> on the calendar in <code>eq:abc</code>, <code>eq:A_def_general</code>, <code>eq:ABC</code>. These are fundamentally different variables.</li>
+</ol>
+
+<p>At minimum, I'd recommend:</p>
+<ul>
+<li>rename SEIR-section \((\alpha,\beta,\gamma)\) to something like \((\gamma_R,\beta_c,\gamma_L)\) or footnote that these symbols are reused locally for the SEIR example only;</li>
+<li>rename the cosine amplitude \(\epsilon\) to something else (say \(A\) or \(a\))… but then \(A\) already denotes the population profile, so perhaps \(\varepsilon_c\) or \(\eta\);</li>
+<li>replace \(t_i\) in <code>eq:a_seir_spike</code> with \(\tau_i^*\) or similar, reserving \(t_i\) for calendar infection time.</li>
+</ul>
+
+<h3>B.3 <code>eq:A_def_general</code>: argument mismatch</h3>
+
+<p>Written as</p>
+
+$$
+A(t_i,\tau)=E_i[a_i(\tau)]=E_i[\nu_i b_i(\tau)]\,E_i[c_i(t_i+\tau)].
+$$
+
+<p>The LHS is a function of \((t_i,\tau)\) but the inner expectation drops \(t_i\) from \(a_i\). It should read \(A(t,\tau)=E_i[a_i(t,\tau)]\), where \(t\) is a fixed calendar infection time (not a person-indexed \(t_i\), since we are averaging over \(i\)). Then \(E_i[c_i(t+\tau)]=C(t+\tau)\). The same \(t_i\)-as-fixed-time abuse appears in <code>eq:ABC</code>.</p>
+
+<h3>B.4 "mean latent period \(\gamma=\)XX, mean infectious period \(\alpha=\)XX" (caption of Fig. <code>seir_sims</code>)</h3>
+
+<p>Given the rest of the text, \(\gamma\) and \(\alpha\) are <em>rates</em>, so the mean latent period is \(1/\gamma\) and the mean infectious period is \(1/\alpha\). The caption should either swap the identification (rates) or put \(1/\gamma\) and \(1/\alpha\) in the placeholders.</p>
+
+<h3>B.5 Density vs. random-variable notation</h3>
+
+<p><code>eq:gamma_gi</code> writes "\(g(\tau)\sim\mathrm{Gamma}(\alpha,\beta)\)". Strictly, \(g\) is a density, not a random variable. Prefer "let \(g(\tau)\) be the \(\mathrm{Gamma}(\alpha,\beta)\) pdf". Minor.</p>
+
+<h2>C. Derivations that I verified and that check out</h2>
+
+<h3>C.1 Euler–Lotka (<code>supplementary.tex</code>, <code>eq:euler_lotka</code>)</h3>
+
+$$
+1 = R_0\int_0^\infty e^{-r\tau}\frac{\beta^\alpha}{\Gamma(\alpha)}\tau^{\alpha-1}e^{-\beta\tau}d\tau
+= R_0\left(\frac{\beta}{\beta+r}\right)^{\!\alpha}
+= \frac{R_0}{(1+z)^\alpha},
+$$
+
+<p>with \(z=r/\beta\). Correct. Implies \(r=\beta(R_0^{1/\alpha}-1)=(\alpha/\bar g)(R_0^{1/\alpha}-1)\), matching <code>eq:r_from_params</code>.</p>
+
+<h3>C.2 \(\mathrm{Var}[W]\) derivation</h3>
+
+<p>Starting from the distributional fixed point \(W\stackrel{d}{=}\sum_{j=1}^{\chi_i}e^{-r\tau_j}W_j\) and applying the law of total variance conditional on \((\chi_i,\tau_1,\dots,\tau_{\chi_i})\),</p>
+
+$$
+\mathrm{Var}[W]=\mathrm{Var}[W]\cdot \mathbb{E}\!\left[\sum_j e^{-2r\tau_j}\right] + \mathrm{Var}\!\left[\sum_j e^{-r\tau_j}\right].
+$$
+
+<p>With \(\tau_j=l_i+\epsilon_j\) and \(\rho_k=(\beta/(\beta+kr))=1/(1+kz)\):</p>
+
+$$
+\mathbb{E}\!\left[\sum_j e^{-2r\tau_j}\right]=R_0\,\rho_2^{(1-\psi)\alpha}\rho_2^{\psi\alpha}=R_0\rho_2^\alpha,
+$$
+
+$$
+\mathbb{E}\!\left[\Bigl(\textstyle\sum_j e^{-r\tau_j}\Bigr)^{\!2}\right]
+=\underbrace{R_0\rho_2^\alpha}_{j=k\text{ terms}}+\underbrace{R_0^2\,\rho_2^{(1-\psi)\alpha}\rho_1^{2\psi\alpha}}_{j\neq k\text{ terms, share }l_i}.
+$$
+
+<p>The factor \(\rho_2^{(1-\psi)\alpha}\) (not \(\rho_1^{2(1-\psi)\alpha}\)) is the crucial consequence of \(l_i\) being <em>shared</em> across all offspring of \(i\); this shared latent period is exactly what makes \(\mathrm{Var}[W]\) depend on \(\psi\). Substituting \(R_0=(1+z)^\alpha\), \(\rho_1=1/(1+z)\), \(\rho_2=1/(1+2z)\) reproduces</p>
+
+$$
+\mathrm{Var}[W]=\frac{\left(\frac{1+z}{1+2z}\right)^{\!\alpha}+\left(\frac{(1+z)^2}{1+2z}\right)^{\!(1-\psi)\alpha}-1}{1-\left(\frac{1+z}{1+2z}\right)^{\!\alpha}}.
+$$
+
+<p>Correct. Non-negativity of the denominator follows from \(\rho_2<\rho_1\) (i.e. \(R_0\rho_2^\alpha<R_0\rho_1^\alpha=1\)) for \(z>0\). I also checked the ψ→1 limit collapses the numerator to \(R_0\rho_2^\alpha\) (positive, as expected).</p>
+
+<h3>C.3 Monotonicity of \(\mathrm{Var}[W]\) in \(\psi\)</h3>
+
+<p>The base \(\sigma=(1+z)^2/(1+2z)\) satisfies \(\sigma>1\) for \(z>0\) since \((1+z)^2=1+2z+z^2>1+2z\). So \(\sigma^{(1-\psi)\alpha}\) is decreasing in \(\psi\), i.e. \(\psi\to 0\) (spike) maximizes \(\mathrm{Var}[W]\) and \(\psi\to 1\) (smooth) minimizes it. Matches the manuscript's claim.</p>
+
+<h3>C.4 Mode of the Gamma approximation to \(\varsigma\)</h3>
+
+<p>With \(E[W]=1\) and the stated \(E[W^2]\), conditioning on survival (\(E[W\mid\text{surv}]=1/p\), \(E[W^2\mid\text{surv}]=E[W^2]/p\)) gives</p>
+
+$$
+\mathrm{CV}^2[W\mid\text{surv}]=p\,E[W^2]-1
+= \frac{p\left(\tfrac{(1+z)^2}{1+2z}\right)^{(1-\psi)\alpha}}{1-\left(\tfrac{1+z}{1+2z}\right)^{\alpha}}-1,
+$$
+
+<p>and the Gamma-mode \((k-1)/\lambda=(1-\mathrm{CV}^2)/p\) followed by \(\mathrm{Mode}[\varsigma]=(1/r)\log(\mathrm{mode}[W\mid\text{surv}])\) gives</p>
+
+$$
+\mathrm{Mode}[\varsigma]=\frac{1}{r}\log\!\left(\frac{2\left[1-\left(\tfrac{1+z}{1+2z}\right)^\alpha\right]-p\left(\tfrac{(1+z)^2}{1+2z}\right)^{(1-\psi)\alpha}}{p\left[1-\left(\tfrac{1+z}{1+2z}\right)^\alpha\right]}\right).
+$$
+
+<p>Matches <code>eq:mode_timeshift</code>. Good. The cautionary note that "mode \(\to -\infty\) when the numerator \(\le 0\)" is correct and is exactly where the Gamma approximation loses its interior mode (\(k<1\)).</p>
+
+<h3>C.5 Monotonicity of \(\alpha\log\sigma\) in \(R_0\) and in \(\alpha\)</h3>
+
+<p>Defining \(\mu=R_0^{1/\alpha}\), so that \(\sigma=\mu^2/(2\mu-1)\) and \(\alpha\log\sigma=2\log R_0 - \alpha\log(2R_0^{1/\alpha}-1)\):</p>
+
+$$
+\frac{\partial(\alpha\log\sigma)}{\partial R_0}=\frac{2}{R_0}-\frac{2R_0^{1/\alpha-1}}{2R_0^{1/\alpha}-1}=\frac{2(\mu-1)}{R_0(2\mu-1)}.
+$$
+
+<p>Positive for \(\mu>1\) (i.e. \(R_0>1\)). ✓</p>
+
+<p>For \(\alpha\), define \(h(\mu)=(2\mu-1)\log(2\mu-1)-2\mu\log\mu\). Then \(h(1)=0\) and</p>
+
+$$
+h'(\mu)=2\log(2\mu-1)+2-2\log\mu-2=2\log\!\left(2-\frac{1}{\mu}\right)>0\text{ for }\mu>1,
+$$
+
+<p>so \(h(\mu)>0\) for \(\mu>1\), which implies \(\partial(\alpha\log\sigma)/\partial\alpha<0\). Matches the supplement.</p>
+
+<h3>C.6 Euler–Lotka / \(z\) identities</h3>
+
+<p>\(\rho_k=1/(1+kz)\), \(R_0\rho_1^\alpha=1\), \(R_0\rho_2^\alpha=((1+z)/(1+2z))^\alpha\), and \(R_0^2\rho_2^{(1-\psi)\alpha}\rho_1^{2\psi\alpha}=((1+z)^2/(1+2z))^{(1-\psi)\alpha}\). All consistent with how they're used in the Var/Mode derivations.</p>
+
+<h2>D. Issues needing attention that aren't formal errors but I flag them</h2>
+
+<h3>D.1 The \(k(\psi)\) equation in <code>uncontrolled.tex</code> (overdispersion with periodic contacts)</h3>
+
+<p>Currently:</p>
+
+$$
+k=\frac{2}{\bar c}\,A^{2}\!\left(1+\frac{\omega^{2}}{r^{2}}\right)^{\!\psi\alpha}
+$$
+
+<p>Several problems:</p>
+<ol>
+<li>\(A\), \(\bar c\), and \(\omega\) are never defined in the main text. I assume \(A\) is the cosine amplitude (currently called \(\epsilon\) in the periodic contact model) and \(\omega\) is the angular frequency (\(2\pi\) for a daily period). \(\bar c\) presumably is \(E_t[c]=1\), so it collapses out.</li>
+<li>A scratch expression at the bottom of the same file has \(2/\bar c^{2}\), not \(2/\bar c\). One of the two is wrong, and without the derivation being in the supplement I can't tell which.</li>
+<li>The exponent \(\psi\alpha\) (rather than the \((1-\psi)\alpha\) that appears in the \(W\) results) <em>is</em> consistent with the intuition in the paper: for the periodic-contact overdispersion story, what matters is how tightly the offspring \(\epsilon_j\) samples the contact clock, which is governed by the Gamma\((\psi\alpha,\beta)\) piece (not the shared \(l_i\)).</li>
+<li>The derivation for this should be written out in the supplement before this equation can be trusted. Right now it is just asserted.</li>
+</ol>
+
+<h3>D.2 Independence/factorization assumption in <code>eq:A_def_general</code></h3>
+
+<p>The text says "assume that \(c_i\) is independent of \(\nu_i\) and \(b_i\), but allow \(\nu_i\) and \(b_i\) to depend on one another," then writes</p>
+
+$$
+E_i[\nu_i b_i(\tau)c_i(t_i+\tau)]=E_i[\nu_i b_i(\tau)]\,E_i[c_i(t_i+\tau)].
+$$
+
+<p>This requires \(c_i(t_i+\tau)\) to be independent of \((\nu_i,b_i)\). If \(t_i\) is person \(i\)'s infection time on the calendar, and \(t_i\) can correlate with anything about \(i\), then this factorization has a hidden assumption: either \(c_i\) is literally deterministic (e.g. the periodic model) or \(t_i\) is independent of \((\nu_i,b_i,c_i)\). Probably fine for your use cases, but worth a sentence making it explicit.</p>
+
+<h3>D.3 Reference contact definition</h3>
+
+<p>"\(E_t[c_i(t)]=1\)" is strictly a time-<em>average</em>, not a probabilistic expectation — the manuscript says "for a randomly chosen time \(t\)," which is OK but might read more cleanly as \(\lim_{T\to\infty}T^{-1}\int_0^T c_i(t)\,dt=1\) (or, for stationary random \(c_i\), the stationary mean). For the periodic model, \(T^{-1}\int_0^T (1-\epsilon\cos(2\pi t))\,dt\to 1\). ✓</p>
+
+<h3>D.4 Placement of the supplementary §"The modulating role of \(\alpha\log\sigma\)"</h3>
+
+<p>The supplementary subsections "Monotonicity in \(R_0\)" and "Monotonicity in \(\alpha\)" differentiate <code>eq:alpha_log_sigma</code>, but that equation is defined <em>after</em> them in the file. Reordering so the definition precedes the derivatives would help the reader.</p>
+
+<h2>E. Minor / typographical</h2>
+
+<ul>
+<li><code>model.tex</code>: "the {\bf Supplementary Methods}" and "{\bf Table XX}", "{\bf Figure XX}" placeholders scattered throughout. (Known TODOs, not math.)</li>
+<li><code>uncontrolled.tex</code>: "simultions" → "simulations"; "deatils" → "details".</li>
+<li><code>supplementary.tex</code>, §"Monotonicity in \(R_0\)": "\(\frac{d}{dR_0}(2R_0^{1/\alpha})=(2/\alpha)R_0^{1/\alpha-1}\)" — correct.</li>
+<li><code>supplementary.tex</code>, §"Mode of the two-moment Gamma approximation…": "\(E[W^n\mid\text{extinct}]=0\) almost surely since the epidemic fails to establish" — this is true because \(W=\lim e^{-rt}Z(t)=0\) on the extinction event; \(W\) is zero there deterministically, not just in expectation. The text could be sharpened to say \(W=0\) on extinction.</li>
+<li>Introduction, §"sugesting" → "suggesting"; "beffore" (controlled.tex scratch) → "before"; "hierarhcical" (identifiability.tex) → "hierarchical"; "imapct" (discussion.tex) → "impact"; "dynamcis" → "dynamics"; "Estiamting" → "Estimating". (Many in commented scratch, but some are in live prose.)</li>
+</ul>
+
+<h2>F. Summary</h2>
+
+<p>The core derivations — Euler–Lotka, \(\mathrm{Var}[W]\), \(E[W^2]\), \(\mathrm{Mode}[\varsigma]\), and the \(R_0\)/\(\alpha\) monotonicity of \(\alpha\log\sigma\) — are correct. I did not find any error in the supplement's algebra. The substantive issues are two <em>definitional</em> typos in <code>model.tex</code>:</p>
+
+<ol>
+<li>\(a_i(\tau)=(\beta/\gamma)\delta_{t_i}(\tau)\) should be \(a_i(\tau)=(\beta/\alpha)\delta_{t_i}(\tau)\) (i.e. \(R_0\,\delta_{t_i}(\tau)\));</li>
+<li>\(b_i(\tau)=f_\epsilon(\tau)\) for \(\tau>l_i\) should be \(b_i(\tau)=f_\epsilon(\tau-l_i)\).</li>
+</ol>
+
+<p>Everything that flows from these inside the supplement already <em>assumes</em> the corrected forms, so only the main-text statements need to be fixed; the downstream results are unaffected.</p>
+
+<p>The biggest notation issue is that <code>identifiability.tex</code> still uses \(\kappa\) where the rest of the .tex uses \(\psi\). That needs a global \(\kappa\to\psi\) substitution in that file.</p>
+
+<p>Secondary notation issues to consider at your discretion: the SEIR \((\alpha,\beta,\gamma)\) symbols collide with the Gamma generation-interval \((\alpha,\beta)\) symbols; the cosine amplitude \(\epsilon\) collides with the Gamma lag \(\epsilon_j\); and \(t_i\) is used for two different things (spike location on the \(\tau\)-axis vs. calendar infection time).</p>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
