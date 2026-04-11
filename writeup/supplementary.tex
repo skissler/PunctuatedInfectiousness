@@ -193,7 +193,7 @@ where the division by $p$ arises because
 \begin{equation}
 E[W^n] = E[W^n | \text{surv}] P(\text{surv}) + E[W^n | \text{extinct}] P(\text{extinct}) = E[W^n | \text{surv}] \cdot p 
 \end{equation}
-since $E[W^n | \text{extinct}] = 0$ almost surely since the epidemic fails to establish. Thus, $E[W^n | \text{surv}] = E[W^n] / p$. 
+since $W = 0$ when the epidemic fails to establish. Thus, $E[W^n | \text{surv}] = E[W^n] / p$. 
 
 Our goal is to approximate the distribution of $W$ with a $\text{Gamma}(k, \lambda)$ distribution, and specifically to estimate the mode of the distribution of $W | \text{surv}$ with the mode of the moment-matched $\text{Gamma}(k, \lambda)$ distribution. Note that the mode of a generic $\text{Gamma}(k,\lambda)$ distribution is $(k-1)/\lambda$, and that the distribution has a mean of $k/\lambda$ and a squared coefficient of variation of ($\text{CV}^2$) $1/k$. Thus, the parameters of the moment-matched Gamma distribution are 
 \begin{align}
