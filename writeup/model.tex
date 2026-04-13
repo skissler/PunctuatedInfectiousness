@@ -152,15 +152,30 @@ To investigate the impact of the punctuatedness of $a_i(\tau)$ on epidemic dynam
 
 We normally keep the contact process fixed at the reference value ($c_i(t) \equiv 1$). However, to examine the interaction between $b_i(\tau)$ and $c_i(t)$, we introduce a ``periodic'' and a ``Pareto'' contact model. 
 
-For the periodic contact model, we assume 
-% 
+For the periodic contact model, we assume
+%
 \begin{equation}
-    c_i(t) = 1 - \epsilon \cos(2 \pi t) \forall i 
+    c_i(t) = 1 - A \cos(\omega t) \quad \forall i
+    \label{eq:periodic_c}
 \end{equation}
 %
-This models a contact process with a period of one day, reflecting higher numbers of contacts during the day and lower numbers at night. The amplitude of the contact process is governed by the parameter $\epsilon \in [0,1]$, with $\epsilon=0$ recovering the reference contact proces $c_i(\tau) \equiv 1$. Note that this contact process also yields a periodic population-level contact modulator: $E_i[c_i(t)] = 1 - \epsilon \cos(2 \pi t)$. Here, there is no variation between individuals' contact processes, but there is variation over time. 
+with amplitude $A \in [0,1]$ and angular frequency $\omega > 0$. We take $\omega = 2\pi\,\text{day}^{-1}$ as the default, which models a contact process with a period of one day, reflecting higher numbers of contacts during the day and lower numbers at night. Setting $A = 0$ recovers the reference contact process $c_i(t) \equiv 1$. Note that this contact process also yields a periodic population-level contact modulator: $E_i[c_i(t)] = 1 - A \cos(\omega t)$. Here, there is no variation between individuals' contact processes, but there is variation over time. 
 
-For the Pareto contact model, we assume each person's contact modulator switches to a new level at times $t^* \sim \text{Exp}(\lambda)$, \ie, according to a Poisson process. The levels that are switched to are independently drawn from a $c^*\sim \text{Pareto}(xx,xx)$ distribution, which has mean 1. For this contact process, each person's infectiousness profile is unique, but the population-average infectiousness profile $C(t) = E_i[c_i(t)] = 1$, meaning the population-level, mean-field dynamics follow the reference contact process. 
+For the Pareto contact model, we assume each person's contact modulator is a piecewise-constant process that switches to a new level at the points of a Poisson process with rate $\lambda$, \ie, the sojourn at each level is exponentially distributed with mean $1/\lambda$. The levels that are switched to are independently drawn from a Lomax (Pareto Type II) distribution with shape $\alpha_P$ and scale $\sigma$,
+%
+\begin{equation}
+    f_{c^*}(c) = \frac{\alpha_P}{\sigma}\Bigl(1 + \frac{c}{\sigma}\Bigr)^{-(\alpha_P + 1)}, \qquad c \geq 0
+    \label{eq:lomax_pdf}
+\end{equation}
+%
+with $\alpha_P > 1$. The Lomax distribution has support $[0,\infty)$ and mean $\sigma / (\alpha_P - 1)$, so requiring a mean of 1 (to be consistent with the reference contact process) pins down
+%
+\begin{equation}
+    \sigma = \alpha_P - 1
+    \label{eq:lomax_scale}
+\end{equation}
+%
+leaving a one-parameter family indexed by the tail exponent $\alpha_P$. Under this constraint, the variance of $c^*$ collapses to $\text{Var}[c^*] = \alpha_P / (\alpha_P - 2)$, which is finite for $\alpha_P > 2$ and diverges as $\alpha_P \searrow 2$; smaller $\alpha_P$ therefore corresponds to a heavier upper tail and rarer but more extreme ``superspreader'' contact levels, while larger $\alpha_P$ makes $c^*$ progressively tighter around 1. Because each person's contact modulator is an iid sequence of Lomax levels held over exponential sojourns, the long-run time average satisfies $\lim_{T \rightarrow \infty} T^{-1} \int_0^T c_i(t) \, dt = E[c^*] = 1$ almost surely, so $\nu_i$ retains its interpretation as person $i$'s expected number of secondary infections under the reference contact process. For this contact model, each person's infectiousness profile is unique, but the population-average infectiousness profile $C(t) = E_i[c_i(t)] = 1$, meaning the population-level, mean-field dynamics follow the reference contact process.
 
 % ////////////////////////////////////////////////////////////////////////////////////////////
 % SCRATCH 

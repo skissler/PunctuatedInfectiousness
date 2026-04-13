@@ -3635,6 +3635,366 @@ $$
 
 <p>Secondary notation issues to consider at your discretion: the SEIR \((\alpha,\beta,\gamma)\) symbols collide with the Gamma generation-interval \((\alpha,\beta)\) symbols; the cosine amplitude \(\epsilon\) collides with the Gamma lag \(\epsilon_j\); and \(t_i\) is used for two different things (spike location on the \(\tau\)-axis vs. calendar infection time).</p>
 
+<hr>
+
+<h1>Parameterizing the Pareto contact model to have mean 1 (2026-04-10)</h1>
+
+<p>The question: in the "Pareto" contact model, each person's contact modulator \(c_i(t)\) switches at Poisson\((\lambda)\) times to a new level \(c^*\) drawn independently from a Pareto distribution. For this to be consistent with the reference contact process \(c_i(t)\equiv 1\) against which \(R_0\) and \(\nu_i\) are defined, we need the time-average of \(c_i(t)\) to equal 1. For a Poisson-switching process with iid level draws, the long-run time-average equals \(\mathbb{E}[c^*]\):</p>
+
+$$
+\lim_{T\to\infty}\frac{1}{T}\int_0^T c_i(t)\,dt
+\;=\;\frac{\mathbb{E}[\,c^*\cdot\text{(length of one sojourn)}\,]}{\mathbb{E}[\,\text{length of one sojourn}\,]}
+\;=\;\mathbb{E}[c^*],
+$$
+
+<p>since the sojourn lengths are iid \(\mathrm{Exp}(\lambda)\) with mean \(1/\lambda\) and independent of the levels. So \(\mathbb{E}[c^*]=1\) is the constraint, and \(\lambda\) cancels out of the mean-1 requirement (it controls <em>how often</em> the contact state turns over, not the long-run mean).</p>
+
+<h2>Pareto Type I (the "classic" Pareto)</h2>
+
+<p>Pareto Type I has pdf</p>
+
+$$
+f(c\mid\alpha_{\!P},\,c_{\min})
+\;=\;\frac{\alpha_{\!P}\,c_{\min}^{\alpha_{\!P}}}{c^{\,\alpha_{\!P}+1}},\qquad c\ge c_{\min}>0,\ \alpha_{\!P}>0.
+$$
+
+<p>Two parameters: the shape \(\alpha_{\!P}\) (the tail index, subscripted with \(P\) to distinguish it from the Gamma shape \(\alpha\) used for the generation interval) and the scale \(c_{\min}\), which is the hard floor. When the moments exist,</p>
+
+$$
+\mathbb{E}[c^*]=\frac{\alpha_{\!P}\,c_{\min}}{\alpha_{\!P}-1}\quad(\alpha_{\!P}>1),
+\qquad
+\mathrm{Var}[c^*]=\frac{c_{\min}^{\,2}\,\alpha_{\!P}}{(\alpha_{\!P}-1)^2(\alpha_{\!P}-2)}\quad(\alpha_{\!P}>2).
+$$
+
+<p>Setting the mean equal to 1:</p>
+
+$$
+\frac{\alpha_{\!P}\,c_{\min}}{\alpha_{\!P}-1}=1
+\;\Longleftrightarrow\;
+\boxed{\,c_{\min}=\frac{\alpha_{\!P}-1}{\alpha_{\!P}}=1-\frac{1}{\alpha_{\!P}}\,}.
+$$
+
+<p>This requires \(\alpha_{\!P}>1\) (otherwise the mean is infinite and the constraint cannot be satisfied). The mean-1 Pareto is therefore a <em>one-parameter</em> family indexed by the shape \(\alpha_{\!P}>1\), with \(c_{\min}\) pinned by the constraint. Substituting \(c_{\min}=1-1/\alpha_{\!P}\) into the variance formula collapses it to</p>
+
+$$
+\mathrm{Var}[c^*]=\frac{1}{\alpha_{\!P}\,(\alpha_{\!P}-2)}\qquad(\alpha_{\!P}>2).
+$$
+
+<p>So \(\alpha_{\!P}\) alone controls the tail heaviness:</p>
+
+<ul>
+<li>\(\alpha_{\!P}\to\infty\): \(c_{\min}\to 1\), \(\mathrm{Var}\to 0\), distribution degenerates at 1 (reference process recovered).</li>
+<li>\(\alpha_{\!P}\to 2^+\): variance \(\to\infty\), mean still 1.</li>
+<li>\(\alpha_{\!P}\in(1,2]\): finite mean, infinite variance (heavy enough tail that \(c^2\) is not integrable).</li>
+<li>\(\alpha_{\!P}\le 1\): infeasible.</li>
+</ul>
+
+<p><strong>Tail behavior.</strong> The survival function is \(P(c^*>c)=(c_{\min}/c)^{\alpha_{\!P}}=\left((1-1/\alpha_{\!P})/c\right)^{\alpha_{\!P}}\) for \(c\ge c_{\min}\), so the tail decays as a power law \(c^{-\alpha_{\!P}}\). Smaller \(\alpha_{\!P}\) means a heavier right tail, which is the mechanism by which rare-but-very-high contact levels drive temporal superspreading in the epidemic simulations.</p>
+
+<p><strong>Practical caveat (the floor).</strong> Because \(c_{\min}=1-1/\alpha_{\!P}>0\), Type I enforces a hard floor on the contact process — nobody ever has zero contact. For \(\alpha_{\!P}=2\) the floor is 0.5, for \(\alpha_{\!P}=10\) it is 0.9. If you want the model to be able to reach zero (e.g. "fully isolated" stretches), a Lomax / Pareto Type II is the alternative: support \([0,\infty)\), density \(\alpha_{\!P}\lambda_{\!P}^{\alpha_{\!P}}/(c+\lambda_{\!P})^{\alpha_{\!P}+1}\), mean \(\lambda_{\!P}/(\alpha_{\!P}-1)\); setting the mean to 1 gives \(\lambda_{\!P}=\alpha_{\!P}-1\), again a one-parameter family. Lomax has a strictly heavier effective tail at the same nominal shape, but loses the minimum-contact-rate interpretation.</p>
+
+<h2>Recommendation</h2>
+
+<p>Start with Pareto Type I and \(\alpha_{\!P}>2\) (so the variance is finite), with \(c_{\min}\) fixed at \((\alpha_{\!P}-1)/\alpha_{\!P}\). That gives a single tunable parameter \(\alpha_{\!P}\in(2,\infty)\) with a clean "heaviness dial" interpretation, finite variance \(1/(\alpha_{\!P}(\alpha_{\!P}-2))\), and well-behaved second moments for any analytical derivation of \(k(\psi,\alpha_{\!P})\) you'll do in the overdispersion section. If you later want to push into the infinite-variance regime for illustration, \(\alpha_{\!P}\in(1,2]\) is still available, but anything involving \(\mathrm{Var}[c^*]\) will need to be treated separately there.</p>
+
+<hr>
+
+<h1>Pareto contact model — interpretation in actual-contacts space</h1>
+
+<p><strong>Setup.</strong> The contact modulator \(c_i(t)\) is a <em>proportional</em> deviation from the reference process \(\bar{c}\), so the actual number of contacts for person \(i\) at time \(t\) is \(\bar{c}\,c_i(t)\). With \(\bar{c}\approx 5\), an "actual contacts" value of 1 corresponds to \(c_i=0.2\), and an "actual contacts" value of 50 corresponds to \(c_i=10\). The question is: what achievable ranges does the mean-1 Pareto family support, and does it include contact patterns ranging from ~1 to ~50?</p>
+
+<h2>1. The mean-1 Pareto Type I family is restrictive.</h2>
+
+<p>Under the Type I parameterization, \(c^*\ge c_{\min}=1-1/\alpha_{\!P}\). Multiplying by \(\bar{c}=5\), the hard floor in <em>actual contacts</em> is</p>
+
+<p>$$\bar{c}\cdot c_{\min} \;=\; 5\left(1 - \frac{1}{\alpha_{\!P}}\right)\;\in\;\left(2.5,\,5\right)\quad\text{for}\quad \alpha_{\!P}\in(2,\infty).$$</p>
+
+<p>So <strong>a minimum as low as 1 contact is simply not reachable</strong> with mean-1 Pareto Type I — the floor is pinned above \(\bar{c}/2\). Concretely (verified by quantile formula \(c_q = c_{\min}(1-q)^{-1/\alpha_{\!P}}\), multiplied by \(\bar{c}=5\)):</p>
+
+<table border="1" cellpadding="4" cellspacing="0">
+<thead><tr><th>\(\alpha_{\!P}\)</th><th>min</th><th>q5</th><th>q25</th><th>median</th><th>q75</th><th>q95</th><th>q99</th><th>q99.9</th><th>SD</th></tr></thead>
+<tbody>
+<tr><td>2.01</td><td>2.51</td><td>2.58</td><td>2.90</td><td>3.55</td><td>5.01</td><td>11.15</td><td>24.84</td><td>78.10</td><td>35.27 (diverging)</td></tr>
+<tr><td>2.10</td><td>2.62</td><td>2.68</td><td>3.00</td><td>3.64</td><td>5.07</td><td>10.91</td><td>23.47</td><td>70.26</td><td>10.91</td></tr>
+<tr><td>2.50</td><td>3.00</td><td>3.06</td><td>3.37</td><td>3.96</td><td>5.22</td><td>9.94</td><td>18.93</td><td>47.55</td><td>4.47</td></tr>
+<tr><td>3.00</td><td>3.33</td><td>3.39</td><td>3.67</td><td>4.20</td><td>5.29</td><td>9.05</td><td>15.47</td><td>33.33</td><td>2.89</td></tr>
+<tr><td>5.00</td><td>4.00</td><td>4.04</td><td>4.24</td><td>4.59</td><td>5.28</td><td>7.28</td><td>10.05</td><td>15.92</td><td>1.29</td></tr>
+<tr><td>10.0</td><td>4.50</td><td>4.52</td><td>4.63</td><td>4.82</td><td>5.17</td><td>6.07</td><td>7.13</td><td>8.98</td><td>0.56</td></tr>
+</tbody>
+</table>
+
+<p>Interpretation: with mean 1 enforced, \(\alpha_{\!P}\) simultaneously governs (i) the minimum (always above \(\bar{c}/2\)) and (ii) the tail heaviness. You <em>can</em> reach actual contacts up to ~25 at 99% and ~70 at 99.9% (for \(\alpha_{\!P}=2.1\)), but you cannot dip below ~2.6. The "1–50 span" is therefore <strong>not achievable</strong> in Type I — the rigid coupling of min and tail via the mean-1 constraint prevents it.</p>
+
+<h2>2. Lomax (Pareto Type II) can achieve the desired range.</h2>
+
+<p>The Lomax / Type II distribution has support \([0,\infty)\) with density</p>
+
+<p>$$f_{c^*}(c)\;=\;\frac{\alpha_{\!P}}{\sigma}\left(1+\frac{c}{\sigma}\right)^{-(\alpha_{\!P}+1)},\qquad c\ge 0$$</p>
+
+<p>and mean \(\sigma/(\alpha_{\!P}-1)\), so enforcing mean 1 gives \(\sigma=\alpha_{\!P}-1\). Quantile: \(c_q=(\alpha_{\!P}-1)[(1-q)^{-1/\alpha_{\!P}}-1]\). Under the mean-1 constraint, \(\mathrm{Var}[c^*]=\alpha_{\!P}/(\alpha_{\!P}-2)\) for \(\alpha_{\!P}>2\). Same table, with \(\bar{c}=5\):</p>
+
+<table border="1" cellpadding="4" cellspacing="0">
+<thead><tr><th>\(\alpha_{\!P}\)</th><th>min</th><th>q5</th><th>q25</th><th>median</th><th>q75</th><th>q95</th><th>q99</th><th>q99.9</th><th>SD</th></tr></thead>
+<tbody>
+<tr><td>2.01</td><td>0.00</td><td>0.13</td><td>0.78</td><td>2.08</td><td>5.02</td><td>17.37</td><td>44.87</td><td>151.9</td><td>70.89 (diverging)</td></tr>
+<tr><td>2.10</td><td>0.00</td><td>0.14</td><td>0.81</td><td>2.15</td><td>5.14</td><td>17.40</td><td>43.79</td><td>142.1</td><td>22.91</td></tr>
+<tr><td>2.50</td><td>0.00</td><td>0.16</td><td>0.91</td><td>2.40</td><td>5.56</td><td>17.36</td><td>39.82</td><td>111.4</td><td>11.18</td></tr>
+<tr><td>3.00</td><td>0.00</td><td>0.17</td><td>1.01</td><td>2.60</td><td>5.87</td><td>17.14</td><td>36.42</td><td>90.00</td><td>8.66</td></tr>
+<tr><td>5.00</td><td>0.00</td><td>0.21</td><td>1.18</td><td>2.97</td><td>6.39</td><td>16.41</td><td>30.24</td><td>59.62</td><td>6.46</td></tr>
+<tr><td>10.0</td><td>0.00</td><td>0.23</td><td>1.31</td><td>3.23</td><td>6.69</td><td>15.72</td><td>26.32</td><td>44.79</td><td>5.59</td></tr>
+</tbody>
+</table>
+
+<p>With Lomax at \(\alpha_{\!P}\approx 3\), for example: q25=1.0, median=2.6, q95=17, q99=36, q99.9=90. The bulk of the distribution sits in the 1–17 range and the upper tail reaches 36–90. This is much closer to the "1 to 50" range. The trade-off is that Lomax does not have a hard floor — about 25% of observations dip below 1 actual contact (and ~10% below 0.5), which corresponds to quiet periods (sleeping, solitude, weekend at home) when the contact level is far below average.</p>
+
+<h2>3. What the Pareto model is actually doing in contact-space.</h2>
+
+<p>In both cases, the contact process for person \(i\) is a <em>piecewise-constant</em> stochastic process:</p>
+
+<ul>
+  <li>At each switching epoch (Poisson rate \(\lambda\)), a new level is drawn from \(c^*\) and held until the next epoch.</li>
+  <li>The long-run time average of \(\bar{c}\,c_i(t)\) equals \(\bar{c}\,E[c^*]=\bar{c}\), so each person's expected contact rate, averaged over time, equals the reference \(\bar{c}\). In this sense, everyone is "the same on average".</li>
+  <li>What varies is the <em>time spent at each level</em>. A person whose current level is 10 (50 actual contacts) is in a temporary high-contact regime — a house party, a crowded meeting — while a person at level 0.2 (1 actual contact) is in a quiet regime. On average (over time, for any individual, and over individuals at any instant), the level is 1 and actual contacts are \(\bar{c}\).</li>
+  <li>The tail exponent \(\alpha_{\!P}\) controls the heaviness of the upper tail. Small \(\alpha_{\!P}\) means rare but very extreme spikes (superspreader events); large \(\alpha_{\!P}\) means more uniformity. For \(\alpha_{\!P}>2\) the second moment is finite, which is what you need for the analytical \(k\) derivation to make sense.</li>
+  <li>The switching rate \(\lambda\) determines how long each regime lasts. If \(1/\lambda\) is much longer than the infectiousness profile \(b_i(\tau)\), each person's infectiousness profile is multiplied by a single level \(c^*\), and the overdispersion pattern depends sensitively on that draw. If \(1/\lambda\) is much shorter than \(b_i\), the contact process time-averages out within a single infection window and contributes little overdispersion. The interaction between \(\lambda\) and \(b_i\) is analogous to the interaction between \(\omega\) and \(b_i\) in the periodic model.</li>
+</ul>
+
+<h2>4. Comparison, and recommendation.</h2>
+
+<p>The practical question is whether you want a <strong>hard floor</strong> on person-time contact rates, or a <strong>soft floor at zero</strong> with most mass above some positive threshold. They give qualitatively different contact-space behaviors:</p>
+
+<table border="1" cellpadding="4" cellspacing="0">
+<thead><tr><th></th><th>Pareto Type I (hard floor)</th><th>Lomax / Type II (soft floor at 0)</th></tr></thead>
+<tbody>
+<tr><td>Support</td><td>\([\bar{c}(1-1/\alpha_{\!P}),\infty)\)</td><td>\([0,\infty)\)</td></tr>
+<tr><td>Reach low values (~1 contact at \(\bar{c}=5\))?</td><td>No, floored at ~2.5–4</td><td>Yes (~25% mass below 1 at \(\alpha_{\!P}=3\))</td></tr>
+<tr><td>Reach high values (~50 contacts)?</td><td>Only in extreme tail (q99.9)</td><td>Around q99 at \(\alpha_{\!P}\in[2.5,3]\)</td></tr>
+<tr><td>"1 to 50" span</td><td>Not achievable</td><td>Achievable, covering ~70–80% of mass</td></tr>
+<tr><td>Interpretation of floor</td><td>Baseline always-on contact rate</td><td>Quiet periods, possibly near-zero</td></tr>
+<tr><td>Free parameters under mean-1</td><td>1 (\(\alpha_{\!P}\))</td><td>1 (\(\alpha_{\!P}\))</td></tr>
+<tr><td>Finite variance</td><td>\(\alpha_{\!P}>2\), \(\mathrm{Var}=1/(\alpha_{\!P}(\alpha_{\!P}-2))\)</td><td>\(\alpha_{\!P}>2\), \(\mathrm{Var}=\alpha_{\!P}/(\alpha_{\!P}-2)\)</td></tr>
+</tbody>
+</table>
+
+<p><strong>Recommendation:</strong> given that you explicitly want contact rates to span something like 1–50 (an order-of-magnitude spread around \(\bar{c}=5\)), <strong>switch the "Pareto contact model" to a Lomax (Pareto Type II) distribution with mean 1</strong>. With \(\sigma=\alpha_{\!P}-1\), a single parameter \(\alpha_{\!P}\in(2,\infty)\) covers the full range you want:</p>
+
+<ul>
+  <li>\(\alpha_{\!P}\approx 3\) is a good default: median actual contacts 2.6, IQR [1.0, 5.9], 95%ile 17, 99%ile 36, 99.9%ile 90. Finite variance (SD\(\cdot\bar{c}=8.66\)).</li>
+  <li>\(\alpha_{\!P}\approx 5\) for a "tamer" heavy-tail scenario: IQR [1.2, 6.4], 99%ile 30, SD\(\cdot\bar{c}=6.46\).</li>
+  <li>\(\alpha_{\!P}\approx 2.1\) for a heavy-tail / near-superspreader scenario: 99%ile 44, 99.9%ile 142 (close to variance divergence).</li>
+</ul>
+
+<p>All three sit within your "2 to 20" (via bulk) to "1 to 50" (via tails) target range, and the meaning of \(\alpha_{\!P}\) as a tail-heaviness dial survives. The price is that ~25% of person-time is below 1 contact, which actually seems physically reasonable for a stochastic social-contact model (quiet periods).</p>
+
+<p>If you really want a <em>hard</em> floor above zero (nobody ever dips below some baseline), the cleanest generalization is a <strong>shifted Lomax</strong> with two free parameters: \(c^*=c_0+Y\) with \(Y\sim\mathrm{Lomax}(\alpha_{\!P},\sigma)\) and \(c_0+\sigma/(\alpha_{\!P}-1)=1\), so \(\sigma=(1-c_0)(\alpha_{\!P}-1)\). Then \(c_0\) is the hard floor (e.g.\ \(c_0=0.2\) means min = 1 actual contact with \(\bar{c}=5\)) and \(\alpha_{\!P}\) independently tunes the tail. But this adds a parameter and a small amount of algebraic fuss for the \(k(\psi)\) derivation downstream; the one-parameter Lomax is probably the right place to start.</p>
+
+<hr>
+
+<h1>Derivation of the negative binomial \(k\) under the Lomax contact model</h1>
+
+<p><strong>Goal.</strong> Derive the Lloyd-Smith (2005) overdispersion parameter \(k\) for the secondary-infection distribution when the biological profile is the time-shifted Gamma model with punctuation parameter \(\psi\) and the contact modulator is a Poisson-switching piecewise-constant process with Lomax(\(\alpha_{\!P}\), \(\sigma=\alpha_{\!P}-1\)) levels.</p>
+
+<h2>Step 0. Lloyd-Smith bridge: \(k=R_0^2/\mathrm{Var}[M_i]\)</h2>
+
+<p>In the Lloyd-Smith framework, the number of secondary infections from person \(i\) is \(Z_i\sim\mathrm{Poisson}(M_i)\) where \(M_i\) is a random individual reproduction number. The marginal distribution of \(Z_i\) is \(\mathrm{NegBin}(R_0,k)\) in the Lloyd-Smith parameterization (mean \(R_0\), variance \(R_0(1+R_0/k)\)) exactly when \(M_i\) is Gamma-distributed; for other \(M_i\) distributions, \(\mathrm{NegBin}(R_0,k)\) is a two-moment approximation. Either way, matching moments gives</p>
+
+$$
+k \;=\; \frac{R_0^{\,2}}{\mathrm{Var}[M_i]}.
+$$
+
+<p>From the decomposition \(a_i(t_i,\tau)=\nu_i\,b_i(\tau)\,c_i(t_i+\tau)\), the conditional-on-\((b_i,c_i,\nu_i)\) mean offspring count is</p>
+
+$$
+M_i \;=\; \int_0^\infty a_i(t_i,\tau)\,d\tau \;=\; \nu_i\,\tilde c_i,\qquad
+\tilde c_i \;=\; \int_0^\infty b_i(\tau)\,c_i(t_i+\tau)\,d\tau.
+$$
+
+<p>In this section we isolate the effect of punctuation and contact variability by holding \(\nu_i\equiv R_0\) (no extra individual intensity variation), so \(M_i=R_0\,\tilde c_i\) and</p>
+
+$$
+k \;=\; \frac{R_0^{\,2}}{R_0^{\,2}\,\mathrm{Var}[\tilde c_i]} \;=\; \frac{1}{\mathrm{Var}[\tilde c_i]}.
+$$
+
+<p>All the work is in computing \(\mathrm{Var}[\tilde c_i]\).</p>
+
+<p><strong>Mean of \(\tilde c_i\) (sanity check).</strong> Condition on \(b_i\) (treated as a random density):</p>
+
+$$
+E[\tilde c_i\mid b_i] \;=\; \int_0^\infty b_i(\tau)\,E[c_i(t_i+\tau)]\,d\tau \;=\; \int_0^\infty b_i(\tau)\cdot 1\,d\tau \;=\; 1,
+$$
+
+<p>using stationarity of \(c_i(\cdot)\) with mean \(E[c^*]=1\), and the fact that \(b_i\) is a probability density. Hence \(E[\tilde c_i]=1\) and \(E[M_i]=R_0\), as required.</p>
+
+<h2>Step 1. Variance of \(\tilde c_i\) via conditioning</h2>
+
+<p>Since \(E[\tilde c_i\mid b_i]=1\) is nonrandom, the law of total variance collapses:</p>
+
+$$
+\mathrm{Var}[\tilde c_i]
+\;=\; E\!\bigl[\mathrm{Var}[\tilde c_i\mid b_i]\bigr] \;+\; \mathrm{Var}\!\bigl[E[\tilde c_i\mid b_i]\bigr]
+\;=\; E\!\bigl[\mathrm{Var}[\tilde c_i\mid b_i]\bigr].
+$$
+
+<p>Conditional on \(b_i\), \(\tilde c_i\) is a weighted integral of a stationary process, so</p>
+
+$$
+\mathrm{Var}[\tilde c_i\mid b_i]
+\;=\; \int_0^\infty\!\int_0^\infty b_i(\tau)\,b_i(\tau')\,K_c(\tau-\tau')\,d\tau\,d\tau',
+$$
+
+<p>where \(K_c(s)=\mathrm{Cov}[c_i(t),c_i(t+s)]\) is the (stationary) autocovariance of the contact process.</p>
+
+<h2>Step 2. Autocovariance of the Lomax-Poisson contact process</h2>
+
+<p>The process \(c_i(\cdot)\) is piecewise constant with switching epochs from a Poisson process of rate \(\lambda\), and at each epoch a fresh iid draw from the Lomax distribution is assigned. At time \(t\), let \(c^*\) be the current level and let \(N(s)\) be the number of switches in \([t,t+s]\). Because levels are iid,</p>
+
+$$
+\mathrm{Cov}[c_i(t),\,c_i(t+s)]
+\;=\; \mathrm{Var}[c^*]\cdot P(\text{no switch in }[t,t+s])
+\;=\; V_c\,e^{-\lambda|s|},
+$$
+
+<p>where \(V_c:=\mathrm{Var}[c^*]=\dfrac{\alpha_{\!P}}{\alpha_{\!P}-2}\) is the variance of a mean-1 Lomax with tail exponent \(\alpha_{\!P}>2\). (Intuitively: conditional on \textit{not} having switched by time \(t+s\), both \(c_i(t)\) and \(c_i(t+s)\) equal the same draw, contributing \(V_c\); if there has been at least one switch, the two draws are independent and contribute zero to the covariance.)</p>
+
+<p>Therefore</p>
+
+$$
+\mathrm{Var}[\tilde c_i\mid b_i]
+\;=\; V_c\,\underbrace{\int_0^\infty\!\!\int_0^\infty b_i(\tau)\,b_i(\tau')\,e^{-\lambda|\tau-\tau'|}\,d\tau\,d\tau'}_{\displaystyle =:\;I(b_i)}.
+$$
+
+<h2>Step 3. \(I(b_i)\) does not depend on the latent period \(l_i\)</h2>
+
+<p>Recall \(b_i(\tau)=f_\epsilon(\tau-l_i)\) for \(\tau>l_i\), where \(f_\epsilon\) is the \(\mathrm{Gamma}(\psi\alpha,\beta)\) density and \(l_i\sim\mathrm{Gamma}((1-\psi)\alpha,\beta)\). Substitute \(u=\tau-l_i\), \(u'=\tau'-l_i\):</p>
+
+$$
+I(b_i) \;=\; \int_0^\infty\!\!\int_0^\infty f_\epsilon(u)\,f_\epsilon(u')\,e^{-\lambda|u-u'|}\,du\,du'
+\;=\; E\!\left[e^{-\lambda|U-U'|}\right]\;=:\; I^*,
+$$
+
+<p>where \(U,U'\overset{\text{iid}}{\sim}\mathrm{Gamma}(\psi\alpha,\beta)\). The \(l_i\) drops out by translation invariance: shifting both \(\tau\) and \(\tau'\) by the same amount leaves \(|\tau-\tau'|\) unchanged. Consequently,</p>
+
+$$
+\mathrm{Var}[\tilde c_i]\;=\;V_c\,I^*\qquad\text{and}\qquad k\;=\;\frac{1}{V_c\,I^*}\;=\;\frac{\alpha_{\!P}-2}{\alpha_{\!P}\,I^*}.
+$$
+
+<h2>Step 4. Evaluating \(I^*\) in closed form</h2>
+
+<p>Write \(I^*\) using the Fourier representation \(e^{-\lambda|s|}=\dfrac{\lambda}{\pi}\displaystyle\int_{-\infty}^{\infty}\dfrac{e^{i\omega s}}{\lambda^2+\omega^2}\,d\omega\). Interchanging integration order,</p>
+
+$$
+I^* \;=\; \frac{\lambda}{\pi}\int_{-\infty}^{\infty}\frac{|\varphi_U(\omega)|^2}{\lambda^2+\omega^2}\,d\omega,
+\qquad
+\varphi_U(\omega)=E[e^{i\omega U}]=\Bigl(\frac{\beta}{\beta-i\omega}\Bigr)^{\!\psi\alpha},
+$$
+
+<p>so \(|\varphi_U(\omega)|^2=(1+\omega^2/\beta^2)^{-\psi\alpha}\). Substitute \(t=\omega/\beta\) and let \(r:=\lambda/\beta\):</p>
+
+$$
+I^* \;=\; \frac{2r}{\pi}\int_0^\infty\frac{dt}{(r^2+t^2)\,(1+t^2)^{\psi\alpha}}.
+$$
+
+<p>Change variable \(u=t^2\) (so \(dt=u^{-1/2}du/2\)):</p>
+
+$$
+I^* \;=\; \frac{r}{\pi}\int_0^\infty\frac{u^{-1/2}\,du}{(r^2+u)\,(1+u)^{\psi\alpha}}.
+$$
+
+<p>This is an instance of Gradshteyn–Ryzhik 3.197.1, which reduces it to a Gauss hypergeometric function. Factoring \(r^2+u=r^2(1+u/r^2)\) and applying the identity with \(\mu=\tfrac12\), \(\nu=1\), \(\rho=\psi\alpha\), \(\beta_{\rm GR}=1/r^2\), \(\gamma_{\rm GR}=1\):</p>
+
+$$
+\int_0^\infty\frac{u^{-1/2}\,du}{(r^2+u)\,(1+u)^{\psi\alpha}}
+\;=\; \frac{\sqrt{\pi}\,\Gamma\!\left(\psi\alpha+\tfrac12\right)}{r\,\Gamma(\psi\alpha+1)}\;{_2F_1}\!\left(\psi\alpha,\tfrac12;\,\psi\alpha+1;\,1-r^2\right).
+$$
+
+<p>Plugging back,</p>
+
+$$
+\boxed{\;
+I^* \;=\; \frac{\Gamma\!\left(\psi\alpha+\tfrac12\right)}{\sqrt{\pi}\,\Gamma(\psi\alpha+1)}\;{_2F_1}\!\left(\psi\alpha,\,\tfrac12;\,\psi\alpha+1;\,1-\Bigl(\tfrac{\lambda}{\beta}\Bigr)^{\!2}\right).
+\;}
+$$
+
+<h2>Step 5. Assembling \(k\)</h2>
+
+<p>Combining Steps 3 and 4,</p>
+
+$$
+\boxed{\;
+k \;=\; \underbrace{\frac{\alpha_{\!P}-2}{\alpha_{\!P}}}_{\text{(i) contact-tail factor}}\;\cdot\;
+\underbrace{\frac{\sqrt{\pi}\,\Gamma(\psi\alpha+1)}{\Gamma\!\left(\psi\alpha+\tfrac12\right)}}_{\text{(ii) profile-width factor}}\;\cdot\;
+\underbrace{\frac{1}{{_2F_1}\!\left(\psi\alpha,\tfrac12;\,\psi\alpha+1;\,1-(\lambda/\beta)^2\right)}}_{\text{(iii) switching-rate factor}}.
+\;}
+$$
+
+<p>The three factors admit distinct interpretations:</p>
+
+<ol>
+  <li><strong>Contact-tail factor</strong> \((\alpha_{\!P}-2)/\alpha_{\!P}\). Depends only on the Lomax tail exponent: equals \(1-2/\alpha_{\!P}\in(0,1)\) and drops to \(0\) as \(\alpha_{\!P}\searrow 2\) (variance-divergence limit of \(c^*\)). Heavier contact tails \(\Rightarrow\) smaller \(k\) \(\Rightarrow\) more overdispersion.</li>
+  <li><strong>Profile-width factor</strong> \(\sqrt{\pi}\,\Gamma(\psi\alpha+1)/\Gamma(\psi\alpha+\tfrac12)\). Depends only on the effective biological-profile shape \(\psi\alpha\), equals \(1\) when \(\psi=0\) (spike), and by Stirling grows like \(\sqrt{\pi\psi\alpha}\) for large \(\psi\alpha\). Wider individual profiles \(\Rightarrow\) larger \(k\) \(\Rightarrow\) less overdispersion.</li>
+  <li><strong>Switching-rate factor</strong> \({_2F_1}(\psi\alpha,\tfrac12;\psi\alpha+1;\,1-r^2)^{-1}\), \(r=\lambda/\beta\). This captures the interaction between the timescale of biological infectiousness (\(1/\beta\)) and the timescale of contact-regime sojourns (\(1/\lambda\)).</li>
+</ol>
+
+<h2>Sanity checks and limiting cases</h2>
+
+<h3>(a) Spike limit \(\psi\to 0\)</h3>
+
+<p>With \(\psi\alpha\to 0\):</p>
+<ul>
+  <li>Factor (ii): \(\sqrt{\pi}\,\Gamma(1)/\Gamma(\tfrac12)=\sqrt{\pi}/\sqrt{\pi}=1\).</li>
+  <li>Factor (iii): \({_2F_1}(0,\tfrac12;1;\,x)=1\) (the series terminates at the \(n=0\) term because \((0)_n=0\) for \(n\ge 1\)), so the inverse is \(1\).</li>
+</ul>
+<p>Hence \(k\to(\alpha_{\!P}-2)/\alpha_{\!P}\). This matches the direct argument: when \(b_i\to\delta_{\tau_i^*}\), \(\tilde c_i=c_i(t_i+\tau_i^*)\) is a single draw from the stationary distribution of \(c_i\), so \(\mathrm{Var}[\tilde c_i]=V_c\) and \(k=1/V_c=(\alpha_{\!P}-2)/\alpha_{\!P}\). ✓</p>
+
+<h3>(b) Slow-switching limit \(\lambda\to 0\), any \(\psi\)</h3>
+
+<p>Here \(r\to 0\), so \(1-r^2\to 1\). Use Gauss's summation theorem:</p>
+
+$$
+{_2F_1}(a,b;c;1)=\frac{\Gamma(c)\,\Gamma(c-a-b)}{\Gamma(c-a)\,\Gamma(c-b)},\qquad\mathrm{Re}(c-a-b)>0.
+$$
+
+<p>With \(a=\psi\alpha\), \(b=\tfrac12\), \(c=\psi\alpha+1\), we get \(c-a-b=\tfrac12>0\) and</p>
+
+$$
+{_2F_1}(\psi\alpha,\tfrac12;\psi\alpha+1;1)=\frac{\Gamma(\psi\alpha+1)\,\Gamma(\tfrac12)}{\Gamma(1)\,\Gamma(\psi\alpha+\tfrac12)}=\frac{\sqrt{\pi}\,\Gamma(\psi\alpha+1)}{\Gamma(\psi\alpha+\tfrac12)},
+$$
+
+<p>which exactly cancels factor (ii). So in the slow-switching limit, \(k\to(\alpha_{\!P}-2)/\alpha_{\!P}\) for any \(\psi\). ✓</p>
+
+<p><em>Interpretation.</em> When contact regimes are held for much longer than the infection window (\(1/\lambda\gg 1/\beta\)), each person sees effectively a single \(c^*\) draw over their entire infectious interval; the temporal shape of \(b_i\) becomes irrelevant. All the overdispersion comes from the Lomax level distribution, regardless of \(\psi\).</p>
+
+<h3>(c) Fast-switching limit \(\lambda\to\infty\), any \(\psi\)</h3>
+
+<p>Here \(r\to\infty\). The integrand in \(I^*\) is dominated by \(r^{-2}\), giving \(I^*=O(r^{-2})\to 0\), so \(\mathrm{Var}[\tilde c_i]\to 0\) and \(k\to\infty\). ✓</p>
+
+<p><em>Interpretation.</em> When regimes flip much faster than the infection window (\(1/\lambda\ll 1/\beta\)), the contact process time-averages to its mean \(1\) over each person's infection window, so \(\tilde c_i\to 1\) deterministically. There is no contact-driven overdispersion; the offspring distribution is Poisson (\(k=\infty\)).</p>
+
+<h3>(d) Smooth (non-punctuated) limit \(\psi\to 1\)</h3>
+
+<p>Here \(b_i\equiv g\), so \(\tilde c_i\) is the same deterministic integral of \(c_i\) (shifted by \(l_i=0\)) for every person. All the variation in \(\tilde c_i\) is temporal averaging of a single \(c_i\). The formula specializes to</p>
+
+$$
+k_{\psi=1}=\frac{\alpha_{\!P}-2}{\alpha_{\!P}}\cdot\frac{\sqrt{\pi}\,\Gamma(\alpha+1)}{\Gamma(\alpha+\tfrac12)}\cdot{_2F_1}\!\bigl(\alpha,\tfrac12;\alpha+1;1-(\lambda/\beta)^2\bigr)^{-1}.
+$$
+
+<h2>Monotonicity in \(\psi\) (at fixed \(\alpha,\alpha_{\!P},\lambda/\beta\))</h2>
+
+<p>Physically, \(\tilde c_i\) is a weighted temporal average of \(c_i\) using the kernel \(b_i\). Narrower kernels (smaller \(\psi\)) perform less averaging, retaining more of \(c_i\)'s variance; wider kernels perform more averaging, reducing variance. Therefore \(I^*\) is monotonically decreasing in \(\psi\) (at fixed \(\lambda,\beta,\alpha\)), and \(k\) is monotonically increasing in \(\psi\): <strong>more punctuated biological profiles produce more overdispersion</strong>, with the contact-variance amplitude \(V_c=\alpha_{\!P}/(\alpha_{\!P}-2)\) setting the overall scale.</p>
+
+<p>A more formal argument: factor (ii) is strictly increasing in \(\psi\) (since \(\Gamma(x+1)/\Gamma(x+\tfrac12)\) is increasing for \(x\ge 0\), by properties of the digamma function), and factor (iii) is also increasing in \(\psi\) for every fixed \(r\) (intuitively: the hypergeometric in the denominator interpolates monotonically between \(1\) at \(\psi=0\) and \(\sqrt{\pi}\,\Gamma(\psi\alpha+1)/\Gamma(\psi\alpha+\tfrac12)\) at \(r=0\), and all three factors conspire so that the \(r\)-dependence fades out as \(\psi\to 0\)). A fully rigorous proof is deferred to a separate note.</p>
+
+<h2>Note on the two-moment closure</h2>
+
+<p>The expression \(k=R_0^2/\mathrm{Var}[M_i]\) holds exactly whenever \(M_i\) is Gamma-distributed; otherwise, it is a two-moment approximation to the mean and variance of the Lloyd-Smith \(\mathrm{NegBin}(R_0,k)\) model. Under our setup, \(M_i=R_0\tilde c_i\) is a nonlinear functional of the stationary contact process and the random biological kernel, so \(M_i\) is not exactly Gamma; nonetheless, the two-moment match is the standard convention in this literature \citep{lloyd-smith_superspreading_2005} and gives a closed-form answer that respects all the limiting cases above.</p>
+
+<h2>Placement in the manuscript</h2>
+
+<ul>
+  <li><strong>Main text (<code>writeup/uncontrolled.tex</code>).</strong> Place the boxed final expression for \(k\) from Step 5 alongside the existing periodic-contact \(k\) formula, and reference the supplementary section for the derivation.</li>
+  <li><strong>Supplementary (<code>writeup/supplementary.tex</code>).</strong> Add a new subsection "Overdispersion under the Lomax contact model" containing Steps 0–5 (analogous to the existing placeholder for the periodic contact derivation at line 304).</li>
+</ul>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

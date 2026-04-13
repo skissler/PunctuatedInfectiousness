@@ -301,6 +301,107 @@ The two partial derivatives establish that the modulating quantity  $\alpha\log\
 %
 Together, these results confirm that punctuated infectiousness  ($\psi < 1$) has the greatest impact on epidemic timing variability  when $R_0$ is large and the generation interval is dispersed ---  precisely the regime in which the individual infectiousness profile  has the most temporal structure for offspring timing to inherit.
 
+\clearpage
+
+\subsubsection*{Overdispersion arising from periodic contact patterns}
+
+Here, we derive the Negative Binomial overdispersion parameter $k$ \citep{lloyd-smith_superspreading_2005} of the secondary infection distribution under the periodic contact model (Eq.~\ref{eq:periodic_c}), which we restate here in a stationary form with a common random phase $\Phi \sim \text{Uniform}[0, 2\pi)$:
+%
+\begin{equation}
+	c_i(t) = 1 - A \cos(\omega t + \Phi), \qquad A \in [0,1].
+	\label{eq:periodic_c_supp}
+\end{equation}
+%
+Randomizing $\Phi$ makes $c_i(\cdot)$ stationary and is equivalent to assuming that the infection-time phase $t_i \bmod 2\pi/\omega$ is uniform across individuals, which holds in good approximation during sustained exponential growth.
+
+\paragraph{Lloyd--Smith bridge.} The number of secondary infections from person $i$ is $Z_i \sim \text{Poisson}(M_i)$ with $M_i = \int_0^\infty a_i(t_i, \tau)\,d\tau = \nu_i\,\tilde{c}_i$, where
+%
+\begin{equation}
+	\tilde{c}_i := \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau.
+	\label{eq:tilde_c_def}
+\end{equation}
+%
+Matching the mean and variance of the mixed-Poisson offspring law to those of $\text{NegBin}(R_0, k)$ in the Lloyd-Smith parameterization gives $k = R_0^2/\text{Var}[M_i]$. With $\nu_i \equiv R_0$ held fixed (isolating the contribution of punctuation and contact variability), this reduces to
+%
+\begin{equation}
+	k = \frac{1}{\text{Var}[\tilde{c}_i]}.
+	\label{eq:k_bridge}
+\end{equation}
+%
+The rest of the derivation computes $\text{Var}[\tilde{c}_i]$.
+
+\paragraph{Mean.} Conditional on $b_i$, stationarity gives $E[c_i(t)] = 1$, hence
+%
+\begin{equation}
+	E[\tilde{c}_i \mid b_i] = \int_0^\infty b_i(\tau)\,d\tau = 1,
+\end{equation}
+%
+using that $b_i$ is a probability density. Therefore $E[\tilde{c}_i] = 1$ (and $E[M_i] = R_0$), and by the law of total variance $\text{Var}[\tilde{c}_i] = E\bigl[\text{Var}[\tilde{c}_i \mid b_i]\bigr]$.
+
+\paragraph{Autocovariance.} Averaging over the uniform random phase $\Phi$,
+%
+\begin{equation}
+	\text{Cov}[c_i(t), c_i(t+s)] = A^2\,E_\Phi[\cos(\omega t + \Phi)\cos(\omega(t+s) + \Phi)] = \frac{A^2}{2}\cos(\omega s),
+	\label{eq:periodic_cov}
+\end{equation}
+%
+so $\text{Var}[c_i(t)] = A^2/2$ and the spectrum of the contact process is concentrated at the single frequency $\omega$.
+
+\paragraph{Conditional variance of $\tilde{c}_i$.} Substituting Eq.~\ref{eq:periodic_cov} into the double-integral form of the conditional variance,
+%
+\begin{align}
+	\text{Var}[\tilde{c}_i \mid b_i]
+	&= \int_0^\infty\!\!\int_0^\infty b_i(\tau)\,b_i(\tau')\,\frac{A^2}{2}\cos\bigl(\omega(\tau - \tau')\bigr)\,d\tau\,d\tau' \notag\\
+	&= \frac{A^2}{2}\,\text{Re}\!\left[\left(\int_0^\infty b_i(\tau)\,e^{i\omega\tau}\,d\tau\right)\!\left(\int_0^\infty b_i(\tau')\,e^{-i\omega\tau'}\,d\tau'\right)\right] \notag\\
+	&= \frac{A^2}{2}\,\bigl|\hat{b}_i(\omega)\bigr|^2,
+	\label{eq:var_cond}
+\end{align}
+%
+where $\hat{b}_i(\omega) = \int_0^\infty b_i(\tau)\,e^{-i\omega\tau}\,d\tau$ is the Fourier transform (equivalently, the characteristic function at $\omega$) of the biological profile.
+
+\paragraph{Evaluating $|\hat{b}_i(\omega)|^2$.} For the time-shifted Gamma model, $b_i(\tau) = f_\epsilon(\tau - l_i)$ with $f_\epsilon$ a $\text{Gamma}(\psi\alpha, \beta)$ density and random latent period $l_i$. A time shift multiplies the Fourier transform by a unit-modulus phase, so
+%
+\begin{equation}
+	\hat{b}_i(\omega) = e^{-i\omega l_i}\,\hat{f}_\epsilon(\omega), \qquad \bigl|\hat{b}_i(\omega)\bigr|^2 = \bigl|\hat{f}_\epsilon(\omega)\bigr|^2,
+\end{equation}
+%
+with the $l_i$-dependence dropping out entirely. The characteristic function of $\text{Gamma}(\psi\alpha, \beta)$ is $\hat{f}_\epsilon(\omega) = (1 - i\omega/\beta)^{-\psi\alpha}$, giving
+%
+\begin{equation}
+	\bigl|\hat{f}_\epsilon(\omega)\bigr|^2 = \left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}.
+	\label{eq:cf_gamma}
+\end{equation}
+%
+Because Eq.~\ref{eq:cf_gamma} is deterministic, the outer expectation over $b_i$ in the law of total variance is trivial:
+%
+\begin{equation}
+	\text{Var}[\tilde{c}_i] = \frac{A^2}{2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}.
+	\label{eq:var_tildec}
+\end{equation}
+
+\paragraph{Closed-form expression for $k$.} Combining Eqs.~\ref{eq:k_bridge} and~\ref{eq:var_tildec},
+%
+\begin{equation}
+	\boxed{\;
+	k = \frac{2}{A^2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{\psi\alpha}.
+	\;}
+	\label{eq:k_periodic}
+\end{equation}
+%
+The expression has two factors with transparent interpretations. The prefactor $2/A^2$ is the reciprocal variance of a uniformly-phased sinusoid with amplitude $A$, and it sets the overall scale: larger contact-oscillation amplitude $\Rightarrow$ smaller $k$ $\Rightarrow$ more overdispersion. The bracketed factor $(1 + \omega^2/\beta^2)^{\psi\alpha}$ is the reciprocal of the squared characteristic function of $b_i$ at the contact frequency $\omega$, and it quantifies how much the biological profile's temporal window fails to average out the contact oscillation. This factor increases with $\psi$ for any $\omega > 0$, so narrower profiles always produce more overdispersion in the presence of any periodic contact variation.
+
+\paragraph{Limiting cases.}
+\begin{itemize}
+	\item \textbf{Spike profile, $\psi \to 0$:} the bracketed factor becomes $1$, leaving $k = 2/A^2$. A spike profile samples $c_i$ at a single instant, so the conditional variance of $\tilde{c}_i$ equals $\text{Var}[c_i] = A^2/2$ regardless of $\omega$ or $\beta$.
+	\item \textbf{Smooth profile, $\psi \to 1$:} $k = (2/A^2)(1 + \omega^2/\beta^2)^{\alpha}$, strictly larger than the spike value whenever $\omega > 0$.
+	\item \textbf{Slow oscillation, $\omega/\beta \to 0$:} the contact process looks locally constant over the infection window, so $\tilde{c}_i \approx c_i(t_i)$ for any $\psi$, and $k \to 2/A^2$ independent of $\psi$.
+	\item \textbf{Fast oscillation, $\omega/\beta \to \infty$:} the contact process averages out over any infection window with $\psi > 0$, driving $\text{Var}[\tilde{c}_i] \to 0$ and $k \to \infty$ (Poisson).
+	\item \textbf{No contact variation, $A \to 0$:} $k \to \infty$ trivially.
+\end{itemize}
+%
+These limits are consistent with the intuition that overdispersion arises from incomplete averaging of contact variation by the biological profile window, and that the degree of averaging is controlled by both $\psi\alpha$ (profile width) and $\omega/\beta$ (ratio of profile timescale to contact timescale).
+
+
 \subsection*{Supplementary Figures}
 
 \subsection*{Supplementary Tables}

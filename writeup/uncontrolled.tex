@@ -105,9 +105,14 @@ Punctuated individual infectiousness profiles also make empirical estimates of t
 
 \subsection{Narrow biological infectiousness profiles interact with periodic contact patterns to generate overdispersion in secondary infections}
 
+When contacts are uniform in time, the ``punctuatedness'' of biological infectiousness ($\psi$) has no effect on the secondary infection distribution: every individual produces a $\text{Poisson}(R_0)$-distributed number of infections, and there is no overdispersion ($k \rightarrow \infty$) irrespective of $\psi$. However, if contacts vary over time, narrower biological profiles ``see'' more of this contact variation, generating overdispersion in the secondary infection distribution. We illustrate this using the periodic contact model, $c_i(t) = 1 - A \cos(\omega t + \Phi)$, for which a closed-form expression for $k$ can be obtained ({\bf Supplementary Methods}):
+%
 \begin{equation}
-	k = \frac{2}{\bar{c}} A^2 \Bigr(1 + \frac{\omega^2}{r^2}\Bigl)^{\psi \alpha}
+	k = \frac{2}{A^2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{\psi \alpha}
+	\label{eq:k_periodic_main}
 \end{equation}
+%
+where $A$ is the amplitude of the contact oscillation and $\omega$ is its angular frequency. Here, the prefactor $2/A^2$ sets the overall overdispersion scale, and the bracketed factor quantifies the failure of the biological profile's temporal window to average out the contact oscillation, with $(1 + \omega^2/\beta^2)^{-\psi\alpha}$ being exactly the squared characteristic function of the Gamma$(\psi\alpha, \beta)$ density at the contact frequency $\omega$. Since this factor is strictly increasing in $\psi$ for any $\omega > 0$, narrower biological profiles always produce more overdispersion in the presence of periodic contact variation. The effect disappears in the spike limit only if $\omega \rightarrow 0$ or $A \rightarrow 0$ (no temporal contact variation), and grows arbitrarily large in the smooth limit if $\omega/\beta$ is large (contact oscillations much faster than the profile window, so the profile averages them out). Simulations extend this result to heavier-tailed, non-periodic contact heterogeneity, for which the same mechanism holds qualitatively ({\bf Figure XX}).
 
 
 
