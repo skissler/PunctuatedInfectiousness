@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  14 APR 2026 12:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  14 APR 2026 12:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -579,24 +579,15 @@ n-fec-tions (in-fluenza, omi-cron, measles $\OMS/zplm/m/n/10 ^^B$ \T1/ppl/m/n/1
 [3] [4] [5]) (./introduction.tex [6
 
 
-] [7]) (./model.tex [8] [9
+]) (./model.tex [7] [8
 
-]
+] [9])
+(./uncontrolled.tex [10] [11
 
-LaTeX Warning: Reference `eq:gamma_timeshift' on page 10 undefined on input lin
-e 195.
+] [12]) (./controlled.tex [13])
+(./identifiability.tex [14
 
-) (./uncontrolled.tex [10]
-
-LaTeX Warning: Reference `eq:gamma_timeshift' on page 11 undefined on input lin
-e 9.
-
-[11
-
-] [12]) (./controlled.tex [13]) (./identifiability.tex [14
-
-])
-(./discussion.tex [15
+]) (./discussion.tex [15
 
 ]) [16
 
@@ -632,12 +623,7 @@ the Royal So-ci-ety B: Bi-o-log-i-cal Sci-ences\T1/ppl/m/n/10 , 274(1609):599--
 
 ] [28
 
-]
-
-LaTeX Warning: Reference `eq:periodic_c' on page 29 undefined on input line 308
-.
-
-[29
+] [29
 
 ] [30]
 
@@ -645,20 +631,17 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 (hyperref)                than one, level fixed on input line 404.
 
 ) [31] (./main.aux)
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 6827CCAC0FBCECDECD417A734FB935FE;4920.
  ) 
 Here is how much of TeX's memory you used:
- 12703 strings out of 478994
- 185767 string characters out of 5858184
- 506527 words of memory out of 5000000
- 29810 multiletter control sequences out of 15000+600000
+ 12710 strings out of 478994
+ 185857 string characters out of 5858184
+ 506887 words of memory out of 5000000
+ 29814 multiletter control sequences out of 15000+600000
  442320 words of font info for 115 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,77p,1388b,555s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 75i,13n,77p,1544b,555s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
@@ -671,10 +654,10 @@ xmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist
 type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/
 urw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pal
 atino/uplri8a.pfb>
-Output written on main.pdf (31 pages, 233339 bytes).
+Output written on main.pdf (31 pages, 235508 bytes).
 PDF statistics:
- 435 PDF objects out of 1000 (max. 8388607)
- 387 compressed objects within 4 object streams
- 135 named destinations out of 1000 (max. 500000)
+ 442 PDF objects out of 1000 (max. 8388607)
+ 394 compressed objects within 4 object streams
+ 138 named destinations out of 1000 (max. 500000)
  113 words of extra memory for PDF output out of 10000 (max. 10000000)
 

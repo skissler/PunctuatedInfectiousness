@@ -1,88 +1,34 @@
-\clearpage 
+\clearpage
 \section{Introduction}
 
-{\bf $A(\tau)$ is the fundamental epidemiological object.}
-\begin{itemize}
-	\item 	The trajectory of an epidemic depends on two fundamental quantities: the basic reproduction number ($R_0$), which is the expected number of secondary infections that an infectious person will produce in an otherwise susceptible population; and the intrinsic generation interval distribution ($g(\tau)$), which is the distribution of times at which those secondary infections are expected to occur relative to the index case's infection time ($\tau = 0$) \citep{wallinga_how_2007, champredon_intrinsic_2015}. 
-	\item These quantities can be combined into a single object, the ``infectiousness profile'', defined as $A(\tau) = R_0 g(\tau)$, which describes a person's expected contribution to transmission and how it is distributed over time \citep{breda_formulation_2012}. This implies that $R_0 = \int_0^\infty A(\tau) \, d\tau$ and $g(\tau) = A(\tau) / R_0$. 
-\end{itemize}
+The trajectory of an epidemic is governed by two fundamental quantities: the basic reproduction number $R_0$, defined as the expected number of secondary infections produced by an infectious individual in a fully susceptible population, and the intrinsic generation interval distribution $g(\tau)$, which describes the distribution of times at which those secondary infections occur relative to the index case's time of infection ($\tau = 0$) \citep{wallinga_how_2007, champredon_intrinsic_2015}. These can be combined into a single object, the infectiousness profile $A(\tau) = R_0\,g(\tau)$, which captures both the total expected transmission and its distribution over time \citep{breda_formulation_2012}, with $R_0 = \int_0^\infty A(\tau)\,d\tau$ and $g(\tau) = A(\tau)/R_0$.
 
-\noindent {\bf $A(\tau)$ is an expectation of $a_i(\tau)$.}
-\begin{itemize}
-	\item $R_0$ and $g(\tau)$ are both expectations taken over a large population. At the individual level, the individual reproduction number, $\nu_i$, is the expected number of infections that a particular person $i$ will produce, such that $R_0 = E_i[\nu_i]$ \citep{lloyd-smith_superspreading_2005}. Similarly, the ``individual infectiousness profile'' or ``infectiousness kernel'', $a_i(\tau)$, describes how a particular person's infectiousness is distributed over time, with $A(\tau) = E_i[a_i(\tau)]$ \citep{champredon_intrinsic_2015, svensson_note_2007}. 
-	\item This implies the existence of an individual intrinsic generation interval distribution, $\xi_i(\tau)$, such that $a_i(\tau) = \nu_i \xi_i(\tau)$, with $\nu_i = \int_0^\infty a_i(\tau) d\tau$ and $\xi_i(\tau) = a_i(\tau) / \nu_i$. 
-\end{itemize}
+Both $R_0$ and $g(\tau)$ are expectations over a population. At the individual level, the individual reproduction number $\nu_i$ is the expected number of secondary infections produced by person $i$, with $R_0 = E_i[\nu_i]$ \citep{lloyd-smith_superspreading_2005}. Similarly, the individual infectiousness profile $a_i(\tau)$ describes how person $i$'s infectiousness is distributed over time, with $A(\tau) = E_i[a_i(\tau)]$ \citep{champredon_intrinsic_2015, svensson_note_2007}. The decomposition $a_i(\tau) = \nu_i\,\xi_i(\tau)$ defines an individual intrinsic generation interval distribution $\xi_i(\tau) = a_i(\tau)/\nu_i$, where $\nu_i = \int_0^\infty a_i(\tau)\,d\tau$.
 
-\noindent {\bf Since $A(\tau)$ is an expectation, it may look very different from $a_i(\tau)$.}
-\begin{itemize}
-	\item Since $A(\tau)$ is an expectation over individuals, it does not necessarily reflect any single person's infectiousness $a_i(\tau)$. 
-	\item For example: the SEIR model is conceptually motivated by considering an individual who undergoes a latent period of length $x_i \sim \text{Exp}(\gamma)$ during which they are not infectious, followed by an infectious period of length $y_i \sim \text{Exp}(\alpha)$ during which they are infectious at level $\beta$. Mathematically, this ``stepwise'' individual infectiousness profile is expressed as
-	%
-	\begin{equation}
-	a_i(\tau) = \begin{cases}
-	    \beta & \tau \in [x_i, x_i + y_i] \\
-	    0 & \text{otherwise}
-	\end{cases}
-	\label{eq:a_seir_stepwise}
-	\end{equation}
-	%
-	This yields the population-level infectiousness kernel
-	%
-	\begin{equation}
-	A_\text{{SEIR}}(\tau) = E_i[a_i(\tau)] = \lim_{n \rightarrow \infty} \frac{1}{n} \sum_{i=1}^n a_i(\tau) = \beta \frac{\gamma}{\gamma - \alpha}(e^{-\alpha \tau} - e^{-\gamma \tau})
-	\label{eq:A_seir}
-	\end{equation}
-	%
-	\ie, a smooth, bell-shaped curve that arises from a sum of discontinuous, stepwise $a_i(\tau)$ ({\bf Figure XX}). 
-	\item Other choices of $a_i(\tau)$ can also yield the same $A_\text{{SEIR}}(\tau)$. For example, $a_i(\tau) \equiv A_\text{{SEIR}}(\tau)$ is a ``smooth'' individual infectiousness profile, where each person's infectiousness follows the population-level average. 
-	\item Alternatively, $a_i(\tau) = \frac{\beta}{\alpha} \delta_{\tau_i^*}(\tau)$ is a ``spike'' individual infectiousness profile, where $\delta_{\tau_i^*}(\tau)$ is a delta function with mass at time $\tau_i^*$, and $\tau_i^*$ is distributed according to $g(\tau) = A_\text{{SEIR}}(\tau) / R_0$, so that a person's infectiousness is concentrated at a single moment. 
-	% \item While all these choices yield the same mean-field population-level epidemic dynamics, since they all share the same $A(\tau)$, the potential impact on stochastic epidemic dynamics is poorly understood. 
-	% \item Other choices of $a_i(\tau)$ can yield the same $A(\tau)$ in Eq.~\ref{eq:A_seir}, including
-	% %
-	% \begin{equation}
-	% a_i(\tau) = \beta_{\text{SEIR}} \frac{\gamma_{\text{SEIR}}}{\gamma_{\text{SEIR}} - \alpha_{\text{SEIR}}} (e^{-\alpha_{\text{SEIR}} \tau} - e^{-\gamma_{\text{SEIR}} \tau})
-	% \label{eq:a_seir_smooth}
-	% \end{equation}
-	% %
-	% \ie, a ``smooth'' individual infectiousness profile where each person's infectiousness is identical to the population-level average, and
-	% %
-	% \begin{equation}
-	% a_i(\tau) = \frac{\beta_{\text{SEIR}}}{\alpha_{\text{SEIR}}} \delta_{\tau_i^*}(\tau)
-	% \label{eq:a_seir_spike}
-	% \end{equation}
-	% %
-	% \ie, a ``spike'' infectiousness profile where $\delta_i(\tau)$ is a delta function with mass at time $t_i$, and $t_i$ is distributed according to the generation interval density $g(\tau) = A(\tau) / R_0$, such that a person's infectiousness is concentrated at a single moment ({\bf Figure \ref{fig:seir_sims} A--C}).
-	% \item In general, any definition of $a_i(\tau)$ such that $E_i[a_i(\tau)] = A(\tau)$ will yield the same mean-field population-level epidemic dynamics; however, different choices of $a_i(\tau)$ may have important stochastic consequences ({\bf Figure \ref{fig:seir_sims} D--I}), which are the main topic of this article. 
-\end{itemize}
+Because $A(\tau)$ is an expectation over individuals, it need not resemble any single person's infectiousness profile. The SEIR model provides a clear illustration: it assumes each individual undergoes a latent period $x_i \sim \text{Exp}(\gamma)$ during which they are not infectious, followed by an infectious period $y_i \sim \text{Exp}(\alpha)$ during which they transmit at rate $\beta$. The resulting ``stepwise'' individual infectiousness profile is
+%
+\begin{equation}
+a_i(\tau) = \begin{cases}
+    \beta & \tau \in [x_i, x_i + y_i] \\
+    0 & \text{otherwise}
+\end{cases}
+\label{eq:a_seir_stepwise}
+\end{equation}
+%
+Averaging over individuals yields the population-level infectiousness profile
+%
+\begin{equation}
+A_\text{SEIR}(\tau) = E_i[a_i(\tau)] = \beta \frac{\gamma}{\gamma - \alpha}(e^{-\alpha \tau} - e^{-\gamma \tau})
+\label{eq:A_seir}
+\end{equation}
+%
+--- a smooth, bell-shaped curve that emerges from a collection of discontinuous, rectangular $a_i(\tau)$ ({\bf Figure XX}). Importantly, other choices of $a_i(\tau)$ can produce the same $A_\text{SEIR}(\tau)$. Setting $a_i(\tau) \equiv A_\text{SEIR}(\tau)$ for all individuals gives a ``smooth'' profile in which each person's infectiousness follows the population average. At the opposite extreme, $a_i(\tau) = (\beta/\alpha)\,\delta_{\tau_i^*}(\tau)$, with $\tau_i^*$ drawn from $g(\tau) = A_\text{SEIR}(\tau)/R_0$, gives a ``spike'' profile in which each person's infectiousness is concentrated at a single moment. All three families --- stepwise, smooth, and spike --- produce the same $A(\tau)$ and hence the same deterministic, mean-field epidemic dynamics.
 
-\noindent {\bf We don't know what $a_i(\tau)$ looks like in general.} 
-\begin{itemize}
-	\item We have good methods for measuring $R_0$ and $g(\tau)$, but not for measuring $a_i(\tau)$. 
-	\item Measuring $a_i(\tau)$ is challenging: it requires accurate contact tracing and precise inference of infection times. 
-	\item We can maybe get at $a_i(\tau)$ from viral kinetics, but the link isn't obvious. Viral load $\neq$ viable virus shedding $\neq$ infectiousness. 
-	\item The full variability in $A(\tau)$ is made up of both within-individual and between-individual variation: at one extreme, $a_i(\tau) \equiv A(\tau)$ (all variability in infection times comes from within-individual variation, and there is no between-individual variation), but this is unlikely to be true in general. Instead, individuals vary in the timing of infectiousness --- suggesting that $a_i(\tau)$ is in general narrower than $A(\tau)$. 
-	\item Emphasizing this point, some evidence suggests that the period when SARS-CoV-2 and influenza can transmit explosively is short, lasting less than a day \citep{goyal_viral_2021}, suggesting that $a_i(\tau)$ may in some cases be much narrower than $A(\tau)$, with much of the variation in $A(\tau)$ arising from variation between individuals and on when their peak infectiousness occurs. 
-\end{itemize} 
+We have well-established methods for estimating $R_0$ and $g(\tau)$, but not for measuring $a_i(\tau)$. Doing so requires both accurate contact tracing and precise inference of infection times --- data that are rarely available. Viral load kinetics offer an indirect window into the timing of infectiousness, but the mapping is far from straightforward: viral load, viable virus shedding, and infectiousness are distinct quantities. Nevertheless, we can reason about the likely shape of $a_i(\tau)$. The full variability in $g(\tau)$ arises from both within-individual and between-individual variation in infection timing. At one extreme, setting $a_i(\tau) \equiv A(\tau)$ attributes all variability to within-individual variation, but this is unlikely: individuals almost certainly differ in the timing of their peak infectiousness, suggesting that $a_i(\tau)$ is generally narrower than $A(\tau)$. Indeed, some evidence suggests that the window of peak transmissibility for SARS-CoV-2 and influenza may be very short --- less than a day \citep{goyal_viral_2021} --- implying that much of the variation in $g(\tau)$ arises from between-individual differences in when that window occurs.
 
-\noindent {\bf There are good reasons to believe that knowing about $a_i(\tau)$ is important.} 
-\begin{itemize}
-	\item This raises the question: if measuring $a_i(\tau)$ is so challenging, is there really any need to do it? Does it add anything beyond knowing $R_0$ and $g(\tau)$? There are good reasons to believe that it might. 
-	\item At the individual level, communicating about the likely timing of a person's infectiousness is important: it is good to know if you will be very infectious for a short time, or mildly infectious for a long time, so that you can shape your behavior accordingly. 
-	\item Additionally, a punctuated individual infectiousness kernel could impact epidemic dynamics. The stochastic effects of $a_i(\tau)$ early in an outbreak could cascade through the rest of the outbreak, creating meaningful differences in epidemic trajectory \citep{morris_computation_2024}. It could interplay with control measures, especially those designed to intervene on infectiousness at the individual level like test- or symptom-based screening and isolation. It could interact with time-varying contact patterns. 
-	\item Indeed, the impact of the punctuatedness of the individual infectiousness kernel has been examined as a sensitivity analysis in various epidemiological studies \citep{larremore_test_2021} {\bf Others?}, but we lack a comprehensive understanding of its impact on epidemic dynamics. 
-\end{itemize}
+This raises a natural question: if measuring $a_i(\tau)$ is so challenging, is there any reason to try? Does it add anything beyond knowing $R_0$ and $g(\tau)$? There are several reasons to believe it might. At the individual level, knowing whether one's infectiousness is concentrated in a brief burst or spread over a longer period is important for guiding personal behavior. At the population level, a more punctuated $a_i(\tau)$ could meaningfully alter stochastic epidemic dynamics: individual-level stochastic effects early in an outbreak can cascade through the rest of the epidemic trajectory \citep{morris_computation_2024}. The shape of $a_i(\tau)$ also interacts with control measures that target individual infectiousness --- such as symptom- or test-based screening and isolation --- and with time-varying contact patterns. The impact of punctuated infectiousness has been examined as a sensitivity analysis in several epidemiological studies \citep{larremore_test_2021} {\bf Others?}, but a systematic understanding of its effect on epidemic dynamics is lacking.
 
-% \item However, we lack a comprehensive understanding of how the sharpness of the individual infectiousness kernel, independent of other features like the individual reproduction number, basic reproduction number, and generation interval distribution, impacts epidemic dynamics under both uncontrolled and controlled settings. 
-% 	\item Furthermore, we lack an understanding of how to measure the shape of the individual infectiousness kernel reliably, along with the settings when the kernel's shape is statistically identifiable.
-
-\noindent {\bf Our goals.}
-\begin{itemize}
- 	\item The main goal: holding $A(\tau)$ constant, how do different choices of $a_i(\tau)$ impact epidemic dynamics? And how would we know what $a(\tau)$ looks like? 
- 	\item We'll focus on the punctuation of $a_i(\tau)$ as a key parameter, since it's perhaps the simplest and most plausible thing we can change. Effectively, this asks: how does the split of within-individual \vs between-individual variation in infection timing impact epidemic dynamics? 
- 	\item We'll focus on pathogens with clear unimodal population-level and individual infectiousness kernels with short transmission times (\eg, respiratory viruses), though the theory can extend to pathogens with more complex transmission histories like tuberculosis and HIV. 
- 	\item Interpersonal variation in the level of infectiousness has been studied extensively elsewhere \citep{lloyd-smith_superspreading_2005}, so we're going to focus on interpersonal variation in the timing of infectiousness (\ie, when it falls and how narrow the window of infectiousness is), holding all else constant, including critically the population-level parameters $R_0$ and $g(\tau)$. Thus, we'll be looking at stochastic effects around the mean-field solution.
- 	\item We also address the question of how to infer $a_i(\tau)$ and examine its identifiability as a function of $R_0$. 
- \end{itemize} 
+In this paper, we ask: holding $A(\tau)$ constant, how do different choices of $a_i(\tau)$ impact epidemic dynamics? And how would we determine what $a_i(\tau)$ looks like in practice? We focus on the ``punctuatedness'' of $a_i(\tau)$ --- the degree to which an individual's infectiousness is concentrated in time --- as the key parameter of interest. This is equivalent to asking how the decomposition of generation interval variability into within-individual \vs between-individual components affects epidemic behavior. We restrict attention to pathogens with unimodal generation interval distributions and short transmission timescales (\eg, respiratory viruses), though the framework extends in principle to pathogens with more complex dynamics. Interpersonal variation in the overall \emph{level} of infectiousness has been studied extensively \citep{lloyd-smith_superspreading_2005}; here, we focus specifically on interpersonal variation in the \emph{timing} of infectiousness, holding all population-level parameters --- including $R_0$ and $g(\tau)$ --- constant. Our analyses therefore concern stochastic fluctuations around the mean-field solution. We also address the identifiability of the punctuatedness parameter and examine how inferential power changes as a function of $R_0$.
 
 % ⏺ The literature search is done. Here's the key finding upfront: no paper makes your core results
 %   redundant. But there are several important papers to cite and position against. Let me give you the
