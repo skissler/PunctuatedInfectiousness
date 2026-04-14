@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  13 APR 2026 10:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  14 APR 2026 12:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -554,80 +554,111 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--55
 
  []
 
-(./abstract.tex) (./introduction.tex [1
+(./abstract.tex) (./outline.tex [1
 
-{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2
-
-]) (./model.tex [3] [4]
-Overfull \hbox (0.27995pt too wide) in paragraph at lines 118--122
-\T1/ppl/m/n/10 with the ex-pec-ta-tion taken over the pop-u-la-tion in-dexed by
- $\OML/zplm/m/it/10 i$\T1/ppl/m/n/10 . We de-fine $\OML/zplm/m/it/10 C\OT1/zplm
-/m/n/10 (\OML/zplm/m/it/10 t\OT1/zplm/m/n/10 ) = \OML/zplm/m/it/10 E[]\OT1/zplm
-/m/n/10 [\OML/zplm/m/it/10 c[]\OT1/zplm/m/n/10 (\OML/zplm/m/it/10 t\OT1/zplm/m/
-n/10 )]$ \T1/ppl/m/n/10 to be the population-
+{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (0.58006pt too wide) in paragraph at lines 33--34
+[]\T1/ppl/m/n/10 The time-shifted Gamma fam-ily pro-vides a one-parameter con-t
+in-uum be-tween spike and smooth
  []
 
-[5] [6]) (./uncontrolled.tex [7] [8
+[2
 
-] [9]) (./controlled.tex [10])
-(./identifiability.tex [11
+]
+LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 4
+1.
+ (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1ppl.fd
+File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
+)
+Overfull \hbox (19.94936pt too wide) in paragraph at lines 59--64
+\T1/ppl/m/it/10 Deliverables: \T1/ppl/m/n/10 Sur-vival curves for time-to-100 i
+n-fec-tions (in-fluenza, omi-cron, measles $\OMS/zplm/m/n/10 ^^B$ \T1/ppl/m/n/1
+0 spike/smooth). 
+ []
 
-]) (./discussion.tex [12
+[3] [4] [5]) (./introduction.tex [6
 
-]) [13
+
+] [7]) (./model.tex [8] [9
+
+]
+
+LaTeX Warning: Reference `eq:gamma_timeshift' on page 10 undefined on input lin
+e 195.
+
+) (./uncontrolled.tex [10]
+
+LaTeX Warning: Reference `eq:gamma_timeshift' on page 11 undefined on input lin
+e 9.
+
+[11
+
+] [12]) (./controlled.tex [13]) (./identifiability.tex [14
+
+])
+(./discussion.tex [15
+
+]) [16
 
 ] (./main.bbl
-Underfull \hbox (badness 1158) in paragraph at lines 54--63
+Underfull \hbox (badness 1158) in paragraph at lines 43--52
 \T1/ppl/m/n/10 demics.  \T1/ppl/m/it/10 Pro-ceed-ings of the Royal So-ci-ety of
  Lon-don. Se-ries A, Con-tain-ing Pa-pers of a Math-e-mat-i-cal
  []
 
 
-Underfull \hbox (badness 1242) in paragraph at lines 118--127
+Underfull \hbox (badness 1242) in paragraph at lines 107--116
 \T1/ppl/m/n/10 and re-pro-duc-tive num-bers.  \T1/ppl/m/it/10 Pro-ceed-ings of 
 the Royal So-ci-ety B: Bi-o-log-i-cal Sci-ences\T1/ppl/m/n/10 , 274(1609):599--
 
  []
 
-[14
-
-]) [15] (./acknowledgements.tex) [16
-
-] (./supplementary.tex
-LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 2
-7.
-
-(/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1ppl.fd
-File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
 ) [17
 
-] [18
+] (./acknowledgements.tex) [18
 
-]
-[19] [20] [21
+] (./supplementary.tex [19
 
-] [22] [23
+] [20
 
-] [24
+] [21]
+[22] [23
 
-] [25
+] [24] [25
 
 ] [26
 
 ] [27
 
-] [28]) [29] (./main.aux)
+] [28
+
+]
+
+LaTeX Warning: Reference `eq:periodic_c' on page 29 undefined on input line 308
+.
+
+[29
+
+] [30]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 404.
+
+) [31] (./main.aux)
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: B5ED738CF55DC39EA8933DD0A520C569;5766.
+(rerunfilecheck)             Checksum: 6827CCAC0FBCECDECD417A734FB935FE;4920.
  ) 
 Here is how much of TeX's memory you used:
  12703 strings out of 478994
- 186007 string characters out of 5858184
- 509839 words of memory out of 5000000
- 29830 multiletter control sequences out of 15000+600000
- 445077 words of font info for 121 fonts, out of 8000000 for 9000
+ 185767 string characters out of 5858184
+ 506527 words of memory out of 5000000
+ 29810 multiletter control sequences out of 15000+600000
+ 442320 words of font info for 115 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,77p,1634b,477s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 75i,13n,77p,1388b,555s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
@@ -640,10 +671,10 @@ xmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist
 type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/
 urw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pal
 atino/uplri8a.pfb>
-Output written on main.pdf (29 pages, 225874 bytes).
+Output written on main.pdf (31 pages, 233339 bytes).
 PDF statistics:
- 422 PDF objects out of 1000 (max. 8388607)
- 372 compressed objects within 4 object streams
- 113 named destinations out of 1000 (max. 500000)
+ 435 PDF objects out of 1000 (max. 8388607)
+ 387 compressed objects within 4 object streams
+ 135 named destinations out of 1000 (max. 500000)
  113 words of extra memory for PDF output out of 10000 (max. 10000000)
 

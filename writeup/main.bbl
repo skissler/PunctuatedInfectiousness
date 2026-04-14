@@ -1,4 +1,4 @@
-\begin{thebibliography}{11}
+\begin{thebibliography}{10}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -27,17 +27,6 @@ David Champredon and Jonathan Dushoff.
 \newblock \doi{10.1098/rspb.2015.2026}.
 \newblock URL
   \url{https://royalsocietypublishing.org/doi/10.1098/rspb.2015.2026}.
-
-\bibitem[Dietz(1993)]{dietz_estimation_1993}
-K.~Dietz.
-\newblock The estimation of the basic reproduction number for infectious
-  diseases.
-\newblock \emph{Statistical Methods in Medical Research}, 2\penalty0
-  (1):\penalty0 23--41, March 1993.
-\newblock ISSN 0962-2802, 1477-0334.
-\newblock \doi{10.1177/096228029300200103}.
-\newblock URL
-  \url{https://journals.sagepub.com/doi/10.1177/096228029300200103}.
 
 \bibitem[Goyal et~al.(2021)Goyal, Reeves, Cardozo-Ojeda, Schiffer, and
   Mayer]{goyal_viral_2021}

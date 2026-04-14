@@ -3,44 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: plainnat.bst
 Database file #1: zotero.bib
-You've used 11 entries,
+You've used 10 entries,
             2773 wiz_defined-function locations,
-            699 strings with 8076 characters,
-and the built_in function-call counts, 6077 in all, are:
-= -- 589
-> -- 353
-< -- 6
-+ -- 119
-- -- 108
-* -- 578
-:= -- 973
-add.period$ -- 66
-call.type$ -- 11
-change.case$ -- 69
-chr.to.int$ -- 11
-cite$ -- 22
-duplicate$ -- 225
-empty$ -- 440
-format.name$ -- 127
-if$ -- 1246
+            690 strings with 7821 characters,
+and the built_in function-call counts, 5661 in all, are:
+= -- 544
+> -- 343
+< -- 5
++ -- 115
+- -- 105
+* -- 544
+:= -- 907
+add.period$ -- 60
+call.type$ -- 10
+change.case$ -- 65
+chr.to.int$ -- 10
+cite$ -- 20
+duplicate$ -- 205
+empty$ -- 402
+format.name$ -- 123
+if$ -- 1159
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 11
-newline$ -- 96
-num.names$ -- 44
-pop$ -- 85
+missing$ -- 10
+newline$ -- 88
+num.names$ -- 40
+pop$ -- 81
 preamble$ -- 1
-purify$ -- 58
+purify$ -- 55
 quote$ -- 0
-skip$ -- 166
+skip$ -- 154
 stack$ -- 0
-substring$ -- 262
-swap$ -- 22
+substring$ -- 241
+swap$ -- 20
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 121
+type$ -- 110
 warning$ -- 0
-while$ -- 50
+while$ -- 45
 width$ -- 0
-write$ -- 216
+write$ -- 197

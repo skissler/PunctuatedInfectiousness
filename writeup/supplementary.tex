@@ -401,6 +401,16 @@ The expression has two factors with transparent interpretations. The prefactor $
 %
 These limits are consistent with the intuition that overdispersion arises from incomplete averaging of contact variation by the biological profile window, and that the degree of averaging is controlled by both $\psi\alpha$ (profile width) and $\omega/\beta$ (ratio of profile timescale to contact timescale).
 
+\subsubsection{Renewal equation model}
+
+Early work by Hudson, and later by Kermack and McKendrick \citep{kermack_contribution_1927}, modeled the transmission of a permanently immunizing infection using an integral equation. In modern notation \citep{breda_formulation_2012}, the force of infection is
+%
+\begin{equation} 
+F(t) = \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau 
+\label{eq:foi}
+\end{equation}
+%
+where $F(t)$ is the force of infection at time $t$, $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the infectiousness profile describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is the product of the force of infection and the susceptible density (\ie, $-\frac{dS}{dt} = F(t) S(t)$); thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds. 
 
 \subsection*{Supplementary Figures}
 
