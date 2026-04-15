@@ -6,7 +6,7 @@
 
 Early-outbreak stochasticity can impact when an epidemic becomes established and begins its exponential growth phase \citep{morris_computation_2024}. This time shift durably impacts the epidemic's full trajectory. The effect of this early-outbreak stochasticity can be modeled as a random time shift applied to the deterministic epidemic trajectory \citep{morris_computation_2024}. Here, we demonstrate that the distribution of this time shift --- both its mode and variance --- depend on $\psi$. 
 
-Let  contacts be uniform over time and across individuals ($c_i(t) \equiv 1 \, \forall \, i$), and let $b_i(\tau) $ follow the time-shifted Gamma model (Eq.~\ref{eq:gamma_timeshift}). Drawing upon branching process theory, the cumulative incidence over time, $Z(t)$, during the exponential growth phase can be approximated as a deterministic exponential function with a random initial scaling factor $W$: 
+Let  contacts be uniform over time and across individuals ($c_i(t) \equiv 1 \, \forall \, i$), and let $\xi_i(\tau) $ follow the time-shifted Gamma model (Eq.~\ref{eq:gamma_timeshift}). Drawing upon branching process theory, the cumulative incidence over time, $Z(t)$, during the exponential growth phase can be approximated as a deterministic exponential function with a random initial scaling factor $W$: 
 %
 \begin{equation}
 	Z(t) \approx W \cdot e^{rt}
@@ -105,7 +105,7 @@ Punctuated individual infectiousness profiles also make empirical estimates of t
 
 \subsection{Narrow biological infectiousness profiles interact with periodic contact patterns to generate overdispersion in secondary infections}
 
-When contacts are uniform in time, the ``punctuatedness'' of biological infectiousness ($\psi$) has no effect on the secondary infection distribution: every individual produces a $\text{Poisson}(R_0)$-distributed number of infections, and there is no overdispersion ($k \rightarrow \infty$) irrespective of $\psi$. However, if contacts vary over time, narrower biological profiles ``see'' more of this contact variation, generating overdispersion in the secondary infection distribution. We illustrate this using the periodic contact model, $c_i(t) = 1 - A \cos(\omega t + \Phi)$, for which a closed-form expression for $k$ can be obtained ({\bf Supplementary Methods}):
+When contacts are uniform in time, the ``punctuatedness'' of biological infectiousness ($\psi$) has no effect on the secondary infection distribution: every individual produces a $\text{Poisson}(R_0)$-distributed number of infections, and there is no overdispersion ($k \rightarrow \infty$) irrespective of $\psi$. However, if contacts vary over time, narrower biological profiles ``see'' more of this contact variation, generating overdispersion in the secondary infection distribution. We illustrate this using the periodic contact model, $c_i(t) = 1 - A \cos(\omega t)$, for which a closed-form expression for $k$ can be obtained ({\bf Supplementary Methods}):
 %
 \begin{equation}
 	k = \frac{2}{A^2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{\psi \alpha}

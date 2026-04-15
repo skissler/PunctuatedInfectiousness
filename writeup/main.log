@@ -1,9 +1,11 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  14 APR 2026 13:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  14 APR 2026 17:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**\def\darkmode{}\input{main} -jobname=main
- (./main.tex
+**main.tex
+(./main.tex
+LaTeX2e <2020-10-01> patch level 4
+L3 programming layer <2021-02-18>
 (/usr/local/texlive/2021/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2020/04/10 v1.4m Standard LaTeX document class
 (/usr/local/texlive/2021/texmf-dist/tex/latex/base/size10.clo
@@ -345,8 +347,6 @@ Package: lineno 2005/11/02 line numbers on paragraphs v4.41
 \bframebox=\box49
 LaTeX Info: Redefining \\ on input line 3056.
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 27.
-
 (/usr/local/texlive/2021/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2020/10/26 v3.5g Customizing captions (AR)
 
@@ -466,7 +466,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring ON on input line 49.
+Package hyperref Info: Link coloring OFF on input line 49.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -576,20 +576,33 @@ n-fec-tions (in-fluenza, omi-cron, measles $\OMS/zplm/m/n/10 ^^B$ \T1/ppl/m/n/1
 0 spike/smooth). 
  []
 
-[3] [4] [5]) (./introduction.tex [6
+[3] [4] [5]) (./introduction.tex
+<a_schematic.pdf, id=134, 464.73625pt x 115.43124pt>
+File: a_schematic.pdf Graphic file (type pdf)
+<use a_schematic.pdf>
+Package pdftex.def Info: a_schematic.pdf  used on input line 36.
+(pdftex.def)             Requested size: 469.75502pt x 116.68149pt.
+ [6
 
 
-]) (./model.tex [7] [8
+]) (./model.tex [7 <./a_schematic.pdf>]
+<psi_schematic_2.pdf, id=607, 447.6725pt x 128.48pt>
+File: psi_schematic_2.pdf Graphic file (type pdf)
+<use psi_schematic_2.pdf>
+Package pdftex.def Info: psi_schematic_2.pdf  used on input line 25.
+(pdftex.def)             Requested size: 469.75502pt x 134.8217pt.
 
-] [9])
-(./uncontrolled.tex [10] [11
+[8
 
-] [12]) (./controlled.tex [13])
-(./identifiability.tex [14
+ <./psi_schematic_2.pdf>] [9]) (./uncontrolled.tex [10] [11
+
+] [12])
+(./controlled.tex [13]) (./identifiability.tex [14
 
 ]) (./discussion.tex [15
 
-]) [16
+])
+[16
 
 ] (./main.bbl
 Underfull \hbox (badness 1158) in paragraph at lines 43--52
@@ -635,29 +648,31 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 6827CCAC0FBCECDECD417A734FB935FE;4920.
  ) 
 Here is how much of TeX's memory you used:
- 12710 strings out of 478994
- 185857 string characters out of 5858184
- 506887 words of memory out of 5000000
- 29814 multiletter control sequences out of 15000+600000
- 442320 words of font info for 115 fonts, out of 8000000 for 9000
+ 12754 strings out of 478994
+ 186538 string characters out of 5858184
+ 507508 words of memory out of 5000000
+ 29840 multiletter control sequences out of 15000+600000
+ 451625 words of font info for 138 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,77p,1544b,555s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 71i,13n,74p,1511b,555s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
-xlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
-live/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texli
-ve/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texliv
-e/2021/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb></usr/local/texlive/202
-1/texmf-dist/fonts/type1/public/mathpazo/fplmri.pfb></usr/local/texlive/2021/te
-xmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist
-/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/
-type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/
-urw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pal
-atino/uplri8a.pfb>
-Output written on main.pdf (31 pages, 235833 bytes).
+exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
+xlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/tex
+live/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texl
+ive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texliv
+e/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
+/2021/texmf-dist/fonts/type1/public/mathpazo/fplmbi.pfb></usr/local/texlive/202
+1/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb></usr/local/texlive/2021/tex
+mf-dist/fonts/type1/public/mathpazo/fplmri.pfb></usr/local/texlive/2021/texmf-d
+ist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist/font
+s/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1
+/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/p
+alatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/palatino
+/uplri8a.pfb>
+Output written on main.pdf (31 pages, 413196 bytes).
 PDF statistics:
- 444 PDF objects out of 1000 (max. 8388607)
- 396 compressed objects within 4 object streams
- 138 named destinations out of 1000 (max. 500000)
- 113 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1037 PDF objects out of 1200 (max. 8388607)
+ 792 compressed objects within 8 object streams
+ 140 named destinations out of 1000 (max. 500000)
+ 123 words of extra memory for PDF output out of 10000 (max. 10000000)
 

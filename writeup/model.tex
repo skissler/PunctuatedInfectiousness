@@ -20,6 +20,13 @@ where $l_i \sim \text{Gamma}((1 - \psi)\alpha, \beta)$ is a random latent period
 
 For requirement~(i), observe that the time from infection to a secondary infection attempt is $\tau = l_i + U_i$, where $U_i \sim \text{Gamma}(\psi\alpha, \beta)$ is the draw from $f_\epsilon$. Since $l_i$ and $U_i$ are independent Gamma random variables with a common rate $\beta$, their sum follows a $\text{Gamma}((1-\psi)\alpha + \psi\alpha, \beta) = \text{Gamma}(\alpha, \beta)$ distribution by the additive property of the Gamma family. Taking expectations over individuals, $E_i[\xi_i(\tau)] = g(\tau)$, so $E_i[a_i(\tau)] = R_0\,g(\tau) = A(\tau)$ as required. Notably, this convergence does not require the population to share a common value of $\psi$: individual-specific values $\psi_i$ drawn from any distribution on $[0,1]$ still yield $E_i[a_i(\tau)] = A(\tau)$ ({\bf Supplementary Methods}).
 
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{psi_schematic_2.pdf}
+\caption{{\bf \boldmath Individual infectiousness profiles generated using the Gamma time-shift model.}  }
+\label{fig:psi_schematic}
+\end{figure}
+
 % \begin{figure}[ht]
 %     \centering
 %     % \includegraphics[width=.5\textwidth]{figures/stock.png}
