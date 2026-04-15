@@ -22,11 +22,12 @@ source("code/utils.R")
 # 1. Parameters
 # ==============================================================================
 
-popsize <- 1000
-e_dur   <- 2 
-i_dur   <- 3 
-R0      <- 2
-nsim    <- 100
+popsize       <- 1000
+e_dur         <- 2
+i_dur         <- 3
+R0            <- 2
+nsim          <- 100
+max_plot_sims <- 200  # max number of individual trajectories to draw on plots
 
 # ==============================================================================
 # 2. Mean-field ODE solution
@@ -151,8 +152,9 @@ fs_table <- cuminf_df %>%
 # 5. Figures — epidemic trajectories
 # ==============================================================================
 
-# Cumulative stochastic epidemic curves (grey) with ODE overlay (black) 
+# Cumulative stochastic epidemic curves (grey) with ODE overlay (black)
 fig_cuminf_overlay <- cuminf_df %>%
+	filter(sim <= max_plot_sims) %>%
 	ggplot(aes(x=tinf, y=cuminf, group=sim)) +
 		geom_line(alpha=0.2, col="grey") +
 		geom_line(data=filter(ode_daily, day<=lastday),
@@ -164,9 +166,10 @@ fig_cuminf_overlay <- cuminf_df %>%
 ggsave(fig_cuminf_overlay, file="figures/cuminf_overlay_SEIR.pdf")
 ggsave(fig_cuminf_overlay, file="figures/cuminf_overlay_SEIR.png")
 
-# Daily stochastic incidence curves (grey) with ODE overlay (black) 
-fig_inf_overlay <- dailyinf_df %>% 
-	ggplot(aes(x=day, y=ninf, group=sim)) + 
+# Daily stochastic incidence curves (grey) with ODE overlay (black)
+fig_inf_overlay <- dailyinf_df %>%
+	filter(sim <= max_plot_sims) %>%
+	ggplot(aes(x=day, y=ninf, group=sim)) +
 		geom_line(alpha=0.2, col="grey") + 
 		geom_line(data=filter(ode_daily, day<=lastday), 
 			aes(x=day, y=newinf*popsize),
@@ -284,7 +287,8 @@ fig_growthrate_hists <- ggplot(growthrate_df, aes(x = growthrate)) +
 	     title = paste0("Log-linear growth rate (first ", growth_threshold, " cases)"))
 
 fig_growthrate_lines <- cuminf_df %>%
-	filter(established == 1, cuminf <= growth_threshold, cuminf>=min_threshold) %>%
+	filter(established == 1, cuminf <= growth_threshold, cuminf >= min_threshold,
+	       sim <= max_plot_sims) %>%
 	ggplot(aes(x = tinf, y = log(cuminf), group = factor(sim))) +
 		geom_point(alpha=0.1, size=0.2, col="grey") + 
 		geom_line(alpha=0.1, linewidth=0.2, col="grey") +

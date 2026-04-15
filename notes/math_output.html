@@ -3995,6 +3995,171 @@ $$
   <li><strong>Supplementary (<code>writeup/supplementary.tex</code>).</strong> Add a new subsection "Overdispersion under the Lomax contact model" containing Steps 0–5 (analogous to the existing placeholder for the periodic contact derivation at line 304).</li>
 </ul>
 
+<hr>
+
+<div class="prompt">Why is the log-linear growth rate estimate (cases 10–100) biased downward for omicron and measles but not for influenza?</div>
+
+<h1>Sub-asymptotic growth bias in early epidemic growth rate estimation</h1>
+
+<h2>Setup</h2>
+
+<p>The code estimates the Malthusian growth rate \(r\) by fitting \(\log n = a + b\, t_n\) for infection events \(n = 10, 11, \dots, 100\), where \(t_n\) is the time of the \(n\)-th infection. The theoretical rate \(r\) satisfies the Lotka–Euler equation for a \(\mathrm{Gamma}(\alpha, \beta)\) generation interval:</p>
+
+$$R_0 \left(\frac{\beta}{\beta + r}\right)^\alpha = 1 \qquad \Longrightarrow \qquad R_0 = \left(1 + \frac{rT}{\alpha}\right)^\alpha$$
+
+<p>where \(\beta = \alpha/T\). For the three pathogens:</p>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #666;"><th style="padding: 4px 16px;">Pathogen</th><th style="padding: 4px 12px;">\(R_0\)</th><th style="padding: 4px 12px;">\(\alpha\)</th><th style="padding: 4px 12px;">\(T\)</th><th style="padding: 4px 12px;">\(r\)</th><th style="padding: 4px 12px;">\(rT\)</th><th style="padding: 4px 12px;">Window (gens)</th><th style="padding: 4px 12px;">\(R_0/e^{rT}\)</th></tr>
+<tr><td style="padding: 4px 16px;">Influenza</td><td style="padding: 4px 12px;">2</td><td style="padding: 4px 12px;">2.32</td><td style="padding: 4px 12px;">3.2</td><td style="padding: 4px 12px;">0.252</td><td style="padding: 4px 12px;">0.81</td><td style="padding: 4px 12px;">2.85</td><td style="padding: 4px 12px;">0.89</td></tr>
+<tr><td style="padding: 4px 16px;">Omicron</td><td style="padding: 4px 12px;">6</td><td style="padding: 4px 12px;">2.39</td><td style="padding: 4px 12px;">7.05</td><td style="padding: 4px 12px;">0.378</td><td style="padding: 4px 12px;">2.67</td><td style="padding: 4px 12px;">0.86</td><td style="padding: 4px 12px;">0.42</td></tr>
+<tr><td style="padding: 4px 16px;">Measles</td><td style="padding: 4px 12px;">12</td><td style="padding: 4px 12px;">11.36</td><td style="padding: 4px 12px;">12.2</td><td style="padding: 4px 12px;">0.228</td><td style="padding: 4px 12px;">2.78</td><td style="padding: 4px 12px;">0.83</td><td style="padding: 4px 12px;">0.75</td></tr>
+</table>
+
+<h2>The key quantity: generations in the fitting window</h2>
+
+<p>The time spanned by cases 10–100 is approximately \(\log(100/10)/r = \log 10 / r\). Dividing by the mean generation time \(T\) gives the number of <strong>transmission generations</strong> in the fitting window:</p>
+
+$$\text{generations in window} = \frac{\log 10}{rT}$$
+
+<p>For <strong>influenza</strong> this is ≈ 2.85 generations, but for <strong>omicron</strong> and <strong>measles</strong> it is < 1 generation.</p>
+
+<p>This matters because the Malthusian rate \(r\) is an <em>asymptotic</em> property of the branching process — it describes the growth rate after the process has gone through enough generations for the "compounding" to stabilize. In the first generation or two, growth is governed by the generation time CDF \(G(\tau)\), not by \(e^{r\tau}\).</p>
+
+<h2>Why early growth is slower than \(e^{rt}\)</h2>
+
+<p>In the first generation, the expected cumulative infections from the index case are:</p>
+
+$$E[C(t)] \approx 1 + R_0\, G(t)$$
+
+<p>The asymptotic exponential growth predicts \(C(t) \propto e^{rt}\), which at \(t = T\) gives a per-generation multiplier of \(e^{rT}\). Meanwhile, the actual per-generation multiplier is \(R_0\). The standard inequality \((1 + x/n)^n < e^x\) gives us:</p>
+
+$$\boxed{R_0 = \left(1 + \frac{rT}{\alpha}\right)^\alpha < e^{rT}}$$
+
+<p>So the true branching-process multiplier per generation (\(R_0\)) is always <em>less</em> than the exponential prediction (\(e^{rT}\)). The Malthusian rate \(r\) effectively "borrows" growth from future generations — it describes the exponential envelope that the process converges to, not the actual growth in any single generation.</p>
+
+<p>The ratio \(R_0 / e^{rT}\) measures the magnitude of this discrepancy:</p>
+
+<ul>
+  <li><strong>Influenza:</strong> \(R_0/e^{rT} = 0.89\) — mild discrepancy, and the fitting window spans ~3 generations (enough time to converge).</li>
+  <li><strong>Omicron:</strong> \(R_0/e^{rT} = 0.42\) — severe discrepancy (the exponential predicts 2.4× more growth per generation than actually occurs), and the window spans < 1 generation.</li>
+  <li><strong>Measles:</strong> \(R_0/e^{rT} = 0.75\) — moderate discrepancy, and the window spans < 1 generation.</li>
+</ul>
+
+<h2>When is the bias worst?</h2>
+
+<p>The bias depends on two factors:</p>
+
+<ol>
+  <li><strong>How many generations the fitting window spans</strong> — fewer generations means less time to converge to asymptotic growth. This is \(\log 10 / (rT)\), which is small when \(rT\) is large.</li>
+  <li><strong>How much the per-generation growth departs from the exponential</strong> — the ratio \(R_0/e^{rT} = (1 + rT/\alpha)^\alpha / e^{rT}\) is furthest from 1 when \(rT\) is large and \(\alpha\) is small (high generation-time variance).</li>
+</ol>
+
+<p>Both factors point in the same direction: <strong>the bias is worst when \(rT\) is large</strong> (many "doublings" per generation). Omicron (\(rT = 2.67\)) and measles (\(rT = 2.78\)) both have large \(rT\), while influenza (\(rT = 0.81\)) does not. </p>
+
+<p>Additionally, <strong>low \(\alpha\) (high generation-time variance)</strong> slows the convergence to exponential growth, which is why omicron (\(\alpha = 2.39\)) shows more bias than measles (\(\alpha = 11.36\)) despite similar \(rT\) values.</p>
+
+<h2>Summary</h2>
+
+<div class="highlight">
+<p>The log-linear regression underestimates the Malthusian rate because the fitting window (cases 10–100) spans < 1 generation for omicron and measles, and the epidemic hasn't yet converged to its asymptotic exponential growth. The per-generation multiplier \(R_0\) is strictly less than the asymptotic prediction \(e^{rT}\) by the inequality \((1 + rT/\alpha)^\alpha < e^{rT}\), so the early-phase growth is systematically slower than \(e^{rt}\). For influenza, the window spans ~3 generations, which is enough for convergence — hence minimal bias.</p>
+</div>
+
+<hr>
+
+<div class="prompt">How is the Malthusian growth rate normally estimated in practice? Have others noted this bias? What should we do instead?</div>
+
+<h1>Growth rate estimation: methods, pitfalls, and best practices</h1>
+
+<h2>1. Is log-linear regression on cumulative cases the standard?</h2>
+
+<p><strong>No.</strong> Fitting to <em>cumulative</em> case counts is actively discouraged by methodologists. The core problem is that cumulative counts are a running sum, so successive observations are positively autocorrelated by construction. Standard regression assumes independent errors, leading to <strong>illusory precision</strong> — point estimates may be reasonable, but confidence intervals are far too narrow.</p>
+
+<p>This was demonstrated rigorously by <strong>King, Domenech de Cellès, Magpantay &amp; Rohani (2015)</strong>, "Avoidable errors in the modelling of outbreaks of emerging pathogens, with special reference to Ebola" (<em>Proc R Soc B</em>, 282:20150347). They showed via simulation that fitting deterministic models to cumulative incidence produces "errors that mask their own presence."</p>
+
+<p>The recommended standard is to <strong>fit to incidence data</strong> (new cases per time unit), not cumulative cases.</p>
+
+<h2>2. Has the sub-asymptotic bias been noted?</h2>
+
+<p><strong>Yes, though not typically framed in exactly these terms.</strong></p>
+
+<ul>
+  <li>A 2025 paper in <em>Infectious Disease Modelling</em> (PMC12908057) systematically found that for short fitting windows, both negative binomial regression and Hidden Markov Model approaches <strong>underestimate the growth rate</strong>, with estimates approaching the true value only as the fitting window grows.</li>
+  <li><strong>Ma, Dushoff, Bolker &amp; Earn (2014)</strong>, "Estimating initial epidemic growth rates" (<em>Bull Math Biol</em>, 76:245–260), compared phenomenological models and found that simple exponential fits underestimate the growth rate as the fitting window extends beyond the pure exponential phase.</li>
+  <li><strong>Chowell et al. (2016)</strong>, "Mathematical models to characterize early epidemic growth" (<em>Physics of Life Reviews</em>, 18:66–97), documented that many real epidemics show sub-exponential growth in the first few generations.</li>
+  <li><strong>Champredon &amp; Dushoff (2015)</strong>, "Intrinsic and realized generation intervals" (<em>Proc R Soc B</em>, 282:20152026), described how the distinction between intrinsic and realized generation intervals relates to the transient dynamics before the age-of-infection distribution stabilizes.</li>
+</ul>
+
+<p>However, the specific framing we identified — connecting the bias to the <strong>number of generation times in the fitting window</strong> and the inequality \(R_0 = (1 + rT/\alpha)^\alpha < e^{rT}\) — does not appear to have been stated explicitly in the literature. This could be a useful methodological point to formalize.</p>
+
+<h2>3. Better approaches</h2>
+
+<h3>a) Log-linear or Poisson regression on incidence</h3>
+
+<p>The simplest improvement: fit \(\log I_t = rt + b\) to <em>incidence</em> \(I_t\) (new cases per time unit), or better yet, use a Poisson/negative binomial GLM:</p>
+
+$$I_t \sim \mathrm{Poisson}(e^{rt + b})$$
+
+<p>This is implemented in the R <code>incidence</code> package (RECON) and the <code>R0</code> package (<code>est.R0.EG()</code> with <code>method="poisson"</code>). The GLM approach properly handles count data, avoids log(0) issues, and can accommodate overdispersion via negative binomial.</p>
+
+<h3>b) Renewal equation estimators</h3>
+
+<p>Rather than estimating \(r\) directly, one can estimate \(R_t\) using the renewal equation:</p>
+
+<ul>
+  <li><strong>Cori et al. (2013)</strong> — Bayesian estimation of the instantaneous reproduction number \(R_t\), implemented in the widely-used <strong>EpiEstim</strong> R package. Assumes a Poisson observation model with a Gamma prior on \(R_t\).</li>
+  <li><strong>Wallinga &amp; Teunis (2004)</strong> — Estimates the case reproduction number by computing relative likelihoods of who-infected-whom, weighted by the serial interval distribution.</li>
+</ul>
+
+<h3>c) The Wallinga–Lipsitch framework (Euler–Lotka inversion)</h3>
+
+<p>The key reference: <strong>Wallinga &amp; Lipsitch (2007)</strong>, "How generation intervals shape the relationship between growth rates and reproductive numbers" (<em>Proc R Soc B</em>, 274:599–604). They showed that different models relating \(r\) to \(R\) are all special cases of:</p>
+
+$$R = \frac{1}{M_g(-r)}$$
+
+<p>where \(M_g\) is the moment generating function of the generation interval distribution. Special cases:</p>
+
+<table style="border-collapse: collapse; margin: 1em 0;">
+<tr style="border-bottom: 1px solid #666;"><th style="padding: 4px 16px;">Assumption</th><th style="padding: 4px 16px;">Formula</th></tr>
+<tr><td style="padding: 4px 16px;">Delta function at \(T\)</td><td style="padding: 4px 16px;">\(R = e^{rT}\) (upper bound)</td></tr>
+<tr><td style="padding: 4px 16px;">Exponential (SIR)</td><td style="padding: 4px 16px;">\(R = 1 + r/\gamma\)</td></tr>
+<tr><td style="padding: 4px 16px;">SEIR</td><td style="padding: 4px 16px;">\(R = (1 + r/\sigma)(1 + r/\gamma)\)</td></tr>
+<tr><td style="padding: 4px 16px;">Gamma(\(\alpha, \beta\))</td><td style="padding: 4px 16px;">\(R = (1 + rT/\alpha)^\alpha\)</td></tr>
+<tr><td style="padding: 4px 16px;">Normal(\(T, \sigma^2\))</td><td style="padding: 4px 16px;">\(R = e^{rT - r^2\sigma^2/2}\)</td></tr>
+</table>
+
+<p>In practice, one estimates \(r\) from incidence data, then solves the Euler–Lotka equation for \(R\) given an assumed generation interval distribution. This is what <code>R0::R.from.r()</code> does. <strong>Park, Champredon, Weitz &amp; Dushoff (2019)</strong> showed the Gamma approximation (using just the mean and CV of the generation interval) is practical and accurate.</p>
+
+<h3>d) Important subtlety: intrinsic vs. realized generation intervals</h3>
+
+<p><strong>Park, Sun, Champredon et al. (2021)</strong> showed in <em>PNAS</em> that using improperly defined serial intervals in early COVID-19 estimates "biased estimates of initial reproduction number by up to a factor of 2.6." During a growing epidemic, backward-looking generation intervals are systematically shorter (recent infectors are overrepresented), biasing \(R\) estimates downward if not corrected.</p>
+
+<h2>4. What should we do?</h2>
+
+<div class="highlight">
+<p><strong>For our simulations</strong>, the sub-asymptotic bias is a real artifact of fitting a log-linear model over a window that spans too few generation times. Two practical options:</p>
+
+<ol>
+  <li><strong>Fit to incidence rather than cumulative cases.</strong> Aggregate infection times into daily bins and fit \(I_t \sim \mathrm{Poisson}(e^{rt + b})\). This doesn't eliminate the sub-asymptotic issue but avoids the autocorrelation problem of cumulative fitting.</li>
+  <li><strong>Solve the Euler–Lotka equation directly from \(R_0\).</strong> Since we know \(R_0\) and the generation interval distribution in the simulations, we can simply compute \(r\) analytically via \(R_0(\beta/(\beta+r))^\alpha = 1\) — this is already done for the theoretical reference line. The simulated growth rates can then be compared to this known value without needing regression at all.</li>
+  <li><strong>If estimation from trajectories is the goal</strong>, extend the fitting window to span at least 2–3 generation times: use cases up to \(\sim R_0^3\) rather than a fixed threshold of 100. For measles this would require \(N \gg 1000\).</li>
+</ol>
+</div>
+
+<h2>5. Key references</h2>
+
+<ul>
+  <li>King AA et al. (2015). Avoidable errors in the modelling of outbreaks. <em>Proc R Soc B</em>, 282:20150347.</li>
+  <li>Wallinga J, Lipsitch M (2007). How generation intervals shape the relationship between growth rates and reproductive numbers. <em>Proc R Soc B</em>, 274:599–604.</li>
+  <li>Ma J, Dushoff J, Bolker BM, Earn DJD (2014). Estimating initial epidemic growth rates. <em>Bull Math Biol</em>, 76:245–260.</li>
+  <li>Cori A et al. (2013). A new framework and software to estimate time-varying reproduction numbers during epidemics. <em>Am J Epidemiol</em>, 178:1505–1512.</li>
+  <li>Champredon D, Dushoff J (2015). Intrinsic and realized generation intervals. <em>Proc R Soc B</em>, 282:20152026.</li>
+  <li>Park SW et al. (2019). A practical generation-interval-based approach to inferring the strength of epidemics from their speed. <em>Epidemics</em>, 27:12–18.</li>
+  <li>Park SW et al. (2021). Forward-looking serial intervals correctly link epidemic growth to reproduction numbers. <em>PNAS</em>, 118:e2011548118.</li>
+  <li>Chowell G et al. (2016). Mathematical models to characterize early epidemic growth. <em>Physics of Life Reviews</em>, 18:66–97.</li>
+  <li>Obadia T et al. (2012). The R0 package. <em>BMC Med Inform Decis Mak</em>, 12:147.</li>
+</ul>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

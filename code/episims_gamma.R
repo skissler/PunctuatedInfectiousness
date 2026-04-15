@@ -23,9 +23,10 @@ source("code/parameters.R")
 # 1. Global parameters
 # ==============================================================================
 
-popsize  <- 1000 #10000
-nsim     <- 1000 #2000
-psivals <- c(0, 0.5, 1)
+popsize       <- 1000 #10000
+nsim          <- 1000 #2000
+psivals       <- c(0, 0.5, 1)
+max_plot_sims <- 200  # max number of individual trajectories to draw on plots
 
 # ==============================================================================
 # 2. Loop over pathogens
@@ -173,10 +174,11 @@ print(fs_table)
 
 # Cumulative stochastic epidemic curves (grey) with ODE overlay (blue)
 fig_cuminf_overlay <- cuminf_df %>%
+	filter(sim <= max_plot_sims) %>%
 	ggplot(aes(x=tinf, y=cuminf, group=sim)) +
 		geom_line(alpha=0.2, col="grey") +
 		geom_line(data=filter(ren_out, t<=lastday),
-			aes(x=t, y=cuminf*popsize),
+			aes(x=t, y=cuminf*popsize, group=1),
 			alpha=0.8, linewidth=1, col="black") +
 		theme_classic() +
 		labs(x="Time (days)", y="Cumulative infections", title = pathogen) +
@@ -186,10 +188,11 @@ save_fig(fig_cuminf_overlay, paste0("fig_cuminf_overlay_", pathogen))
 
 # Daily stochastic incidence curves (grey) with ODE overlay (blue)
 fig_inf_overlay <- dailyinf_df %>%
+	filter(sim <= max_plot_sims) %>%
 	ggplot(aes(x=day, y=ninf, group=sim)) +
 		geom_line(alpha=0.2, col="grey") +
 		geom_line(data=filter(ren_daily, day<=lastday),
-			aes(x=day, y=newinf*popsize),
+			aes(x=day, y=newinf*popsize, group=1),
 			alpha=0.8, linewidth=1, col="black") +
 		theme_classic() +
 		labs(x="Time (days)", y="Daily new infections", title = pathogen) +
@@ -238,7 +241,7 @@ fig_survival_100 <- ggplot(survival_100_df, aes(x=t, y=prop_below, col=psi)) +
 save_fig(fig_survival_100, paste0("fig_survival_100_", pathogen))
 
 # ==============================================================================
-# 2f. Epidemic growth rate (log-linear regression on first 10-100 cases)
+# 2f. Epidemic growth rate (Poisson GLM on daily incidence, cases 10-100)
 # ==============================================================================
 
 # Theoretical growth rate: solve R0 * (beta/(beta+r))^alpha = 1  (Lotka-Euler)
@@ -246,17 +249,31 @@ r_malthusian <- uniroot(
 	function(r) R0 * (beta / (beta + r))^alpha - 1,
 	interval = c(0, 10))$root
 
-# For each established epidemic, fit log(case_number) ~ time using the first
-# 100 infection times. The slope is the empirical exponential growth rate.
+# For each established epidemic, compute daily incidence in the window where
+# cumulative cases are between 10 and 100, then fit a Poisson GLM
+# I_t ~ Poisson(exp(r*t + b)) to estimate the exponential growth rate.
 growth_threshold <- 100
 min_threshold <- 10
 
-growthrate_df <- cuminf_df %>%
+growth_incidence <- cuminf_df %>%
 	filter(established == 1, cuminf >= min_threshold, cuminf <= growth_threshold) %>%
+	mutate(day = floor(tinf)) %>%
+	group_by(sim, psi, day) %>%
+	summarise(count = n(), .groups = "drop") %>%
 	group_by(sim, psi) %>%
+	complete(day = seq(min(day), max(day)), fill = list(count = 0)) %>%
+	mutate(day0 = day - min(day)) %>%
+	ungroup()
+
+growthrate_df <- growth_incidence %>%
+	group_by(sim, psi) %>%
+	filter(n() >= 3) %>%
 	summarise(
-		growthrate = coef(lm(log(cuminf) ~ tinf))[2],
-		.groups = "drop")
+		growthrate = tryCatch(
+			coef(glm(count ~ day0, family = poisson))[2],
+			error = function(e) NA_real_),
+		.groups = "drop") %>%
+	filter(!is.na(growthrate))
 
 growthrate_table <- growthrate_df %>%
 	group_by(psi) %>%
@@ -278,17 +295,17 @@ fig_growthrate_hists <- ggplot(growthrate_df, aes(x = growthrate)) +
 
 save_fig(fig_growthrate_hists, paste0("fig_growthrate_hists_", pathogen))
 
-fig_growthrate_lines <- cuminf_df %>%
-	filter(established == 1, cuminf <= growth_threshold, cuminf >= min_threshold) %>%
-	ggplot(aes(x = tinf, y = log(cuminf), group = factor(sim))) +
-		geom_point(alpha=0.1, size=0.2, col="grey") +
-		geom_line(alpha=0.1, linewidth=0.2, col="grey") +
-		geom_line(stat="smooth", method = "lm", alpha = 0.1, linewidth = 0.3) +
-		geom_abline(intercept = 0, slope = r_malthusian,
+fig_growthrate_lines <- growth_incidence %>%
+	filter(sim <= max_plot_sims, count > 0) %>%
+	ggplot(aes(x = day0, y = count, group = factor(sim))) +
+		geom_point(alpha = 0.1, size = 0.3, col = "grey") +
+		geom_abline(intercept = log10(min_threshold),
+		            slope = r_malthusian / log(10),
 		            col = "blue", linewidth = 0.8, lty = "dashed") +
+		scale_y_log10() +
 		theme_classic() +
 		facet_wrap(~psi, nrow = 1) +
-		labs(x = "Time (days)", y = "log(cumulative infections)",
+		labs(x = "Days since case 10", y = "Daily incidence",
 		     title = pathogen)
 
 save_fig(fig_growthrate_lines, paste0("fig_growthrate_lines_", pathogen))

@@ -49,13 +49,14 @@ Given this setup, it can be shown ({\bf Supplementary Methods}) that
 where $z = R_0^{1/\alpha} - 1$. The punctuation parameter $\psi$ enters the expression only once, in the middle term of the numerator; thus, $\text{Var}[W]$ and $\psi$ are monotonically related, where narrower individual infectiousness profiles ($\psi \rightarrow 0$) maximize the variance and broader profiles ($\psi \rightarrow 1$) minimize it. 
 % where $z = r \bar{g} / \alpha$, and $\bar{g}$ is the mean of the generation interval distribution $g(\tau)$. Note that, from the Euler-Lotka equation, $z = R_0^{1/\alpha} - 1$, so increasing $z$ implies increasing $R_0$ (for fixed $\alpha$). The punctuation parameter $\psi$ enters the expression only once, in the middle term of the numerator, demonstrating that $\text{Var}[W]$ and $\psi$ are monotonically related: narrower profiles ($\psi \rightarrow 0$) maximize the variance, while broader profiles ($\psi \rightarrow 1$) minimize it. The parameter $z$ can be interpreted as the amount of epidemic growth per generation ($r \bar{g}$) multiplied by the generation interval distribution's coefficient of variation ($1/\alpha$). Thus, $z$ increases with faster-growing epidemics, longer mean generation times, and more variable generation interval distributions (under fixed $\bar{g}$). 
 
-We can also derive an approximate expression for the mode of the distribution of $\varsigma$, $f_\varsigma(\tau)$. To approximate $f_\varsigma(\tau)$, we can use  a two-moment version of the moment matching approach of \citet{morris_computation_2024}. These moments are 
-%
-\begin{equation}
-	E[W] = 1, \qquad E[W^2] = \frac{\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}}{1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha}
-\end{equation}
-%
-where the first follows from the property $E[W] = I_0$ and the second follows from the variance calculation derived above, with $E[W^2] = \text{Var}[W] + (E[W])^2 = \text{Var}[W] + 1$. With these moments in hand it can be shown ({\bf Supplementary Methods}) that
+We can also derive an approximate expression for the modal value of $\varsigma$ using a two-moment version of the moment matching approach of \citet{morris_computation_2024} ({\bf Supplementary Methods}): 
+% These moments are 
+% %
+% \begin{equation}
+% 	E[W] = 1, \qquad E[W^2] = \frac{\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}}{1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha}
+% \end{equation}
+% %
+% where the first follows from the property $E[W] = I_0$ and the second follows from the variance calculation derived above, with $E[W^2] = \text{Var}[W] + (E[W])^2 = \text{Var}[W] + 1$. With these moments in hand it can be shown ({\bf Supplementary Methods}) that
 %
 \begin{equation}
 	\text{Mode}[\varsigma] = \frac{1}{r} \log \Biggl( 
@@ -70,7 +71,7 @@ where the first follows from the property $E[W] = I_0$ and the second follows fr
 %
 provided the numerator within the logarithm is positive; when the numerator is zero or negative, no finite modal time shift exists and  $\text{Mode}[\varsigma]  \rightarrow -\infty$. Again, $\psi$ enters the expression only once, with narrow individual infectiousness profiles ($\psi \rightarrow 0$) minimizing the mode (making it more negative, \ie, causing the typical epidemic to be shifted later) and broad individual infectiousness profiles ($\psi \rightarrow 1$) maximizing it (causing the typical epidemic to be shifted earlier). 
 
-Note that the $\psi$-dependence of both $\text{Var}[W]$ and $\text{Mode}[\varsigma]$ enter through the expression 
+Note that the $\psi$-dependence of both $\text{Var}[W]$ and $\text{Mode}[\varsigma]$ enters through the expression 
 %
 \begin{equation}
 	\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi)\alpha}
