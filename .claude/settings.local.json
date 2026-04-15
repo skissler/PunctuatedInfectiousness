@@ -16,7 +16,16 @@
       "Bash(python3:*)",
       "Bash(open:*)",
       "Bash(cat:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(chmod:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git rev-list:*)",
+      "Bash(git cat-file:*)",
+      "Bash(git reset:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git ls-files:*)"
     ]
   }
 }

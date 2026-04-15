@@ -1,0 +1,15 @@
+# Large simulation output
+output/*.csv
+
+# Archived figures
+figures/_archive/
+figures/
+output/
+
+# R artifacts
+.Rhistory
+.RData
+.Rproj.user/
+
+# macOS
+.DS_Store
