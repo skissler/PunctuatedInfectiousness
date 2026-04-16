@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  15 APR 2026 12:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  16 APR 2026 11:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -600,20 +600,37 @@ File: cinfcomposite.pdf Graphic file (type pdf)
 <use cinfcomposite.pdf>
 Package pdftex.def Info: cinfcomposite.pdf  used on input line 100.
 (pdftex.def)             Requested size: 469.75502pt x 241.89726pt.
- [10 <./cinfcomposite.pdf>]) (./uncontrolled.tex [11] [12
+ [10 <./cinfcomposite.pdf>]
+<pathogenAs.pdf, id=847, 163.61125pt x 107.40125pt>
+File: pathogenAs.pdf Graphic file (type pdf)
+<use pathogenAs.pdf>
+Package pdftex.def Info: pathogenAs.pdf  used on input line 123.
+(pdftex.def)             Requested size: 180.67499pt x 118.60222pt.
+) (./uncontrolled.tex [11 <./pathogenAs.pdf>] [12
 
 ]
-<survival.pdf, id=871, 456.70625pt x 161.60374pt>
+<cuminf.pdf, id=902, 463.7325pt x 289.08pt>
+File: cuminf.pdf Graphic file (type pdf)
+<use cuminf.pdf>
+Package pdftex.def Info: cuminf.pdf  used on input line 101.
+(pdftex.def)             Requested size: 469.75502pt x 292.84186pt.
+<survival.pdf, id=903, 456.70625pt x 161.60374pt>
 File: survival.pdf Graphic file (type pdf)
 <use survival.pdf>
-Package pdftex.def Info: survival.pdf  used on input line 101.
+Package pdftex.def Info: survival.pdf  used on input line 108.
 (pdftex.def)             Requested size: 469.75502pt x 166.22685pt.
- [13 <./survival.pdf>]) (./controlled.tex [14])
-(./identifiability.tex [15
+ [13 <./cuminf.pdf>]) (./controlled.tex [14 <./survival.pdf>]) (./identifiabili
+ty.tex [15
 
 ]) (./discussion.tex [16
 
-]) [17
+]
+Overfull \hbox (29.1396pt too wide) in paragraph at lines 13--14
+[]\T1/ppl/m/n/10 Cite this: https://royalsocietypublishing.org/rsif/article/18/
+184/20210575/90033/The-stochastic-dynamics-
+ []
+
+) [17
 
 ] (./main.bbl
 Underfull \hbox (badness 1158) in paragraph at lines 43--52
@@ -659,10 +676,10 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 6827CCAC0FBCECDECD417A734FB935FE;4920.
  ) 
 Here is how much of TeX's memory you used:
- 12770 strings out of 478994
- 186857 string characters out of 5858184
- 507723 words of memory out of 5000000
- 29852 multiletter control sequences out of 15000+600000
+ 12786 strings out of 478994
+ 187155 string characters out of 5858184
+ 508316 words of memory out of 5000000
+ 29864 multiletter control sequences out of 15000+600000
  451625 words of font info for 138 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  71i,13n,74p,1511b,555s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -680,10 +697,10 @@ s/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1
 /urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/p
 alatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/palatino
 /uplri8a.pfb>
-Output written on main.pdf (32 pages, 581392 bytes).
+Output written on main.pdf (32 pages, 9754474 bytes).
 PDF statistics:
- 1446 PDF objects out of 1728 (max. 8388607)
- 1064 compressed objects within 11 object streams
- 142 named destinations out of 1000 (max. 500000)
- 133 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 6834 PDF objects out of 7423 (max. 8388607)
+ 4634 compressed objects within 47 object streams
+ 144 named destinations out of 1000 (max. 500000)
+ 143 words of extra memory for PDF output out of 10000 (max. 10000000)
 

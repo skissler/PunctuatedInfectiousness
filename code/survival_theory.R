@@ -240,7 +240,7 @@ fit_W_gengamma <- function(R0, alpha, beta, r, psi) {
 # 2. Global parameters
 # ==============================================================================
 
-popsize   <- 1000
+popsize   <- 10000
 nsim      <- 1000
 threshold <- 100
 n_draws   <- 100000
@@ -328,22 +328,18 @@ theory_draws_df <- bind_rows(theory_surv_list)
 # 3d. Load empirical simulation data and build empirical survival curves
 # --------------------------------------------------------------------------
 
-cuminf_df <- load_cache(pathogen, nsim, popsize, psivals)
+cache <- load_cache_v2(pathogen, nsim, popsize, psivals)
 
-if (is.null(cuminf_df)) {
-	cat(sprintf("  WARNING: cache not found for %s (n=%d, s=%d), skipping\n",
+if (is.null(cache)) {
+	cat(sprintf("  WARNING: v2 cache not found for %s (n=%d, s=%d), skipping\n",
 	    pathogen, popsize, nsim))
 	next
 }
 
-# Extract time to threshold for each established epidemic
-time_to_threshold <- cuminf_df %>%
-	filter(established == 1) %>%
-	group_by(sim, psi) %>%
-	filter(cuminf >= threshold) %>%
-	slice(1) %>%
-	ungroup() %>%
-	select(sim, psi, tinf)
+# Extract time to threshold from summary (pre-computed in episims_gamma.R)
+time_to_threshold <- cache$summary %>%
+	filter(established == 1, !is.na(time_to_100)) %>%
+	select(sim, psi, tinf = time_to_100)
 
 # Build empirical survival curves
 t_max <- max(time_to_threshold$tinf)

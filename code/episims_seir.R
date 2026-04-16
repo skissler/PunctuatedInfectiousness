@@ -27,7 +27,8 @@ e_dur         <- 2
 i_dur         <- 3
 R0            <- 2
 nsim          <- 100
-max_plot_sims <- 200  # max number of individual trajectories to draw on plots
+max_plot_sims <- 1000  # max number of individual trajectories to draw on plots
+threshold     <- 100  # case count milestone for survival/milestone plots
 
 # ==============================================================================
 # 2. Mean-field ODE solution
@@ -166,6 +167,42 @@ fig_cuminf_overlay <- cuminf_df %>%
 ggsave(fig_cuminf_overlay, file="figures/cuminf_overlay_SEIR.pdf")
 ggsave(fig_cuminf_overlay, file="figures/cuminf_overlay_SEIR.png")
 
+# Cumulative curves with time-to-threshold milestone annotations
+milestone_df <- cuminf_df %>%
+	filter(sim <= max_plot_sims, established == 1, cuminf >= threshold) %>%
+	group_by(sim, profiletype) %>%
+	slice(1) %>%
+	group_by(profiletype) %>%
+	summarise(
+		median_t = median(tinf),
+		q05_t    = quantile(tinf, 0.05),
+		q95_t    = quantile(tinf, 0.95),
+		.groups  = "drop")
+
+fig_cuminf_milestones <- cuminf_df %>%
+	filter(sim <= max_plot_sims) %>%
+	ggplot(aes(x=tinf, y=cuminf, group=sim)) +
+		geom_line(alpha=0.2, col="grey") +
+		geom_line(data=filter(ode_daily, day<=lastday),
+			aes(x=day, y=cuminf*popsize),
+			alpha=0.8, linewidth=1, col="black") +
+		geom_segment(data=milestone_df,
+			aes(x=q05_t, xend=q05_t,
+			    y=threshold*0.85, yend=threshold*1.15, group=1),
+			col="red", linewidth=0.6) +
+		geom_segment(data=milestone_df,
+			aes(x=q95_t, xend=q95_t,
+			    y=threshold*0.85, yend=threshold*1.15, group=1),
+			col="red", linewidth=0.6) +
+		geom_point(data=milestone_df,
+			aes(x=median_t, y=threshold, group=1),
+			col="red", size=2.5) +
+		theme_classic() +
+		labs(x="Time (days)", y="Cumulative infections") +
+		facet_wrap(~profiletype, nrow=1)
+ggsave(fig_cuminf_milestones, file="figures/cuminf_milestones_SEIR.pdf")
+ggsave(fig_cuminf_milestones, file="figures/cuminf_milestones_SEIR.png")
+
 # Daily stochastic incidence curves (grey) with ODE overlay (black)
 fig_inf_overlay <- dailyinf_df %>%
 	filter(sim <= max_plot_sims) %>%
@@ -185,8 +222,6 @@ ggsave(fig_cuminf_overlay, file="figures/inf_overlay_SEIR.png")
 # ==============================================================================
 
 # For each established epidemic, extract the time it first reaches 100 infections
-threshold <- 100
-
 time_to_threshold <- cuminf_df %>%
 	filter(established == 1) %>%
 	group_by(sim, profiletype) %>%

@@ -249,18 +249,14 @@ print(varratio_all[[pathogen]])
 
 # Load cached simulations (psi values are those from episims_gamma, not psivals)
 sim_psivals <- c(0, 0.5, 1)
-cuminf_df_raw <- load_cache(pathogen, nsim, popsize, sim_psivals)
+cache <- load_cache_v2(pathogen, nsim, popsize, sim_psivals)
 
-if (!is.null(cuminf_df_raw)) {
-	cuminf_df <- cuminf_df_raw
-
-	fs_df <- cuminf_df %>%
+if (!is.null(cache)) {
+	fs_df <- cache$summary %>%
 		filter(established == 1) %>%
-		group_by(sim, psi) %>%
-		summarise(finalsize = max(cuminf), .groups = "drop") %>%
 		group_by(psi) %>%
-		summarise(fs_mean = mean(finalsize),
-		          fs_var  = var(finalsize),
+		summarise(fs_mean = mean(final_size),
+		          fs_var  = var(final_size),
 		          .groups = "drop")
 
 	fs_var_ref <- fs_df %>% filter(psi == 1) %>% pull(fs_var)

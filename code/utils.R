@@ -1,5 +1,9 @@
-library(tidyverse) 
-library(odin) 
+library(tidyverse)
+library(odin)
+library(Rcpp)
+
+# Compile Rcpp simulation engine (priority-queue based, ~50-100x faster)
+sourceCpp("code/src/sim_stochastic_rcpp.cpp")
 
 # ==============================================================================
 # Utility functions
@@ -412,20 +416,20 @@ gen_inf_attempts_gamma_symptoms <- function(T, R0, alpha, psi,
 	}
 }
 
-#' Stochastic epidemic simulation
+#' Stochastic epidemic simulation (R fallback)
 #'
-#' Generates the infection times for a population (size n) given individual
-#' infectiousness profiles specified by gen_inf_attempts
+#' Pure-R implementation using sorted vector queue. Kept as fallback;
+#' the default sim_stochastic_fast() uses the Rcpp priority-queue version.
 #'
 #' @param n Population size (default 1000)
-#' @param gen_inf_attempts Infection attempt time generator function, 
-#'   capturing the individual infectiousness profile, with signature 
-#'   function(t_inf) -> numeric vector. 
-#' @return Numeric vector of length n containing infection times (Inf if the 
+#' @param gen_inf_attempts Infection attempt time generator function,
+#'   capturing the individual infectiousness profile, with signature
+#'   function(t_inf) -> numeric vector.
+#' @return Numeric vector of length n containing infection times (Inf if the
 #'   person remains uninfected at the end of the simulation)
-sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
+sim_stochastic_fast_r <- function(n=1000, gen_inf_attempts){
 
-	# Initialize infection times 
+	# Initialize infection times
 	tinf_vec <- rep(Inf, n)
 
 	# Seed infection
@@ -435,17 +439,17 @@ sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
 	qi <- 1L
 	qn <- length(queue)
 
-	# Process events in chronological order 
+	# Process events in chronological order
 	while(qi <= qn){
 		t_attempt <- queue[qi]
-		qi <- qi + 1L 
+		qi <- qi + 1L
 
 		target <- sample.int(n,1)
 		if(tinf_vec[target]==Inf){
 			tinf_vec[target] <- t_attempt
 			new_attempts <- gen_inf_attempts(t_attempt)
 			if(length(new_attempts) > 0L){
-				# Merge new events with unprocessed remainder of queue 
+				# Merge new events with unprocessed remainder of queue
 				remaining <- if(qi <= qn) queue[qi:qn] else numeric(0)
 				queue <- sort.int(c(remaining, new_attempts))
 				qi <- 1L
@@ -454,6 +458,22 @@ sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
 		}
 	}
 	return(tinf_vec)
+}
+
+#' Stochastic epidemic simulation
+#'
+#' Generates the infection times for a population (size n) given individual
+#' infectiousness profiles specified by gen_inf_attempts. Uses the Rcpp
+#' priority-queue implementation for speed.
+#'
+#' @param n Population size (default 1000)
+#' @param gen_inf_attempts Infection attempt time generator function,
+#'   capturing the individual infectiousness profile, with signature
+#'   function(t_inf) -> numeric vector.
+#' @return Numeric vector of length n containing infection times (Inf if the
+#'   person remains uninfected at the end of the simulation)
+sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
+	sim_stochastic_rcpp(n, gen_inf_attempts)
 }
 
 # Helper: save a ggplot as both .png and .pdf in figures/
@@ -485,5 +505,85 @@ load_cache <- function(pathogen, nsim, popsize, psivals) {
 
 	cat(sprintf("  %s: loading cached simulations from %s\n", pathogen, cache_file))
 	df %>% mutate(psi = factor(psi))
+}
+
+# ==============================================================================
+# V2 cache format: summary + plot trajectories (two small files)
+# ==============================================================================
+
+# Helper: construct v2 cache file paths
+cache_path_summary <- function(pathogen, nsim, popsize) {
+	file.path("output", sprintf("sim_summary_%s_n%d_s%d.csv", pathogen, popsize, nsim))
+}
+
+cache_path_plot <- function(pathogen, nsim, popsize) {
+	file.path("output", sprintf("plot_trajectories_%s_n%d_s%d.csv", pathogen, popsize, nsim))
+}
+
+# Helper: load v2 cached simulations, or return NULL if missing/stale
+#
+# Returns a list with $summary (one row per sim*psi) and $plot (individual
+# infection times for first max_plot_sims simulations). Returns NULL if
+# cache is missing or doesn't contain all required psi values.
+load_cache_v2 <- function(pathogen, nsim, popsize, psivals) {
+	summary_file <- cache_path_summary(pathogen, nsim, popsize)
+	plot_file    <- cache_path_plot(pathogen, nsim, popsize)
+
+	if (!file.exists(summary_file) || !file.exists(plot_file)) return(NULL)
+
+	summary_df <- read_csv(summary_file, show_col_types = FALSE)
+	cached_psi <- sort(unique(summary_df$psi))
+	if (!all(psivals %in% cached_psi)) {
+		cat(sprintf("  %s: v2 cache missing psi values %s, re-running\n",
+		    pathogen, paste(setdiff(psivals, cached_psi), collapse = ", ")))
+		return(NULL)
+	}
+
+	plot_df <- read_csv(plot_file, show_col_types = FALSE)
+
+	cat(sprintf("  %s: loading v2 cached simulations from %s\n", pathogen, summary_file))
+	list(
+		summary = summary_df %>% mutate(psi = factor(psi)),
+		plot    = plot_df    %>% mutate(psi = factor(psi))
+	)
+}
+
+# ==============================================================================
+# Growth rate helper
+# ==============================================================================
+
+#' Compute epidemic growth rate from infection times via Poisson GLM
+#'
+#' Given a sorted vector of infection times, restricts to the window where
+#' cumulative cases are between min_threshold and growth_threshold, aggregates
+#' to daily incidence, and fits log-linear Poisson GLM to estimate the
+#' exponential growth rate.
+#'
+#' @param infected Sorted vector of infection times (finite values only)
+#' @param min_threshold Lower bound on cumulative cases (default 10)
+#' @param growth_threshold Upper bound on cumulative cases (default 100)
+#' @return Scalar growth rate (coefficient on day), or NA if too few data points
+compute_growth_rate <- function(infected, min_threshold = 10, growth_threshold = 100) {
+	n <- length(infected)
+	if (n < growth_threshold) return(NA_real_)
+
+	# Restrict to window [min_threshold, growth_threshold]
+	window_times <- infected[min_threshold:min(growth_threshold, n)]
+	days <- floor(window_times)
+	day_counts <- table(days)
+
+	# Build complete daily incidence (filling zeros)
+	day_seq <- seq(min(days), max(days))
+	counts <- integer(length(day_seq))
+	names(counts) <- as.character(day_seq)
+	counts[names(day_counts)] <- as.integer(day_counts)
+	day0 <- day_seq - min(day_seq)
+
+	if (length(day0) < 3) return(NA_real_)
+
+	tryCatch(
+		coef(glm(counts ~ day0, family = poisson))[2],
+		error = function(e) NA_real_
+	)
 }
 

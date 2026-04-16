@@ -19,14 +19,40 @@ parslist <- list(
 # Compute moment-matched Gamma shape and rate for each pathogen
 # Gamma(alpha, beta): mean = alpha/beta, var = alpha/beta^2
 #   => alpha = mean^2 / var, beta = mean / var
+#
+# Malthusian growth rate from the Euler-Lotka equation
+#   1 = R0 * integral_0^infty exp(-r*tau) * g(tau) dtau
+# with g ~ Gamma(alpha, beta), the MGF gives
+#   1 = R0 * (beta / (beta + r))^alpha
+#   => r = beta * (R0^(1/alpha) - 1)
+#
+# Probability of epidemic establishment from a single introduction under a
+# Poisson(R0) offspring distribution: P_est = 1 - q, where the extinction
+# probability q satisfies q = exp(-R0 * (1 - q)). For R0 <= 1, q = 1.
+# p_establish_poisson <- function(R0) {
+# 	if (R0 <= 1) return(0)
+# 	root <- uniroot(function(q) q - exp(-R0 * (1 - q)),
+# 	                interval = c(1e-12, 1 - 1e-12))$root
+# 	1 - root
+# }
+p_establish <- function(R0) {
+	if (R0 <= 1) return(0)
+	1 - (1 / R0)
+}
+
+
 for (i in seq_along(parslist)) {
-	parslist[[i]]$alpha <- parslist[[i]]$Tgen^2 / parslist[[i]]$Tvar
-	parslist[[i]]$beta  <- parslist[[i]]$Tgen   / parslist[[i]]$Tvar
+	parslist[[i]]$alpha  <- parslist[[i]]$Tgen^2 / parslist[[i]]$Tvar
+	parslist[[i]]$beta   <- parslist[[i]]$Tgen   / parslist[[i]]$Tvar
+	parslist[[i]]$r      <- parslist[[i]]$beta *
+	                        (parslist[[i]]$R0^(1 / parslist[[i]]$alpha) - 1)
+	# parslist[[i]]$p_est  <- p_establish_poisson(parslist[[i]]$R0)
+	parslist[[i]]$p_est  <- p_establish(parslist[[i]]$R0)
 }
 
 # Print summary
 for (p in parslist) {
-	cat(sprintf("%-12s  Tgen=%.2f  Tvar=%.2f  alpha=%.2f  beta=%.3f\n",
-	    p$pathogen, p$Tgen, p$Tvar, p$alpha, p$beta))
+	cat(sprintf("%-12s  Tgen=%.2f  Tvar=%.2f  alpha=%.2f  beta=%.3f  r=%.3f  p_est=%.3f\n",
+	    p$pathogen, p$Tgen, p$Tvar, p$alpha, p$beta, p$r, p$p_est))
 }
 

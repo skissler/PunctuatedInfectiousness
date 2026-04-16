@@ -11,7 +11,7 @@ source("code/parameters.R")
 #      epidemic dynamics"
 #
 # Runs nsim stochastic epidemics for spike (psi=0), smooth (psi=1), and
-# intermediate (psi=0.25) individual infectiousness profiles, and:
+# intermediate (psi=0.5) individual infectiousness profiles, and:
 #   - Plots epidemic trajectories (daily incidence and cumulative incidence)
 #   - Calculates extinction probabilities and final size distributions
 #   - Plots the time to reach various epidemic milestones (100 infections,
@@ -23,10 +23,15 @@ source("code/parameters.R")
 # 1. Global parameters
 # ==============================================================================
 
-popsize       <- 1000 #10000
+popsize       <- 10000 #10000
 nsim          <- 1000 #2000
 psivals       <- c(0, 0.5, 1)
-max_plot_sims <- 200  # max number of individual trajectories to draw on plots
+max_plot_sims <- 1000  # max number of individual trajectories to draw on plots
+
+# Thresholds for growth rate estimation and survival curves
+threshold        <- 100
+min_threshold    <- 10
+growth_threshold <- 100
 
 # ==============================================================================
 # 2. Loop over pathogens
@@ -48,7 +53,7 @@ cat(sprintf("\n===== %s: T=%.2f, alpha=%.2f, R0=%.1f =====\n",
 # ==============================================================================
 
 # Run the renewal equation model
-ren_out <- renewal_epidemic(R0, alpha, T, 1000)
+ren_out <- renewal_epidemic(R0, alpha, T, popsize)
 
 # Aggregate renewal equation output to daily and weekly new-infection counts
 ren_daily <- ren_out %>%
@@ -68,51 +73,88 @@ ren_weekly <- ren_out %>%
 	mutate(newinf=case_when(is.na(newinf)~cuminf, TRUE~newinf))
 
 # ==============================================================================
-# 2b. Stochastic simulations (cached)
+# 2b. Stochastic simulations (cached, incremental processing)
 # ==============================================================================
 
-cuminf_df <- load_cache(pathogen, nsim, popsize, psivals)
+cache <- load_cache_v2(pathogen, nsim, popsize, psivals)
 
-if (is.null(cuminf_df)) {
-	# Run the simulations and store the output
-	cuminf_df <- tibble()
+if (!is.null(cache)) {
+	sim_summary_df <- cache$summary
+	plot_df        <- cache$plot
+} else {
+	# Run simulations with incremental processing:
+	#   - Compute per-sim summary immediately, discard raw infection times
+	#   - Keep full trajectories only for sim <= max_plot_sims (for plotting)
+	summary_list <- vector("list", nsim * length(psivals))
+	plot_list    <- vector("list", max_plot_sims * length(psivals))
+	si <- 0L  # summary index
+	pi <- 0L  # plot index
+
 	for(sim in 1:nsim){
 	    for(psi in psivals){
-	            tinf <- sim_stochastic_fast(n=popsize,
-	            	                        gen_inf_attempts=gen_inf_attempts_gamma(T, R0, alpha, psi))
-	            cuminf_df <- bind_rows(cuminf_df,
-	                    tibble(tinf=sort(tinf[tinf<Inf])) %>%
-	                            mutate(cuminf=1:n(), sim=sim, psi=psi))
+	        tinf <- sim_stochastic_fast(n=popsize,
+	                                    gen_inf_attempts=gen_inf_attempts_gamma(T, R0, alpha, psi))
+
+	        # Extract sorted finite infection times
+	        infected <- sort(tinf[is.finite(tinf)])
+	        final_size <- length(infected)
+	        established <- as.integer(final_size >= 0.1 * popsize)
+
+	        # Compute time to threshold (100 cases)
+	        time_to_100 <- if(final_size >= threshold) infected[threshold] else NA_real_
+
+	        # Compute growth rate
+	        growthrate <- compute_growth_rate(infected, min_threshold, growth_threshold)
+
+	        # Store summary row
+	        si <- si + 1L
+	        summary_list[[si]] <- tibble(
+	            sim = sim, psi = psi,
+	            established = established,
+	            final_size = final_size,
+	            time_to_100 = time_to_100,
+	            growthrate = growthrate
+	        )
+
+	        # Keep full trajectory for plotting subset
+	        if(sim <= max_plot_sims && final_size > 0){
+	            pi <- pi + 1L
+	            plot_list[[pi]] <- tibble(
+	                tinf = infected,
+	                cuminf = seq_along(infected),
+	                sim = sim,
+	                psi = psi,
+	                established = established
+	            )
+	        }
 	    }
 	    if(sim %% 100 == 0) cat(sprintf("  %s: sim %d/%d\n", pathogen, sim, nsim))
 	}
 
-	# Flag established epidemics (>= 10% of population infected)
-	cuminf_df <- cuminf_df %>%
-		mutate(psi = factor(psi)) %>%
-		group_by(sim, psi) %>%
-		mutate(established = as.integer(n() >= 0.1 * popsize)) %>%
-		ungroup()
+	sim_summary_df <- bind_rows(summary_list[1:si])
+	plot_df        <- bind_rows(plot_list[seq_len(pi)])
 
-	# Save to cache
-	cache_file <- cache_path(pathogen, nsim, popsize)
-	write_csv(cuminf_df, cache_file)
-	cat(sprintf("  %s: simulations saved to %s\n", pathogen, cache_file))
+	# Save to v2 cache
+	write_csv(sim_summary_df, cache_path_summary(pathogen, nsim, popsize))
+	write_csv(plot_df, cache_path_plot(pathogen, nsim, popsize))
+	cat(sprintf("  %s: simulations saved (v2 cache)\n", pathogen))
+
+	sim_summary_df <- sim_summary_df %>% mutate(psi = factor(psi))
+	plot_df        <- plot_df %>% mutate(psi = factor(psi))
 }
 
+# ==============================================================================
+# 2c. Aggregate plot subset to daily/weekly resolution (for trajectory plots)
+# ==============================================================================
 
-# Aggregate to daily/weekly resolution
+lastday <- ceiling(max(plot_df$tinf))
+
 dayjoin <- expand_grid(
-	psi=unique(cuminf_df$psi),
-	sim=1:nsim,
-	day=0:max(ceiling(cuminf_df$tinf)))
+	psi=unique(plot_df$psi),
+	sim=unique(plot_df$sim),
+	day=0:lastday)
 
-weekjoin <- expand_grid(
-	psi=unique(cuminf_df$psi),
-	sim=1:nsim,
-	week=0:max(ceiling(cuminf_df$tinf / 7)))
-
-dailyinf_df <- cuminf_df %>%
+dailyinf_df <- plot_df %>%
 	mutate(day = floor(tinf)) %>%
 	group_by(psi, sim, day) %>%
 	summarise(ninf = n(), established = first(established), .groups = "drop") %>%
@@ -123,45 +165,18 @@ dailyinf_df <- cuminf_df %>%
 	mutate(established = max(established, na.rm = TRUE)) %>%
 	mutate(cuminf=cumsum(ninf))
 
-weeklyinf_df <- cuminf_df %>%
-	mutate(day = floor(tinf), week = floor(day / 7)) %>%
-	group_by(psi, sim, week) %>%
-	summarise(ninf = n(), established = first(established), .groups = "drop") %>%
-	right_join(weekjoin, by = c("psi", "sim", "week")) %>%
-	replace_na(list(ninf = 0)) %>%
-	group_by(psi, sim) %>%
-	arrange(week, .by_group = TRUE) %>%
-	mutate(established = max(established, na.rm = TRUE)) %>%
-	mutate(cuminf=cumsum(ninf))
-
-lastday <- ceiling(max(cuminf_df$tinf))
-
-dailyinf_means <- dailyinf_df %>%
-	filter(established == 1) %>%
-	group_by(psi, day) %>%
-	summarise(mean_ninf = mean(ninf), mean_cuminf = mean(cuminf), .groups = "drop")
-
-weeklyinf_means <- weeklyinf_df %>%
-	filter(established == 1) %>%
-	group_by(psi, week) %>%
-	summarise(mean_ninf = mean(ninf), mean_cuminf = mean(cuminf), .groups = "drop")
-
 # ==============================================================================
-# 2c. Key metrics
+# 2d. Key metrics (from summary)
 # ==============================================================================
 
-pest_table <- cuminf_df %>%
-	group_by(sim, psi) %>%
-	slice(1) %>%
+pest_table <- sim_summary_df %>%
 	group_by(psi) %>%
-	summarise(pestablished=sum(established)/nsim, .groups="drop")
+	summarise(pestablished=mean(established), .groups="drop")
 
-fs_table <- cuminf_df %>%
-	group_by(sim, psi) %>%
+fs_table <- sim_summary_df %>%
 	filter(established==1) %>%
-	summarise(finalsize=max(cuminf), .groups="drop") %>%
 	group_by(psi) %>%
-	summarise(fs_mean=mean(finalsize), fs_sd=sd(finalsize), .groups="drop")
+	summarise(fs_mean=mean(final_size), fs_sd=sd(final_size), .groups="drop")
 
 cat(sprintf("  %s: P(established) by psi:\n", pathogen))
 print(pest_table)
@@ -169,12 +184,11 @@ cat(sprintf("  %s: Final size summary:\n", pathogen))
 print(fs_table)
 
 # ==============================================================================
-# 2d. Figures — epidemic trajectories
+# 2e. Figures — epidemic trajectories (plot subset only)
 # ==============================================================================
 
-# Cumulative stochastic epidemic curves (grey) with ODE overlay (blue)
-fig_cuminf_overlay <- cuminf_df %>%
-	filter(sim <= max_plot_sims) %>%
+# Cumulative stochastic epidemic curves (grey) with ODE overlay (black)
+fig_cuminf_overlay <- plot_df %>%
 	ggplot(aes(x=tinf, y=cuminf, group=sim)) +
 		geom_line(alpha=0.2, col="grey") +
 		geom_line(data=filter(ren_out, t<=lastday),
@@ -186,9 +200,43 @@ fig_cuminf_overlay <- cuminf_df %>%
 
 save_fig(fig_cuminf_overlay, paste0("fig_cuminf_overlay_", pathogen))
 
-# Daily stochastic incidence curves (grey) with ODE overlay (blue)
+# Cumulative curves with time-to-threshold milestone annotations
+milestone_df <- plot_df %>%
+	filter(established == 1, cuminf >= threshold) %>%
+	group_by(sim, psi) %>%
+	slice(1) %>%
+	group_by(psi) %>%
+	summarise(
+		median_t = median(tinf),
+		q05_t    = quantile(tinf, 0.05),
+		q95_t    = quantile(tinf, 0.95),
+		.groups  = "drop")
+
+fig_cuminf_milestones <- plot_df %>%
+	ggplot(aes(x=tinf, y=cuminf, group=sim)) +
+		geom_line(alpha=0.2, col="grey") +
+		geom_line(data=filter(ren_out, t<=lastday),
+			aes(x=t, y=cuminf*popsize, group=1),
+			alpha=0.8, linewidth=1, col="black") +
+		geom_segment(data=milestone_df,
+			aes(x=q05_t, xend=q05_t,
+			    y=threshold*0.85, yend=threshold*1.15, group=1),
+			col="red", linewidth=0.6) +
+		geom_segment(data=milestone_df,
+			aes(x=q95_t, xend=q95_t,
+			    y=threshold*0.85, yend=threshold*1.15, group=1),
+			col="red", linewidth=0.6) +
+		geom_point(data=milestone_df,
+			aes(x=median_t, y=threshold, group=1),
+			col="red", size=2.5) +
+		theme_classic() +
+		labs(x="Time (days)", y="Cumulative infections", title = pathogen) +
+		facet_wrap(~psi, nrow=1)
+
+save_fig(fig_cuminf_milestones, paste0("fig_cuminf_milestones_", pathogen))
+
+# Daily stochastic incidence curves (grey) with ODE overlay (black)
 fig_inf_overlay <- dailyinf_df %>%
-	filter(sim <= max_plot_sims) %>%
 	ggplot(aes(x=day, y=ninf, group=sim)) +
 		geom_line(alpha=0.2, col="grey") +
 		geom_line(data=filter(ren_daily, day<=lastday),
@@ -201,33 +249,24 @@ fig_inf_overlay <- dailyinf_df %>%
 save_fig(fig_inf_overlay, paste0("fig_inf_overlay_", pathogen))
 
 # ==============================================================================
-# 2e. Figure — KM curves for time to reach 100 cases
+# 2f. Figure — KM curves for time to reach 100 cases (from summary)
 # ==============================================================================
 
-# For each established epidemic, extract the time it first reaches 100 infections
-threshold <- 100
+time_to_threshold <- sim_summary_df %>%
+	filter(established == 1, !is.na(time_to_100)) %>%
+	select(sim, psi, time_to_100)
 
-time_to_threshold <- cuminf_df %>%
-	filter(established == 1) %>%
-	group_by(sim, psi) %>%
-	filter(cuminf >= threshold) %>%
-	slice(1) %>%
-	ungroup() %>%
-	select(sim, psi, tinf)
-
-# Build the survival curve: for a grid of times, compute the fraction
-# of epidemics that haven't yet reached the threshold
-t_grid <- seq(0, max(time_to_threshold$tinf), length.out = 500)
+t_grid <- seq(0, max(time_to_threshold$time_to_100), length.out = 500)
 
 survival_100_df <- time_to_threshold %>%
 	group_by(psi) %>%
 	summarise(
 		t = list(t_grid),
-		prop_below = list(sapply(t_grid, function(tt) mean(tinf > tt))),
+		prop_below = list(sapply(t_grid, function(tt) mean(time_to_100 > tt))),
 		.groups = "drop") %>%
 	unnest(cols = c(t, prop_below))
 
-breakvals = if(max(cuminf_df$tinf)>120){seq(0,365,by=15)}else{seq(0,365,by=7)}
+breakvals = if(max(time_to_threshold$time_to_100)>120){seq(0,365,by=15)}else{seq(0,365,by=7)}
 fig_survival_100 <- ggplot(survival_100_df, aes(x=t, y=prop_below, col=psi)) +
 	geom_line(alpha=0.6, linewidth=0.8) +
 	scale_x_continuous(breaks=breakvals) +
@@ -241,7 +280,7 @@ fig_survival_100 <- ggplot(survival_100_df, aes(x=t, y=prop_below, col=psi)) +
 save_fig(fig_survival_100, paste0("fig_survival_100_", pathogen))
 
 # ==============================================================================
-# 2f. Epidemic growth rate (Poisson GLM on daily incidence, cases 10-100)
+# 2g. Epidemic growth rate (from summary)
 # ==============================================================================
 
 # Theoretical growth rate: solve R0 * (beta/(beta+r))^alpha = 1  (Lotka-Euler)
@@ -249,31 +288,8 @@ r_malthusian <- uniroot(
 	function(r) R0 * (beta / (beta + r))^alpha - 1,
 	interval = c(0, 10))$root
 
-# For each established epidemic, compute daily incidence in the window where
-# cumulative cases are between 10 and 100, then fit a Poisson GLM
-# I_t ~ Poisson(exp(r*t + b)) to estimate the exponential growth rate.
-growth_threshold <- 100
-min_threshold <- 10
-
-growth_incidence <- cuminf_df %>%
-	filter(established == 1, cuminf >= min_threshold, cuminf <= growth_threshold) %>%
-	mutate(day = floor(tinf)) %>%
-	group_by(sim, psi, day) %>%
-	summarise(count = n(), .groups = "drop") %>%
-	group_by(sim, psi) %>%
-	complete(day = seq(min(day), max(day)), fill = list(count = 0)) %>%
-	mutate(day0 = day - min(day)) %>%
-	ungroup()
-
-growthrate_df <- growth_incidence %>%
-	group_by(sim, psi) %>%
-	filter(n() >= 3) %>%
-	summarise(
-		growthrate = tryCatch(
-			coef(glm(count ~ day0, family = poisson))[2],
-			error = function(e) NA_real_),
-		.groups = "drop") %>%
-	filter(!is.na(growthrate))
+growthrate_df <- sim_summary_df %>%
+	filter(established == 1, !is.na(growthrate))
 
 growthrate_table <- growthrate_df %>%
 	group_by(psi) %>%
@@ -295,8 +311,19 @@ fig_growthrate_hists <- ggplot(growthrate_df, aes(x = growthrate)) +
 
 save_fig(fig_growthrate_hists, paste0("fig_growthrate_hists_", pathogen))
 
+# Growth rate lines plot: uses plot subset trajectories
+growth_incidence <- plot_df %>%
+	filter(established == 1, cuminf >= min_threshold, cuminf <= growth_threshold) %>%
+	mutate(day = floor(tinf)) %>%
+	group_by(sim, psi, day) %>%
+	summarise(count = n(), .groups = "drop") %>%
+	group_by(sim, psi) %>%
+	complete(day = seq(min(day), max(day)), fill = list(count = 0)) %>%
+	mutate(day0 = day - min(day)) %>%
+	ungroup()
+
 fig_growthrate_lines <- growth_incidence %>%
-	filter(sim <= max_plot_sims, count > 0) %>%
+	filter(count > 0) %>%
 	ggplot(aes(x = day0, y = count, group = factor(sim))) +
 		geom_point(alpha = 0.1, size = 0.3, col = "grey") +
 		geom_abline(intercept = log10(min_threshold),

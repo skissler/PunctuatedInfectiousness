@@ -4160,11 +4160,363 @@ $$R = \frac{1}{M_g(-r)}$$
   <li>Obadia T et al. (2012). The R0 package. <em>BMC Med Inform Decis Mak</em>, 12:147.</li>
 </ul>
 
+<hr>
+<div class="prompt">Why does k grow so fast in ψ? Do the line plots and heatmaps reflect the same information?</div>
+
+<h1>Exponential growth of k in ψ: line plots vs heatmaps</h1>
+
+<h2>The formula is exponential in ψ</h2>
+
+<p>From Eq. 6 in the paper, the overdispersion parameter under periodic contacts is:</p>
+
+$$k = \frac{2}{A^2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{\psi\alpha}$$
+
+<p>This has the form \(k = c_0 \cdot b^{\psi}\) where:</p>
+
+<ul>
+  <li><strong>Prefactor:</strong> \(c_0 = 2/A^2\) — sets the baseline overdispersion at \(\psi = 0\) (purely from the contact process). For \(A = 0.5\), we get \(c_0 = 8\).</li>
+  <li><strong>Base:</strong> \(b = \left(1 + \omega^2/\beta^2\right)^{\alpha}\) — the exponential growth rate in \(\psi\). This depends on the pathogen's generation interval parameters \((\alpha, \beta)\) and the contact frequency \(\omega\).</li>
+</ul>
+
+<p>The base \(b\) is the squared characteristic function of the Gamma\((\alpha, \beta)\) generation interval evaluated at frequency \(\omega\), raised to a power. Pathogens with <strong>higher \(\alpha\)</strong> (more concentrated generation intervals) or <strong>lower \(\beta\)</strong> (longer generation times relative to variance) see \(k\) explode faster in \(\psi\).</p>
+
+<h2>Growth rates by pathogen</h2>
+
+<p>With \(A = 0.5\), period = 1 day (\(\omega = 2\pi\)):</p>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em 0;">
+<tr><th>Pathogen</th><th>\(\alpha\)</th><th>\(\beta\)</th><th>base \(b\)</th><th>\(\psi\) where \(k = 50\)</th></tr>
+<tr><td>Influenza</td><td>2.32</td><td>0.726</td><td>\(2.3 \times 10^4\)</td><td>0.18</td></tr>
+<tr><td>Omicron</td><td>2.39</td><td>0.339</td><td>\(1.2 \times 10^6\)</td><td>0.13</td></tr>
+<tr><td>Measles</td><td>11.36</td><td>0.931</td><td>\(8.8 \times 10^{18}\)</td><td>0.04</td></tr>
+</table>
+
+<p>At \(\psi = 1\), the values are astronomical: \(k \approx 1.9 \times 10^5\) (influenza), \(9.3 \times 10^6\) (omicron), \(7 \times 10^{19}\) (measles). These are effectively infinite — the offspring distribution is essentially Poisson, with no meaningful overdispersion from the contact process.</p>
+
+<h2>Line plots and heatmaps show the same thing</h2>
+
+<p>The <strong>cross-pathogen line plot</strong> (\(k\) vs \(\psi\) at fixed \(A = 0.5\)) is a single horizontal slice through each pathogen's heatmap at \(A = 0.5\). On a log scale, the curves are straight lines with slopes \(\alpha \cdot \log(1 + \omega^2/\beta^2)\). Measles has the steepest slope (largest \(\alpha\)).</p>
+
+<p>The <strong>heatmaps</strong> show the same formula over the full \((A, \psi)\) plane. When capped at \(k = 50\):</p>
+
+<ul>
+  <li>The cap saturates across most of the \((\psi, A)\) domain, because \(k\) exceeds 50 very quickly.</li>
+  <li>For <strong>measles</strong>, essentially only \(\psi \lesssim 0.04\) shows any color variation — the rest is solid at the cap.</li>
+  <li>For <strong>influenza</strong>, the interesting region extends to \(\psi \approx 0.18\).</li>
+  <li>For <strong>omicron</strong>, up to \(\psi \approx 0.13\).</li>
+</ul>
+
+<p>The contour lines in the heatmap are level curves of \(k = \frac{2}{A^2}(1 + \omega^2/\beta^2)^{\psi\alpha}\). Setting \(k = k_0\) and solving:</p>
+
+$$A = \sqrt{\frac{2}{k_0}} \cdot \left(1 + \frac{\omega^2}{\beta^2}\right)^{\psi\alpha / 2}$$
+
+<p>These are exponential curves in \(\psi\), explaining why the contours in the heatmap sweep steeply upward and compress toward the left edge.</p>
+
+<h2>Physical interpretation</h2>
+
+<p>At \(\psi = 0\) (fully punctuated), all of an individual's infection attempts occur at a single random time \(\ell_i\). This maximizes sensitivity to the contact process: whether \(\ell_i\) falls at a peak or trough of \(c(t)\) determines whether the individual produces many or few secondary cases. This creates maximal overdispersion (\(k = 2/A^2\), independent of pathogen).</p>
+
+<p>As \(\psi\) increases, infection attempts spread out over a wider time window (Gamma\((\psi\alpha, \beta)\) spread around \(\ell_i\)). This <strong>averages over the contact oscillation</strong>, washing out the between-individual variability. The rate at which this averaging happens depends on how the generation interval's timescale compares to the contact period:</p>
+
+<ul>
+  <li><strong>Measles</strong> (\(\alpha = 11.36\)): highly concentrated generation interval, so even a small spread (\(\psi = 0.05\)) covers many contact cycles, rapidly averaging them out.</li>
+  <li><strong>Influenza</strong> (\(\alpha = 2.32\)): broader generation interval relative to its mean, so it takes more spreading before the contact oscillation averages out.</li>
+</ul>
+
+<p>The bottom line: <strong>the contact-driven overdispersion is only meaningful for highly punctuated profiles</strong> (\(\psi\) near 0). For smooth profiles (\(\psi\) near 1), individuals inherently average over the contact cycle, and \(k \to \infty\) (Poisson offspring).</p>
+
+<hr>
+<div class="prompt">Should we switch from Lomax to lognormal for the switching contact model? Does it make the k derivation cleaner? Should we consider something else entirely?</div>
+
+<h1>Choice of level distribution for the Poisson-switching contact model</h1>
+
+<h2>Key observation: the derivation is distribution-agnostic</h2>
+
+<p>Looking back at the Lomax derivation (Steps 0–5 above), the specific distribution of the contact levels \(c^*\) enters <strong>only through a single quantity</strong>: the variance \(V_c = \mathrm{Var}[c^*]\). Here's why.</p>
+
+<p>For <em>any</em> Poisson-switching process with rate \(\lambda\) and iid level draws from a distribution with mean 1, the autocovariance is</p>
+
+$$K_c(s) = V_c\,e^{-\lambda|s|}$$
+
+<p>regardless of whether the levels are Lomax, lognormal, Gamma, or anything else. This exponential autocovariance is a property of the <em>switching structure</em> (Poisson holding times with iid refreshes), not of the level distribution.</p>
+
+<p>Steps 1–4 of the derivation only use \(K_c(s)\), never the full distribution of \(c^*\). The result was:</p>
+
+$$k = \frac{1}{V_c \cdot I^*}$$
+
+<p>where</p>
+
+$$I^* = \frac{\Gamma\!\left(\psi\alpha+\tfrac{1}{2}\right)}{\sqrt{\pi}\,\Gamma(\psi\alpha+1)}\;{_2F_1}\!\left(\psi\alpha,\,\tfrac{1}{2};\,\psi\alpha+1;\,1-\Bigl(\tfrac{\lambda}{\beta}\Bigr)^{2}\right)$$
+
+<p>depends only on the <strong>biological profile parameters</strong> (\(\psi\alpha\), \(\beta\)) and the <strong>switching rate</strong> (\(\lambda\)). The level distribution is entirely absorbed into \(V_c\).</p>
+
+<p><strong>Bottom line:</strong> Switching from Lomax to lognormal (or anything else) does not change the derivation at all. It only changes the expression for \(V_c\).</p>
+
+<h2>Comparing candidates</h2>
+
+<p>Since the derivation is the same, the choice of level distribution is purely about (a) how cleanly \(V_c\) parameterizes and (b) modeling considerations. Here are the main options:</p>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1em 0;">
+<thead>
+<tr><th>Distribution</th><th>Constraint for \(E[c^*]=1\)</th><th>\(V_c = \mathrm{Var}[c^*]\)</th><th>Free parameter</th><th>\(k\) formula</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Lomax</strong>(\(\alpha_{\!P}, \sigma\))</td>
+  <td>\(\sigma = \alpha_{\!P}-1\)</td>
+  <td>\(\dfrac{\alpha_{\!P}}{\alpha_{\!P}-2}\)</td>
+  <td>\(\alpha_{\!P}>2\)</td>
+  <td>\(\dfrac{\alpha_{\!P}-2}{\alpha_{\!P}\,I^*}\)</td>
+</tr>
+<tr>
+  <td><strong>Lognormal</strong>(\(\mu, \sigma^2\))</td>
+  <td>\(\mu = -\sigma^2/2\)</td>
+  <td>\(e^{\sigma^2}-1\)</td>
+  <td>\(\sigma^2 > 0\)</td>
+  <td>\(\dfrac{1}{(e^{\sigma^2}-1)\,I^*}\)</td>
+</tr>
+<tr>
+  <td><strong>Gamma</strong>(\(k_c, k_c\))</td>
+  <td>shape = rate = \(k_c\)</td>
+  <td>\(1/k_c\)</td>
+  <td>\(k_c > 0\)</td>
+  <td>\(\dfrac{k_c}{I^*}\)</td>
+</tr>
+</tbody>
+</table>
+
+<h2>The Gamma is the cleanest choice</h2>
+
+<p>With \(c^* \sim \mathrm{Gamma}(k_c, k_c)\) (shape = rate = \(k_c\)), we get \(E[c^*] = 1\) and \(V_c = 1/k_c\), giving:</p>
+
+$$\boxed{\;k = \frac{k_c}{I^*(\psi\alpha,\,\lambda/\beta)}\;}$$
+
+<p>This is the simplest possible formula: \(k\) is just the contact shape parameter \(k_c\) divided by the profile-width/switching factor. The advantages:</p>
+
+<ol>
+  <li><strong>Simplest parameterization.</strong> \(V_c = 1/k_c\) is cleaner than \(e^{\sigma^2}-1\) (lognormal) or \(\alpha_{\!P}/(\alpha_{\!P}-2)\) (Lomax).</li>
+
+  <li><strong>Clean nesting of constant contacts.</strong> As \(k_c \to \infty\), \(V_c \to 0\) and \(k \to \infty\) (Poisson offspring). The constant-contact model is smoothly nested as a limiting case. This is the same property you noted for the lognormal (\(\sigma^2 \to 0\)), but the Gamma parameterization is more transparent.</li>
+
+  <li><strong>Intuitive interpretation.</strong> \(k_c\) directly controls the shape of the contact-level distribution:
+    <ul>
+      <li>\(k_c = 1\): exponential (memoryless, moderate variation)</li>
+      <li>\(k_c < 1\): heavy-tailed, L-shaped (many quiet periods, occasional extreme contacts)</li>
+      <li>\(k_c > 1\): bell-shaped, increasingly concentrated around 1</li>
+      <li>\(k_c \to \infty\): point mass at 1 (constant contacts)</li>
+    </ul>
+  </li>
+
+  <li><strong>The parameter \(k_c\) plays a familiar role.</strong> In the Lloyd-Smith framework, individual reproduction numbers follow \(M_i \sim \mathrm{Gamma}(k, R_0/k)\), where \(k\) is the dispersion parameter. Here, the contact levels follow \(c^* \sim \mathrm{Gamma}(k_c, k_c)\). The formula \(k = k_c / I^*\) then says: the offspring dispersion equals the <em>contact</em> dispersion, modulated by how much temporal averaging the biological profile performs. When \(I^* = 1\) (spike limit), you get \(k = k_c\) — the contact variability passes through to the offspring distribution unattenuated.</li>
+
+  <li><strong>Compound Poisson with Gamma levels is well studied.</strong> The Poisson-switching process with Gamma level draws connects to the Gamma–Poisson (negative binomial) framework used throughout the superspreading literature. The downstream distribution \(Z_i \sim \mathrm{Poisson}(M_i)\) with \(M_i\) driven by Gamma contact levels gives a natural hierarchy that mirrors the standard Lloyd-Smith setup.</li>
+</ol>
+
+<h2>Why not lognormal?</h2>
+
+<p>Lognormal works — it satisfies both of your requirements (mean 1, variance → 0 recovers constant contacts). But it's less clean:</p>
+
+<ul>
+  <li>\(V_c = e^{\sigma^2} - 1\) is a nonlinear function of the free parameter, so the \(k\) formula inherits this nonlinearity.</li>
+  <li>The parameter \(\sigma^2\) doesn't have as direct an interpretation as \(k_c\).</li>
+  <li>No conjugacy benefits with the Poisson offspring model.</li>
+</ul>
+
+<p>The lognormal's main advantage — heavier tails than the Gamma for a given variance — is already handled by small \(k_c\) values in the Gamma family. The Gamma with \(k_c \ll 1\) produces extreme right skew (occasional very high contact rates), which captures the same "superspreading-from-contacts" phenomenon that motivates a heavy-tailed level distribution.</p>
+
+<h2>Why not Lomax?</h2>
+
+<p>The Lomax has the problem you identified: the mean-1 constraint pins \(\sigma = \alpha_{\!P} - 1\), and the requirement \(\alpha_{\!P} > 2\) for finite variance means \(V_c = \alpha_{\!P}/(\alpha_{\!P} - 2) > 1\) always — you <em>cannot</em> have \(V_c < 1\), so you can never get close to constant contacts. There is no smooth path from "Lomax variability" to "constant contacts" through the parameter space. The Gamma and lognormal both allow \(V_c\) to range over \((0, \infty)\), nesting the constant case.</p>
+
+<h2>Summary</h2>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em 0;">
+<thead>
+<tr><th></th><th>Lomax</th><th>Lognormal</th><th>Gamma</th></tr>
+</thead>
+<tbody>
+<tr><td>Nests constant contacts?</td><td>No (\(V_c > 1\) always)</td><td>Yes (\(\sigma^2 \to 0\))</td><td>Yes (\(k_c \to \infty\))</td></tr>
+<tr><td>\(k\) formula</td><td>\(\frac{\alpha_{\!P}-2}{\alpha_{\!P}\,I^*}\)</td><td>\(\frac{1}{(e^{\sigma^2}-1)\,I^*}\)</td><td>\(\frac{k_c}{I^*}\)</td></tr>
+<tr><td>Derivation complexity</td><td>Same</td><td>Same</td><td>Same</td></tr>
+<tr><td>Interpretation</td><td>Tail exponent</td><td>Log-variance</td><td>Shape = dispersion</td></tr>
+<tr><td>Support</td><td>\([0, \infty)\)</td><td>\((0, \infty)\)</td><td>\([0, \infty)\)</td></tr>
+</tbody>
+</table>
+
+<p><strong>Recommendation: use Gamma</strong>(\(k_c, k_c\)) <strong>for the contact level distribution.</strong> It gives the cleanest formula (\(k = k_c/I^*\)), nests the constant-contact model, and has the most intuitive parameterization. The lognormal is a reasonable alternative but offers no mathematical advantage and a less transparent formula.</p>
+
+<hr>
+<h2>Simple analytic results for \(k\) under the stochastic contact model</h2>
+
+<p>The overdispersion parameter under the stochastic (Poisson-switching, Gamma-level) contact model is
+\(k = k_c / I^*\), where</p>
+
+$$I^* = \mathbb{E}\!\left[e^{-\lambda|U - U'|}\right], \qquad U, U' \stackrel{\text{iid}}{\sim} \text{Gamma}(\psi\alpha, \beta)$$
+
+<p>and \(r \equiv \lambda/\beta\) is the switching-to-recovery rate ratio.
+The exact closed form involves a \({}_2F_1\) hypergeometric function, which, while correct, is not
+particularly illuminating. Here we identify several <em>clean</em> results that capture the essential
+behavior.</p>
+
+<h3>1. Spectral unification of both contact models</h3>
+
+<p>Both the periodic and stochastic contact models can be understood through a single spectral framework.
+The key identity is:</p>
+
+$$\frac{1}{k} = V_c \cdot \left\langle |\varphi_\varepsilon(\omega)|^2 \right\rangle_{S_c}$$
+
+<p>where \(\varphi_\varepsilon(\omega) = \mathbb{E}[e^{i\omega U}]\) is the characteristic function of
+\(U \sim \text{Gamma}(\psi\alpha, \beta)\), \(S_c(\omega)\) is the power spectral density of the
+contact process, and \(\langle \cdot \rangle_{S_c}\) denotes the spectral average
+\(\int_0^\infty (\cdot)\, S_c(\omega)\,d\omega / \int_0^\infty S_c(\omega)\,d\omega\).</p>
+
+<p>The characteristic function of the Gamma distribution gives
+\(|\varphi_\varepsilon(\omega)|^2 = (1 + \omega^2/\beta^2)^{-\psi\alpha}\), and the two contact models
+differ only in their spectral content:</p>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1em auto;">
+<thead><tr><th>Contact model</th><th>Power spectral density \(S_c(\omega)\)</th><th>Resulting \(k\)</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>Periodic</strong> \(c(t) = 1 - A\cos(\omega_0 t)\)</td>
+  <td>Point mass at \(\omega_0\): \(S_c(\omega) = \frac{A^2}{2}\,\delta(\omega - \omega_0)\)</td>
+  <td>\(k = \dfrac{2}{A^2}\!\left(1 + \dfrac{\omega_0^2}{\beta^2}\right)^{\!\psi\alpha}\)</td>
+</tr>
+<tr>
+  <td><strong>Stochastic</strong> (Poisson-switching, rate \(\lambda\))</td>
+  <td>Lorentzian: \(S_c(\omega) \propto \dfrac{\lambda}{\lambda^2 + \omega^2}\)</td>
+  <td>\(k = \dfrac{k_c}{I^*}\) where \(I^* = \displaystyle\int_0^\infty \frac{(1+\omega^2/\beta^2)^{-\psi\alpha}}{\pi(\lambda^2+\omega^2)/\lambda}\,d\omega\)</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Physical interpretation:</strong> The periodic model concentrates all its spectral power at a
+single frequency \(\omega_0\). If \(\omega_0\) is high relative to \(\beta\), the infectious profile
+averages it away very effectively, making \(k\) large (little overdispersion). The stochastic model
+spreads power across all frequencies (Lorentzian spectrum), so even when high frequencies are averaged
+out, the low-frequency components survive. This is why <em>the stochastic model generically produces more
+robust overdispersion</em> than the periodic model at comparable parameters.</p>
+
+<h3>2. Clean exact result for \(\psi\alpha = 1\)</h3>
+
+<p>When \(\psi\alpha = 1\), the infectious-period draws \(U, U'\) become \(\text{Exp}(\beta)\), and a
+classical result gives \(|U - U'| \sim \text{Exp}(\beta)\) as well (this can be verified: if
+\(U, U' \stackrel{\text{iid}}{\sim} \text{Exp}(\beta)\), then \(|U - U'|\) has density
+\(\beta\,e^{-\beta x}\) for \(x \geq 0\)). Therefore:</p>
+
+$$I^* = \mathbb{E}[e^{-\lambda|U-U'|}] = \int_0^\infty \beta\,e^{-(\lambda+\beta)x}\,dx = \frac{\beta}{\beta + \lambda} = \frac{1}{1 + r}$$
+
+<p>and we get the beautifully simple result:</p>
+
+$$\boxed{k = k_c\!\left(1 + \frac{\lambda}{\beta}\right) \qquad \text{when } \psi\alpha = 1}$$
+
+<p>This says: the overdispersion parameter is the <em>contact dispersion</em> \(k_c\) multiplied by
+\((1 + r)\), where \(r = \lambda/\beta\) is the ratio of the switching rate to the generation-interval
+rate. When switching is fast relative to the generation interval (\(r \gg 1\)), each person's infectious
+window spans many contact regimes, so the contact heterogeneity is averaged out and \(k\) is large.
+When switching is slow (\(r \ll 1\)), each person is essentially stuck in one contact regime for
+their entire infectious period, so \(k \approx k_c\).</p>
+
+<p><strong>Numerical verification</strong> (Monte Carlo with \(10^6\) samples):</p>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em auto;">
+<thead><tr><th>Pathogen</th><th>\(\psi\) for \(\psi\alpha=1\)</th><th>\(\lambda\)</th><th>\(r\)</th><th>\(I^*_{\text{exact}}\)</th><th>\(I^*_{\text{MC}}\)</th><th>\(k/k_c\)</th></tr></thead>
+<tbody>
+<tr><td>Influenza</td><td>0.431</td><td>1</td><td>1.38</td><td>0.4205</td><td>0.4202</td><td>2.38</td></tr>
+<tr><td>Influenza</td><td>0.431</td><td>\(2\pi\)</td><td>8.66</td><td>0.1035</td><td>0.1034</td><td>9.66</td></tr>
+<tr><td>Omicron</td><td>0.418</td><td>\(2\pi\)</td><td>18.5</td><td>0.0512</td><td>0.0512</td><td>19.5</td></tr>
+<tr><td>Measles</td><td>0.088</td><td>\(2\pi\)</td><td>6.75</td><td>0.1290</td><td>0.1289</td><td>7.75</td></tr>
+</tbody>
+</table>
+
+<h3>3. Exact result for \(\psi\alpha = 2\)</h3>
+
+<p>For \(\psi\alpha = 2\), a longer but still tractable calculation (convolving the density of
+\(|U - U'|\) when \(U \sim \text{Gamma}(2, \beta)\)) gives:</p>
+
+$$I^* = \frac{r + 2}{2(r+1)^2}, \qquad k = k_c \cdot \frac{2(1+r)^2}{r+2} \qquad \text{when } \psi\alpha = 2$$
+
+<p>This is still fairly clean: for \(r \gg 1\), \(k/k_c \approx 2r\), growing linearly; for \(r \ll 1\),
+\(k/k_c \approx 1\). Verified numerically to high accuracy.</p>
+
+<h3>4. Geometric-mean (Jensen) bound</h3>
+
+<p>A simple upper bound on \(k/k_c\) follows from Jensen's inequality applied to the convex function
+\(e^{-\lambda|\cdot|}\):</p>
+
+$$k \leq k_c \!\left(1 + \frac{\lambda}{\beta}\right)^{2\psi\alpha}$$
+
+<p>This has the attractive exponential-in-\(\psi\) structure that mirrors the periodic result, but
+its accuracy depends strongly on the regime:</p>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em auto;">
+<thead><tr><th>Pathogen</th><th>\(\psi\)</th><th>\(\psi\alpha\)</th><th>\(k/k_c\) (exact)</th><th>Bound</th><th>Ratio</th></tr></thead>
+<tbody>
+<tr><td>Influenza</td><td>0.05</td><td>0.12</td><td>1.62</td><td>1.69</td><td>1.05</td></tr>
+<tr><td>Influenza</td><td>0.10</td><td>0.23</td><td>2.41</td><td>2.87</td><td>1.19</td></tr>
+<tr><td>Influenza</td><td>0.20</td><td>0.46</td><td>4.40</td><td>8.22</td><td>1.87</td></tr>
+<tr><td>Measles</td><td>0.05</td><td>0.57</td><td>4.54</td><td>10.2</td><td>2.25</td></tr>
+<tr><td>Measles</td><td>0.10</td><td>1.14</td><td>8.71</td><td>105</td><td>12.0</td></tr>
+<tr><td>Measles</td><td>0.20</td><td>2.27</td><td>15.1</td><td>10,965</td><td>728</td></tr>
+</tbody>
+</table>
+
+<p>The bound is within ~5% for \(\psi\alpha \lesssim 0.15\) but becomes extremely loose for larger
+\(\psi\alpha\). This is because the true \(k/k_c\) grows much more slowly than exponentially in
+\(\psi\alpha\) under the stochastic model — the broadband spectrum means that low-frequency
+components are never fully averaged out, placing an effective ceiling on how large \(k/k_c\) can get.</p>
+
+<h3>5. Periodic vs. stochastic: quantitative comparison</h3>
+
+<p>At comparable frequency parameters (\(\omega_0 = \lambda = 2\pi\,\text{day}^{-1}\), \(A = 0.5\)):</p>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em auto;">
+<thead><tr><th>Pathogen</th><th>\(\psi\)</th><th>Periodic \(k\)</th><th>Stochastic \(k/k_c\)</th></tr></thead>
+<tbody>
+<tr><td>Influenza</td><td>0.05</td><td>13.2</td><td>1.62</td></tr>
+<tr><td>Influenza</td><td>0.20</td><td>59.8</td><td>4.40</td></tr>
+<tr><td>Omicron</td><td>0.10</td><td>32.3</td><td>3.32</td></tr>
+<tr><td>Omicron</td><td>0.20</td><td>130.6</td><td>7.58</td></tr>
+<tr><td>Measles</td><td>0.05</td><td>70.8</td><td>4.54</td></tr>
+<tr><td>Measles</td><td>0.20</td><td>49,194</td><td>15.1</td></tr>
+</tbody>
+</table>
+
+<p>The stochastic model produces <em>dramatically more overdispersion</em> (smaller \(k/k_c\)) than
+the periodic model gives \(k\), especially for measles at moderate \(\psi\). The key reason: the
+periodic model's single-frequency noise is efficiently averaged away by a broad infectious profile,
+while the stochastic model's broadband noise always retains low-frequency power that cannot be averaged
+out.</p>
+
+<h3>6. Summary and recommended presentation</h3>
+
+<p>For the paper, we recommend presenting the stochastic contact model results as follows:</p>
+
+<ol>
+<li><strong>Lead with the spectral interpretation:</strong> Both models are spectral averages of the
+infectious profile's characteristic function against the contact process's power spectral density.
+This unifies the two models conceptually.</li>
+
+<li><strong>State the exact \(\psi\alpha = 1\) result prominently:</strong>
+\(k = k_c(1 + \lambda/\beta)\). This is as clean as the periodic result and has a transparent
+physical interpretation (how many contact-regime switches fit in one generation interval).</li>
+
+<li><strong>Note the qualitative difference from periodic:</strong> Under stochastic contacts,
+\(k/k_c\) grows subexponentially in \(\psi\) (roughly as a low-degree polynomial for moderate
+\(\psi\alpha\)), in contrast to the exponential growth under periodic contacts. This means the
+stochastic model predicts <em>more persistent overdispersion</em> across a wider range of \(\psi\).</li>
+
+<li><strong>Relegate the \({}_2F_1\) formula to supplementary material</strong>, presenting it as the
+exact closed form that can be computed for any parameters but emphasizing that the qualitative
+behavior is captured by the simpler results above.</li>
+</ol>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
       {left: "$$", right: "$$", display: true},
       {left: "\\(", right: "\\)", display: false},
+      {left: "$", right: "$", display: false},
       {left: "\\begin{align}", right: "\\end{align}", display: true}
     ]
   });
