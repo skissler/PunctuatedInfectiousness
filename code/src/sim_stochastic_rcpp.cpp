@@ -47,3 +47,44 @@ Rcpp::NumericVector sim_stochastic_rcpp(int n, Rcpp::Function gen_inf_attempts) 
 
   return tinf_vec;
 }
+
+// [[Rcpp::export]]
+Rcpp::NumericVector sim_infinite_pop_rcpp(int max_cases, double tmax,
+                                          Rcpp::Function gen_inf_attempts) {
+
+  std::vector<double> tinf_vec;
+  tinf_vec.reserve(max_cases);
+
+  // Min-heap priority queue for event times
+  std::priority_queue<double, std::vector<double>, std::greater<double>> pq;
+
+  // Seed: index case at t=0
+  tinf_vec.push_back(0.0);
+
+  // Generate initial infection attempts from index case
+  Rcpp::NumericVector init_attempts = gen_inf_attempts(0.0);
+  for (int i = 0; i < init_attempts.size(); i++) {
+    pq.push(init_attempts[i]);
+  }
+
+  // Process events in chronological order
+  while (!pq.empty() && (int)tinf_vec.size() < max_cases) {
+    double t_attempt = pq.top();
+    pq.pop();
+
+    if (t_attempt > tmax) break;
+
+    // Every attempt succeeds (infinite susceptible population)
+    tinf_vec.push_back(t_attempt);
+
+    // Only generate new attempts if we still need more cases
+    if ((int)tinf_vec.size() < max_cases) {
+      Rcpp::NumericVector new_attempts = gen_inf_attempts(t_attempt);
+      for (int i = 0; i < new_attempts.size(); i++) {
+        pq.push(new_attempts[i]);
+      }
+    }
+  }
+
+  return Rcpp::wrap(tinf_vec);
+}

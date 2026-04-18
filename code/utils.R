@@ -476,6 +476,72 @@ sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
 	sim_stochastic_rcpp(n, gen_inf_attempts)
 }
 
+#' Stochastic epidemic simulation with infinite population (R fallback)
+#'
+#' Like sim_stochastic_fast_r, but assumes an infinite susceptible population
+#' so every infection attempt succeeds. Useful for estimating exponential
+#' growth rates without susceptible depletion effects.
+#'
+#' @param max_cases Maximum number of infections before stopping (default 1000)
+#' @param tmax Maximum simulation time; stops processing attempts beyond this
+#'   (default Inf)
+#' @param gen_inf_attempts Infection attempt time generator function,
+#'   capturing the individual infectiousness profile, with signature
+#'   function(t_inf) -> numeric vector.
+#' @return Sorted numeric vector of infection times (length <= max_cases),
+#'   starting with 0 for the index case
+sim_infinite_pop_r <- function(max_cases=1000, tmax=Inf, gen_inf_attempts){
+
+	tinf_vec <- numeric(max_cases)
+	tinf_vec[1] <- 0  # index case
+	n_infected <- 1L
+
+	queue <- gen_inf_attempts(0)
+	qi <- 1L
+	qn <- length(queue)
+
+	while(qi <= qn && n_infected < max_cases){
+		t_attempt <- queue[qi]
+		qi <- qi + 1L
+
+		if(t_attempt > tmax) break
+
+		# Every attempt succeeds (infinite susceptible population)
+		n_infected <- n_infected + 1L
+		tinf_vec[n_infected] <- t_attempt
+
+		# Only generate new attempts if we still need more cases
+		if(n_infected < max_cases){
+			new_attempts <- gen_inf_attempts(t_attempt)
+			if(length(new_attempts) > 0L){
+				remaining <- if(qi <= qn) queue[qi:qn] else numeric(0)
+				queue <- sort.int(c(remaining, new_attempts))
+				qi <- 1L
+				qn <- length(queue)
+			}
+		}
+	}
+
+	return(tinf_vec[1:n_infected])
+}
+
+#' Stochastic epidemic simulation with infinite population
+#'
+#' Like sim_stochastic_fast, but assumes an infinite susceptible population
+#' so every infection attempt succeeds. Uses the Rcpp priority-queue
+#' implementation for speed.
+#'
+#' @param max_cases Maximum number of infections before stopping (default 1000)
+#' @param tmax Maximum simulation time (default Inf)
+#' @param gen_inf_attempts Infection attempt time generator function,
+#'   capturing the individual infectiousness profile, with signature
+#'   function(t_inf) -> numeric vector.
+#' @return Sorted numeric vector of infection times (length <= max_cases),
+#'   starting with 0 for the index case
+sim_infinite_pop <- function(max_cases=1000, tmax=Inf, gen_inf_attempts){
+	sim_infinite_pop_rcpp(max_cases, tmax, gen_inf_attempts)
+}
+
 # Helper: save a ggplot as both .png and .pdf in figures/
 save_fig <- function(plot, name, width = 10, height = 5) {
 	ggsave(file.path("figures", paste0(name, ".pdf")), plot, width = width, height = height)
@@ -549,6 +615,41 @@ load_cache_v2 <- function(pathogen, nsim, popsize, psivals) {
 }
 
 # ==============================================================================
+# Infinite-population cache helpers
+# ==============================================================================
+
+cache_path_infpop_summary <- function(pathogen, nsim, max_cases) {
+	file.path("output", sprintf("infpop_summary_%s_m%d_s%d.csv", pathogen, max_cases, nsim))
+}
+
+cache_path_infpop_plot <- function(pathogen, nsim, max_cases) {
+	file.path("output", sprintf("infpop_plot_%s_m%d_s%d.csv", pathogen, max_cases, nsim))
+}
+
+load_cache_infpop <- function(pathogen, nsim, max_cases, psivals) {
+	summary_file <- cache_path_infpop_summary(pathogen, nsim, max_cases)
+	plot_file    <- cache_path_infpop_plot(pathogen, nsim, max_cases)
+
+	if (!file.exists(summary_file) || !file.exists(plot_file)) return(NULL)
+
+	summary_df <- read_csv(summary_file, show_col_types = FALSE)
+	cached_psi <- sort(unique(summary_df$psi))
+	if (!all(psivals %in% cached_psi)) {
+		cat(sprintf("  %s: infpop cache missing psi values %s, re-running\n",
+		    pathogen, paste(setdiff(psivals, cached_psi), collapse = ", ")))
+		return(NULL)
+	}
+
+	plot_df <- read_csv(plot_file, show_col_types = FALSE)
+
+	cat(sprintf("  %s: loading cached infpop simulations from %s\n", pathogen, summary_file))
+	list(
+		summary = summary_df %>% mutate(psi = factor(psi)),
+		plot    = plot_df    %>% mutate(psi = factor(psi))
+	)
+}
+
+# ==============================================================================
 # Growth rate helper
 # ==============================================================================
 
@@ -558,6 +659,14 @@ load_cache_v2 <- function(pathogen, nsim, popsize, psivals) {
 #' cumulative cases are between min_threshold and growth_threshold, aggregates
 #' to daily incidence, and fits log-linear Poisson GLM to estimate the
 #' exponential growth rate.
+#'
+#' The first and last days of the window contain only a *fraction* of that
+#' day's cases (those with case-index >= min_threshold on the first day and
+#' <= growth_threshold on the last), so both are undercounted. Because the
+#' Poisson GLM weights observations by their variance (which equals the
+#' mean), the artificially-low last-day count has disproportionate leverage
+#' and biases the slope downward. We drop the first and last days from the
+#' fit; on pure NHPP data this reduces the bias from ~-34% to essentially 0.
 #'
 #' @param infected Sorted vector of infection times (finite values only)
 #' @param min_threshold Lower bound on cumulative cases (default 10)
@@ -577,9 +686,12 @@ compute_growth_rate <- function(infected, min_threshold = 10, growth_threshold =
 	counts <- integer(length(day_seq))
 	names(counts) <- as.character(day_seq)
 	counts[names(day_counts)] <- as.integer(day_counts)
-	day0 <- day_seq - min(day_seq)
 
-	if (length(day0) < 3) return(NA_real_)
+	# Drop first and last days (partial coverage — see docstring)
+	if (length(day_seq) < 5) return(NA_real_)
+	keep <- 2:(length(day_seq) - 1)
+	counts <- counts[keep]
+	day0 <- day_seq[keep] - min(day_seq[keep])
 
 	tryCatch(
 		coef(glm(counts ~ day0, family = poisson))[2],

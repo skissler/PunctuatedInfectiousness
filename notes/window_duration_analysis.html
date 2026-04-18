@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='UTF-8'>
+  <title>Window Duration Analysis for Growth Rate Estimation</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f5f5f5; }
+    h1 { color: #333; border-bottom: 3px solid #2c3e50; padding-bottom: 10px; }
+    h2 { color: #2c3e50; margin-top: 30px; }
+    table { border-collapse: collapse; margin: 20px 0; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    th { background-color: #34495e; color: white; padding: 12px; text-align: left; font-weight: 600; }
+    td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    tr:hover { background-color: #f0f0f0; }
+    .highlight-yes { background-color: #d4edda; }
+    .highlight-no { background-color: #f8d7da; }
+    .note { background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; border-radius: 4px; }
+    .warning { background-color: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 20px 0; border-radius: 4px; }
+    .success { background-color: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0; border-radius: 4px; }
+    code { background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+    .formula { background-color: #f9f9f9; padding: 10px; border-left: 3px solid #2c3e50; margin: 10px 0; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+<h1>Window Duration Analysis for Growth Rate Estimation</h1>
+
+<p><strong>Analysis Date:</strong> 2026-04-16</p>
+<p><strong>Parameters:</strong> N = 10,000 | Z_min = 100</p>
+
+<h2>Executive Summary</h2>
+<div class='warning'>
+  <strong>Critical Finding:</strong> It is <strong>impossible to satisfy both constraints simultaneously</strong> with a single window duration D for all three pathogens.
+  <ul>
+    <li>To achieve ≥2 generation times: D ≥ 24.4 days</li>
+    <li>To maintain <5% susceptible depletion: D < 7.1 days</li>
+  </ul>
+  This incompatibility arises because Measles has a very long generation time (12.2 days) while 
+  simultaneously having a slow growth rate (r=0.228 per day).
+</div>
+
+<h2>Part 1: Old Window Duration (Z=100 to Z=500)</h2>
+<p>Time required to go from cumulative incidence Z=100 to Z=500, and how many generation times this spans.</p>
+<div class='formula'>Duration = ln(5)/r = ln(5)/r</div>
+
+<table>
+  <tr>
+    <th>Pathogen</th>
+    <th>T_gen (days)</th>
+    <th>r (per day)</th>
+    <th>Duration (days)</th>
+    <th>Generation Times</th>
+  </tr>
+  <tr>
+    <td>Influenza</td>
+    <td>3.20</td>
+    <td>0.252</td>
+    <td>6.39</td>
+    <td>1.996</td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>7.05</td>
+    <td>0.378</td>
+    <td>4.26</td>
+    <td>0.604</td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>12.20</td>
+    <td>0.228</td>
+    <td>7.06</td>
+    <td>0.579</td>
+  </tr>
+</table>
+
+<div class='note'>
+  <strong>Key Finding:</strong> The old window (Z=100→500) does not span ≥2 generation times for any pathogen.
+  Omicron and Measles span only ~0.6 generation times each, which is far too short for reliable 
+  growth rate estimation. Even Influenza barely reaches 2 generations. 
+  <strong>This justifies exploring longer, fixed-duration windows.</strong>
+</div>
+
+<h2>Part 2: Candidate Fixed Window Durations</h2>
+<p>For window durations D ∈ {5, 7, 10, 14} days, compute:</p>
+<ul>
+  <li><code>Z_reached</code>: Cumulative incidence at end of window</li>
+  <li><code>Depletion (%)</code>: Fraction of population with infection history (Z/N × 100)</li>
+  <li><code>Gen_times</code>: Number of generation times the window spans (D/T_gen)</li>
+</ul>
+<div class='formula'>Z = Z_min × exp(r×D)</div>
+
+<table>
+  <tr>
+    <th>Pathogen</th>
+    <th>D (days)</th>
+    <th>Z_reached</th>
+    <th>Depletion (%)</th>
+    <th>Gen Times</th>
+  </tr>
+  <tr><td colspan='5'><strong style='color:#2c3e50;'>D = 5 days</strong></td></tr>
+  <tr>
+    <td>Influenza</td>
+    <td>5</td>
+    <td>352.5</td>
+    <td>3.53</td>
+    <td>1.56</td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>5</td>
+    <td>661.9</td>
+    <td>6.62</td>
+    <td>0.71</td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>5</td>
+    <td>312.7</td>
+    <td>3.13</td>
+    <td>0.41</td>
+  </tr>
+  <tr><td colspan='5'><strong style='color:#2c3e50;'>D = 7 days</strong></td></tr>
+  <tr>
+    <td>Influenza</td>
+    <td>7</td>
+    <td>583.6</td>
+    <td>5.84</td>
+    <td>2.19</td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>7</td>
+    <td>1409.8</td>
+    <td>14.10</td>
+    <td>0.99</td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>7</td>
+    <td>493.3</td>
+    <td>4.93</td>
+    <td>0.57</td>
+  </tr>
+  <tr><td colspan='5'><strong style='color:#2c3e50;'>D = 10 days</strong></td></tr>
+  <tr>
+    <td>Influenza</td>
+    <td>10</td>
+    <td>1242.9</td>
+    <td>12.43</td>
+    <td>3.13</td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>10</td>
+    <td>4381.6</td>
+    <td>43.82</td>
+    <td>1.42</td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>10</td>
+    <td>977.7</td>
+    <td>9.78</td>
+    <td>0.82</td>
+  </tr>
+  <tr><td colspan='5'><strong style='color:#2c3e50;'>D = 14 days</strong></td></tr>
+  <tr>
+    <td>Influenza</td>
+    <td>14</td>
+    <td>3405.6</td>
+    <td>34.06</td>
+    <td>4.38</td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>14</td>
+    <td>19874.1</td>
+    <td>198.74</td>
+    <td>1.99</td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>14</td>
+    <td>2433.7</td>
+    <td>24.34</td>
+    <td>1.15</td>
+  </tr>
+</table>
+
+<h2>Constraint Definitions and Analysis</h2>
+
+<h3>Constraint 1: Statistical Power</h3>
+<p><strong>Requirement:</strong> Window should span ≥2 generation times for all pathogens, ensuring sufficient 
+time for reliable growth rate estimation.</p>
+<p><strong>Mathematical formulation:</strong></p>
+<div class='formula'>D ≥ 2 × max(T_gen) = 2 × 12.2 = 24.4 days</div>
+<p><strong>Implication:</strong> No window smaller than ~24 days will satisfy this constraint for all pathogens.</p>
+
+<h3>Constraint 2: Minimal Susceptible Depletion</h3>
+<p><strong>Requirement:</strong> Susceptible pool depletion should remain <5% to preserve the validity of 
+the exponential growth model (which assumes unlimited susceptibles).</p>
+<p><strong>Mathematical formulation:</strong></p>
+<div class='formula'>
+Z/N < 0.05  ⟹  Z < 500  ⟹  100 × exp(r×D) < 500
+exp(r×D) < 5  ⟹  D < ln(5)/r
+</div>
+<p><strong>For each pathogen:</strong></p>
+<ul>
+  <li><strong>Influenza</strong> (r=0.252): D < ln(5)/0.252 = 6.39 days</li>
+  <li><strong>Omicron</strong> (r=0.378): D < ln(5)/0.378 = 4.26 days</li>
+  <li><strong>Measles</strong> (r=0.228): D < ln(5)/0.228 = 7.06 days ← Most restrictive</li>
+</ul>
+<p><strong>Implication:</strong> To satisfy this constraint for <em>all</em> pathogens, 
+D < 4.26 days (Omicron's limit).</p>
+
+<h3>The Incompatibility</h3>
+<div class='warning'>
+  <table style='border-collapse: collapse; width: 100%; background-color: white; margin: 10px 0;'>
+    <tr style='background-color: #34495e; color: white;'>
+      <th style='padding: 10px; text-align: left;'>Constraint</th>
+      <th style='padding: 10px; text-align: left;'>Requirement</th>
+    </tr>
+    <tr style='border-bottom: 1px solid #ddd;'>
+      <td style='padding: 10px;'>Generation times (≥2)</td>
+      <td style='padding: 10px;'>D ≥ 24.4 days</td>
+    </tr>
+    <tr>
+      <td style='padding: 10px;'>Depletion (<5%)</td>
+      <td style='padding: 10px;'>D < 4.26 days</td>
+    </tr>
+    <tr style='background-color: #f8d7da;'>
+      <td colspan='2' style='padding: 10px;'><strong>OVERLAP:</strong> None. Ranges are disjoint.</td>
+    </tr>
+  </table>
+</div>
+
+<h2>Compromise Solutions</h2>
+
+<h3>Option A: Prioritize Generation Times (Recommended for Statistical Power)</h3>
+<p>Use <strong>D = 26 days</strong> (minimum D to satisfy ≥2 generation times).</p>
+<table>
+  <tr>
+    <th>Pathogen</th>
+    <th>Generation Times</th>
+    <th>Depletion (%)</th>
+    <th>Status</th>
+  </tr>
+  <tr>
+    <td>Influenza</td>
+    <td>8.13</td>
+    <td>23,826</td>
+    <td style='text-align: center;'><strong style='color: #28a745;'>✓ Gen</strong></td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>3.69</td>
+    <td>195,246</td>
+    <td style='text-align: center;'><strong style='color: #28a745;'>✓ Gen</strong></td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>2.13</td>
+    <td>6,264</td>
+    <td style='text-align: center;'><strong style='color: #28a745;'>✓ Gen</strong></td>
+  </tr>
+</table>
+<p><strong>Assessment:</strong> Satisfies the generation times constraint perfectly. However, 
+the depletion numbers (>100%) reveal that N=10,000 is far too small to sustain exponential growth 
+over 26 days. The model breaks down.</p>
+
+<h3>Option B: Compromise at D = 7 days</h3>
+<p>Accept a modest depletion for faster-growing pathogens while acknowledging short windows for slower pathogens.</p>
+<table>
+  <tr>
+    <th>Pathogen</th>
+    <th>Generation Times</th>
+    <th>Depletion (%)</th>
+    <th>Assessment</th>
+  </tr>
+  <tr>
+    <td>Influenza</td>
+    <td>2.19</td>
+    <td>5.84</td>
+    <td>Good: 2+ gens, acceptable depletion</td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>0.99</td>
+    <td>14.10</td>
+    <td>Poor: <1 gen, high depletion</td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>0.57</td>
+    <td>4.93</td>
+    <td>Very Poor: <1 gen, minimal depletion (exponential phase too short)</td>
+  </tr>
+</table>
+
+<h3>Option C: Pathogen-Specific Windows (Not Comparable Across Pathogens)</h3>
+<p>If D can vary by pathogen:</p>
+<table>
+  <tr>
+    <th>Pathogen</th>
+    <th>Optimal D</th>
+    <th>Gen Times</th>
+    <th>Depletion (%)</th>
+  </tr>
+  <tr>
+    <td>Influenza</td>
+    <td>6.39 days</td>
+    <td>1.996</td>
+    <td>5.00</td>
+  </tr>
+  <tr>
+    <td>Omicron</td>
+    <td>4.26 days</td>
+    <td>0.604</td>
+    <td>5.00</td>
+  </tr>
+  <tr>
+    <td>Measles</td>
+    <td>7.06 days</td>
+    <td>0.579</td>
+    <td>5.00</td>
+  </tr>
+</table>
+<p><strong>Problem:</strong> Omicron and Measles still span <1 generation time, even at their optimal 
+window durations. This limits statistical power for these slower-growing pathogens.</p>
+
+<h2>Critical Caveat: Model Validity</h2>
+
+<div class='warning'>
+  <h3>The Exponential Model Breaks When Z Becomes Large</h3>
+  <p>The exponential growth model Z(t) = Z_min × exp(r×t) assumes an unlimited susceptible pool. 
+  Once cumulative incidence approaches a material fraction of N, three effects invalidate this model:</p>
+  <ol>
+    <li><strong>Susceptible Depletion:</strong> The susceptible pool shrinks, reducing transmission rates.</li>
+    <li><strong>Logistic Saturation:</strong> Growth transitions from exponential to logistic (S-shaped).</li>
+    <li><strong>Generation Structure:</strong> The age-of-infection distribution becomes non-stationary.</li>
+  </ol>
+  
+  <h4>Examples from this analysis:</h4>
+  <ul>
+    <li>By D=10 days, Omicron's Z reaches 43.82% of N, far beyond the ~5% threshold for valid exponential growth.</li>
+    <li>By D=7 days, Omicron's Z is 14.1% of N, already in the regime where depletion effects matter significantly.</li>
+  </ul>
+  
+  <h4>Implications:</h4>
+  <p>To truly satisfy both constraints (≥2 gens with <5% depletion), the population must be much larger than 
+  10,000. Alternatively, a more sophisticated model accounting for susceptible dynamics must be used.</p>
+</div>
+
+<h2>Recommendations</h2>
+
+<div class='success'>
+  <h3>Recommendation 1: If N=10,000 is Fixed</h3>
+  <ol>
+    <li><strong>Use D = 5-7 days as a practical compromise.</strong> This spans ~2 generations for Influenza 
+      and keeps depletion under 15% for most pathogens.</li>
+    <li><strong>Validate findings against simulations.</strong> Run stochastic epidemic simulations (e.g., SEIR model) 
+      with N=10,000 to verify that growth rates estimated from 5–7 day windows remain unbiased when 
+      susceptible depletion is accounted for.</li>
+    <li><strong>Document limitations.</strong> Clearly state that the analysis uses an exponential model valid 
+      only in early epidemic phases, and that results may diverge from reality when depletion is >5%.</li>
+  </ol>
+</div>
+
+<div class='success'>
+  <h3>Recommendation 2: If Study Design Is Flexible</h3>
+  <ol>
+    <li><strong>Increase population size to N ≥ 100,000.</strong> This would allow D~10–14 days with <5% depletion 
+      across all pathogens, while spanning 1.4–2 generations.</li>
+    <li><strong>Alternatively, use age-cohort-specific analysis.</strong> Instead of whole-population tracking, 
+      focus on narrow age groups with high transmission intensity. This reduces the effective N and allows 
+      shorter windows.</li>
+  </ol>
+</div>
+
+<div class='success'>
+  <h3>Recommendation 3: Best Practise for Analysis</h3>
+  <ol>
+    <li>Use <strong>D = 7 days</strong> as the primary analysis window (balance between generation coverage 
+      and model validity).</li>
+    <li>Run <strong>sensitivity analyses</strong> with D ∈ {5, 7, 10} days to assess robustness of estimates.</li>
+    <li>Report <strong>both growth rates and confidence intervals</strong> from each window, acknowledging 
+      that wider windows (D=10) may have higher depletion bias but lower sampling variance.</li>
+    <li><strong>Compare to compartmental models</strong> (e.g., logistic, SEIR) that explicitly model 
+      susceptible depletion, to bound the magnitude of bias.</li>
+  </ol>
+</div>
+
+<h2>Summary Table: Quick Reference</h2>
+
+<table style='font-size: 0.95em;'>
+  <tr>
+    <th>Window (D)</th>
+    <th>Constraint</th>
+    <th>Influenza</th>
+    <th>Omicron</th>
+    <th>Measles</th>
+    <th>Status</th>
+  </tr>
+  <tr style='background-color: #ecf0f1;'>
+    <td colspan='6'><strong>Generation Times (target: ≥2)</strong></td>
+  </tr>
+  <tr>
+    <td>5 days</td>
+    <td>Gen</td>
+    <td>1.56</td>
+    <td>0.71</td>
+    <td>0.41</td>
+    <td class='highlight-no'>FAIL</td>
+  </tr>
+  <tr>
+    <td>7 days</td>
+    <td>Gen</td>
+    <td>2.19</td>
+    <td>0.99</td>
+    <td>0.57</td>
+    <td class='highlight-no'>FAIL</td>
+  </tr>
+  <tr>
+    <td>10 days</td>
+    <td>Gen</td>
+    <td>3.13</td>
+    <td>1.42</td>
+    <td>0.82</td>
+    <td class='highlight-no'>FAIL</td>
+  </tr>
+  <tr>
+    <td>26 days</td>
+    <td>Gen</td>
+    <td>8.13</td>
+    <td>3.69</td>
+    <td>2.13</td>
+    <td class='highlight-yes'>PASS</td>
+  </tr>
+  <tr style='background-color: #ecf0f1;'>
+    <td colspan='6'><strong>Susceptible Depletion (target: <5%)</strong></td>
+  </tr>
+  <tr>
+    <td>4 days</td>
+    <td>Depl</td>
+    <td>2.32%</td>
+    <td>4.51%</td>
+    <td>1.35%</td>
+    <td class='highlight-yes'>PASS</td>
+  </tr>
+  <tr>
+    <td>5 days</td>
+    <td>Depl</td>
+    <td>3.53%</td>
+    <td>6.62%</td>
+    <td>3.13%</td>
+    <td class='highlight-no'>FAIL</td>
+  </tr>
+  <tr>
+    <td>7 days</td>
+    <td>Depl</td>
+    <td>5.84%</td>
+    <td>14.10%</td>
+    <td>4.93%</td>
+    <td class='highlight-no'>FAIL</td>
+  </tr>
+</table>
+
+</body>
+</html>

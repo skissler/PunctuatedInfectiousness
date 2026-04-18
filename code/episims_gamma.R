@@ -30,8 +30,13 @@ max_plot_sims <- 1000  # max number of individual trajectories to draw on plots
 
 # Thresholds for growth rate estimation and survival curves
 threshold        <- 100
-min_threshold    <- 10
-growth_threshold <- 100
+min_threshold    <- 100 # 10
+growth_threshold <- 500 # 100
+
+# Infinite-population simulation parameters
+max_cases_infpop     <- 1000   # cases per sim (must exceed growth_threshold)
+nsim_infpop          <- 1000   # number of sims
+max_plot_sims_infpop <- 200    # trajectories to keep for plotting
 
 # ==============================================================================
 # 2. Loop over pathogens
@@ -311,7 +316,13 @@ fig_growthrate_hists <- ggplot(growthrate_df, aes(x = growthrate)) +
 
 save_fig(fig_growthrate_hists, paste0("fig_growthrate_hists_", pathogen))
 
-# Growth rate lines plot: uses plot subset trajectories
+# Growth rate lines plot: uses plot subset trajectories.
+# The cumulative window [min_threshold, growth_threshold] produces partial-day
+# counts on the first and last day of each sim's window; drop them, as in
+# compute_growth_rate(). The blue theoretical line uses intercept
+# log10(r * min_threshold) because the y-axis is DAILY incidence; during
+# exponential growth dN/dt = r*N, so at N = min_threshold the expected
+# daily count is r * min_threshold.
 growth_incidence <- plot_df %>%
 	filter(established == 1, cuminf >= min_threshold, cuminf <= growth_threshold) %>%
 	mutate(day = floor(tinf)) %>%
@@ -320,22 +331,145 @@ growth_incidence <- plot_df %>%
 	group_by(sim, psi) %>%
 	complete(day = seq(min(day), max(day)), fill = list(count = 0)) %>%
 	mutate(day0 = day - min(day)) %>%
+	filter(day0 > 0, day0 < max(day0)) %>%
 	ungroup()
 
 fig_growthrate_lines <- growth_incidence %>%
 	filter(count > 0) %>%
 	ggplot(aes(x = day0, y = count, group = factor(sim))) +
-		geom_point(alpha = 0.1, size = 0.3, col = "grey") +
-		geom_abline(intercept = log10(min_threshold),
+		geom_line(alpha = 0.1, linewidth = 0.3, col = "grey") +
+		geom_point(alpha = 0.2, size = 0.3, col = "grey") +
+		geom_abline(intercept = log10(r_malthusian * min_threshold),
 		            slope = r_malthusian / log(10),
 		            col = "blue", linewidth = 0.8, lty = "dashed") +
 		scale_y_log10() +
 		theme_classic() +
 		facet_wrap(~psi, nrow = 1) +
-		labs(x = "Days since case 10", y = "Daily incidence",
+		labs(x = sprintf("Days since case %d", min_threshold),
+		     y = "Daily incidence",
 		     title = pathogen)
 
 save_fig(fig_growthrate_lines, paste0("fig_growthrate_lines_", pathogen))
+
+# ==============================================================================
+# 2h. Infinite-population stochastic simulations (cached)
+# ==============================================================================
+
+cache_infpop <- load_cache_infpop(pathogen, nsim_infpop, max_cases_infpop, psivals)
+
+if (!is.null(cache_infpop)) {
+	infpop_summary_df <- cache_infpop$summary
+	infpop_plot_df    <- cache_infpop$plot
+} else {
+	summary_list_ip <- vector("list", nsim_infpop * length(psivals))
+	plot_list_ip    <- vector("list", max_plot_sims_infpop * length(psivals))
+	si_ip <- 0L
+	pi_ip <- 0L
+
+	for (sim in 1:nsim_infpop) {
+	    for (psi in psivals) {
+	        infected <- sim_infinite_pop(
+	            max_cases = max_cases_infpop,
+	            gen_inf_attempts = gen_inf_attempts_gamma(T, R0, alpha, psi))
+
+	        n_infected <- length(infected)
+
+	        # Compute growth rate (same window as finite-pop)
+	        growthrate <- compute_growth_rate(infected, min_threshold, growth_threshold)
+
+	        # Store summary row
+	        si_ip <- si_ip + 1L
+	        summary_list_ip[[si_ip]] <- tibble(
+	            sim = sim, psi = psi,
+	            n_infected = n_infected,
+	            growthrate = growthrate
+	        )
+
+	        # Keep full trajectory for plotting subset
+	        if (sim <= max_plot_sims_infpop && n_infected > 0) {
+	            pi_ip <- pi_ip + 1L
+	            plot_list_ip[[pi_ip]] <- tibble(
+	                tinf = infected,
+	                cuminf = seq_along(infected),
+	                sim = sim,
+	                psi = psi
+	            )
+	        }
+	    }
+	    if (sim %% 100 == 0) cat(sprintf("  %s [infpop]: sim %d/%d\n", pathogen, sim, nsim_infpop))
+	}
+
+	infpop_summary_df <- bind_rows(summary_list_ip[1:si_ip])
+	infpop_plot_df    <- bind_rows(plot_list_ip[seq_len(pi_ip)])
+
+	# Save cache
+	write_csv(infpop_summary_df,
+	          cache_path_infpop_summary(pathogen, nsim_infpop, max_cases_infpop))
+	write_csv(infpop_plot_df,
+	          cache_path_infpop_plot(pathogen, nsim_infpop, max_cases_infpop))
+	cat(sprintf("  %s: infpop simulations saved\n", pathogen))
+
+	infpop_summary_df <- infpop_summary_df %>% mutate(psi = factor(psi))
+	infpop_plot_df    <- infpop_plot_df %>% mutate(psi = factor(psi))
+}
+
+# ==============================================================================
+# 2i. Infinite-population growth rate analysis and figures
+# ==============================================================================
+
+infpop_growthrate_df <- infpop_summary_df %>%
+	filter(!is.na(growthrate))
+
+infpop_growthrate_table <- infpop_growthrate_df %>%
+	group_by(psi) %>%
+	summarise(mean = mean(growthrate), sd = sd(growthrate), .groups = "drop")
+
+cat(sprintf("  %s [infpop]: theoretical growth rate = %.4f\n", pathogen, r_malthusian))
+print(infpop_growthrate_table)
+
+# Histogram of growth rates by psi
+fig_growthrate_infpop_hists <- ggplot(infpop_growthrate_df, aes(x = growthrate)) +
+	geom_histogram(aes(y = after_stat(density)), bins = 40,
+	               fill = "white", col = "darkgrey") +
+	geom_density(adjust = 2) +
+	geom_vline(xintercept = r_malthusian, col = "blue", lty = "dashed", linewidth = 0.8) +
+	geom_vline(data = infpop_growthrate_table, aes(xintercept = mean),
+	           col = "red", linewidth = 0.8) +
+	theme_classic() +
+	facet_wrap(~psi, nrow = 1) +
+	labs(x = "Empirical growth rate (1/day)", y = "Density",
+	     title = paste0(pathogen, " (infinite pop)"))
+
+save_fig(fig_growthrate_infpop_hists, paste0("fig_growthrate_infpop_hists_", pathogen))
+
+# Growth rate lines: daily incidence on log scale in the growth window
+infpop_growth_incidence <- infpop_plot_df %>%
+	filter(cuminf >= min_threshold, cuminf <= growth_threshold) %>%
+	mutate(day = floor(tinf)) %>%
+	group_by(sim, psi, day) %>%
+	summarise(count = n(), .groups = "drop") %>%
+	group_by(sim, psi) %>%
+	complete(day = seq(min(day), max(day)), fill = list(count = 0)) %>%
+	mutate(day0 = day - min(day)) %>%
+	filter(day0 > 0, day0 < max(day0)) %>%
+	ungroup()
+
+fig_growthrate_infpop_lines <- infpop_growth_incidence %>%
+	filter(count > 0) %>%
+	ggplot(aes(x = day0, y = count, group = factor(sim))) +
+		geom_line(alpha = 0.1, linewidth = 0.3, col = "grey") +
+		geom_point(alpha = 0.2, size = 0.3, col = "grey") +
+		geom_abline(intercept = log10(r_malthusian * min_threshold),
+		            slope = r_malthusian / log(10),
+		            col = "blue", linewidth = 0.8, lty = "dashed") +
+		scale_y_log10() +
+		theme_classic() +
+		facet_wrap(~psi, nrow = 1) +
+		labs(x = sprintf("Days since case %d", min_threshold),
+		     y = "Daily incidence",
+		     title = paste0(pathogen, " (infinite pop)"))
+
+save_fig(fig_growthrate_infpop_lines, paste0("fig_growthrate_infpop_lines_", pathogen))
 
 cat(sprintf("  %s: figures saved.\n", pathogen))
 

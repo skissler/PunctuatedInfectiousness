@@ -1,199 +1,255 @@
 library(tidyverse)
+library(patchwork)
 
 source("code/utils.R")
 source("code/parameters.R")
 
-# --- Shared parameters for sections 1-3 (influenza) ---
-alpha <- parslist[[1]]$alpha
-beta <- parslist[[1]]$beta
-psi_vals <- c(0, 0.2, 0.5, 0.8, 1)
+# ==============================================================================
+# Isolation effects on TE and epidemic dynamics, across all pathogens
+#
+# Four analyses per pathogen:
+#   1. Fixed isolation time — TE vs isolation timing relative to peak
+#   2. Symptom-triggered isolation — TE vs mean symptom onset time
+#   3. Regular screening — TE vs gap between tests (with & without action delay)
+#   4. Epidemic simulations — fixed isolation vs naive R_eff = R0*(1-TE) adjust
+#
+# For sections 1-3, curves across psi values are overlaid; for section 4,
+# stochastic epidemic trajectories and growth rates are compared between
+# isolation and reduced-R0 controls.
+# ==============================================================================
 
 # ==============================================================================
-# Fixed isolation time
+# Global parameters (shared across pathogens)
 # ==============================================================================
 
-# For psi \in {0, 0.2, 0.5, 0.8, 1}, plot S_\psi(\tau_{iso}), i.e., the remaining infectiousness as a function of isolation time. S_\psi(\tau_{iso}) should just be a Gamma(alpha*psi, beta) CDF, so this should be easy to compute. The lines for each psi value should be overlaid in a single plot. The goal of the plot is to demonstrate how, for a given isolation time, TE can vary widely depending on how spiky (psi -> 0) the infectiousness profile is. It has the added benefit of showing that the equivalence points for the curves pass through a common point where TE=0.5 and \tau_{iso} > 0, highlighting that for right-skewed infectiousness profils, we gain a bit of time after rpeak infectiousness where spike profiles still have higher TE (until we get to really incredibly spiked profiles when the equivalence breaks down). A rough sketch of how this might look is hashed out in code/te.R.
+psi_vals_te <- c(0, 0.2, 0.5, 0.8, 1)  # for TE curves (sections 1-3)
+psi_vals_sim <- c(0, 0.5, 1)           # for epidemic simulations (section 4)
 
-tau_offset <- seq(from=-5, to=5, by=0.1)
+# Symptom-triggered isolation
+sigma_sym <- 0.5       # SD of symptom onset (days) relative to profile peak
 
-te_fixed_df <- expand_grid(psi=psi_vals, tau_offset=tau_offset) %>%
-	mutate(mode=pmax(0,((alpha*psi-1)/beta))) %>%
-	mutate(TE=1-pgamma(tau_offset+mode, alpha*psi, beta))
+# Regular screening
+d_pre  <- 3            # days before peak at which test detects
+d_post <- 7            # days after peak at which test stops detecting
+w      <- d_pre + d_post
+Delta_vals <- seq(from = 0.5, to = 14, by = 0.5)
+lambda_act <- 1        # rate of exponential delay to action (mean 1 day)
+
+# Epidemic simulations
+tau_offset_sim <- -1   # isolation 1 day BEFORE peak (negative = before)
+p_adhere       <- 0.5  # 50% of individuals adhere to isolation
+popsize        <- 1000
+nsim           <- 200
+min_threshold    <- 10
+growth_threshold <- 100
+
+# Storage for composite figures
+te_fixed_list         <- list()
+te_symp_list          <- list()
+te_testing_list       <- list()
+te_testing_delay_list <- list()
+pest_tables_list      <- list()
+
+# ==============================================================================
+# Loop over pathogens
+# ==============================================================================
+
+for (pars in parslist) {
+
+pathogen <- pars$pathogen
+T        <- pars$Tgen
+alpha    <- pars$alpha
+beta     <- pars$beta
+R0       <- pars$R0
+
+cat(sprintf("\n========== %s (R0=%g, alpha=%.2f, beta=%.3f) ==========\n",
+            pathogen, R0, alpha, beta))
+
+# Scale the tau_offset / mu_sym axis to cover ~2.5 SDs of the profile
+sd_g             <- sqrt(alpha) / beta
+tau_offset_range <- 2.5 * sd_g
+tau_offset       <- seq(-tau_offset_range, tau_offset_range, length.out = 201)
+mu_sym           <- seq(-tau_offset_range, tau_offset_range, length.out = 201)
+
+# ==============================================================================
+# Section 1. Fixed isolation TE curves
+#
+# TE(tau_off, psi) = 1 - F_Gamma(tau_off + mode; alpha*psi, beta)
+# ==============================================================================
+
+te_fixed_df <- expand_grid(psi = psi_vals_te, tau_offset = tau_offset) %>%
+	mutate(mode = pmax(0, ((alpha*psi - 1)/beta))) %>%
+	mutate(TE = 1 - pgamma(tau_offset + mode, alpha*psi, beta))
 
 fig_te_fixed <- te_fixed_df %>%
-	ggplot(aes(x=tau_offset, y=TE, col=factor(psi))) +
-		geom_line(linewidth=0.8, alpha=0.8) +
+	ggplot(aes(x = tau_offset, y = TE, col = factor(psi))) +
+		geom_line(linewidth = 0.8, alpha = 0.8) +
 		theme_classic() +
-		labs(x="Isolation time (days relative to peak infectiousness)", y="Test effectiveness", col="psi")
+		labs(x = "Isolation time (days relative to peak infectiousness)",
+		     y = "Test effectiveness",
+		     col = expression(psi),
+		     title = sprintf("%s  (R0 = %g)", pathogen, R0))
+
+save_fig(fig_te_fixed, sprintf("fig_te_fixed_%s", pathogen))
+te_fixed_list[[pathogen]] <- fig_te_fixed
 
 # ==============================================================================
-# Variable isolation time (symptoms)
+# Section 2. Symptom-triggered TE curves
+#
+# Symptom onset t ~ N(mu_sym, sigma_sym). Given t, isolation is immediate.
+# TE(mu_sym, psi) = E_t[1 - F_Gamma(t + mode; alpha*psi, beta)]
 # ==============================================================================
 
-# Next, we can consider what happens when the detection time is a random variable, rather than fixed, and when there are potentially delays between detection and isolation. We'll begin with considering symptom onset, which follows a normal distribution with mean \mu_{symp} (relative to the peak of the infectiousness profile, so \mu_{symp} = 0 means the timing of symptoms corresponds with peak infectiousness on average, while \mu_{symp} < 0 means symptoms precede peak infectiousness) and variance \sigma^2_{symp}. The first task is to generate TE curves like in the previous section, but for the variable detection time. We assume initially that isolation is immediate. Then, we will generate another set of curves assumin isolation follows some exponentially-distributed waiting time after detection. We will use these plots to see how variation in the onset of symptoms and the delay before taking action impact TE as the infectiousness profile width varies from smooth to spike. The TE curves will have TE on the vertical axis and the mean symptom onset time on the horizontal axis. We can maybe consider \mu_{symp} between -3 and 3, and let's set \sigma^2_{symp} = 0.5 for now.
-
-mu_sym <- seq(from=-5, to=5, by=0.1)
-sigma_sym <- 0.5
-
-te_symp_df <- expand_grid(psi=psi_vals, mu_sym=mu_sym) %>%
-	mutate(mode=pmax(0,((alpha*psi-1)/beta))) %>%
+te_symp_df <- expand_grid(psi = psi_vals_te, mu_sym = mu_sym) %>%
+	mutate(mode = pmax(0, ((alpha*psi - 1)/beta))) %>%
 	rowwise() %>%
-	mutate(TE=integrate(function(t)
-		(1-pgamma(t+mode, alpha*psi, beta))*
+	mutate(TE = integrate(function(t)
+		(1 - pgamma(t + mode, alpha*psi, beta)) *
 		dnorm(t, mu_sym, sigma_sym),
-		lower=mu_sym-5*sigma_sym, upper=mu_sym+5*sigma_sym)$value) %>%
+		lower = mu_sym - 5*sigma_sym, upper = mu_sym + 5*sigma_sym)$value) %>%
 	ungroup()
 
 fig_te_symp <- te_symp_df %>%
-	ggplot(aes(x=mu_sym, y=TE, col=factor(psi))) +
-		geom_line(linewidth=0.8, alpha=0.8) +
+	ggplot(aes(x = mu_sym, y = TE, col = factor(psi))) +
+		geom_line(linewidth = 0.8, alpha = 0.8) +
 		theme_classic() +
-		labs(x="Mean symptom onset time (days relative to peak infectiousness)", y="Test effectiveness", col="psi")
+		labs(x = "Mean symptom onset time (days relative to peak infectiousness)",
+		     y = "Test effectiveness",
+		     col = expression(psi),
+		     title = sprintf("%s  (R0 = %g, sigma_sym = %g)", pathogen, R0, sigma_sym))
+
+save_fig(fig_te_symp, sprintf("fig_te_symp_%s", pathogen))
+te_symp_list[[pathogen]] <- fig_te_symp
 
 # ==============================================================================
-# Variable isolation time (regular testing)
+# Section 3a. Regular testing TE (perfect sensitivity, no delay)
+#
+# First test falls uniformly in [0, Delta]; detection window length w.
+# TE(Delta, psi) = (1/Delta) * int_0^min(Delta,w) S_psi(u - d_pre + mode) du
 # ==============================================================================
 
-# Next, we will create yet another series of TE curves, this time with TE on the vertical axis and gap-between-tests on the horizontal axis. The model here is that there's a window of detectability extending -d_{pre} before peak infectiousness and d_{post} after peak infectiousness. Testing is regular (i.e., there are exactly \Delta days between each test), with a uniform random offset so that the testing phase is random with respect to the infectiousness profile. Parameters to consider here include: test sensitivity, delay to action (like before, modeled as a exponential random variable), the gap between tests \Delta, and the length of d_{pre} and d_{post}. For reasonable values of d_{pre} and d_{post}, e.g., d_{pre} = 3 and d_{post} = 7, we can initially consider a perfectly sensitive test and see how TE varies with the gap between tests. Then, we should see how delays between testing and taking action affect things. We can also consider varying the test positivity window. Each plot should show multiple curves depicting how the punctuatedness of the individual infectiousness profile \psi impacts TE as a function of the gap between tests.
-
-d_pre <- 3
-d_post <- 7
-w <- d_pre + d_post
-Delta_vals <- seq(from=0.5, to=14, by=0.5)
-
-# --- Perfect sensitivity, no delay to action ---
-# The first test in the window falls at offset U ~ Uniform(0, Delta) from the
-# window start (mode - d_pre), by the random-phase argument. With p_sens = 1,
-# detection occurs at the first test in the window (if any).
-# TE = (1/Delta) * int_0^min(Delta,w) S_psi(mode + u - d_pre) du
-# This unifies Delta <= w (certain detection) and Delta > w (P(det) = w/Delta).
-
-te_testing_df <- expand_grid(psi=psi_vals, Delta=Delta_vals) %>%
-	mutate(mode=pmax(0, ((alpha*psi-1)/beta))) %>%
+te_testing_df <- expand_grid(psi = psi_vals_te, Delta = Delta_vals) %>%
+	mutate(mode = pmax(0, ((alpha*psi - 1)/beta))) %>%
 	rowwise() %>%
-	mutate(TE=integrate(function(u)
-		(1-pgamma(u - d_pre + mode, alpha*psi, beta)),
-		lower=0, upper=min(Delta, w))$value / Delta) %>%
+	mutate(TE = integrate(function(u)
+		(1 - pgamma(u - d_pre + mode, alpha*psi, beta)),
+		lower = 0, upper = min(Delta, w))$value / Delta) %>%
 	ungroup()
 
 fig_te_testing <- te_testing_df %>%
-	ggplot(aes(x=Delta, y=TE, col=factor(psi))) +
-		geom_line(linewidth=0.8, alpha=0.8) +
+	ggplot(aes(x = Delta, y = TE, col = factor(psi))) +
+		geom_line(linewidth = 0.8, alpha = 0.8) +
 		theme_classic() +
-		labs(x="Gap between tests (days)", y="Test effectiveness", col="psi")
+		labs(x = "Gap between tests (days)",
+		     y = "Test effectiveness",
+		     col = expression(psi),
+		     title = sprintf("%s  (R0 = %g, d_pre=%g, d_post=%g)",
+		                     pathogen, R0, d_pre, d_post))
 
-# --- Perfect sensitivity, exponential delay to action ---
-# Now isolation occurs at tau_det + delta_act, where delta_act ~ Exp(lambda_act).
-# The inner expectation E_delta[S_psi(t0 + delta)] over delta ~ Exp(lambda) has
-# a closed form (by Fubini + Gamma-exponential convolution):
-#   I(t0) = [1 - pgamma(t0, a, beta)]
-#          - exp(lambda*t0) * (beta/(beta+lambda))^a * [1 - pgamma(t0, a, beta+lambda)]
-# This reduces the double integral to a single well-behaved integral over u.
+save_fig(fig_te_testing, sprintf("fig_te_testing_%s", pathogen))
+te_testing_list[[pathogen]] <- fig_te_testing
 
-lambda_act <- 1  # rate parameter; mean delay = 1/lambda_act = 1 day
+# ==============================================================================
+# Section 3b. Regular testing TE with exponential action delay
+#
+# Isolation at tau_det + delta_act, delta_act ~ Exp(lambda_act). Inner
+# expectation E_delta[S_psi(t0 + delta)] closed form via Gamma-Exp convolution.
+# ==============================================================================
 
-te_testing_delay_df <- expand_grid(psi=psi_vals, Delta=Delta_vals) %>%
-	mutate(mode=pmax(0, ((alpha*psi-1)/beta))) %>%
+te_testing_delay_df <- expand_grid(psi = psi_vals_te, Delta = Delta_vals) %>%
+	mutate(mode = pmax(0, ((alpha*psi - 1)/beta))) %>%
 	rowwise() %>%
-	mutate(TE={
-		a <- alpha*psi
-		cr <- (beta/(beta+lambda_act))^a
+	mutate(TE = {
+		a  <- alpha*psi
+		cr <- (beta / (beta + lambda_act))^a
 		integrate(function(u) {
 			t0 <- u - d_pre + mode
-			(1-pgamma(t0, a, beta)) -
-			exp(lambda_act*t0) * cr * (1-pgamma(t0, a, beta+lambda_act))
-		}, lower=0, upper=min(Delta, w))$value / Delta
+			(1 - pgamma(t0, a, beta)) -
+			exp(lambda_act*t0) * cr * (1 - pgamma(t0, a, beta + lambda_act))
+		}, lower = 0, upper = min(Delta, w))$value / Delta
 	}) %>%
 	ungroup()
 
 fig_te_testing_delay <- te_testing_delay_df %>%
-	ggplot(aes(x=Delta, y=TE, col=factor(psi))) +
-		geom_line(linewidth=0.8, alpha=0.8) +
+	ggplot(aes(x = Delta, y = TE, col = factor(psi))) +
+		geom_line(linewidth = 0.8, alpha = 0.8) +
 		theme_classic() +
-		labs(x="Gap between tests (days)", y="Test effectiveness", col="psi")
+		labs(x = "Gap between tests (days)",
+		     y = "Test effectiveness",
+		     col = expression(psi),
+		     title = sprintf("%s  (R0 = %g, lambda_act = %g)",
+		                     pathogen, R0, lambda_act))
+
+save_fig(fig_te_testing_delay, sprintf("fig_te_testing_delay_%s", pathogen))
+te_testing_delay_list[[pathogen]] <- fig_te_testing_delay
 
 # ==============================================================================
-# How isolation impacts the secondary infection distribution and
-# generation interval distribution
+# Section 4. Epidemic simulations: fixed isolation vs reduced R0
 # ==============================================================================
 
-# Based on theory we've developed previously (a sketch is at the end if notes/findings_controlled.md), detect-and-isolate protocols can impact the generation interval distribution. The distribution shrinks, and does so more for smooth infectiousness profiles than for spiky ones (in the spiky limit, \psi -> 0, there is no generation interval distortion). As a result, TE tells only part of the story: if we were to simulate an epidemic with R_{eff} = R_0 (1-TE), we would get a different-looking epidemic than the one we actually see with the detect-and-isolate program. It should be the case that the detect-and-isolate epidemic should grow faster and shrink faster than the simple ajdusted R_{eff} epidemic, since the shorter generation interval distribution should lead to faster dynamics overall. Additinoally: test-and-isolate protocols should lead to more overdispersion, especially in the spike case, where test-and-isolate zeroes out some people's infectiousness but completely misses other people's. Again, this should have an impact on epidemic dynamics: relative to an epidemic with R_{eff} = R_0 (1-TE), the controlled epidemics should be less likely to take off (more overdispersion causes this), but also more explosive when they do. I'd like to generate simulations using the simulation function employed in episims_gamma.R  to compare epidemics that undergo detect-and-isolate from analogous epidemics where only R_{eff} is changed to match what we'd expect from TE. I'd like to show that these epidemics meaningfully differ.
+# Expected TE for each psi used in the simulation
+te_sim_df <- tibble(psi = psi_vals_sim) %>%
+	mutate(mode = pmax(0, (alpha*psi - 1)/beta),
+	       TE   = p_adhere * (1 - pgamma(tau_offset_sim + mode, alpha*psi, beta)))
 
-pars <- parslist[[2]]  # omicron
-T <- pars$Tgen
-alpha <- pars$alpha
-beta <- pars$beta
-R0 <- pars$R0
+cat(sprintf("  Expected TE by psi (tau_off = %g, p_adhere = %g):\n",
+            tau_offset_sim, p_adhere))
+print(te_sim_df)
 
-psi_vals <- c(0, 0.5, 1)
-tau_offset <- -1      # isolation days after peak infectiousness
-p_adhere <- 0.5      # probability of adhering to isolation
-popsize <- 1000
-nsim <- 200
-
-# Compute exact TE for each psi: TE = p_adhere * S_psi(tau_offset)
-te_df <- tibble(psi=psi_vals) %>%
-	mutate(mode=pmax(0, (alpha*psi-1)/beta),
-	       TE=p_adhere * (1-pgamma(tau_offset+mode, alpha*psi, beta)))
-
-cat("Expected TE by psi:\n")
-print(te_df)
-
-# Run simulations: (1) fixed isolation vs (2) naive R0*(1-TE) adjustment
-results <- vector("list", nsim * length(psi_vals) * 2)
+results <- vector("list", nsim * length(psi_vals_sim) * 2)
 idx <- 1L
 
-for(sim in 1:nsim){
-	for(i in seq_along(psi_vals)){
-		psi <- psi_vals[i]
-		te <- te_df$TE[i]
+for (sim in 1:nsim) {
+	for (i in seq_along(psi_vals_sim)) {
+		psi <- psi_vals_sim[i]
+		te  <- te_sim_df$TE[i]
 
 		# (1) Fixed isolation at tau_offset relative to peak
-		tinf <- sim_stochastic_fast(n=popsize,
-			gen_inf_attempts=gen_inf_attempts_gamma_fixed_iso(
+		tinf <- sim_stochastic_fast(n = popsize,
+			gen_inf_attempts = gen_inf_attempts_gamma_fixed_iso(
 				T, R0, alpha, psi,
-				tau_offset=tau_offset,
-				p_adhere=p_adhere))
-		infected <- sort(tinf[tinf < Inf])
-		results[[idx]] <- tibble(tinf=infected, cuminf=seq_along(infected),
-		                         sim=sim, psi=psi, type="isolation")
+				tau_offset = tau_offset_sim,
+				p_adhere   = p_adhere))
+		infected <- sort(tinf[is.finite(tinf)])
+		results[[idx]] <- tibble(tinf = infected, cuminf = seq_along(infected),
+		                         sim = sim, psi = psi, type = "isolation")
 		idx <- idx + 1L
 
 		# (2) Naive TE adjustment (same GI, reduced R0)
-		tinf <- sim_stochastic_fast(n=popsize,
-			gen_inf_attempts=gen_inf_attempts_gamma(
-				T, R0*(1-te), alpha, psi))
-		infected <- sort(tinf[tinf < Inf])
-		results[[idx]] <- tibble(tinf=infected, cuminf=seq_along(infected),
-		                         sim=sim, psi=psi, type="reduced_R0")
+		tinf <- sim_stochastic_fast(n = popsize,
+			gen_inf_attempts = gen_inf_attempts_gamma(
+				T, R0*(1 - te), alpha, psi))
+		infected <- sort(tinf[is.finite(tinf)])
+		results[[idx]] <- tibble(tinf = infected, cuminf = seq_along(infected),
+		                         sim = sim, psi = psi, type = "reduced_R0")
 		idx <- idx + 1L
 	}
-	if(sim %% 50 == 0) cat(sprintf("sim %d/%d\n", sim, nsim))
+	if (sim %% 50 == 0) cat(sprintf("  [%s] sim %d/%d\n", pathogen, sim, nsim))
 }
 
 cuminf_iso_df <- bind_rows(results)
 
-# Flag established epidemics (>=10% of population infected)
+# Flag established epidemics (>= 10% of population infected)
 cuminf_iso_df <- cuminf_iso_df %>%
 	group_by(sim, psi, type) %>%
 	mutate(established = max(cuminf) >= 0.1 * popsize) %>%
 	ungroup()
 
-# Check establishment counts and warn if low
+# Warn if too few established
 est_counts <- cuminf_iso_df %>%
 	group_by(sim, psi, type) %>%
-	summarise(fs = max(cuminf), .groups="drop") %>%
+	summarise(fs = max(cuminf), .groups = "drop") %>%
 	mutate(established = fs >= 0.1 * popsize) %>%
 	group_by(psi, type) %>%
-	summarise(n_est = sum(established), .groups="drop")
+	summarise(n_est = sum(established), .groups = "drop")
 
-for(i in seq_len(nrow(est_counts))){
-	row <- est_counts[i,]
-	if(row$n_est == 0){
-		cat(sprintf("WARNING: No epidemics established for psi=%s, type=%s. Skipping plots for this group.\n",
+for (i in seq_len(nrow(est_counts))) {
+	row <- est_counts[i, ]
+	if (row$n_est == 0) {
+		cat(sprintf("  WARNING: no epidemics established, psi=%s type=%s\n",
 		            row$psi, row$type))
-	} else if(row$n_est < 30){
-		cat(sprintf("WARNING: Only %d epidemics established for psi=%s, type=%s; aggregate statistics may be unreliable.\n",
+	} else if (row$n_est < 30) {
+		cat(sprintf("  WARNING: only %d established, psi=%s type=%s\n",
 		            row$n_est, row$psi, row$type))
 	}
 }
@@ -201,86 +257,85 @@ for(i in seq_len(nrow(est_counts))){
 # --- Cumulative incidence overlay ---
 fig_cuminf_iso <- cuminf_iso_df %>%
 	filter(established) %>%
-	ggplot(aes(x=tinf, y=cuminf, group=interaction(sim, type), col=type)) +
-		geom_line(alpha=0.15, linewidth=0.3) +
-		facet_wrap(~psi, nrow=1, labeller=label_both) +
+	ggplot(aes(x = tinf, y = cuminf,
+	           group = interaction(sim, type), col = type)) +
+		geom_line(alpha = 0.15, linewidth = 0.3) +
+		facet_wrap(~psi, nrow = 1, labeller = label_both) +
 		theme_classic() +
-		labs(x="Time (days)", y="Cumulative infections", col="Strategy") +
-		scale_color_manual(values=c("isolation"="steelblue", "reduced_R0"="tomato"))
+		labs(x = "Time (days)", y = "Cumulative infections", col = "Strategy",
+		     title = sprintf("%s: isolation vs naive R_eff adjustment", pathogen)) +
+		scale_color_manual(values = c("isolation" = "steelblue",
+		                              "reduced_R0" = "tomato"))
 
-# --- P(establishment) comparison ---
+save_fig(fig_cuminf_iso, sprintf("fig_cuminf_iso_%s", pathogen))
+
+# --- P(establishment) and final size table ---
 pest_iso_table <- cuminf_iso_df %>%
 	group_by(sim, psi, type) %>%
-	summarise(fs = max(cuminf), .groups="drop") %>%
+	summarise(fs = max(cuminf), .groups = "drop") %>%
 	group_by(psi, type) %>%
-	summarise(p_est = mean(fs >= 0.1 * popsize),
+	summarise(p_est   = mean(fs >= 0.1 * popsize),
 	          mean_fs = mean(fs[fs >= 0.1 * popsize]),
-	          .groups="drop")
+	          .groups = "drop") %>%
+	mutate(pathogen = pathogen)
 
-cat("\nP(establishment) and mean final size (conditional on establishment):\n")
-print(pest_iso_table %>% pivot_wider(names_from=type, values_from=c(p_est, mean_fs)))
+pest_tables_list[[pathogen]] <- pest_iso_table
+
+cat(sprintf("  [%s] P(establishment) and mean final size:\n", pathogen))
+print(pest_iso_table %>%
+      pivot_wider(names_from = type, values_from = c(p_est, mean_fs)))
 
 # --- Early growth rate comparison ---
-growth_threshold <- 100
-min_threshold <- 10
-
 growthrate_iso_df <- cuminf_iso_df %>%
 	filter(established, cuminf >= min_threshold, cuminf <= growth_threshold) %>%
 	group_by(sim, psi, type) %>%
 	filter(n() >= 2) %>%
-	summarise(growthrate = coef(lm(log(cuminf) ~ tinf))[2], .groups="drop")
+	summarise(growthrate = coef(lm(log(cuminf) ~ tinf))[2], .groups = "drop")
 
-if(nrow(growthrate_iso_df) == 0){
-	cat("WARNING: No established epidemics with enough data points for growth rate estimation.\n")
-	fig_growthrate_iso <- NULL
-} else {
+if (nrow(growthrate_iso_df) > 0) {
 	fig_growthrate_iso <- growthrate_iso_df %>%
-		ggplot(aes(x=growthrate, fill=type)) +
-			geom_density(alpha=0.4) +
-			facet_wrap(~psi, nrow=1, labeller=label_both) +
+		ggplot(aes(x = growthrate, fill = type)) +
+			geom_density(alpha = 0.4) +
+			facet_wrap(~psi, nrow = 1, labeller = label_both) +
 			theme_classic() +
-			labs(x="Early growth rate (per day)", y="Density", fill="Strategy") +
-			scale_fill_manual(values=c("isolation"="steelblue", "reduced_R0"="tomato"))
+			labs(x = "Early growth rate (per day)", y = "Density",
+			     fill = "Strategy",
+			     title = sprintf("%s: growth rate comparison", pathogen)) +
+			scale_fill_manual(values = c("isolation" = "steelblue",
+			                             "reduced_R0" = "tomato"))
+
+	save_fig(fig_growthrate_iso, sprintf("fig_growthrate_iso_%s", pathogen))
 }
 
-# To add:
-# number of established epidemics in the output table
-# Mean growth rate in the output table(?)
+cat(sprintf("  [%s] figures saved.\n", pathogen))
 
+} # end pathogen loop
 
-# This script investigates how detect-and-isolate interventions interact with the punctuatedness (ψ) of the
-# individual infectiousness profile, through three increasingly realistic isolation models:
+# ==============================================================================
+# Composite figures across pathogens
+# ==============================================================================
 
-  # 1. Fixed isolation time (lines 7–27): Plots TE as a function of isolation timing relative to peak
-  # infectiousness, for several ψ values. Shows that for a given isolation time, spikier profiles (ψ→0)
-  #  have higher TE when isolation is before the peak (all-or-nothing: the spike hasn't fired yet) but
-  # lower TE after the peak (the spike already fired, nothing left to avert). The curves cross near the
-  #  mode.
-  # 2. Symptom-triggered isolation (lines 29–54): Same idea but the isolation time is random
-  # (Normal-distributed symptom onset). Smooths out the sharp step-function behavior from section 1,
-  # but the qualitative ordering across ψ values is preserved.
-  # 3. Regular screening (lines 56–119): TE as a function of the gap between tests (Δ), with a
-  # detectability window around peak infectiousness. Computed both without and with an exponential
-  # delay to action (the latter using a closed-form Gamma-exponential convolution to avoid nested
-  # quadrature). Shows how testing frequency trades off against profile shape.
-  # 4. Epidemic simulations (lines 121–end): The main punchline. Compares epidemics under fixed
-  # isolation (using gen_inf_attempts_gamma_fixed_iso) against epidemics that simply reduce R0 to match
-  #  the expected TE. The point is that TE only captures the mean reduction in transmission — it misses
-  #  two things that isolation actually does:
-  #   - GI distortion: Isolation preferentially removes late transmission attempts, shortening the
-  # effective generation interval. This makes controlled epidemics grow (and decline) faster than a
-  # naive R_eff adjustment would predict.
-  #   - Overdispersion: Isolation creates correlated thinning — especially for spike profiles, where
-  # it's all-or-nothing (either detected before the spike and fully averted, or not and fully
-  # transmitted). This increases variance in individual reproductive numbers beyond what Poisson(R_eff)
-  #  would give, reducing establishment probability but making established epidemics more explosive.
+fig_te_fixed_composite <- wrap_plots(te_fixed_list, nrow = 1) +
+	plot_annotation(title = "TE from fixed-time isolation, by pathogen")
+save_fig(fig_te_fixed_composite, "fig_te_fixed", width = 14, height = 5)
 
-  # What it finds (so far):
+fig_te_symp_composite <- wrap_plots(te_symp_list, nrow = 1) +
+	plot_annotation(title = sprintf("TE from symptom-triggered isolation (sigma_sym = %g)", sigma_sym))
+save_fig(fig_te_symp_composite, "fig_te_symp", width = 14, height = 5)
 
-  # The simulation results show these effects clearly at ψ = 0 vs ψ = 1. For the spike case, isolation
-  # dramatically reduces establishment probability relative to the reduced-R0 baseline (0.157 vs 0.624
-  # in the omicron/symptom parameterization), confirming that the overdispersion from all-or-nothing
-  # isolation is epidemiologically consequential — TE alone substantially overpredicts the threat. For
-  # smooth profiles, the gap is smaller because the thinning is more graded. The deterministic-offset
-  # simulations are still being explored, but the framework is in place to systematically vary
-  # tau_offset and p_adhere to map out where ψ-dependent effects are largest.
+fig_te_testing_composite <- wrap_plots(te_testing_list, nrow = 1) +
+	plot_annotation(title = sprintf("TE from regular testing (d_pre=%g, d_post=%g)", d_pre, d_post))
+save_fig(fig_te_testing_composite, "fig_te_testing", width = 14, height = 5)
+
+fig_te_testing_delay_composite <- wrap_plots(te_testing_delay_list, nrow = 1) +
+	plot_annotation(title = sprintf("TE from regular testing w/ Exp(%g) delay", lambda_act))
+save_fig(fig_te_testing_delay_composite, "fig_te_testing_delay", width = 14, height = 5)
+
+# Combined establishment table
+pest_combined <- bind_rows(pest_tables_list) %>%
+	pivot_wider(names_from = type, values_from = c(p_est, mean_fs))
+
+cat("\n===== Combined establishment / final size summary =====\n")
+print(pest_combined)
+
+cat("\nAll figures saved to figures/.\n")
