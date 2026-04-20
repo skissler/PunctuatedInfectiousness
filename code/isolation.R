@@ -206,10 +206,10 @@ for (sim in 1:nsim) {
 
 		# (1) Fixed isolation at tau_offset relative to peak
 		tinf <- sim_stochastic_fast(n = popsize,
-			gen_inf_attempts = gen_inf_attempts_gamma_fixed_iso(
+			gen_inf_attempts = gen_inf_attempts_gamma_symptoms(
 				T, R0, alpha, psi,
-				tau_offset = tau_offset_sim,
-				p_adhere   = p_adhere))
+				mu_sym     = tau_offset_sim,
+				p_sym      = p_adhere))
 		infected <- sort(tinf[is.finite(tinf)])
 		results[[idx]] <- tibble(tinf = infected, cuminf = seq_along(infected),
 		                         sim = sim, psi = psi, type = "isolation")

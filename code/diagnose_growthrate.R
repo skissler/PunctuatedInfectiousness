@@ -88,11 +88,11 @@ for (p in parslist) {
 
 	for (s in seq_len(n_sims_per_pathogen)) {
 		tinf <- sim_stochastic_fast(n = N, gen_inf_attempts = gfun)
-		infected <- sort(tinf[is.finite(tinf)])
-		if (length(infected) < 0.1 * N) next  # not established
+		infection_times <- sort(tinf[is.finite(tinf)])
+		if (length(infection_times) < 0.1 * N) next  # not established
 		for (j in seq_along(thresholds)) {
 			th <- thresholds[[j]]
-			results[s, j] <- compute_growth_rate(infected, th["min"], th["max"])
+			results[s, j] <- compute_growth_rate(infection_times, th["min"], th["max"])
 		}
 	}
 

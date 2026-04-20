@@ -101,15 +101,15 @@ if (!is.null(cache)) {
 	                                    gen_inf_attempts=gen_inf_attempts_gamma(T, R0, alpha, psi))
 
 	        # Extract sorted finite infection times
-	        infected <- sort(tinf[is.finite(tinf)])
-	        final_size <- length(infected)
+	        infection_times <- sort(tinf[is.finite(tinf)])
+	        final_size <- length(infection_times)
 	        established <- as.integer(final_size >= 0.1 * popsize)
 
 	        # Compute time to threshold (100 cases)
-	        time_to_100 <- if(final_size >= threshold) infected[threshold] else NA_real_
+	        time_to_100 <- if(final_size >= threshold) infection_times[threshold] else NA_real_
 
 	        # Compute growth rate
-	        growthrate <- compute_growth_rate(infected, min_threshold, growth_threshold)
+	        growthrate <- compute_growth_rate(infection_times, min_threshold, growth_threshold)
 
 	        # Store summary row
 	        si <- si + 1L
@@ -125,8 +125,8 @@ if (!is.null(cache)) {
 	        if(sim <= max_plot_sims && final_size > 0){
 	            pi <- pi + 1L
 	            plot_list[[pi]] <- tibble(
-	                tinf = infected,
-	                cuminf = seq_along(infected),
+	                tinf = infection_times,
+	                cuminf = seq_along(infection_times),
 	                sim = sim,
 	                psi = psi,
 	                established = established
@@ -368,14 +368,14 @@ if (!is.null(cache_infpop)) {
 
 	for (sim in 1:nsim_infpop) {
 	    for (psi in psivals) {
-	        infected <- sim_infinite_pop(
+	        infection_times <- sim_infinite_pop(
 	            max_cases = max_cases_infpop,
 	            gen_inf_attempts = gen_inf_attempts_gamma(T, R0, alpha, psi))
 
-	        n_infected <- length(infected)
+	        n_infected <- length(infection_times)
 
 	        # Compute growth rate (same window as finite-pop)
-	        growthrate <- compute_growth_rate(infected, min_threshold, growth_threshold)
+	        growthrate <- compute_growth_rate(infection_times, min_threshold, growth_threshold)
 
 	        # Store summary row
 	        si_ip <- si_ip + 1L
@@ -389,8 +389,8 @@ if (!is.null(cache_infpop)) {
 	        if (sim <= max_plot_sims_infpop && n_infected > 0) {
 	            pi_ip <- pi_ip + 1L
 	            plot_list_ip[[pi_ip]] <- tibble(
-	                tinf = infected,
-	                cuminf = seq_along(infected),
+	                tinf = infection_times,
+	                cuminf = seq_along(infection_times),
 	                sim = sim,
 	                psi = psi
 	            )
