@@ -26,27 +26,17 @@ parslist <- list(
 #   1 = R0 * (beta / (beta + r))^alpha
 #   => r = beta * (R0^(1/alpha) - 1)
 #
-# Probability of epidemic establishment from a single introduction under a
-# Poisson(R0) offspring distribution: P_est = 1 - q, where the extinction
-# probability q satisfies q = exp(-R0 * (1 - q)). For R0 <= 1, q = 1.
-# p_establish_poisson <- function(R0) {
-# 	if (R0 <= 1) return(0)
-# 	root <- uniroot(function(q) q - exp(-R0 * (1 - q)),
-# 	                interval = c(1e-12, 1 - 1e-12))$root
-# 	1 - root
-# }
+
 p_establish <- function(R0) {
 	if (R0 <= 1) return(0)
 	1 - (1 / R0)
 }
-
 
 for (i in seq_along(parslist)) {
 	parslist[[i]]$alpha  <- parslist[[i]]$Tgen^2 / parslist[[i]]$Tvar
 	parslist[[i]]$beta   <- parslist[[i]]$Tgen   / parslist[[i]]$Tvar
 	parslist[[i]]$r      <- parslist[[i]]$beta *
 	                        (parslist[[i]]$R0^(1 / parslist[[i]]$alpha) - 1)
-	# parslist[[i]]$p_est  <- p_establish_poisson(parslist[[i]]$R0)
 	parslist[[i]]$p_est  <- p_establish(parslist[[i]]$R0)
 }
 
