@@ -249,7 +249,7 @@ print(varratio_all[[pathogen]])
 
 # Load cached simulations (psi values are those from episims_gamma, not psivals)
 sim_psivals <- c(0, 0.5, 1)
-cache <- load_cache_v2(pathogen, nsim, popsize, sim_psivals)
+cache <- load_cache(pathogen, nsim, popsize, sim_psivals)
 
 if (!is.null(cache)) {
 	fs_df <- cache$summary %>%

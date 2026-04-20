@@ -20,18 +20,6 @@ source("code/parameters.R")
 # 1. Helper functions
 # ==============================================================================
 
-#' Extinction probability for a Poisson(R0) branching process
-extinction_prob <- function(R0) {
-	if (R0 <= 1) return(1)
-	q <- 0.5
-	for (i in 1:1000) {
-		q_new <- exp(R0 * (q - 1))
-		if (abs(q_new - q) < 1e-12) break
-		q <- q_new
-	}
-	q
-}
-
 #' Compute Var(S) for Gamma generation interval with punctuation psi
 #'
 #' S = sum_j e^{-r * tau_j} where tau_j = l_i + epsilon_j
@@ -328,7 +316,7 @@ theory_draws_df <- bind_rows(theory_surv_list)
 # 3d. Load empirical simulation data and build empirical survival curves
 # --------------------------------------------------------------------------
 
-cache <- load_cache_v2(pathogen, nsim, popsize, psivals)
+cache <- load_cache(pathogen, nsim, popsize, psivals)
 
 if (is.null(cache)) {
 	cat(sprintf("  WARNING: v2 cache not found for %s (n=%d, s=%d), skipping\n",
@@ -336,10 +324,10 @@ if (is.null(cache)) {
 	next
 }
 
-# Extract time to threshold from summary (pre-computed in episims_gamma.R)
+# Extract time to establishment from summary (pre-computed in episims_gamma.R)
 time_to_threshold <- cache$summary %>%
-	filter(established == 1, !is.na(time_to_100)) %>%
-	select(sim, psi, tinf = time_to_100)
+	filter(established == 1, !is.na(establishment_time)) %>%
+	select(sim, psi, tinf = establishment_time)
 
 # Build empirical survival curves
 t_max <- max(time_to_threshold$tinf)

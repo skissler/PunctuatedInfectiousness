@@ -4511,6 +4511,63 @@ exact closed form that can be computed for any parameters but emphasizing that t
 behavior is captured by the simpler results above.</li>
 </ol>
 
+<hr>
+<div class="prompt">In survival_theory.R, we calculate the extinction probability using the implicit function $q = e^{R_0(q-1)}$. In parameters.R, we use $p_{\text{est}} = 1 - 1/R_0$. Why the discrepancy? Do they agree under certain assumptions?</div>
+
+<h1>Extinction probability: exact vs. approximate</h1>
+
+<h2>The exact result (survival_theory.R)</h2>
+
+<p>For a <strong>Poisson branching process</strong> with mean offspring $R_0 > 1$, the extinction probability $q$ is the smallest positive root of the probability generating function fixed-point equation:</p>
+
+$$q = G(q) = e^{R_0(q - 1)}$$
+
+<p>This comes from the PGF of the Poisson distribution: $G(s) = e^{R_0(s-1)}$. The extinction probability satisfies $q = G(q)$ by the theory of Galton-Watson processes. There is no closed-form solution &mdash; hence the iterative solver in <code>extinction_prob()</code>.</p>
+
+<h2>The approximation (parameters.R)</h2>
+
+<p>The formula $p_{\text{est}} = 1 - 1/R_0$ (i.e., $q = 1/R_0$) is the <strong>exact extinction probability for a geometric offspring distribution</strong> with mean $R_0$. It is also the standard result from <strong>deterministic SIR/SIS theory</strong>, where the probability of a major epidemic equals $1 - 1/R_0$.</p>
+
+<p>For the Poisson case, $q = 1/R_0$ is an <strong>approximation</strong> that becomes increasingly inaccurate as $R_0$ grows.</p>
+
+<h2>How close are they?</h2>
+
+<p>We can compare them by substituting $q = 1/R_0$ into the exact equation and checking the residual. If $q = 1/R_0$ were exact, we'd need:</p>
+
+$$\frac{1}{R_0} = e^{R_0(1/R_0 - 1)} = e^{1 - R_0}$$
+
+<p>i.e., $R_0 = e^{R_0 - 1}$, which only holds at $R_0 = 1$. So for $R_0 > 1$, there is always a gap. Let's quantify it by expanding around $R_0 = 1$. Write $R_0 = 1 + \epsilon$. The exact equation $q = e^{R_0(q-1)}$ has the small-$\epsilon$ solution:</p>
+
+$$q_{\text{exact}} = 1 - \frac{2\epsilon}{R_0} + O(\epsilon^2) = 1 - 2\epsilon + O(\epsilon^2)$$
+
+<p>while the approximation gives:</p>
+
+$$q_{\text{approx}} = \frac{1}{R_0} = \frac{1}{1+\epsilon} = 1 - \epsilon + O(\epsilon^2)$$
+
+<p>So near $R_0 = 1$, both give $q \approx 1$ (extinction almost certain), but the <strong>leading-order corrections differ by a factor of 2</strong>: the exact establishment probability is $\approx 2\epsilon$ while the approximation gives $\approx \epsilon$. Concretely:</p>
+
+<div class="highlight">
+<table style="border-collapse: collapse; width: 100%;">
+<tr><th style="text-align:left; padding: 4px 12px;">$R_0$</th><th style="text-align:left; padding: 4px 12px;">$q_{\text{exact}}$ (Poisson)</th><th style="text-align:left; padding: 4px 12px;">$q_{\text{approx}} = 1/R_0$</th><th style="text-align:left; padding: 4px 12px;">$p_{\text{est, exact}}$</th><th style="text-align:left; padding: 4px 12px;">$p_{\text{est, approx}}$</th></tr>
+<tr><td style="padding: 4px 12px;">1.5</td><td style="padding: 4px 12px;">0.417</td><td style="padding: 4px 12px;">0.667</td><td style="padding: 4px 12px;">0.583</td><td style="padding: 4px 12px;">0.333</td></tr>
+<tr><td style="padding: 4px 12px;">2.0</td><td style="padding: 4px 12px;">0.203</td><td style="padding: 4px 12px;">0.500</td><td style="padding: 4px 12px;">0.797</td><td style="padding: 4px 12px;">0.500</td></tr>
+<tr><td style="padding: 4px 12px;">3.0</td><td style="padding: 4px 12px;">0.0595</td><td style="padding: 4px 12px;">0.333</td><td style="padding: 4px 12px;">0.940</td><td style="padding: 4px 12px;">0.667</td></tr>
+<tr><td style="padding: 4px 12px;">12.0</td><td style="padding: 4px 12px;">$\approx 6 \times 10^{-6}$</td><td style="padding: 4px 12px;">0.083</td><td style="padding: 4px 12px;">$\approx$ 1</td><td style="padding: 4px 12px;">0.917</td></tr>
+</table>
+</div>
+
+<p>The approximation substantially <strong>overestimates the extinction probability</strong> (underestimates establishment) for moderate-to-large $R_0$.</p>
+
+<h2>Why the difference?</h2>
+
+<p>The key is the <strong>offspring distribution</strong>. The $1/R_0$ formula is exact when each individual produces a <strong>geometrically distributed</strong> number of offspring (which has variance $R_0(R_0+1)$, i.e., highly overdispersed). With Poisson offspring (variance = mean = $R_0$), there is less stochastic variability, so extinction is harder once $R_0 > 1$, and the exact extinction probability is lower than $1/R_0$.</p>
+
+<p>More generally, for any offspring distribution with mean $R_0$ and PGF $G(s)$, the extinction probability satisfies $q = G(q)$. The more overdispersed the offspring distribution, the higher the extinction probability (since a few superspreaders compensate for many who infect no one). The $1/R_0$ result corresponds to maximal overdispersion (geometric), while the Poisson result $q = e^{R_0(q-1)}$ corresponds to the equidispersed case.</p>
+
+<h2>Recommendation</h2>
+
+<p>The <code>p_establish()</code> function in <code>parameters.R</code> should probably use the exact Poisson result (from <code>extinction_prob()</code> in <code>survival_theory.R</code>) for consistency with the simulation model, which draws Poisson offspring counts.</p>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

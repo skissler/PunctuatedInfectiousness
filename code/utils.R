@@ -49,15 +49,15 @@ seir <- odin({
 #'
 #' @param R0     Basic reproduction number
 #' @param alpha  Shape parameter of Gamma generation interval distribution
-#' @param T_gen  Mean generation interval (days)
+#' @param Tgen  Mean generation interval (days)
 #' @param N      Population size, used to set initial conditions
 #' @param dt     Time step for discretization (default 0.01 days)
 #' @param tmax   Maximum simulation length (default 100 days)
 
-renewal_epidemic <- function(R0, alpha, T_gen, N, dt = 0.01, tmax = 100) {
+renewal_epidemic <- function(R0, alpha, Tgen, N, dt = 0.01, tmax = 100) {
 
 	# Set rate parameter of the generation interval distribution
-  beta <- alpha / T_gen
+  beta <- alpha / Tgen
 
   # Initalize time vectors
   times <- seq(0, tmax, by = dt)
@@ -197,19 +197,19 @@ gen_inf_attempts_spike <- function(e_dur, i_dur, R0){
 #' at time tinf, using the Gamma-distributed individual infectiousness profile
 #' with punctuation parameter psi.
 #'
-#' @param T_gen Mean generation interval
+#' @param Tgen Mean generation interval
 #' @param R0 Basic reproduction number
 #' @param alpha Shape parameter for the Gamma-distributed population
 #'   infectiousness profile (A(tau) ~ Gamma(alpha, beta) where
-#'   beta = alpha/T_gen)
+#'   beta = alpha/Tgen)
 #' @param psi Parameter governing punctuation of the individual
 #'   infectiousness profile (psi \in [0, 1], with psi -> 0 giving sharp
 #'   infectiousness profiles and psi -> 1 giving smooth ones equivalent to
 #'   the population generation interval distribution)
 #' @return A function(t_inf) that returns sorted infection attempt times
-gen_inf_attempts_gamma <- function(T_gen, R0, alpha, psi) {
+gen_inf_attempts_gamma <- function(Tgen, R0, alpha, psi) {
 	stopifnot(psi >= 0, psi <= 1)
-	raw <- .make_raw_generator(R0, alpha, alpha / T_gen, psi)
+	raw <- .make_raw_generator(R0, alpha, alpha / Tgen, psi)
 	function(tinf) sort(raw(tinf)$attempts)
 }
 
@@ -220,17 +220,17 @@ gen_inf_attempts_gamma <- function(T_gen, R0, alpha, psi) {
 #' attempts from the gamma profile, then independently accepts each with 
 #' probability z(t)/z_max, where t is the absolute time of the proposal.
 #'
-#' @param T_gen Mean generation interval (days).
+#' @param Tgen Mean generation interval (days).
 #' @param z Function of absolute time returning the contact rate (must satisfy
 #'   0 <= z(t) <= z_max for all t).
 #' @param z_max Upper bound on z(t), used as the proposal rate.
 #' @param alpha Shape parameter for the population generation interval
-#'   (Gamma(alpha, alpha/T_gen)).
+#'   (Gamma(alpha, alpha/Tgen)).
 #' @param psi Punctuation parameter (psi in (0, 1)).
 #' @return Function(tinf) returning a numeric vector of absolute attempt times.
-gen_inf_attempts_gamma_contacts <- function(T_gen, z, z_max, alpha, psi) {
+gen_inf_attempts_gamma_contacts <- function(Tgen, z, z_max, alpha, psi) {
 	stopifnot(psi >= 0, psi <= 1, z_max > 0)
-	raw <- .make_raw_generator(z_max, alpha, alpha / T_gen, psi)
+	raw <- .make_raw_generator(z_max, alpha, alpha / Tgen, psi)
 	function(tinf) {
 		res <- raw(tinf)
 		if (length(res$attempts) == 0L) return(numeric(0))
@@ -325,7 +325,7 @@ gen_inf_attempts_gamma_contacts <- function(T_gen, z, z_max, alpha, psi) {
 #' Delta days with random phase, detection within a window around peak
 #' infectiousness) and removes post-isolation attempts.
 #'
-#' @param T_gen Mean generation interval
+#' @param Tgen Mean generation interval
 #' @param R0 Basic reproduction number
 #' @param alpha Shape parameter for population infectiousness profile
 #' @param psi Punctuation parameter (0 = spike, 1 = smooth)
@@ -337,11 +337,11 @@ gen_inf_attempts_gamma_contacts <- function(T_gen, z, z_max, alpha, psi) {
 #' @param p_sens Test sensitivity (probability of detection per test)
 #' @param eta Isolation effectiveness (1 = perfect, 0 = none)
 #' @return A function(t_inf) that returns sorted infection attempt times
-gen_inf_attempts_gamma_screening <- function(T_gen, R0, alpha, psi,
+gen_inf_attempts_gamma_screening <- function(Tgen, R0, alpha, psi,
                                              d_pre, d_post, Delta,
                                              lambda_act=Inf, p_sens=1, eta=1) {
 	stopifnot(psi >= 0, psi <= 1)
-	raw <- .make_raw_generator(R0, alpha, alpha / T_gen, psi)
+	raw <- .make_raw_generator(R0, alpha, alpha / Tgen, psi)
 	w <- d_pre + d_post
 	function(tinf) {
 		res <- raw(tinf)
@@ -360,7 +360,7 @@ gen_inf_attempts_gamma_screening <- function(T_gen, R0, alpha, psi,
 #' mu_sym=tau_offset, p_sym=p_adhere for deterministic isolation at a fixed
 #' offset relative to peak.
 #'
-#' @param T_gen Mean generation interval
+#' @param Tgen Mean generation interval
 #' @param R0 Basic reproduction number
 #' @param alpha Shape parameter for population infectiousness profile
 #' @param psi Punctuation parameter (0 = spike, 1 = smooth)
@@ -372,11 +372,11 @@ gen_inf_attempts_gamma_screening <- function(T_gen, R0, alpha, psi,
 #' @param p_sym Probability of being symptomatic
 #' @param eta Isolation effectiveness (1 = perfect, 0 = none)
 #' @return A function(t_inf) that returns sorted infection attempt times
-gen_inf_attempts_gamma_symptoms <- function(T_gen, R0, alpha, psi,
+gen_inf_attempts_gamma_symptoms <- function(Tgen, R0, alpha, psi,
                                             mu_sym, sigma_sym=0,
                                             lambda_act=Inf, p_sym=1, eta=1) {
 	stopifnot(psi >= 0, psi <= 1)
-	raw <- .make_raw_generator(R0, alpha, alpha / T_gen, psi)
+	raw <- .make_raw_generator(R0, alpha, alpha / Tgen, psi)
 	function(tinf) {
 		res <- raw(tinf)
 		if (length(res$attempts) == 0L) return(numeric(0))
@@ -511,6 +511,24 @@ sim_infinite_pop <- function(max_cases=1000, tmax=Inf, gen_inf_attempts){
 	sim_infinite_pop_rcpp(max_cases, tmax, gen_inf_attempts)
 }
 
+#' Extinction probability for a Poisson(R0) branching process
+#'
+#' Computes the smallest root of q = exp(R0*(q-1)) by fixed-point iteration.
+#' Returns 1 if R0 <= 1 (certain extinction).
+#'
+#' @param R0 Basic reproduction number.
+#' @return Scalar extinction probability in [0, 1].
+extinction_prob <- function(R0) {
+	if (R0 <= 1) return(1)
+	q <- 0.5
+	for (i in 1:1000) {
+		q_new <- exp(R0 * (q - 1))
+		if (abs(q_new - q) < 1e-12) break
+		q <- q_new
+	}
+	q
+}
+
 # Helper: save a ggplot as both .png and .pdf in figures/
 save_fig <- function(plot, name, width = 10, height = 5) {
 	ggsave(file.path("figures", paste0(name, ".pdf")), plot, width = width, height = height)
@@ -530,12 +548,12 @@ cache_path_plot <- function(pathogen, nsim, popsize) {
 	file.path("output", sprintf("plot_trajectories_%s_n%d_s%d.csv", pathogen, popsize, nsim))
 }
 
-# Helper: load v2 cached simulations, or return NULL if missing/stale
+# Helper: load cached simulations, or return NULL if missing/stale
 #
 # Returns a list with $summary (one row per sim*psi) and $plot (individual
 # infection times for first max_plot_sims simulations). Returns NULL if
 # cache is missing or doesn't contain all required psi values.
-load_cache_v2 <- function(pathogen, nsim, popsize, psivals) {
+load_cache <- function(pathogen, nsim, popsize, psivals) {
 	summary_file <- cache_path_summary(pathogen, nsim, popsize)
 	plot_file    <- cache_path_plot(pathogen, nsim, popsize)
 

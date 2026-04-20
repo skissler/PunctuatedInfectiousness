@@ -27,17 +27,12 @@ parslist <- list(
 #   => r = beta * (R0^(1/alpha) - 1)
 #
 
-p_establish <- function(R0) {
-	if (R0 <= 1) return(0)
-	1 - (1 / R0)
-}
-
 for (i in seq_along(parslist)) {
 	parslist[[i]]$alpha  <- parslist[[i]]$Tgen^2 / parslist[[i]]$Tvar
 	parslist[[i]]$beta   <- parslist[[i]]$Tgen   / parslist[[i]]$Tvar
 	parslist[[i]]$r      <- parslist[[i]]$beta *
 	                        (parslist[[i]]$R0^(1 / parslist[[i]]$alpha) - 1)
-	parslist[[i]]$p_est  <- p_establish(parslist[[i]]$R0)
+	parslist[[i]]$p_est  <- 1 - extinction_prob(parslist[[i]]$R0)
 }
 
 # Print summary
