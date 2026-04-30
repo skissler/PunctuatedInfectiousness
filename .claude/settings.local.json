@@ -29,7 +29,8 @@
       "WebSearch",
       "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
       "WebFetch(domain:arxiv.org)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(git status:*)"
     ]
   }
 }
