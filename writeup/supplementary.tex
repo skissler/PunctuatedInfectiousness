@@ -47,42 +47,75 @@ The punctuation  parameter $\psi \in [0, 1]$ is the only remaining free paramete
 
 \clearpage
 
-\subsubsection*{Derivation of $\text{Var}[W]$}
+\subsubsection*{Derivation of $E[\varsigma]$ and $\text{Var}[\varsigma]$}
 
-For a branching process $Z(t)$ conditional on non-extinction, $e^{-rt} Z(t) \rightarrow W$ almost surely as $t \rightarrow \infty$. Here, $r$ is the early-epidemic exponential growth rate and $W$ is a random variable that effectively scales the branching process' initial condition, capturing stochastic fluctuations in the early-epidemic process. 
+{\bf Setup.} Following \citet{morris_computation_2024}, we describe the cumulative infections during the early-epidemic exponential growth phase as a branching process, $Z(t)$. Let $r$ be the epidemic's exponential growth rate; then, as $t \rightarrow \infty$, $e^{-rt} Z(t) \rightarrow W$ almost surely, where $W$ is a random variable that effectively scales the branching process' initial condition, capturing stochastic fluctuations in the early-epidemic process. We denote this convergence as $Z(t) \approx W \cdot e^{rt}$. 
+
+% Here, $r$ is the early-epidemic exponential growth rate and $W$ is a random variable that effectively scales the branching process' initial condition, capturing stochastic fluctuations in the early-epidemic process. 
 
 With a change of variables, we can translate $W$ into a random initial time shift: 
 %
 \begin{equation}
-	\varsigma = \frac{\log W - \log E[W]}{r} = \frac{\log W}{r}
+	Z(t) \approx e^{r (t + \varsigma)} \qquad \text{where} \qquad \varsigma = \frac{\log W - \log E[W]}{r} = \frac{\log W}{r}
 \end{equation}
 %
-when $I_0 = E[W] = 1$. Our goal is to understand how $\text{Var}[\varsigma]$ depends on the punctuation parameter $\psi$. Since $\varsigma$ and $W$ are monotonically related, we can derive an expression for $\text{Var}[W]$ and will interpret its implications for $\text{Var}[\varsigma]$ at the end. 
+when $I_0 = E[W] = 1$ (\ie, when the epidemic is seeded with a single infectious person). Our goal is to determine how $E[\varsigma]$ and $\text{Var}[\varsigma]$ depend on the punctuation parameter $\psi$. To achieve this, we begin by examining the distribution of $W$. 
 
-To start, we consider an index case $i$ infected at time $t = 0$ who produces $\chi_i \sim \text{Poisson}(R_0)$ offspring. Under the Gamma time-shift model, the offspring $j$ from this index case are infected at times $\tau_j = l_i + \epsilon_j$, where $l_i$ is person $i$'s latent period and $\epsilon_j$ is the additional lag between $l_i$ and person $j$'s infection time, with 
-%
-\[l_i \sim \text{Gamma}((1-\psi)\alpha, \beta), \qquad \epsilon_j \sim \text{Gamma}(\psi \alpha, \beta) \]
-%
-This ensures that the population-level generation interval distribution is
-%
-\[ g(\tau) \sim \text{Gamma}(\alpha, \beta) \]
-%
-We can define some useful quantities that will arise later in the derivation. First, from the Euler-Lotka equation under $g(\tau)$ \citep{wallinga_how_2007}:, 
-%
-\[1 = R_0 \int_{\tau=0}^\infty e^{-r\tau } \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{\alpha-1} e^{-\beta \tau} d\tau\]
-%
-which simplifies to 
-%
-\[ 1 = R_0 \Bigl( \frac{\beta}{\beta+r }\Bigr )^\alpha = R_0 \Bigl(\frac{1}{1+z}\Bigr)^\alpha\]
-%
-where  $z = r/\beta = r \bar{g} / \alpha = R_0^{1/\alpha} - 1$, a dimensionless quantity that simplifies expressions and allows one to easily plug in different combinations of epidemiological parameters. Here, $\bar{g}$ is the mean of the generation interval distribution $g(\tau)$. 
+\noindent {\bf \boldmath Approximating the distribution of $W$.} First, we note that the distribution of $W$ consists of a point mass at 0 with mass $q$ (the probability of epidemic extinction), combined with a smooth density with positive support. The point mass translates into a time shift of $\varsigma = \log(0) / r = -\infty$, corresponding to an epidemic that never establishes. Thus, we restrict our attention to $W | \text{surv}$ and $\varsigma | \text{surv}$, that is, $W$ and $\varsigma$ conditioned on epidemic survival. 
 
-Next, we define 
-%
-\[ \rho_k =  (E[e^{-k r \tau}])^{1/\alpha} = \frac{\beta}{\beta + k r}  = \frac{1 }{1 + kz}\]
-This allows us to re-write the Euler-Lotka equation: 
-%
-\[ 1 = R_0 \rho_1^\alpha \]
+To approximate the distribution of $W|\text{surv}$, we use a $\text{Gamma}(k, \lambda)$ distribution matched to the first two moments. This is a version of the five-moment-matching approach described by \cite{morris_computation_2024}, simplified for analytic tractability. Specifically, we let  
+\begin{equation}
+	k = \frac{E[W|\text{surv}]^2}{\text{Var}[W|\text{surv}]} \qquad \text{and} \qquad \lambda = \frac{E[W|\text{surv}]}{\text{Var}[W|\text{surv}]}
+	\label{eq:k_and_lambda}
+\end{equation}
+Our task is now to compute $E[W|\text{surv}]$ and $\text{Var}[W|\text{surv}]$. 
+
+\noindent {\bf \boldmath Deriving $E[W|\text{surv}]$.} We note that 
+\begin{equation}
+E[W] = E[W|\text{surv}] P(\text{surv}) + E[W|\text{extinct}] P(\text{extinct}) = E[W | \text{surv}] \cdot p
+\label{eq:p_explanation}
+\end{equation}
+since $E[W|\text{extinct}] = 0$, and where $p = 1-q$ is the probability of epidemic survival. Thus,
+\begin{equation}
+\boxed{E[W|\text{surv}] = \frac{1}{p}}
+\end{equation}
+\begin{center}
+{\it [for plugging into expressions for $k$ and $\lambda$, Eq.~\ref{eq:k_and_lambda}]} \\ 
+\end{center} 
+under our assumption that $E[W] = 1$. 
+
+\noindent {\bf \boldmath Deriving $\text{Var}[W|\text{surv}]$.} The derivation for $\text{Var}[W]$ is somewhat more involved. Recall the Gamma time-shift model, where an infectious person produces $\chi_i \sim \text{Poisson}(R_0)$ secondary infections distributed at times $\tau_j = l_i+ \epsilon_j,\, j\in \{1, \dots, \chi_i\}$ and 
+\begin{equation}
+l_i \sim \text{Gamma}((1-\psi) \alpha, \beta), \qquad \epsilon_j \sim \text{Gamma}(\psi \alpha, \beta)
+\end{equation}
+This ensures that a random secondary infection time $\tau$ is distributed according to the generation interval distribution $g(\tau)$, \ie,
+\begin{equation}
+	\tau \sim \text{Gamma}(\alpha, \beta)
+\end{equation}
+For notational convenience, we introduce 
+\begin{equation}
+	E[e^{-c r \tau}] = \int_0^\infty e^{-cr\tau} \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{\alpha-1} e^{-\beta \tau}\, d\tau
+	 = \Bigl(\frac{1}{1 + cz}\Bigr)^\alpha := \rho_c^\alpha
+\end{equation}
+that is, 
+\begin{equation}
+\boxed{\rho_c = \frac{1}{1+cz}}
+\end{equation}
+\begin{center}
+{\it [for notational convenience]} \\ 
+\end{center}
+where $z = r/\beta = r \bar{g} / \alpha = R_0^{1/\alpha} - 1$, a dimensionless quantity that simplifies expressions and allows one to easily plug in different combinations of epidemiological parameters. Here, $\bar{g}$ is the mean of the generation interval distribution $g(\tau)$, and $c$ is a positive integer. The final expression, $z = R_0^{1/\alpha} - 1$, comes from the Euler-Lotka equation \citep{wallinga_how_2007}: 
+\begin{equation}
+1 = R_0 E[e^{-r \tau}] = R_0 \rho_1^\alpha 
+= R_0 \Bigl(\frac{1}{1+z}\Bigr)^\alpha
+\label{eq:euler_lotka}
+\end{equation}
+% \begin{equation}
+% 1 = R_0 E[e^{-r \tau}] = R_0 \int_0^\infty e^{-r \tau} \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{-\alpha-1} e^{-\beta \tau}\, d\tau
+% = R_0 \Bigl(\frac{1}{1+z}\Bigr)^\alpha
+% \end{equation}
+and solving for $z$. 
+
 
 Next, we introduce the distributional fixed point equation, which is a standard starting point for computing moments of $W$. This equation exploits the self-similarity of the branching process, in which an epidemic initiated by a single individual is, in distribution, a scaled and time-shifted copy of the whole epidemic. At large $t$, the epidemic seeded by the index case $i$ consists of the downstream epidemics caused by their offspring $j$, which have grown approximately to size $Z_j(t) = W_j e^{r(t - \tau_j)}$. That is, 
 %
@@ -93,9 +126,9 @@ Multiplying through by $e^{-rt}$:
 %
 \[  W \overset{d}{=} \sum_{j=1}^{\chi_i} e^{-r \tau_j} W_j \]
 
-We now use this expression to calculate $\text{Var}[W]$. Since randomness enters through both $W$ and $\tau$, we first condition on $\tau_j$ using the law of total variance: 
+We now use this expression to calculate $\text{Var}[W]$. Since randomness enters through both $W$ and $\tau$, we first condition on the number of offspring and their infection times, $\tau_\bullet = \{ \chi_i, \tau_1, \tau_2, \dots, \tau_{\chi_i} \}$, using the law of total variance: 
 %
-\[ \text{Var}[W] = E[\text{Var}\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] + \text{Var}[E\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] \]
+\[ \text{Var}[W] = E[\text{Var}\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_\bullet\Bigr]] + \text{Var}[E\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_\bullet\Bigr]] \]
 \[
 =E\Bigl[ \sum_j e^{-2r\tau_j}  \cdot \text{Var}[W] \Bigr] + 
 \text{Var} \Bigl[\sum_j e^{-r \tau_j} \cdot E[W] \Bigr]
@@ -124,10 +157,15 @@ Thus, the variance expression simplifies to
 \[
 	\text{Var}[W] = \frac{\text{Var}[\sum_j e^{-r \tau_j}]}{1 - R_0 \rho_2^\alpha}
 \]
-The denominator does not depend on $\psi$, so we proceed by examining the numerator: 
+Next, we examine the numerator: 
 \[
-	\text{Var}[\sum_j e^{-r \tau_j}] = E[(\sum_j e^{-r \tau_j})^2] - E[\sum_j e^{-r \tau_j}]^2 = E[(\sum_j e^{- r \tau_j})^2] - 1
+	\text{Var}[\sum_j e^{-r \tau_j}] = E[(\sum_j e^{-r \tau_j})^2] - E[\sum_j e^{-r \tau_j}]^2 = E[(\sum_j e^{-r \tau_j})^2] - 1
 \]
+where the last step follows from the Euler-Lotka equation (Eq.~\ref{eq:euler_lotka}). 
+% The second term is (R_0 \frac{1}{1+z})
+% \[
+% 	\text{Var}[\sum_j e^{-r \tau_j}] = E[(\sum_j e^{-r \tau_j})^2] - E[\sum_j e^{-r \tau_j}]^2 = E[(\sum_j e^{- r \tau_j})^2] - 1
+% \]
 Then, 
 \[
 	E[(\sum_j e^{- r \tau_j})^2] = E[\sum_j e^{-2 r \tau_j}] + E[\sum_{j \neq k} e^{-r (\tau_j + \tau_k)}]
@@ -136,7 +174,7 @@ Then,
 \[= R_0 \rho_2^\alpha + R_0^2 E[e^{-r \tau_j} e^{-r \tau_k}]\]
 Here, the $\chi_i (\chi_i - 1)$ term enters because there are this many terms in the sum over $j \neq k$. Also, 
 \[
-E[\chi_i (\chi_i - 1)] = E[\chi_i^2] - E[\chi_i] = Var[\chi_i] + E[\chi_i]^2 - E[\chi_i] = R_0 + R_0^2 - R_0 = R_0^2
+E[\chi_i (\chi_i - 1)] = E[\chi_i^2] - E[\chi_i] = \text{Var}[\chi_i] + E[\chi_i]^2 - E[\chi_i] = R_0 + R_0^2 - R_0 = R_0^2
 \]
 under the assumption that $\chi_i \sim \text{Poisson}(R_0)$. 
 
@@ -146,160 +184,480 @@ Finally, we can assemble $\text{Var}[W]$:
 \[
 	\text{Var}[\sum_j e^{-r \tau_j}] = R_0 \rho_2^\alpha + R_0^2 \rho_2^{(1-\psi)\alpha} \rho_1^{2 \psi \alpha} - 1
 \]
-and thus, substituting in the $z$ expressions for $\rho_1$ and $\rho_2$, we obtain
+and thus, substituting in the $z$ expressions for $\rho_1$ and $\rho_2$ and noting $R_0 = (1 + z)^\alpha$, we obtain
 \begin{equation}
 	\text{Var}[W] = \frac{
 		\Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha + \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha} - 1
 	}{
 		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
-	}
+	} := 
+	\frac{\sigma_1^\alpha + \sigma_2^{(1-\psi)\alpha} - 1}{1 - \sigma_1^\alpha}
 \end{equation}
-which is Eq.~\ref{eq:var_W}. 
+where $\sigma_c = \frac{(1 + z)^c}{1 + 2z}$ for positive integer $c$. 
 
-\clearpage 
+  Last, we note that $E[W^n|\text{surv}] = E[W^n]/p$
+  (by the same logic as in Eq.~\ref{eq:p_explanation}), so
+  \begin{align}
+      \text{Var}[W | \text{surv}]
+      &= E[W^2|\text{surv}] - E[W|\text{surv}]^2 = \frac{1}{p} E[W^2] - \frac{1}{p^2} E[W]^2 \\ 
+      &= \boxed{\frac{1}{p} (1 + \text{Var}[W]) - \frac{1}{p^2}}
+  \end{align}  
+% Last, we note that, by the same logic as in Eq.~\ref{eq:p_explanation}, 
+% \begin{equation}
+% 	\text{Var}[W | \text{surv}] = \frac{1}{p} \cdot \frac{
+% 		\Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha + \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha} - 1
+% 	}{
+% 		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
+% 	}
+% \end{equation}
+\begin{center}
+{\it [for plugging into expressions for $k$ and $\lambda$, Eq.~\ref{eq:k_and_lambda}]}
+\end{center}
 
-\subsubsection*{Mode of the two-moment Gamma approximation for the time-shift distribution}
-
-Following a simplified version of the moment-matching approach of  \citet{morris_computation_2024}, we approximate the distribution of $W$ conditional on survival by a Gamma distribution matched to its first two moments. The unconditional moments of $W$ are:
-%
-\begin{align}
-    E[W] &= 1 \\[6pt]
-    E[W^2] &= 
-    \text{Var}[W] + E[W]^2 = 
-    % \frac{\sigma^{(1-\psi)\alpha}}{1 - c^\alpha} = 
-    \frac{
-		\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
-	}{
-		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
-	}
-\end{align}
-%
-Conditioning on survival with probability $p$: 
-%
-\begin{align}
-    E[W \mid \text{surv}] &= \frac{E[W]}{p} = \frac{1}{p} 
-    \label{eq:W_cond_mean} \\[6pt]
-    E[W^2 \mid \text{surv}] &= \frac{E[W^2]}{p} 
-    % = \frac{\sigma^{(1-\psi)\alpha}}{p(1 - c^\alpha)}
-    = \frac{
-		\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
-	}{
-		p \Bigl(1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha\Bigr)
-	}
-    \label{eq:W_cond_second_moment}
-\end{align}
-%
-where the division by $p$ arises because 
+\noindent {\bf \boldmath Expressions for $k$ and $\lambda$.} Combining the previous derivations and plugging into Eq.~\ref{eq:k_and_lambda} gives 
 \begin{equation}
-E[W^n] = E[W^n | \text{surv}] P(\text{surv}) + E[W^n | \text{extinct}] P(\text{extinct}) = E[W^n | \text{surv}] \cdot p 
+\boxed{k = \frac{1 - \sigma_1^\alpha}{p \sigma_2^{(1 - \psi)\alpha} - 1 + \sigma_1^\alpha},
+\qquad
+\lambda = p k }
 \end{equation}
-since $W = 0$ when the epidemic fails to establish. Thus, $E[W^n | \text{surv}] = E[W^n] / p$. 
+\begin{center}
+	{\it [Parameters of the moment-matched Gamma distribution for W]}
+\end{center}
 
-Our goal is to approximate the distribution of $W$ with a $\text{Gamma}(k, \lambda)$ distribution, and specifically to estimate the mode of the distribution of $W | \text{surv}$ with the mode of the moment-matched $\text{Gamma}(k, \lambda)$ distribution. Note that the mode of a generic $\text{Gamma}(k,\lambda)$ distribution is $(k-1)/\lambda$, and that the distribution has a mean of $k/\lambda$ and a squared coefficient of variation of ($\text{CV}^2$) $1/k$. Thus, the parameters of the moment-matched Gamma distribution are 
-\begin{align}
-	k &= \frac{1}{\text{CV}^2[W|\text{surv}]}  \\ 
-	\lambda &= \frac{k}{E[W|\text{surv}]} = k p 
-\end{align}
-and the mode of the moment-matched distribution is 
+\noindent {\bf \boldmath Deriving the approximate density of $\varsigma$.} Let $f_W(x)$ be the Gamma-distributed approximate density of $W$: 
 \begin{equation}
-	\text{mode}[W|\text{surv}] \approx \frac{k - 1}{\lambda} = \frac{k-1}{k p } = \frac{1 - 1/k}{p} = \frac{1 - \text{CV}^2[W|\text{surv}]}{p}
+	f_W(x) = \frac{\lambda^k}{\Gamma(k)} x^{k-1} e^{-\lambda x}
 \end{equation}
-The expression for $\text{CV}^2$ is  
-\begin{align}
-	\text{CV}^2(W|\text{surv})  &= \frac{\text{Var}(W|\text{surv})}{E[W|\text{surv}]^2} 
-	= \frac{E[W^2 | \text{surv}] - E[W| \text{surv}]^2}{E[W|\text{surv}]^2} \\ 
-	&= \frac{
-		p \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
-	}{
-		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
-	} - 1
-	\label{eq:cv2}
-\end{align}
-This moment-matched approximation is valid when $k \geq 1$ (\ie,\ $\text{CV}^2[W|\text{surv}] \leq 1$). When $k < 1$, the  approximating density is monotonically decreasing on $(0, \infty)$ with  no interior mode. 
-
-The time-shift $\varsigma = \log(W)/r$ is a monotone transformation of $W$, so its modal value is obtained by transforming  the mode of the Gamma approximation. Therefore:
-%
+Since $\varsigma = \frac{1}{r} \log W$, we have $W = e^{r \varsigma}$, or, in terms of the arguments of the density functions, $x = e^{r s}$. By the change of variables formula, the density of $\varsigma$ is 
 \begin{equation}
-    \text{Mode}[\varsigma] 
-    = \frac{1}{r}\log\!\left(\frac{1-V}{p}\right)
-    \label{eq:mode_varsigma_split}
+f_\varsigma(s) = f_W(e^{rs}) |\frac{dw}{ds}| = 
+\frac{\lambda^k}{\Gamma(k)} e^{rs(k-1)} e^{-\lambda e^{rs}} r e^{rs} = \frac{r \lambda^k}{\Gamma(k)} e^{rsk} e^{-\lambda e^{rs}}
+\label{eq:varsigma_dist}
 \end{equation}
-%
-Substituting $V$ from Eq.~\eqref{eq:cv2} and expressing in terms of  $z = R_0^{1/\alpha} - 1$, this yields Eq.~\eqref{eq:mode_timeshift}.  
-
-\clearpage 
-
-\subsubsection*{Monotonicity in $R_0$}
-
-Differentiating Eq.~\eqref{eq:alpha_log_sigma} with respect to $R_0$,  holding $\alpha$ fixed, and using  $\frac{d}{dR_0}(2R_0^{1/\alpha}) = (2/\alpha)R_0^{1/\alpha - 1}$:
-%
+By taking the logarithm, differentiating with respect to $s$, and setting equal to 0, we can determine the mode of the distribution: 
 \begin{equation}
-    \frac{\partial(\alpha\log\sigma)}{\partial R_0} 
-    = \frac{2}{R_0} - \frac{2R_0^{1/\alpha - 1}}{2R_0^{1/\alpha} - 1}
-    = \frac{2}{R_0} \cdot \frac{R_0^{1/\alpha} - 1}{2R_0^{1/\alpha} - 1}
-    = \frac{2(\mu - 1)}{R_0(2\mu - 1)}
+	\boxed{\text{Mode}[\varsigma] = \frac{1}{r} \log \Bigl(\frac{k}{\lambda}\Bigr) = \frac{1}{r} \log \frac{1}{p}}
+	\label{eq:varsigma_mode}
 \end{equation}
-%
-This is strictly positive for all $R_0 > 1$, since $\mu = R_0^{1/\alpha} > 1$  makes both the numerator $\mu - 1$ and denominator $2\mu - 1$ positive. The  derivative vanishes at $R_0 = 1$ ($\mu = 1$), confirming that at the epidemic  threshold there is no $\psi$-dependence in either $\text{Var}(W)$ or  $\text{Mode}[\varsigma]$.
+\begin{center}
+	{\it [Mode of the time shift distribution]}
+\end{center}
+Thus, the modal time shift depends on the epidemic growth rate $r$ and the establishment probability $p$ (and thus the reproduction number $R_0$), but not on the punctuation parameter $\psi$. 
 
-\clearpage 
 
-\subsubsection*{Monotonicity in $\alpha$}
-
-Differentiating Eq.~\eqref{eq:alpha_log_sigma} with respect to $\alpha$,  holding $R_0$ fixed. Write $g(\alpha) = \alpha\log(2R_0^{1/\alpha} - 1)$,  so that $\alpha\log\sigma = 2\log R_0 - g(\alpha)$ and it suffices to show  $\partial g/\partial\alpha > 0$. By the product rule, using  $\frac{\partial}{\partial\alpha}R_0^{1/\alpha}  = -R_0^{1/\alpha}\log R_0/\alpha^2$:
-%
+\noindent {\bf \boldmath Deriving $E[\varsigma]$.} 
+It would be possible to derive $E[\varsigma]$ directly from Eq.\ref{eq:varsigma_dist}, but there is a more direct route: since $W \sim \text{Gamma}(k,\lambda)$ and $\varsigma = \frac{1}{r} \log(W)$, it follows that 
 \begin{equation}
-    \frac{\partial g}{\partial\alpha} 
-    = \log(2\mu - 1) - \frac{2\mu\log\mu}{2\mu - 1}
+	E[\varsigma] = \frac{1}{r}(\Psi^{(0)}(k) - \log \lambda)
 \end{equation}
-%
-where we have substituted $\mu = R_0^{1/\alpha}$ and $\log R_0 = \alpha\log\mu$.  To establish the sign, define  $h(\mu) = (2\mu-1)\log(2\mu-1) - 2\mu\log\mu$, so that the condition  $\partial g/\partial\alpha > 0$ is equivalent to $h(\mu) > 0$.  Differentiating:
-%
+where $\Psi^{(0)}(k)$ is the digamma function evaluated at $k$. Plugging in $\lambda = pk$: 
 \begin{equation}
-    h'(\mu) = 2\log(2\mu - 1) + 2 - 2\log\mu - 2 
-            = 2\log\!\left(2 - \frac{1}{\mu}\right)
+\boxed{E[\varsigma] = \frac{\log(1/p)}{r} + \frac{\Psi^{(0)}(k) - \log(k)}{r}}
 \end{equation}
-%
-For $\mu > 1$, we have $2 - 1/\mu > 1$, so $h'(\mu) > 0$. Since $h(1) = 0$  and $h'(\mu) > 0$ for all $\mu > 1$, it follows that $h(\mu) > 0$ for all  $\mu > 1$, giving $\partial g/\partial\alpha > 0$ and hence:
-%
+\begin{center}
+	{\it [Expected value of the time shift distribution]}
+\end{center}
+The first term is $\text{Mode}[\varsigma]$ (Eq.~\ref{eq:varsigma_mode}), and is independent of the punctuation parameter $\psi$. The second term is a $\psi$-dependent adjustment that is: 
+\begin{enumerate}
+	\item {\bf  Strictly negative.} {\it Proof:} Let $G \sim \text{Gamma}(k,1)$. Then, $E[G] = k$ and $E[\log G] = \Psi^{(0)}(k)$. By Jensen's inequality, since $\log$ is strictly concave, 
+	\[\Psi^{(0)}(k) = E[\log G] < \log(E[G]) = \log k \]
+	Thus, $\bigl(\Psi^{(0)}(k) - \log(k)\bigr)/r < 0$. 
+	\item {\bf \boldmath Strictly increasing (less negative) in $\psi$.} {\it Proof:} Consider 
+	\[\frac{d}{dk} \bigl[ \Psi^{(0)}(k) - \log k \bigr] = 
+	\frac{d}{dk} \Biggl[ \int_0^\infty \Bigl(\frac{e^{-t}}{t} - \frac{e^{-kt}}{1 - e^{-t}}\Bigr) dt \Biggr] - \frac{1}{k} 
+	= \int_0^\infty \frac{t e^{-k t }}{1 - e^{-t}}\, dt  - \frac{1}{k}
+	\]
+	Note that $1 - e^{-t} < t$ for $t > 0$, and thus $\frac{t}{1 - e^{-t}} > 1$. So, 
+	\[  
+	\int_0^\infty \frac{t e^{-kt}}{1 - e^{-t}} > \int_0^\infty e^{-kt} = \frac{1}{k}
+	 \]
+	 So, 
+	 \[\frac{d}{dk} \bigl[ \Psi^{(0)}(k) - \log k \bigr] > 0 \]
+	 and thus $(\Psi^{(0)}(k) - \log k)/r$ is increasing in $k$. \\ 
+	 Next, we note that $k$ is increasing in $\psi$. The only $\psi$-dependent quantity in $k$ (Eq.\ref{eq:k_and_lambda}) is $\sigma_2^{(1-\psi)\alpha}$, which shows up in the denominator. Since
+	 \[\sigma_2 = \frac{(1 + z)^2}{(1 + 2z)} = 1 + \frac{z^2}{1 + 2z} > 1 \quad \text{ for  } z > 0\]
+	 the term is maximized when $\psi = 0$ and minimized when $\psi = 1$. Thus, $k$ is minimized when $\psi = 0$ and maximized when $\psi = 1$ --- \ie, $k$ is increasing in $\psi$. 
+\end{enumerate}
+
+\noindent Together, these observations demonstrate that the expected time shift sits later than the modal time shift (\ie, the time shift is left-skewed; Observation 1), and the expected time shift moves increasingly later as $a_i(\tau)$ becomes more punctuated (Observation 2). 
+
+\noindent {\bf \boldmath Deriving $\text{Var}[\varsigma]$.} Following again from the properties of $\log W$ where $W$ is $\text{Gamma}(k, \lambda)$-distributed, 
 \begin{equation}
-    \frac{\partial(\alpha\log\sigma)}{\partial\alpha} < 0
+	\boxed{\text{Var}[\varsigma] = \frac{1}{r^2} \Psi^{(1)}(k)}
 \end{equation}
-%
-So $\alpha\log\sigma$ is strictly decreasing in $\alpha$: more concentrated  generation intervals (larger $\alpha$, holding $R_0$ fixed) reduce the  impact of punctuation on both $\text{Var}(W)$ and $\text{Mode}[\varsigma]$.
-
-\clearpage 
-
-\subsection*{The modulating role of $\alpha \log \sigma$}
-
-The $\psi$-dependent term in both $\text{Var}(W)$ and $\text{Mode}[\varsigma]$  is $\sigma^{(1-\psi)\alpha}$, which can be written as  $e^{(1-\psi)\alpha\log\sigma}$. The quantity $\alpha\log\sigma$ therefore  acts as the fundamental modulator of $\psi$-dependence: larger  $\alpha\log\sigma$ means the base $\sigma > 1$ is raised to a larger  effective power, amplifying the spread in $\text{Var}(W)$ and  $\text{Mode}[\varsigma]$ between the spike ($\psi \to 0$) and smooth  ($\psi \to 1$) limits. We can express this quantity exactly in terms of  $R_0$ and $\alpha$ alone. Starting from $\sigma = \mu^2/(2\mu-1)$ with  $\mu = R_0^{1/\alpha}$:
-%
+\begin{center}
+	{\it [Variance of the time shift distribution]}
+\end{center}
+where $\Psi^{(1)}(k)$ is the trigamma function. The trigamma function is strictly decreasing in $k$, since 
 \begin{equation}
-    \log\sigma = 2\log\mu - \log(2\mu - 1) 
-               = \frac{2\log R_0}{\alpha} - \log(2R_0^{1/\alpha} - 1)
+\frac{d}{dk} \Psi^{(1)}(k) =  \frac{d}{dk }\sum_{n=0}^\infty \frac{1}{(k+n)^2} = 
+-2 \sum_{n=0}^\infty \frac{1}{(k + n)^3}
 \end{equation}
-%
-and multiplying through by $\alpha$:
-%
+which is strictly negative when $k > 0$. Thus, $\psi \rightarrow 0$ (punctuated profiles) $\Rightarrow$ $k$ decreasing $\Rightarrow$ $\text{Var}[\varsigma]$ increasing, \ie, more punctuated profiles increase the variance of the time shift. 
+
+\noindent {\bf Summary.} In this section, we derived properties of the random time shift $\varsigma$ by relying on a branching process approximation to the early-epidemic exponential growth phase. When conditioning on epidemic survival, we demonstrated that the time shift becomes increasingly later in expectation and more variable as the individual infectiousness profile $a_i(\tau)$ becomes more punctuated ($\psi \rightarrow 0$).
+
+\clearpage
+
+\subsubsection*{Generality beyond the time-shifted Gamma model}
+
+The preceding derivation used the time-shifted Gamma model and a Gamma-distributed generation interval. Here, we show that the core result --- punctuated profiles increase the variance of early-epidemic timing --- holds for \emph{any} non-degenerate generation interval distribution (\ie, any distribution with positive variance, as opposed to a degenerate distribution concentrated on a single point). The argument rests only on the additive splitting $\tau_j = l_i + \varepsilon_j$ (shared shift plus independent jitter) and the Cauchy-Schwarz inequality.
+
+\noindent {\bf Setup.} Let $g$ be an arbitrary generation interval distribution with Laplace transform $M_g(s) = E[e^{-s\tau}]$, so the Euler-Lotka equation gives $R_0 M_g(r) = 1$. Each index case's offspring share a common latent shift $l_i$ and receive independent jitter $\varepsilon_j$, so $\tau_j = l_i + \varepsilon_j$ with the marginal distribution of $\tau_j$ equal to $g$. The distributions of $l$ and $\varepsilon$ are arbitrary, subject only to $M_l \cdot M_\varepsilon = M_g$.
+
+\noindent {\bf \boldmath Model-free $\text{Var}[W]$ formula.} The law-of-total-variance derivation proceeds identically to the Gamma case. The only splitting-dependent step is the cross-term for $j \neq k$:
+\[
+E[e^{-r \tau_j} e^{-r \tau_k}] = E[e^{-2rl}] (E[e^{-r\varepsilon}])^2 = M_l(2r) \cdot M_\varepsilon(r)^2
+\]
+Using $M_l(2r) = M_g(2r) / M_\varepsilon(2r)$, this becomes $M_g(2r) \cdot Q$, where
 \begin{equation}
-    \alpha\log\sigma = 2\log R_0 - \alpha\log(2R_0^{1/\alpha} - 1).
-    \label{eq:alpha_log_sigma}
+	Q := \frac{M_\varepsilon(r)^2}{M_\varepsilon(2r)}
+	\label{eq:Q_def}
 \end{equation}
-%
-We now show that this expression is strictly increasing in $R_0$ and  strictly decreasing in $\alpha$, confirming the qualitative picture that  punctuation ($\psi < 1$) matters more when $R_0$ is large and the  generation interval is dispersed (small $\alpha$).
+Assembling the full variance formula (with $A := R_0 M_g(2r)$):
+\begin{equation}
+	\text{Var}[W] = \frac{A(1 + R_0 Q) - 1}{1 - A}
+	\label{eq:var_W_general}
+\end{equation}
+Here, $A$ depends only on $g$ and not on the splitting, and $Q$ is the \emph{only} place the splitting enters. Since Eq.~\ref{eq:var_W_general} is affine in $Q$ with positive slope $R_0 A / (1-A)$, $\text{Var}[W]$ is strictly increasing in $Q$.
 
-\clearpage 
+\noindent {\bf Three properties of $Q$.}
 
-\subsubsection*{Summary}
+\begin{enumerate}
+	\item $Q \leq 1$, with equality if and only if $\varepsilon$ is degenerate (maximum punctuation).
 
-The two partial derivatives establish that the modulating quantity  $\alpha\log\sigma$ --- and hence the sensitivity of $\text{Var}(W)$ and  $\text{Mode}[\varsigma]$ to $\psi$ --- is:
-%
-\begin{itemize}
-    \item \textbf{Increasing in $R_0$}: higher transmissibility amplifies  the effect of punctuation, because more offspring more densely sample  the individual infectiousness profile, inheriting more of its temporal  structure.
-    \item \textbf{Decreasing in $\alpha$}: more concentrated generation  intervals dampen the effect of punctuation, because there is less  temporal variation across the generation interval for the shared  latent period $l_i$ to exploit.
-\end{itemize}
-%
-Together, these results confirm that punctuated infectiousness  ($\psi < 1$) has the greatest impact on epidemic timing variability  when $R_0$ is large and the generation interval is dispersed ---  precisely the regime in which the individual infectiousness profile  has the most temporal structure for offspring timing to inherit.
+	{\it Proof:} By the Cauchy-Schwarz inequality applied to $X = e^{-r\varepsilon}$:
+	\[M_\varepsilon(2r) = E[X^2] \geq (E[X])^2 = M_\varepsilon(r)^2\]
+	so $Q = M_\varepsilon(r)^2 / M_\varepsilon(2r) \leq 1$. Equality holds if and only if $X$ is almost surely constant, \ie, $\varepsilon$ is degenerate. $\blacksquare$
+
+	\item $Q$ is multiplicative under convolution: if $\varepsilon_2 \overset{d}{=} \varepsilon_1 + \delta$ with $\delta$ independent, then $Q_2 = Q_1 \cdot Q_\delta \leq Q_1$, with strict inequality if $\delta$ is non-degenerate.
+
+	{\it Proof:} $M_{\varepsilon_2}(s) = M_{\varepsilon_1}(s) \cdot M_\delta(s)$, so $Q_2 = Q_1 \cdot M_\delta(r)^2 / M_\delta(2r) = Q_1 \cdot Q_\delta$, and $Q_\delta \leq 1$ by Property 1. $\blacksquare$
+
+	\item The spike-vs-smooth gap in $\text{Var}[W]$ is strictly positive for any non-degenerate $g$.
+
+	{\it Proof:} For the spike ($\varepsilon = 0$), $Q_\text{spike} = 1$. For the smooth ($\varepsilon = \tau$, $l = 0$), $Q_\text{smooth} = M_g(r)^2 / M_g(2r) = 1 / (R_0^2 M_g(2r)) = 1/(R_0 A)$. The gap is
+	\[
+	\text{Var}[W]_\text{spike} - \text{Var}[W]_\text{smooth} = \frac{R_0 A (1 - Q_\text{smooth})}{1 - A} = \frac{R_0 A - 1}{1 - A}
+	\]
+	Since $R_0 A = R_0^2 M_g(2r) \geq R_0^2 M_g(r)^2 = 1$ by the Cauchy-Schwarz inequality applied to $X = e^{-r\tau}$, with strict inequality for non-degenerate $g$, the gap is strictly positive. $\blacksquare$
+\end{enumerate}
+
+\noindent {\bf Monotonicity for parameterized families.} For a one-parameter family of splittings $\varepsilon_\psi$ with $\varepsilon_0 = 0$ (spike) and $\varepsilon_1 = \tau$ (smooth), if the family is ordered by convolution --- meaning $\varepsilon_{\psi_2} \overset{d}{=} \varepsilon_{\psi_1} + \delta$ for some independent $\delta \geq 0$ whenever $\psi_2 > \psi_1$ --- then $Q(\psi)$ is strictly decreasing and $\text{Var}[W](\psi)$ is strictly decreasing in $\psi$. The time-shifted Gamma model satisfies this ordering, since $\text{Gamma}(\psi_2 \alpha, \beta) \overset{d}{=} \text{Gamma}(\psi_1 \alpha, \beta) + \text{Gamma}((\psi_2 - \psi_1) \alpha, \beta)$, but any infinitely divisible generation interval distribution admits such a family.
+
+\noindent {\bf Implications for the full chain.} Combined with the model-free conditioning step ($\text{Var}[W|\text{surv}] = (1 + \text{Var}[W])/p - 1/p^2$, which increases in $\text{Var}[W]$) and the Gamma-approximation results above, the full chain holds for general $g$:
+\begin{center}
+\begin{tabular}{ccccccc}
+	More punctuation & $\Rightarrow$ & higher $Q$ & $\Rightarrow$ & higher $\text{Var}[W]$ & $\Rightarrow$ & lower $k$ \\
+	& & {\scriptsize (Cauchy-Schwarz)} & & {\scriptsize (Eq.~\ref{eq:var_W_general})} & & {\scriptsize (Eq.~\ref{eq:k_and_lambda})} \\[6pt]
+	& $\Rightarrow$ & more negative $E[\varsigma]$ & and & higher $\text{Var}[\varsigma]$ \\
+	& & {\scriptsize (digamma monotonicity)} & & {\scriptsize (trigamma monotonicity)} \\
+\end{tabular}
+\end{center}
+The first two links are model-free: the only assumption is that $g$ is non-degenerate. The final link --- from $\text{Var}[W]$ to properties of $\varsigma = (\log W)/r$ --- requires a distributional assumption, because moments of $W$ do not uniquely determine moments of $\log W$. The Gamma moment-matching approximation serves this role: given $E[W|\text{surv}]$ and $\text{Var}[W|\text{surv}]$, it provides a complete distribution from which $E[\varsigma]$ and $\text{Var}[\varsigma]$ can be computed in closed form via the digamma and trigamma functions. Without this (or an analogous) approximation, the qualitative direction is still supported by Jensen's inequality --- which guarantees $E[\varsigma|\text{surv}] < \log(1/p)/r$ for any distribution of $W|\text{surv}$, with the gap increasing when the distribution becomes more dispersed in the sense of convex order --- but the specific quantitative expressions would not apply.
+
+
+
+
+
+
+
+
+
+
+
+% \noindent To complete the argument, we show that $k$ is increasing in $\psi$. Recall from Eq.~\ref{eq:k_and_lambda} that
+% \[
+% k = \frac{1 - \sigma_1^\alpha}{p\, \sigma_2^{(1-\psi)\alpha} + \sigma_1^\alpha - 1}
+% \]
+% The numerator does not depend on $\psi$. In the denominator, the only $\psi$-dependent term is $\sigma_2^{(1-\psi)\alpha}$, whose derivative with respect to $\psi$ is
+% \[
+% \frac{d}{d\psi} \sigma_2^{(1-\psi)\alpha} = -\alpha \log(\sigma_2) \cdot \sigma_2^{(1-\psi)\alpha} < 0
+% \]
+% since $\sigma_2 = (1+z)^2/(1+2z) = 1 + z^2/(1+2z) > 1$ for $z > 0$. Thus, the denominator is strictly decreasing in $\psi$, and $k$ (a positive constant divided by a decreasing positive function) is strictly increasing in $\psi$.
+
+% \noindent {\bf Summary.} Combining the three results above: as $\psi$ decreases (more punctuated infectiousness), $k$ decreases, making the Jensen gap $(\Psi^{(0)}(k) - \log k)/r$ more negative, and thus $E[\varsigma]$ more negative --- meaning epidemics reach the establishment threshold earlier, on average.
+
+% secondary infection time are distributed according to the generation interval distribution $g(\tau)$, \ie, $\tau_j \sim \text{Gamma}(\alpha, \beta)$
+
+
+% For notational convenience, we introduce 
+% \begin{equation}
+% 	\rho_c = E[e^{-c r \tau}] = 
+% \end{equation}
+
+
+
+
+
+% Our first step is to approximate the distribution of $W$, conditional on epidemic survival, with a $\text{Gamma}(k, \lambda)$ distribution by matching the first two moments. Specifically, we set
+% % \begin{equation}
+% % 	k = \frac{}
+% % \end{equation}
+
+
+% Our first step is to approximate the distribution of $W$, which we denote $f_W(x)$, with an approximate distribution $\tilde{f}_W(x)$ that follows a $\text{Gamma}(k,\lambda)$ distribution. 
+
+
+
+
+
+% \clearpage
+
+
+% \subsubsection*{Derivation of $\text{Var}[W]$}
+
+% For a branching process $Z(t)$ conditional on non-extinction, $e^{-rt} Z(t) \rightarrow W$ almost surely as $t \rightarrow \infty$. Here, $r$ is the early-epidemic exponential growth rate and $W$ is a random variable that effectively scales the branching process' initial condition, capturing stochastic fluctuations in the early-epidemic process. 
+
+% With a change of variables, we can translate $W$ into a random initial time shift: 
+% %
+% \begin{equation}
+% 	\varsigma = \frac{\log W - \log E[W]}{r} = \frac{\log W}{r}
+% \end{equation}
+% %
+% when $I_0 = E[W] = 1$. Our goal is to understand how $\text{Var}[\varsigma]$ depends on the punctuation parameter $\psi$. Since $\varsigma$ and $W$ are monotonically related, we can derive an expression for $\text{Var}[W]$ and will interpret its implications for $\text{Var}[\varsigma]$ at the end. 
+
+% To start, we consider an index case $i$ infected at time $t = 0$ who produces $\chi_i \sim \text{Poisson}(R_0)$ offspring. Under the Gamma time-shift model, the offspring $j$ from this index case are infected at times $\tau_j = l_i + \epsilon_j$, where $l_i$ is person $i$'s latent period and $\epsilon_j$ is the additional lag between $l_i$ and person $j$'s infection time, with 
+% %
+% \[l_i \sim \text{Gamma}((1-\psi)\alpha, \beta), \qquad \epsilon_j \sim \text{Gamma}(\psi \alpha, \beta) \]
+% %
+% This ensures that the population-level generation interval distribution is
+% %
+% \[ g(\tau) \sim \text{Gamma}(\alpha, \beta) \]
+% %
+% We can define some useful quantities that will arise later in the derivation. First, from the Euler-Lotka equation under $g(\tau)$ \citep{wallinga_how_2007}:, 
+% %
+% \[1 = R_0 \int_{\tau=0}^\infty e^{-r\tau } \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{\alpha-1} e^{-\beta \tau} d\tau\]
+% %
+% which simplifies to 
+% %
+% \[ 1 = R_0 \Bigl( \frac{\beta}{\beta+r }\Bigr )^\alpha = R_0 \Bigl(\frac{1}{1+z}\Bigr)^\alpha\]
+% %
+% where  $z = r/\beta = r \bar{g} / \alpha = R_0^{1/\alpha} - 1$, a dimensionless quantity that simplifies expressions and allows one to easily plug in different combinations of epidemiological parameters. Here, $\bar{g}$ is the mean of the generation interval distribution $g(\tau)$. 
+
+% Next, we define 
+% %
+% \[ \rho_k =  (E[e^{-k r \tau}])^{1/\alpha} = \frac{\beta}{\beta + k r}  = \frac{1 }{1 + kz}\]
+% This allows us to re-write the Euler-Lotka equation: 
+% %
+% \[ 1 = R_0 \rho_1^\alpha \]
+
+% Next, we introduce the distributional fixed point equation, which is a standard starting point for computing moments of $W$. This equation exploits the self-similarity of the branching process, in which an epidemic initiated by a single individual is, in distribution, a scaled and time-shifted copy of the whole epidemic. At large $t$, the epidemic seeded by the index case $i$ consists of the downstream epidemics caused by their offspring $j$, which have grown approximately to size $Z_j(t) = W_j e^{r(t - \tau_j)}$. That is, 
+% %
+% \[
+% 	Z(t) \approx \sum_{j=1}^{\chi_i} W_j e^{rt} e^{-r \tau_j}
+% \]
+% Multiplying through by $e^{-rt}$: 
+% %
+% \[  W \overset{d}{=} \sum_{j=1}^{\chi_i} e^{-r \tau_j} W_j \]
+
+% We now use this expression to calculate $\text{Var}[W]$. Since randomness enters through both $W$ and $\tau$, we first condition on $\tau_j$ using the law of total variance: 
+% %
+% \[ \text{Var}[W] = E[\text{Var}\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] + \text{Var}[E\Bigl[\sum_j e^{-r \tau_j} W_j | \tau_j\Bigr]] \]
+% \[
+% =E\Bigl[ \sum_j e^{-2r\tau_j}  \cdot \text{Var}[W] \Bigr] + 
+% \text{Var} \Bigl[\sum_j e^{-r \tau_j} \cdot E[W] \Bigr]
+% \]
+% \[
+% = E\Bigl[\sum_j e^{-2 r \tau_j}\Bigr] \cdot \text{Var}[W] + 
+% (E[W])^2 \cdot \text{Var}\Bigl[\sum_j e^{-r \tau_j}\Bigr]
+% \]
+% %
+% Since $E[W] = I_0 = 1$, we have 
+% \[
+% 	\text{Var}[W] = \text{Var}[W] E\Bigl[\sum_j e^{-2 r \tau_j}\Bigr] + \text{Var}\Bigl[\sum_j e^{-r \tau_j}\Bigr]
+% \]
+% Solving for $\text{Var}[W]$, 
+% \[
+% 	\text{Var}[W] = \frac{\text{Var}[\sum_j e^{-r \tau_j}]}{1 - E[\sum_j e^{-2 r \tau_j}]}
+% \]
+% To simplify the denominator, note that 
+% \[ 
+% E\Bigl[\sum_{j=1}^{\chi_i} e^{-2 r \tau_j}\Bigr] = E[\chi_i] E[e^{-2 r \tau_j}]
+%  = R_0 E[e^{-2 r \tau_j}]
+%  % = R_0 \Bigl( \frac{\beta}{\beta + 2r}\Bigr )^\alpha 
+%  = R_0 \rho_2^\alpha 
+%  \]
+% Thus, the variance expression simplifies to 
+% \[
+% 	\text{Var}[W] = \frac{\text{Var}[\sum_j e^{-r \tau_j}]}{1 - R_0 \rho_2^\alpha}
+% \]
+% The denominator does not depend on $\psi$, so we proceed by examining the numerator: 
+% \[
+% 	\text{Var}[\sum_j e^{-r \tau_j}] = E[(\sum_j e^{-r \tau_j})^2] - E[\sum_j e^{-r \tau_j}]^2 = E[(\sum_j e^{- r \tau_j})^2] - 1
+% \]
+% Then, 
+% \[
+% 	E[(\sum_j e^{- r \tau_j})^2] = E[\sum_j e^{-2 r \tau_j}] + E[\sum_{j \neq k} e^{-r (\tau_j + \tau_k)}]
+% \]
+% \[= R_0 \rho_2^\alpha + E[\chi_i (\chi_i - 1)] E[e^{-r \tau_j} e^{-r \tau_k}]\]
+% \[= R_0 \rho_2^\alpha + R_0^2 E[e^{-r \tau_j} e^{-r \tau_k}]\]
+% Here, the $\chi_i (\chi_i - 1)$ term enters because there are this many terms in the sum over $j \neq k$. Also, 
+% \[
+% E[\chi_i (\chi_i - 1)] = E[\chi_i^2] - E[\chi_i] = Var[\chi_i] + E[\chi_i]^2 - E[\chi_i] = R_0 + R_0^2 - R_0 = R_0^2
+% \]
+% under the assumption that $\chi_i \sim \text{Poisson}(R_0)$. 
+
+% Since $\tau_j = l_i + \epsilon_j$, and since $l_i$, $\epsilon_j$, and $\epsilon_k$ are independent, 
+% \[ E[e^{-r \tau_j} e^{-r \tau_k}]  = E[e^{-2r l_i} e^{-r \epsilon_j} e^{-r \epsilon_k}] = E[e^{-2r l_i}] (E[e^{-r \epsilon}])^2 = \rho_2^{(1-\psi)\alpha} \cdot \rho _1^{2 \psi \alpha}\]
+% Finally, we can assemble $\text{Var}[W]$: 
+% \[
+% 	\text{Var}[\sum_j e^{-r \tau_j}] = R_0 \rho_2^\alpha + R_0^2 \rho_2^{(1-\psi)\alpha} \rho_1^{2 \psi \alpha} - 1
+% \]
+% and thus, substituting in the $z$ expressions for $\rho_1$ and $\rho_2$, we obtain
+% \begin{equation}
+% 	\text{Var}[W] = \frac{
+% 		\Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha + \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha} - 1
+% 	}{
+% 		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
+% 	}
+% \end{equation}
+% which is Eq.~\ref{eq:var_W}. 
+
+% \clearpage 
+
+% \subsubsection*{Mode of the two-moment Gamma approximation for the time-shift distribution}
+
+% Following a simplified version of the moment-matching approach of  \citet{morris_computation_2024}, we approximate the distribution of $W$ conditional on survival by a Gamma distribution matched to its first two moments. The unconditional moments of $W$ are:
+% %
+% \begin{align}
+%     E[W] &= 1 \\[6pt]
+%     E[W^2] &= 
+%     \text{Var}[W] + E[W]^2 = 
+%     % \frac{\sigma^{(1-\psi)\alpha}}{1 - c^\alpha} = 
+%     \frac{
+% 		\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
+% 	}{
+% 		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
+% 	}
+% \end{align}
+% %
+% Conditioning on survival with probability $p$: 
+% %
+% \begin{align}
+%     E[W \mid \text{surv}] &= \frac{E[W]}{p} = \frac{1}{p} 
+%     \label{eq:W_cond_mean} \\[6pt]
+%     E[W^2 \mid \text{surv}] &= \frac{E[W^2]}{p} 
+%     % = \frac{\sigma^{(1-\psi)\alpha}}{p(1 - c^\alpha)}
+%     = \frac{
+% 		\Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
+% 	}{
+% 		p \Bigl(1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha\Bigr)
+% 	}
+%     \label{eq:W_cond_second_moment}
+% \end{align}
+% %
+% where the division by $p$ arises because 
+% \begin{equation}
+% E[W^n] = E[W^n | \text{surv}] P(\text{surv}) + E[W^n | \text{extinct}] P(\text{extinct}) = E[W^n | \text{surv}] \cdot p 
+% \end{equation}
+% since $W = 0$ when the epidemic fails to establish. Thus, $E[W^n | \text{surv}] = E[W^n] / p$. 
+
+% Our goal is to approximate the distribution of $W$ with a $\text{Gamma}(k, \lambda)$ distribution, and specifically to estimate the mode of the distribution of $W | \text{surv}$ with the mode of the moment-matched $\text{Gamma}(k, \lambda)$ distribution. Note that the mode of a generic $\text{Gamma}(k,\lambda)$ distribution is $(k-1)/\lambda$, and that the distribution has a mean of $k/\lambda$ and a squared coefficient of variation of ($\text{CV}^2$) $1/k$. Thus, the parameters of the moment-matched Gamma distribution are 
+% \begin{align}
+% 	k &= \frac{1}{\text{CV}^2[W|\text{surv}]}  \\ 
+% 	\lambda &= \frac{k}{E[W|\text{surv}]} = k p 
+% \end{align}
+% and the mode of the moment-matched distribution is 
+% \begin{equation}
+% 	\text{mode}[W|\text{surv}] \approx \frac{k - 1}{\lambda} = \frac{k-1}{k p } = \frac{1 - 1/k}{p} = \frac{1 - \text{CV}^2[W|\text{surv}]}{p}
+% \end{equation}
+% The expression for $\text{CV}^2$ is  
+% \begin{align}
+% 	\text{CV}^2(W|\text{surv})  &= \frac{\text{Var}(W|\text{surv})}{E[W|\text{surv}]^2} 
+% 	= \frac{E[W^2 | \text{surv}] - E[W| \text{surv}]^2}{E[W|\text{surv}]^2} \\ 
+% 	&= \frac{
+% 		p \Bigl(\frac{(1 + z)^2}{1 + 2z}\Bigr)^{(1-\psi) \alpha}
+% 	}{
+% 		1 - \Bigl(\frac{1 + z}{1 + 2z}\Bigr)^\alpha
+% 	} - 1
+% 	\label{eq:cv2}
+% \end{align}
+% This moment-matched approximation is valid when $k \geq 1$ (\ie,\ $\text{CV}^2[W|\text{surv}] \leq 1$). When $k < 1$, the  approximating density is monotonically decreasing on $(0, \infty)$ with  no interior mode. 
+
+% The time-shift $\varsigma = \log(W)/r$ is a monotone transformation of $W$, so its modal value is obtained by transforming  the mode of the Gamma approximation. Therefore:
+% %
+% \begin{equation}
+%     \text{Mode}[\varsigma] 
+%     = \frac{1}{r}\log\!\left(\frac{1-\text{CV}^2[W|\text{surv}]}{p}\right)
+%     \label{eq:mode_varsigma_split}
+% \end{equation}
+% %
+% Substituting $\text{CV}^2[W|\text{surv}]$ from Eq.~\eqref{eq:cv2} and expressing in terms of  $z = R_0^{1/\alpha} - 1$, this yields Eq.~\eqref{eq:mode_timeshift}.  
+
+% \clearpage 
+
+% \subsubsection*{Monotonicity in $R_0$}
+
+% Differentiating Eq.~\eqref{eq:alpha_log_sigma} with respect to $R_0$,  holding $\alpha$ fixed, and using  $\frac{d}{dR_0}(2R_0^{1/\alpha}) = (2/\alpha)R_0^{1/\alpha - 1}$:
+% %
+% \begin{equation}
+%     \frac{\partial(\alpha\log\sigma)}{\partial R_0} 
+%     = \frac{2}{R_0} - \frac{2R_0^{1/\alpha - 1}}{2R_0^{1/\alpha} - 1}
+%     = \frac{2}{R_0} \cdot \frac{R_0^{1/\alpha} - 1}{2R_0^{1/\alpha} - 1}
+%     = \frac{2(\mu - 1)}{R_0(2\mu - 1)}
+% \end{equation}
+% %
+% This is strictly positive for all $R_0 > 1$, since $\mu = R_0^{1/\alpha} > 1$  makes both the numerator $\mu - 1$ and denominator $2\mu - 1$ positive. The  derivative vanishes at $R_0 = 1$ ($\mu = 1$), confirming that at the epidemic  threshold there is no $\psi$-dependence in either $\text{Var}(W)$ or  $\text{Mode}[\varsigma]$.
+
+% \clearpage 
+
+% \subsubsection*{Monotonicity in $\alpha$}
+
+% Differentiating Eq.~\eqref{eq:alpha_log_sigma} with respect to $\alpha$,  holding $R_0$ fixed. Write $g(\alpha) = \alpha\log(2R_0^{1/\alpha} - 1)$,  so that $\alpha\log\sigma = 2\log R_0 - g(\alpha)$ and it suffices to show  $\partial g/\partial\alpha > 0$. By the product rule, using  $\frac{\partial}{\partial\alpha}R_0^{1/\alpha}  = -R_0^{1/\alpha}\log R_0/\alpha^2$:
+% %
+% \begin{equation}
+%     \frac{\partial g}{\partial\alpha} 
+%     = \log(2\mu - 1) - \frac{2\mu\log\mu}{2\mu - 1}
+% \end{equation}
+% %
+% where we have substituted $\mu = R_0^{1/\alpha}$ and $\log R_0 = \alpha\log\mu$.  To establish the sign, define  $h(\mu) = (2\mu-1)\log(2\mu-1) - 2\mu\log\mu$, so that the condition  $\partial g/\partial\alpha > 0$ is equivalent to $h(\mu) > 0$.  Differentiating:
+% %
+% \begin{equation}
+%     h'(\mu) = 2\log(2\mu - 1) + 2 - 2\log\mu - 2 
+%             = 2\log\!\left(2 - \frac{1}{\mu}\right)
+% \end{equation}
+% %
+% For $\mu > 1$, we have $2 - 1/\mu > 1$, so $h'(\mu) > 0$. Since $h(1) = 0$  and $h'(\mu) > 0$ for all $\mu > 1$, it follows that $h(\mu) > 0$ for all  $\mu > 1$, giving $\partial g/\partial\alpha > 0$ and hence:
+% %
+% \begin{equation}
+%     \frac{\partial(\alpha\log\sigma)}{\partial\alpha} < 0
+% \end{equation}
+% %
+% So $\alpha\log\sigma$ is strictly decreasing in $\alpha$: more concentrated  generation intervals (larger $\alpha$, holding $R_0$ fixed) reduce the  impact of punctuation on both $\text{Var}(W)$ and $\text{Mode}[\varsigma]$.
+
+% \clearpage 
+
+% \subsection*{The modulating role of $\alpha \log \sigma$}
+
+% The $\psi$-dependent term in both $\text{Var}(W)$ and $\text{Mode}[\varsigma]$  is $\sigma^{(1-\psi)\alpha}$, which can be written as  $e^{(1-\psi)\alpha\log\sigma}$. The quantity $\alpha\log\sigma$ therefore  acts as the fundamental modulator of $\psi$-dependence: larger  $\alpha\log\sigma$ means the base $\sigma > 1$ is raised to a larger  effective power, amplifying the spread in $\text{Var}(W)$ and  $\text{Mode}[\varsigma]$ between the spike ($\psi \to 0$) and smooth  ($\psi \to 1$) limits. We can express this quantity exactly in terms of  $R_0$ and $\alpha$ alone. Starting from $\sigma = \mu^2/(2\mu-1)$ with  $\mu = R_0^{1/\alpha}$:
+% %
+% \begin{equation}
+%     \log\sigma = 2\log\mu - \log(2\mu - 1) 
+%                = \frac{2\log R_0}{\alpha} - \log(2R_0^{1/\alpha} - 1)
+% \end{equation}
+% %
+% and multiplying through by $\alpha$:
+% %
+% \begin{equation}
+%     \alpha\log\sigma = 2\log R_0 - \alpha\log(2R_0^{1/\alpha} - 1).
+%     \label{eq:alpha_log_sigma}
+% \end{equation}
+% %
+% We now show that this expression is strictly increasing in $R_0$ and  strictly decreasing in $\alpha$, confirming the qualitative picture that  punctuation ($\psi < 1$) matters more when $R_0$ is large and the  generation interval is dispersed (small $\alpha$).
+
+% \clearpage 
+
+% \subsubsection*{Summary}
+
+% The two partial derivatives establish that the modulating quantity  $\alpha\log\sigma$ --- and hence the sensitivity of $\text{Var}(W)$ and  $\text{Mode}[\varsigma]$ to $\psi$ --- is:
+% %
+% \begin{itemize}
+%     \item \textbf{Increasing in $R_0$}: higher transmissibility amplifies  the effect of punctuation, because more offspring more densely sample  the individual infectiousness profile, inheriting more of its temporal  structure.
+%     \item \textbf{Decreasing in $\alpha$}: more concentrated generation  intervals dampen the effect of punctuation, because there is less  temporal variation across the generation interval for the shared  latent period $l_i$ to exploit.
+% \end{itemize}
+% %
+% Together, these results confirm that punctuated infectiousness  ($\psi < 1$) has the greatest impact on epidemic timing variability  when $R_0$ is large and the generation interval is dispersed ---  precisely the regime in which the individual infectiousness profile  has the most temporal structure for offspring timing to inherit.
 
 \clearpage
 

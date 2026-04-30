@@ -20,36 +20,25 @@ source("code/parameters.R")
 # 1. Helper functions
 # ==============================================================================
 
-#' Compute Var(S) for Gamma generation interval with punctuation psi
+#' Compute Var(W) for Gamma generation interval with punctuation psi
 #'
-#' S = sum_j e^{-r * tau_j} where tau_j = l_i + epsilon_j
-#' Var(S) = m2 + R0^2 * rho^(2*psi*alpha) * [rho2^((1-psi)*alpha) - rho^(2*(1-psi)*alpha)]
+#' Uses the rho_1/rho_2 parameterization from the writeup:
+#'   z = R0^(1/alpha) - 1
+#'   rho_k = (1+z)^k / (1+2z)
+#'   Var(W) = (rho_1^alpha + rho_2^((1-psi)*alpha) - 1) / (1 - rho_1^alpha)
 #'
 #' @param R0    Basic reproduction number
 #' @param alpha Shape parameter of Gamma generation interval
 #' @param beta  Rate parameter of Gamma generation interval
 #' @param r     Malthusian growth rate
 #' @param psi   Punctuation parameter (0 = spike, 1 = smooth)
-compute_var_S <- function(R0, alpha, beta, r, psi) {
-	rho  <- beta / (beta + r)
-	rho2 <- beta / (beta + 2 * r)
+compute_var_W <- function(R0, alpha, beta, r, psi) {
+	z <- R0^(1 / alpha) - 1
+	rho_1 <- (1 + z) / (1 + 2 * z)
+	rho_2 <- (1 + z)^2 / (1 + 2 * z)
 
-	# m2: psi-independent
-	m2 <- R0 * rho2^alpha
-
-	# Synchronisation penalty (vanishes at psi = 1)
-	sync <- R0^2 * rho^(2 * psi * alpha) *
-		(rho2^((1 - psi) * alpha) - rho^(2 * (1 - psi) * alpha))
-
-	m2 + sync
-}
-
-#' Compute CV^2(W) = Var(S) / (1 - m2)
-compute_CV2_W <- function(R0, alpha, beta, r, psi) {
-	rho2 <- beta / (beta + 2 * r)
-	m2 <- R0 * rho2^alpha
-	var_S <- compute_var_S(R0, alpha, beta, r, psi)
-	var_S / (1 - m2)
+	rho_1_a <- rho_1^alpha
+	(rho_1_a + rho_2^((1 - psi) * alpha) - 1) / (1 - rho_1_a)
 }
 
 #' Fit 2-moment Gamma to W | survival and return shape/rate
@@ -58,8 +47,8 @@ compute_CV2_W <- function(R0, alpha, beta, r, psi) {
 #' Conditional on survival (W > 0): E_cond = 1/(1-q), Var_cond from above
 fit_W_gamma <- function(R0, alpha, beta, r, psi) {
 	q <- extinction_prob(R0)
-	CV2 <- compute_CV2_W(R0, alpha, beta, r, psi)
-	EW2 <- 1 + CV2
+	var_W <- compute_var_W(R0, alpha, beta, r, psi)
+	EW2 <- 1 + var_W  # E[W^2] = Var(W) + (E[W])^2 = Var(W) + 1
 
 	E_cond   <- 1 / (1 - q)
 	E2_cond  <- EW2 / (1 - q)
@@ -70,7 +59,7 @@ fit_W_gamma <- function(R0, alpha, beta, r, psi) {
 		rate  = E_cond   / var_cond,
 		E_cond = E_cond,
 		var_cond = var_cond,
-		CV2 = CV2,
+		var_W = var_W,
 		q = q
 	)
 }
@@ -281,13 +270,14 @@ cat(sprintf("  Deterministic time to %d cases: %.2f days\n", threshold, t_det))
 # 3c. Theoretical W distributions and survival curves for each psi
 # --------------------------------------------------------------------------
 
-theory_surv_list <- list()
+theory_surv_list_gg <- list()
+theory_surv_list_g  <- list()
 
 for (psi in psivals) {
 	# Fit generalized gamma via 5-moment matching
 	fit_gg <- fit_W_gengamma(R0, alpha, beta, r_malthusian, psi)
 
-	# Also compute 2-moment Gamma for comparison
+	# Also compute 2-moment Gamma
 	fit_g <- fit_W_gamma(R0, alpha, beta, r_malthusian, psi)
 
 	cat(sprintf("  psi=%.1f: Gamma(shape=%.3f, rate=%.3f) | GG(beta=%.4f, a1=%.4f, a2=%.4f) loss=%.2e\n",
@@ -296,21 +286,21 @@ for (psi in psivals) {
 
 	# Sample W | survival from fitted generalized gamma
 	# W* = beta_gg * Gamma(a1/a2, 1)^(1/a2)
-	W <- fit_gg$beta_gg * rgamma(n_draws, shape = fit_gg$a1 / fit_gg$a2, rate = 1)^(1 / fit_gg$a2)
+	W_gg <- fit_gg$beta_gg * rgamma(n_draws, shape = fit_gg$a1 / fit_gg$a2, rate = 1)^(1 / fit_gg$a2)
+	t_stoch_gg <- t_det - log(W_gg) / r_malthusian
 
-	# Time shift: tau = log(W) / r
-	tau <- log(W) / r_malthusian
+	# Sample W | survival from fitted 2-moment Gamma
+	W_g <- rgamma(n_draws, shape = fit_g$shape, rate = fit_g$rate)
+	t_stoch_g <- t_det - log(W_g) / r_malthusian
 
-	# Stochastic time to threshold = deterministic time - tau
-	t_stoch <- t_det - tau
-
-	theory_surv_list[[as.character(psi)]] <- tibble(
-		psi = factor(psi),
-		t_stoch = t_stoch
-	)
+	theory_surv_list_gg[[as.character(psi)]] <- tibble(
+		psi = factor(psi), t_stoch = t_stoch_gg)
+	theory_surv_list_g[[as.character(psi)]] <- tibble(
+		psi = factor(psi), t_stoch = t_stoch_g)
 }
 
-theory_draws_df <- bind_rows(theory_surv_list)
+theory_draws_gg_df <- bind_rows(theory_surv_list_gg)
+theory_draws_g_df  <- bind_rows(theory_surv_list_g)
 
 # --------------------------------------------------------------------------
 # 3d. Load empirical simulation data and build empirical survival curves
@@ -325,9 +315,11 @@ if (is.null(cache)) {
 }
 
 # Extract time to establishment from summary (pre-computed in episims_gamma.R)
+# Handle both old cache (time_to_100) and new cache (establishment_time) column names
+est_col <- if ("establishment_time" %in% names(cache$summary)) "establishment_time" else "time_to_100"
 time_to_threshold <- cache$summary %>%
-	filter(established == 1, !is.na(establishment_time)) %>%
-	select(sim, psi, tinf = establishment_time)
+	filter(established == 1, !is.na(.data[[est_col]])) %>%
+	transmute(sim, psi, tinf = .data[[est_col]])
 
 # Build empirical survival curves
 t_max <- max(time_to_threshold$tinf)
@@ -341,8 +333,17 @@ empirical_surv <- time_to_threshold %>%
 		.groups = "drop") %>%
 	unnest(cols = c(t, prop_below))
 
-# Build theoretical survival curves on the same grid
-theory_surv <- theory_draws_df %>%
+# Build theoretical survival curves on the same grid (generalized gamma)
+theory_surv_gg <- theory_draws_gg_df %>%
+	group_by(psi) %>%
+	summarise(
+		t = list(t_grid),
+		prop_below = list(sapply(t_grid, function(tt) mean(t_stoch > tt))),
+		.groups = "drop") %>%
+	unnest(cols = c(t, prop_below))
+
+# Build theoretical survival curves on the same grid (2-moment gamma)
+theory_surv_g <- theory_draws_g_df %>%
 	group_by(psi) %>%
 	summarise(
 		t = list(t_grid),
@@ -351,30 +352,99 @@ theory_surv <- theory_draws_df %>%
 	unnest(cols = c(t, prop_below))
 
 # --------------------------------------------------------------------------
-# 3e. Overlay figure
+# 3e. Overlay figures
 # --------------------------------------------------------------------------
 
 breakvals <- if (t_max > 120) seq(0, 365, by = 15) else seq(0, 365, by = 7)
+surv_ylab <- paste0("Proportion not yet reaching ", threshold, " cases")
 
-fig_survival_theory <- ggplot() +
-	# Empirical (solid)
+# Generalized gamma theory overlay
+fig_survival_theory_gg <- ggplot() +
 	geom_line(data = empirical_surv,
 	          aes(x = t, y = prop_below, col = psi),
 	          alpha = 0.6, linewidth = 0.8) +
-	# Theoretical (dashed)
-	geom_line(data = theory_surv,
+	geom_line(data = theory_surv_gg,
 	          aes(x = t, y = prop_below, col = psi),
 	          linetype = "dashed", linewidth = 0.8) +
 	scale_x_continuous(breaks = breakvals) +
 	scale_color_manual(values = psi_colors) +
-	labs(x = "Days",
-	     y = paste0("Proportion not yet reaching ", threshold, " cases"),
-	     col = expression(psi),
-	     title = pathogen) +
+	labs(x = "Days", y = surv_ylab, col = expression(psi),
+	     title = paste0(pathogen, " (gen. gamma theory)")) +
 	theme_classic()
 
-save_fig(fig_survival_theory, paste0("fig_survival_100_theory_", pathogen))
+save_fig(fig_survival_theory_gg, paste0("fig_survival_100_theory_gg_", pathogen))
 
-cat(sprintf("  %s: theory overlay saved.\n", pathogen))
+# 2-moment gamma theory overlay
+fig_survival_theory_g <- ggplot() +
+	geom_line(data = empirical_surv,
+	          aes(x = t, y = prop_below, col = psi),
+	          alpha = 0.6, linewidth = 0.8) +
+	geom_line(data = theory_surv_g,
+	          aes(x = t, y = prop_below, col = psi),
+	          linetype = "dashed", linewidth = 0.8) +
+	scale_x_continuous(breaks = breakvals) +
+	scale_color_manual(values = psi_colors) +
+	labs(x = "Days", y = surv_ylab, col = expression(psi),
+	     title = paste0(pathogen, " (gamma theory)")) +
+	theme_classic()
+
+save_fig(fig_survival_theory_g, paste0("fig_survival_100_theory_g_", pathogen))
+
+cat(sprintf("  %s: theory overlays saved (GG + Gamma).\n", pathogen))
+
+# --------------------------------------------------------------------------
+# 3f. W distribution: empirical histogram with Gamma / Gen. Gamma overlays
+# --------------------------------------------------------------------------
+
+# Empirical W | survival: W = exp(r * (t_det - t_emp))
+W_empirical <- time_to_threshold %>%
+	mutate(W = exp(r_malthusian * (t_det - tinf)))
+
+# Theoretical density functions for each psi
+W_density_list <- list()
+w_grid <- seq(1e-4, quantile(W_empirical$W, 0.995), length.out = 500)
+
+for (psi in psivals) {
+	fit_g  <- fit_W_gamma(R0, alpha, beta, r_malthusian, psi)
+	fit_gg <- fit_W_gengamma(R0, alpha, beta, r_malthusian, psi)
+
+	# Gamma density
+	d_g <- dgamma(w_grid, shape = fit_g$shape, rate = fit_g$rate)
+
+	# Generalized gamma density:
+	# f(w) = (a2 / beta_gg) * (w/beta_gg)^(a1-1) * exp(-(w/beta_gg)^a2) / Gamma(a1/a2)
+	b <- fit_gg$beta_gg; a1 <- fit_gg$a1; a2 <- fit_gg$a2
+	log_d_gg <- log(a2) - log(b) + (a1 - 1) * log(w_grid / b) -
+		(w_grid / b)^a2 - lgamma(a1 / a2)
+	d_gg <- exp(log_d_gg)
+
+	W_density_list[[as.character(psi)]] <- tibble(
+		psi = factor(psi), w = w_grid,
+		Gamma = d_g, `Gen. Gamma` = d_gg) %>%
+		pivot_longer(cols = c(Gamma, `Gen. Gamma`),
+		             names_to = "fit", values_to = "density")
+}
+
+W_density_df <- bind_rows(W_density_list)
+
+fig_W_hist <- ggplot(W_empirical, aes(x = W)) +
+	geom_histogram(aes(y = after_stat(density)), bins = 60,
+	               fill = "white", col = "darkgrey") +
+	geom_line(data = W_density_df,
+	          aes(x = w, y = density, col = fit, linetype = fit),
+	          linewidth = 0.8) +
+	scale_color_manual(values = c("Gamma" = "blue", "Gen. Gamma" = "red")) +
+	scale_linetype_manual(values = c("Gamma" = "dashed", "Gen. Gamma" = "solid")) +
+	facet_wrap(~psi, nrow = 1, scales = "free_y",
+	           labeller = label_bquote(psi == .(as.numeric(as.character(psi))))) +
+	labs(x = "W | survival", y = "Density",
+	     col = "Fit", linetype = "Fit",
+	     title = pathogen) +
+	theme_classic() +
+	theme(legend.position = "bottom")
+
+save_fig(fig_W_hist, paste0("fig_W_hist_", pathogen))
+
+cat(sprintf("  %s: W histogram saved.\n", pathogen))
 
 } # end pathogen loop

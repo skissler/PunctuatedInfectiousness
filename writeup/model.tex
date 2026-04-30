@@ -4,9 +4,9 @@
 
 \subsection{The time-shifted Gamma model}
 
-While our interest is in the general question of how $a_i(\tau)$, independent of $A(\tau)$, impacts epidemic dynamics, we introduce here a specific modeling framework --- general enough to capture the essential features --- that allows us to make precise claims. We seek a definition of $a_i(\tau)$ satisfying three requirements: (i) $A(\tau) = E_i[a_i(\tau)]$, as required by definition; (ii) $\nu_i = R_0$ for all $i$, so that there is no inherent interpersonal variation in total infectiousness; and (iii) the width of $a_i(\tau)$ is governed by a single smoothness parameter $\psi \in [0,1]$, where $\psi = 1$ yields $a_i(\tau) \equiv A(\tau)$ (the smooth case, in which each person's individual infectiousness profile matches the population average) and $\psi \to 0$ makes $a_i(\tau)$ a delta function (the spike case, in which all of a person's secondary infections occur at a single moment).
+While our interest is in the general question of how $a_i(\tau)$, independent of $A(\tau)$, impacts epidemic dynamics, we introduce here a specific modeling framework that allows us to make precise claims while capturing the essential features of the general question. We seek a definition of $a_i(\tau)$ satisfying three requirements: (i) $A(\tau) = E_i[a_i(\tau)]$, as required by definition; (ii) $\nu_i = R_0$ for all $i$, so that there is no inherent interpersonal variation in total infectiousness; and (iii) the width of $a_i(\tau)$ is governed by a single smoothness parameter $\psi \in [0,1]$, where $\psi = 1$ yields $a_i(\tau) \equiv A(\tau)$ (the smooth case, in which each person's individual infectiousness profile matches the population average) and $\psi \to 0$ makes $a_i(\tau)$ a delta function (the spike case, in which all of a person's secondary infections occur at a single moment).
 
-We assume the intrinsic generation interval distribution $g(\tau)$ follows a $\text{Gamma}(\alpha, \beta)$ distribution with $\beta = \alpha/\bar{g}$, where $\bar{g}$ is the mean generation time --- a common choice in applied epidemiology. Define each person's individual generation interval distribution as
+To achieve this, we first assume the intrinsic generation interval distribution $g(\tau)$ follows a $\text{Gamma}(\alpha, \beta)$ distribution with rate $\beta = \alpha/\bar{g}$, where $\bar{g}$ is the mean generation time. The Gamma distribution is a common choice for describing generation interval distributions in applied epidemiology. Next, we define each person's individual generation interval distribution as
 %
 \begin{equation}
     \xi_i(\tau) = \begin{cases}
@@ -16,9 +16,9 @@ We assume the intrinsic generation interval distribution $g(\tau)$ follows a $\t
     \label{eq:gamma_timeshift}
 \end{equation}
 %
-where $l_i \sim \text{Gamma}((1 - \psi)\alpha, \beta)$ is a random latent period and $f_\epsilon$ is the $\text{Gamma}(\psi\alpha, \beta)$ density. Setting $a_i(\tau) = R_0\,\xi_i(\tau)$ immediately satisfies requirement~(ii). For requirement~(iii), as $\psi \to 1$ the latent period vanishes ($l_i \to 0$) and $f_\epsilon$ approaches the full $\text{Gamma}(\alpha, \beta)$ density, so $\xi_i(\tau) = g(\tau)$ for all $i$; as $\psi \to 0$, $f_\epsilon$ concentrates to a point mass and $\xi_i(\tau)$ becomes a delta function at $\tau = l_i$.
+where $l_i \sim \text{Gamma}((1 - \psi)\alpha, \beta)$ is a random latent period and $f_\epsilon$ is the $\text{Gamma}(\psi\alpha, \beta)$ density ({\bf Figure \ref{fig:psi_schematic}}). 
 
-For requirement~(i), observe that the time from infection to a secondary infection attempt is $\tau = l_i + U_i$, where $U_i \sim \text{Gamma}(\psi\alpha, \beta)$ is the draw from $f_\epsilon$. Since $l_i$ and $U_i$ are independent Gamma random variables with a common rate $\beta$, their sum follows a $\text{Gamma}((1-\psi)\alpha + \psi\alpha, \beta) = \text{Gamma}(\alpha, \beta)$ distribution by the additive property of the Gamma family. Taking expectations over individuals, $E_i[\xi_i(\tau)] = g(\tau)$, so $E_i[a_i(\tau)] = R_0\,g(\tau) = A(\tau)$ as required. Notably, this convergence does not require the population to share a common value of $\psi$: individual-specific values $\psi_i$ drawn from any distribution on $[0,1]$ still yield $E_i[a_i(\tau)] = A(\tau)$ ({\bf Supplementary Methods}).
+Setting $a_i(\tau) = R_0\,\xi_i(\tau)$ immediately satisfies requirement~(ii). For requirement~(iii), as $\psi \to 1$ the latent period vanishes ($l_i \to 0$) and $f_\epsilon$ approaches the full $\text{Gamma}(\alpha, \beta)$ density, so $\xi_i(\tau) = g(\tau)$ for all $i$; as $\psi \to 0$, $f_\epsilon$ concentrates to a point mass and $\xi_i(\tau)$ becomes a delta function at $\tau = l_i \sim \text{Gamma}(\alpha, \beta)$. For requirement~(i), observe that the time from infection to a secondary infection attempt is $\tau = l_i + \epsilon_i$, where $\epsilon_i \sim \text{Gamma}(\psi\alpha, \beta)$ is the draw from $f_\epsilon$. Since $l_i$ and $\epsilon_i$ are independent Gamma random variables with a common rate $\beta$, their sum follows a $\text{Gamma}((1-\psi)\alpha + \psi\alpha, \beta) = \text{Gamma}(\alpha, \beta)$ distribution by the additive property of the Gamma family. Taking expectations over individuals, $E_i[\xi_i(\tau)] = g(\tau)$, so $E_i[a_i(\tau)] = R_0\,g(\tau) = A(\tau)$ as required. Notably, this convergence does not require the population to share a common value of $\psi$: individual-specific values $\psi_i$ drawn from any distribution on $[0,1]$ still yield $E_i[a_i(\tau)] = A(\tau)$ ({\bf Supplementary Methods}).
 
 \begin{figure}[ht]
 \centering
@@ -52,28 +52,28 @@ For requirement~(i), observe that the time from infection to a secondary infecti
 
 The formulation above assumes time-homogeneous contacts, which is what allows $a_i(\tau)$ and $A(\tau)$ to depend only on time since infection $\tau$ and not on calendar time $t$. We follow this convention for most of our analyses. However, the interaction between punctuated infectiousness and time-varying contacts turns out to be consequential, so we briefly introduce the relevant generalization and two contact models that serve as test beds.
 
-Under time-uniform contacts, $a_i(\tau) = R_0\,\xi_i(\tau)$, where $R_0$ and $\xi_i(\tau)$ are defined with respect to a reference contact process $\bar{c} \equiv 1$. To allow for time-varying contacts, we introduce a contact modulator $c_i(t)$, a nonnegative function describing person $i$'s proportional deviation from the reference contact level at calendar time $t$. We require $E_t[c_i(t)] = 1$, so that $R_0$ retains its interpretation as the expected number of secondary infections under average contact conditions; this is satisfied by any periodic function with mean~1 or any stationary random process with mean~1. The individual infectiousness profile generalizes to
+Under time-uniform contacts, $a_i(\tau) = \nu_i \xi_i(\tau)$, where $\nu_i$ and $\xi_i(\tau)$ are defined with respect to a reference contact process which we denote $\bar{c} \equiv 1$. To allow for time-varying contacts, we introduce a contact modulator $c_i(t)$, a nonnegative function describing person $i$'s proportional deviation from the reference contact level at calendar time $t$. We require $E_t[c_i(t)] = 1$, so that $\nu_i$ and $R_0$ retain their interpretations as the expected number of secondary infections under average contact conditions. This is satisfied by any periodic function with mean 1 or any stationary random process with mean 1. The individual infectiousness profile generalizes to
 %
 \begin{equation}
-    a_i(t_i, \tau) = R_0\,\xi_i(\tau)\,c_i(t_i + \tau)
+    a_i(t_i, \tau) = \nu_i\,\xi_i(\tau)\,c_i(t_i + \tau)
     \label{eq:ai_contact}
 \end{equation}
 %
-where $t_i$ is person $i$'s infection time. This expression makes explicit that, when contacts vary, a person's realized infectiousness depends not only on their biological profile $\xi_i(\tau)$ but also on when they happen to be infectious. From Eq.~\ref{eq:ai_contact}, we can define the realized individual reproduction number,
+where $t_i$ is person $i$'s infection time. This expression makes explicit that, when contacts vary, a person's realized infectiousness depends not only on their intrinsic generation interval distribution $\xi_i(\tau)$ but also on when they happen to be infectious. From Eq.~\ref{eq:ai_contact}, we can define the realized individual reproduction number,
 %
 \begin{equation}
-    \nu_i^\text{rel}(t_i) = R_0 \int_0^\infty \xi_i(\tau)\,c_i(t_i + \tau)\,d\tau
+    \nu_i^\text{re}(t_i) = \nu_i \int_0^\infty \xi_i(\tau)\,c_i(t_i + \tau)\,d\tau
     \label{eq:nu_rel}
 \end{equation}
 %
-and the realized individual generation interval distribution,
+and the realized individual generation interval distribution, 
 %
 \begin{equation}
-    \xi_i^\text{rel}(t_i, \tau) = \frac{\xi_i(\tau)\,c_i(t_i + \tau)}{\displaystyle\int_0^\infty \xi_i(\tau')\,c_i(t_i + \tau')\,d\tau'}
+    \xi_i^\text{re}(t_i, \tau) = \frac{\xi_i(\tau)\,c_i(t_i + \tau)}{\displaystyle\int_0^\infty \xi_i(\tau')\,c_i(t_i + \tau')\,d\tau'}
     \label{eq:xi_rel}
 \end{equation}
 %
-so that $a_i(t_i, \tau) = \nu_i^\text{rel}(t_i)\,\xi_i^\text{rel}(t_i, \tau)$. When contacts are time-uniform ($c_i \equiv 1$), these reduce to $\nu_i^\text{rel} = R_0$ and $\xi_i^\text{rel} = \xi_i$. When contacts vary, $\nu_i^\text{rel}$ fluctuates around $R_0$: a person whose brief window of infectiousness coincides with a period of high contact activity will have $\nu_i^\text{rel} > R_0$, while one whose window falls during a low-contact period will have $\nu_i^\text{rel} < R_0$. Crucially, this effect is stronger when $\xi_i(\tau)$ is narrow (small $\psi$), because a concentrated profile effectively samples the contact process at a single point, whereas a broad profile averages over it.
+so that $a_i(t_i, \tau) = \nu_i^\text{re}(t_i)\,\xi_i^\text{re}(t_i, \tau)$ ({\bf Figure \ref{fig:cinfcomposite}}). When contacts are time-uniform ($c_i \equiv 1$), these reduce to $\nu_i^\text{re} = \nu_i$ and $\xi_i^\text{re} = \xi_i$. When contacts vary, $\nu_i^\text{re}$ fluctuates around $\nu_i$: a person whose window of infectiousness coincides with a period of high contact activity will have $\nu_i^\text{re} > \nu_i$, while one whose window falls during a low-contact period will have $\nu_i^\text{re} < \nu_i$. 
 
 As test cases, we consider two models. For the \emph{periodic} contact model, we set
 %
@@ -82,18 +82,18 @@ As test cases, we consider two models. For the \emph{periodic} contact model, we
     \label{eq:periodic_c}
 \end{equation}
 %
-with amplitude $A \in [0,1]$ and angular frequency $\omega > 0$. The default $\omega = 2\pi\,\text{day}^{-1}$ models diurnal contact variation, with higher contact rates during the day and lower rates at night. Setting $A = 0$ recovers the reference process. In this model, all individuals share the same contact trajectory, so there is temporal variation within each person's contacts but no variation across individuals.
+with amplitude $A \in [0,1]$ and period  $1/\omega > 0$. The default $\omega = 2\pi\,\text{day}^{-1}$ describes diurnal contact variation, with higher contact rates during the day and lower rates at night. Setting $A = 0$ recovers the reference process. In this model, all individuals share the same contact function, so while there is temporal variation within each person's contacts, there is no variation across individuals; however, the variation over time extends back to the population model, where $E_i[c_i(t)] = C(t) = 1 - A \cos(\omega t)$. Note that the expected value over time --- $E_t[c_i(t)]$ --- is still equal to 1, as required. 
 
-For the \emph{stochastic} contact model, each person's contact modulator is a piecewise-constant process that switches to a new level at the points of a Poisson process with rate $\lambda$, so that sojourn times at each level are exponentially distributed with mean $1/\lambda$. The levels are drawn independently from a $\text{Gamma}(k_c,\, k_c)$ distribution,
+For the \emph{stochastic} contact model, each person's contact modulator is a piecewise-constant process that switches to a new level at arrivals of a Poisson process with rate $\lambda$, so that the amount of time spent at each contact level is exponentially distributed with mean $1/\lambda$. The contact levels are drawn independently from a $\text{Gamma}(k_c,\, k_c)$ distribution,
 %
 \begin{equation}
     f_{c^*}(c) = \frac{k_c^{k_c}}{\Gamma(k_c)}\,c^{k_c - 1}\,e^{-k_c\,c}, \qquad c \geq 0
     \label{eq:gamma_contact_pdf}
 \end{equation}
 %
-which has mean~1 (satisfying the reference-process constraint) and variance $1/k_c$, leaving a one-parameter family indexed by the \emph{contact dispersion} $k_c > 0$. Smaller $k_c$ yields more heterogeneous contacts: for $k_c < 1$ the density is L-shaped, producing many quiet periods punctuated by occasional bursts of high contact activity; for $k_c > 1$ the density is bell-shaped and increasingly concentrated around~1; and as $k_c \to \infty$ the distribution collapses to a point mass at~1, recovering the constant-contact reference process. In contrast to the periodic model, each person's contact trajectory is unique, but the population average is constant: $C(t) = E_i[c_i(t)] = 1$.
+which has mean~1 (satisfying the reference-process constraint) and variance $1/k_c$, leaving a one-parameter family indexed by the ``contact dispersion'' $k_c > 0$. Smaller $k_c$ yields more heterogeneous contacts: for $k_c < 1$, the density is L-shaped, producing many low-contact periods punctuated by occasional bursts of high contact activity. For $k_c > 1$, the density is bell-shaped and increasingly concentrated around~1. As $k_c \to \infty$, the distribution collapses to a point mass at~1, recovering the constant-contact reference process. In contrast to the periodic model, each person's contact trajectory is unique, but the population average is constant in time: $C(t) = E_i[c_i(t)] = 1$.
 
-Depending on the application, either the periodic or the stochastic contact model may more readily yield to analytical treatment; but we present simulation-based results for both models whenever time-varying contacts are considered.
+Depending on the application, either the periodic or the stochastic contact model may more readily yield to analytical treatment. We present simulation-based results for both models whenever time-varying contacts are considered.
 
 \begin{figure}[ht] 
 \centering
@@ -106,11 +106,11 @@ Depending on the application, either the periodic or the stochastic contact mode
 
 \subsection{Simulation approach} 
 
-We investigate the impact of punctuatedness on epidemic dynamics using both closed-form analytic results (derived in the {\bf Supplementary Methods}) and stochastic simulations. Stochastic simulations use a branching-process-like algorithm in a finite population of $N = 10{,}000$ susceptible individuals with a single initial infectious individual. For each infected person $i$:
+We investigate the impact of the shape of $a_i(\tau)$ on epidemic dynamics using both closed-form analytic results and stochastic simulations. Stochastic simulations use a branching process algorithm in a finite population of $N = 10{,}000$ individuals initialized with a single initial infectious individual. For each infected person $i$:
 %
 \begin{enumerate}
     \item A latent period $l_i$ is drawn from $\text{Gamma}((1-\psi)\alpha, \beta)$, defining the individual generation interval distribution $\xi_i(\tau)$ via Eq.~\ref{eq:gamma_timeshift}. When contacts are non-uniform, a contact trajectory $c_i(t)$ is also drawn from the relevant contact model.
-    \item The number of secondary infection attempts is drawn as $X_i \sim \text{Poisson}(R_0)$.
+    \item The number of secondary infection attempts is drawn as $\chi_i \sim \text{Poisson}(R_0)$.
     \item The timing of each attempt relative to infection is drawn from $\xi_i(\tau)$.
     \item When the contact process is non-uniform ($c_i \neq 1$), Poisson thinning is applied: each attempt at calendar time $t_i + \tau$ is accepted with probability proportional to $c_i(t_i + \tau)$, ensuring that the realized infection rate matches $a_i(t_i, \tau)$.
     \item Each accepted attempt is paired with a uniformly chosen individual from the population: if the recipient is susceptible, infection occurs; otherwise, the attempt fails.
@@ -120,7 +120,9 @@ Full details are provided in the {\bf Supplementary Methods}. For illustration, 
 
 \begin{figure}[ht] 
 \centering
-\includegraphics[width=2.5in]{pathogenAs.pdf}
-\caption{{\bf \boldmath Population-level infectiousness profiles ($A(\tau)$) for influenza, SARS-CoV-2 omicron, and measles.}  }
+\includegraphics[width=2.5in]{pathogenAs.pdf} \\ 
+\vspace{.25cm}
+\includegraphics[width=\textwidth]{cuminf.pdf}
+\caption{{\bf \boldmath Population-level infectiousness profiles ($A(\tau)$) for influenza, SARS-CoV-2 omicron, and measles and their impact on epidemic trajectories.}  Measles: high $R_0$, low skew; SARS-CoV-2: intermediate $R_0$, high skew; influenza: low $R_0$, high skew.}
 \label{fig:pathogenAs}
 \end{figure}

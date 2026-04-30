@@ -617,43 +617,45 @@ load_cache_infpop <- function(pathogen, nsim, max_cases, psivals) {
 
 #' Compute epidemic growth rate from infection times via Poisson GLM
 #'
-#' Given a sorted vector of infection times, restricts to the window where
-#' cumulative cases are between min_threshold and growth_threshold, aggregates
-#' to daily incidence, and fits log-linear Poisson GLM to estimate the
-#' exponential growth rate.
+#' Given a sorted vector of infection times, identifies the first full
+#' calendar day after the cumulative case count reaches min_threshold,
+#' then counts ALL infections on each of the next window_days calendar
+#' days and fits a log-linear Poisson GLM to estimate the exponential
+#' growth rate.
 #'
-#' The first and last days of the window contain only a *fraction* of that
-#' day's cases (those with case-index >= min_threshold on the first day and
-#' <= growth_threshold on the last), so both are undercounted. Because the
-#' Poisson GLM weights observations by their variance (which equals the
-#' mean), the artificially-low last-day count has disproportionate leverage
-#' and biases the slope downward. We drop the first and last days from the
-#' fit; on pure NHPP data this reduces the bias from ~-34% to essentially 0.
+#' Because the window is defined by complete calendar days (not by
+#' cumulative case thresholds), there is no boundary truncation and no
+#' need to drop the first or last day.
 #'
 #' @param infection_times Sorted vector of infection times (finite values only)
-#' @param min_threshold Lower bound on cumulative cases (default 10)
-#' @param growth_threshold Upper bound on cumulative cases (default 100)
+#' @param min_threshold  Cumulative case count that marks establishment (default 100)
+#' @param window_days    Number of full calendar days in the estimation window (default 7)
 #' @return Scalar growth rate (coefficient on day), or NA if too few data points
-compute_growth_rate <- function(infection_times, min_threshold = 10, growth_threshold = 100) {
+compute_growth_rate <- function(infection_times, min_threshold = 100, window_days = 7) {
 	n <- length(infection_times)
-	if (n < growth_threshold) return(NA_real_)
+	if (n < min_threshold) return(NA_real_)
 
-	# Restrict to window [min_threshold, growth_threshold]
-	window_times <- infection_times[min_threshold:min(growth_threshold, n)]
-	days <- floor(window_times)
-	day_counts <- table(days)
+	# First full calendar day after reaching min_threshold cases
+	start_day <- floor(infection_times[min_threshold]) + 1L
+	end_day   <- start_day + window_days - 1L
 
-	# Build complete daily incidence (filling zeros)
-	day_seq <- seq(min(days), max(days))
-	counts <- integer(length(day_seq))
-	names(counts) <- as.character(day_seq)
-	counts[names(day_counts)] <- as.integer(day_counts)
+	# Check if simulation data covers the full window
+	if (floor(infection_times[n]) < end_day) {
+		warning(sprintf(
+			"compute_growth_rate: simulation ends on day %d but window extends to day %d (max_cases may be too low)",
+			floor(infection_times[n]), end_day), call. = FALSE)
+		return(NA_real_)
+	}
 
-	# Drop first and last days 
-	if (length(day_seq) < 5) return(NA_real_)
-	keep <- 2:(length(day_seq) - 1)
-	counts <- counts[keep]
-	day0 <- day_seq[keep] - min(day_seq[keep])
+	# Count ALL infections on each day of the window
+	days <- floor(infection_times)
+	day_seq <- start_day:end_day
+	day_counts <- table(factor(days[days >= start_day & days <= end_day],
+	                           levels = day_seq))
+	counts <- as.integer(day_counts)
+	day0 <- seq(0L, window_days - 1L)
+
+	if (sum(counts > 0) < 3) return(NA_real_)
 
 	tryCatch(
 		coef(glm(counts ~ day0, family = poisson))[2],

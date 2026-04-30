@@ -14,16 +14,15 @@ source("code/parameters.R")
 # 1. Global parameters
 # ==============================================================================
 
-psivals              <- c(0, 0.5, 1)
+psivals <- c(0, 0.5, 1)
 
-# Growth rate estimation thresholds
+# Growth rate estimation parameters
 min_growth_threshold <- 100
-max_growth_threshold <- 500
+growth_window_days   <- 7
 
-# Infinite-population simulation parameters
-max_cases_infpop     <- 1000   # cases per sim (must be > max_growth_threshold)
-nsim_infpop          <- 1000   # number of sims
-max_plot_sims_infpop <- 250    # trajectories to keep for plotting
+# Simulation parameters
+nsim_infpop          <- 5000
+max_plot_sims_infpop <- 250
 
 # ==============================================================================
 # 2. Loop over pathogens
@@ -46,11 +45,16 @@ r_malthusian <- uniroot(
 
 cat(sprintf("  %s: theoretical growth rate = %.4f\n", pathogen, r_malthusian))
 
+# Compute max_cases from growth window: enough cases to cover establishment
+# (min_growth_threshold) plus growth_window_days of exponential growth,
+# with a 3x safety margin for stochastic variation.
+max_cases <- ceiling(min_growth_threshold * exp(r_malthusian * (growth_window_days + 1)) * 3)
+
 # ==============================================================================
 # 2a. Infinite-population stochastic simulations (cached)
 # ==============================================================================
 
-cache_infpop <- load_cache_infpop(pathogen, nsim_infpop, max_cases_infpop, psivals)
+cache_infpop <- load_cache_infpop(pathogen, nsim_infpop, max_cases, psivals)
 
 if (!is.null(cache_infpop)) {
 	infpop_summary_df <- cache_infpop$summary
@@ -64,13 +68,13 @@ if (!is.null(cache_infpop)) {
 	for (sim in 1:nsim_infpop) {
 	    for (psi in psivals) {
 	        infection_times <- sim_infinite_pop(
-	            max_cases = max_cases_infpop,
+	            max_cases = max_cases,
 	            gen_inf_attempts = gen_inf_attempts_gamma(Tgen, R0, alpha, psi))
 
 	        n_infected <- length(infection_times)
 
 	        # Compute growth rate
-	        growthrate <- compute_growth_rate(infection_times, min_growth_threshold, max_growth_threshold)
+	        growthrate <- compute_growth_rate(infection_times, min_growth_threshold, growth_window_days)
 
 	        # Store summary row
 	        summindex_ip <- summindex_ip + 1L
@@ -99,9 +103,9 @@ if (!is.null(cache_infpop)) {
 
 	# Save cache
 	write_csv(infpop_summary_df,
-	          cache_path_infpop_summary(pathogen, nsim_infpop, max_cases_infpop))
+	          cache_path_infpop_summary(pathogen, nsim_infpop, max_cases))
 	write_csv(infpop_plot_df,
-	          cache_path_infpop_plot(pathogen, nsim_infpop, max_cases_infpop))
+	          cache_path_infpop_plot(pathogen, nsim_infpop, max_cases))
 	cat(sprintf("  %s: infpop simulations saved\n", pathogen))
 
 	infpop_summary_df <- infpop_summary_df %>% mutate(psi = factor(psi))
@@ -126,10 +130,10 @@ print(infpop_growthrate_table)
 fig_growthrate_infpop_hists <- ggplot(infpop_growthrate_df, aes(x = growthrate)) +
 	geom_histogram(aes(y = after_stat(density)), bins = 40,
 	               fill = "white", col = "darkgrey") +
-	geom_density(adjust = 2) +
+	geom_density(adjust = 1) +
 	geom_vline(xintercept = r_malthusian, col = "blue", lty = "dashed", linewidth = 0.8) +
-	geom_vline(data = infpop_growthrate_table, aes(xintercept = mean),
-	           col = "red", linewidth = 0.8) +
+	# geom_vline(data = infpop_growthrate_table, aes(xintercept = mean),
+	           # col = "red", linewidth = 0.8) +
 	theme_classic() +
 	facet_wrap(~psi, nrow = 1) +
 	labs(x = "Empirical growth rate (1/day)", y = "Density",
@@ -138,15 +142,27 @@ fig_growthrate_infpop_hists <- ggplot(infpop_growthrate_df, aes(x = growthrate))
 save_fig(fig_growthrate_infpop_hists, paste0("fig_growthrate_infpop_hists_", pathogen))
 
 # Growth rate lines: daily incidence on log scale in the growth window
-infpop_growth_incidence <- infpop_plot_df %>%
-	filter(cuminf >= min_growth_threshold, cuminf <= max_growth_threshold) %>%
+# Find the first full calendar day after reaching min_growth_threshold
+start_days <- infpop_plot_df %>%
+	filter(cuminf == min_growth_threshold) %>%
+	transmute(sim, psi, start_day = floor(tinf) + 1L)
+
+# Count ALL infections per day within the fixed-length window
+daily_counts <- infpop_plot_df %>%
 	mutate(day = floor(tinf)) %>%
+	inner_join(start_days, by = c("sim", "psi")) %>%
+	filter(day >= start_day, day < start_day + growth_window_days) %>%
 	group_by(sim, psi, day) %>%
-	summarise(count = n(), .groups = "drop") %>%
+	summarise(count = n(), .groups = "drop")
+
+# Build complete grid and fill zero-count days
+infpop_growth_incidence <- start_days %>%
 	group_by(sim, psi) %>%
-	complete(day = seq(min(day), max(day)), fill = list(count = 0)) %>%
+	reframe(day = seq(start_day, start_day + growth_window_days - 1)) %>%
+	left_join(daily_counts, by = c("sim", "psi", "day")) %>%
+	replace_na(list(count = 0)) %>%
+	group_by(sim, psi) %>%
 	mutate(day0 = day - min(day)) %>%
-	filter(day0 > 0, day0 < max(day0)) %>%
 	ungroup()
 
 fig_growthrate_infpop_lines <- infpop_growth_incidence %>%
@@ -154,7 +170,8 @@ fig_growthrate_infpop_lines <- infpop_growth_incidence %>%
 	ggplot(aes(x = day0, y = count, group = factor(sim))) +
 		geom_line(alpha = 0.1, linewidth = 0.3, col = "grey") +
 		geom_point(alpha = 0.2, size = 0.3, col = "grey") +
-		geom_abline(intercept = log10(r_malthusian * min_growth_threshold),
+		geom_abline(intercept = log10(r_malthusian * min_growth_threshold) +
+		                0.5 * r_malthusian / log(10),
 		            slope = r_malthusian / log(10),
 		            col = "blue", linewidth = 0.8, lty = "dashed") +
 		scale_y_log10() +

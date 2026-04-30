@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  18 APR 2026 09:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  28 APR 2026 21:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -388,7 +388,11 @@ File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count291
 \l__pdf_internal_box=\box51
 )
-(./main.aux)
+(./main.aux
+
+LaTeX Warning: Label `eq:euler_lotka' multiply defined.
+
+)
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
@@ -554,75 +558,59 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--55
 
  []
 
-(./abstract.tex) (./outline.tex [1
+(./abstract.tex) (./introduction.tex [1
 
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (0.58006pt too wide) in paragraph at lines 33--34
-[]\T1/ppl/m/n/10 The time-shifted Gamma fam-ily pro-vides a one-parameter con-t
-in-uum be-tween spike and smooth
- []
-
-[2
-
-]
-LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 4
-1.
- (/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1ppl.fd
-File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
-)
-Overfull \hbox (19.94936pt too wide) in paragraph at lines 59--64
-\T1/ppl/m/it/10 Deliverables: \T1/ppl/m/n/10 Sur-vival curves for time-to-100 i
-n-fec-tions (in-fluenza, omi-cron, measles $\OMS/zplm/m/n/10 ^^B$ \T1/ppl/m/n/1
-0 spike/smooth). 
- []
-
-[3] [4] [5]) (./introduction.tex
-<a_schematic.pdf, id=134, 464.73625pt x 115.43124pt>
+<a_schematic.pdf, id=85, 464.73625pt x 115.43124pt>
 File: a_schematic.pdf Graphic file (type pdf)
 <use a_schematic.pdf>
-Package pdftex.def Info: a_schematic.pdf  used on input line 36.
+Package pdftex.def Info: a_schematic.pdf  used on input line 37.
 (pdftex.def)             Requested size: 469.75502pt x 116.68149pt.
- [6
+ [2
 
-
-]) (./model.tex [7 <./a_schematic.pdf>]
-<psi_schematic_2.pdf, id=607, 447.6725pt x 128.48pt>
+]) (./model.tex [3 <./a_schematic.pdf>]
+<psi_schematic_2.pdf, id=562, 447.6725pt x 128.48pt>
 File: psi_schematic_2.pdf Graphic file (type pdf)
 <use psi_schematic_2.pdf>
 Package pdftex.def Info: psi_schematic_2.pdf  used on input line 25.
 (pdftex.def)             Requested size: 469.75502pt x 134.8217pt.
 
-[8
+[4
 
- <./psi_schematic_2.pdf>] [9]
-<cinfcomposite.pdf, id=764, 436.63126pt x 224.84pt>
+ <./psi_schematic_2.pdf>] [5]
+<cinfcomposite.pdf, id=721, 436.63126pt x 224.84pt>
 File: cinfcomposite.pdf Graphic file (type pdf)
 <use cinfcomposite.pdf>
 Package pdftex.def Info: cinfcomposite.pdf  used on input line 100.
 (pdftex.def)             Requested size: 469.75502pt x 241.89726pt.
- [10 <./cinfcomposite.pdf>]
-<pathogenAs.pdf, id=847, 163.61125pt x 107.40125pt>
+ [6 <./cinfcomposite.pdf>]
+<pathogenAs.pdf, id=804, 163.61125pt x 107.40125pt>
 File: pathogenAs.pdf Graphic file (type pdf)
 <use pathogenAs.pdf>
 Package pdftex.def Info: pathogenAs.pdf  used on input line 123.
 (pdftex.def)             Requested size: 180.67499pt x 118.60222pt.
-) (./uncontrolled.tex [11 <./pathogenAs.pdf>] [12
-
-]
-<cuminf.pdf, id=905, 463.7325pt x 289.08pt>
+<cuminf.pdf, id=805, 463.7325pt x 289.08pt>
 File: cuminf.pdf Graphic file (type pdf)
 <use cuminf.pdf>
-Package pdftex.def Info: cuminf.pdf  used on input line 112.
+Package pdftex.def Info: cuminf.pdf  used on input line 125.
 (pdftex.def)             Requested size: 469.75502pt x 292.84186pt.
-<survival.pdf, id=906, 456.70625pt x 161.60374pt>
+) (./uncontrolled.tex
+[7] [8 <./pathogenAs.pdf> <./cuminf.pdf
+
+pdfTeX warning: pdflatex (file ./cuminf.pdf): PDF inclusion: multiple pdfs with
+ page group included in a single page
+>] [9
+
+]
+<survival.pdf, id=6220, 456.70625pt x 161.60374pt>
 File: survival.pdf Graphic file (type pdf)
 <use survival.pdf>
-Package pdftex.def Info: survival.pdf  used on input line 119.
+Package pdftex.def Info: survival.pdf  used on input line 49.
 (pdftex.def)             Requested size: 469.75502pt x 166.22685pt.
- [13]) (./controlled.tex [14 <./cuminf.pdf>]
-[15 <./survival.pdf>]) (./identifiability.tex [16
+ [10 <./survival.pdf>]) (./controlled.tex [11]) (./identifiability.tex
+[12
 
-]) (./discussion.tex [17
+]) (./discussion.tex [13
 
 ]
 Overfull \hbox (29.1396pt too wide) in paragraph at lines 13--14
@@ -630,7 +618,7 @@ Overfull \hbox (29.1396pt too wide) in paragraph at lines 13--14
 184/20210575/90033/The-stochastic-dynamics-
  []
 
-) [18
+) [14
 
 ] (./main.bbl
 Underfull \hbox (badness 1158) in paragraph at lines 43--52
@@ -645,49 +633,51 @@ the Royal So-ci-ety B: Bi-o-log-i-cal Sci-ences\T1/ppl/m/n/10 , 274(1609):599--
 
  []
 
-) [19
+) [15
 
-] (./acknowledgements.tex) [20
+] (./acknowledgements.tex) [16
 
-] (./supplementary.tex [21
+] (./supplementary.tex
+LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 2
+7.
 
-] [22
+(/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ts1ppl.fd
+File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
+) [17
 
-] [23]
-[24] [25
+] [18
 
-] [26] [27
+]
+[19] [20] [21] [22] [23] [24
 
-] [28
+] [25] [26
 
-] [29
-
-] [30
-
-] [31
-
-] [32]
+] [27]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 404.
+(hyperref)                than one, level fixed on input line 762.
 
-[33] [34
+[28] [29
 
-] [35] [36
+] [30] [31
 
-]) [37] (./main.aux)
+]) [32] (./main.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 6827CCAC0FBCECDECD417A734FB935FE;4920.
  ) 
 Here is how much of TeX's memory you used:
- 12814 strings out of 478994
- 187547 string characters out of 5858184
- 510031 words of memory out of 5000000
- 29875 multiletter control sequences out of 15000+600000
- 453320 words of font info for 143 fonts, out of 8000000 for 9000
+ 12790 strings out of 478994
+ 187399 string characters out of 5858184
+ 508089 words of memory out of 5000000
+ 29878 multiletter control sequences out of 15000+600000
+ 459435 words of font info for 157 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 71i,13n,74p,1578b,555s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 71i,13n,74p,1737b,450s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></usr/local/t
 exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/tex
 live/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texl
@@ -696,15 +686,16 @@ e/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 /2021/texmf-dist/fonts/type1/public/mathpazo/fplmbi.pfb></usr/local/texlive/202
 1/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb></usr/local/texlive/2021/tex
 mf-dist/fonts/type1/public/mathpazo/fplmri.pfb></usr/local/texlive/2021/texmf-d
-ist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist/font
-s/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1
-/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/p
-alatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/palatino
-/uplri8a.pfb>
-Output written on main.pdf (37 pages, 9772210 bytes).
+ist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2021/tex
+mf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist/
+fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
+ype1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/u
+rw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pala
+tino/uplri8a.pfb>
+Output written on main.pdf (32 pages, 9780669 bytes).
 PDF statistics:
- 6879 PDF objects out of 7423 (max. 8388607)
- 4674 compressed objects within 47 object streams
- 159 named destinations out of 1000 (max. 500000)
+ 6843 PDF objects out of 7423 (max. 8388607)
+ 4641 compressed objects within 47 object streams
+ 132 named destinations out of 1000 (max. 500000)
  143 words of extra memory for PDF output out of 10000 (max. 10000000)
 

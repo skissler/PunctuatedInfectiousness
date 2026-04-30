@@ -1,6 +1,7 @@
 library(tidyverse)
 library(odin)
 source("code/utils.R")
+source("code/global_parameters.R")
 source("code/parameters.R")
 
 # ==============================================================================
@@ -17,19 +18,10 @@ source("code/parameters.R")
 # ==============================================================================
 
 # ==============================================================================
-# 1. Global parameters
+# 1. Set parameters
 # ==============================================================================
 
-popsize            <- 10000
-nsim               <- 1000
-psivals            <- c(0, 0.5, 1)
-max_plot_sims      <- 250  # max no. of individual trajectories to draw on plots
-establishment_prop <- 0.05 # prop. of popsize defining epidemic establishment
-establishment_threshold <- popsize * establishment_prop
-
-# Thresholds for growth rate estimation (used in cached summary)
-min_growth_threshold <- 100
-max_growth_threshold <- 500
+psivals <- c(0, 0.5, 1)
 
 # ==============================================================================
 # 2. Loop over pathogens
@@ -93,18 +85,14 @@ if (!is.null(cache)) {
 	        # Compute time to establishment threshold
 	        establishment_time <- if(final_size >= establishment_threshold) infection_times[establishment_threshold] else NA_real_
 
-	        # Compute growth rate
-	        growthrate <- compute_growth_rate(infection_times, min_growth_threshold, max_growth_threshold)
-
 	        # Store summary row
 	        summindex <- summindex + 1L
 	        summary_list[[summindex]] <- tibble(
-	            sim = sim, 
+	            sim = sim,
 	            psi = psi,
 	            established = established,
 	            final_size = final_size,
-	            establishment_time = establishment_time,
-	            growthrate = growthrate
+	            establishment_time = establishment_time
 	        )
 
 	        # Keep full trajectories for a subset of established epidemics for plotting 
@@ -167,10 +155,22 @@ fs_table <- sim_summary_df %>%
 	group_by(psi) %>%
 	summarise(fs_mean=mean(final_size), fs_sd=sd(final_size), .groups="drop")
 
+est_time_table <- sim_summary_df %>%
+	filter(established==1, !is.na(establishment_time)) %>%
+	group_by(psi) %>%
+	summarise(
+		et_mean = mean(establishment_time),
+		et_sd   = sd(establishment_time),
+		et_q05  = quantile(establishment_time, 0.05),
+		et_q95  = quantile(establishment_time, 0.95),
+		.groups = "drop")
+
 cat(sprintf("  %s: P(established) by psi:\n", pathogen))
 print(pest_table)
 cat(sprintf("  %s: Final size summary:\n", pathogen))
 print(fs_table)
+cat(sprintf("  %s: Time to %d cases (established epidemics):\n", pathogen, establishment_threshold))
+print(est_time_table)
 
 # ==============================================================================
 # 2e. Figures — epidemic trajectories (plot subset only)
@@ -196,10 +196,13 @@ milestone_df <- plot_df %>%
 	slice(1) %>%
 	group_by(psi) %>%
 	summarise(
-		median_t = median(tinf),
-		q05_t    = quantile(tinf, 0.05),
-		q95_t    = quantile(tinf, 0.95),
+		mean_t = mean(tinf),
+		q05_t  = quantile(tinf, 0.05),
+		q95_t  = quantile(tinf, 0.95),
 		.groups  = "drop")
+
+# cat(sprintf("  %s: Time to reach 5% of the population infected:\n", pathogen))
+# print(milestone_df, n=Inf)
 
 fig_cuminf_milestones <- plot_df %>%
 	ggplot(aes(x=tinf, y=cuminf, group=sim)) +
@@ -216,7 +219,7 @@ fig_cuminf_milestones <- plot_df %>%
 			    y=establishment_threshold*0.85, yend=establishment_threshold*1.15, group=1),
 			col="red", linewidth=0.6) +
 		geom_point(data=milestone_df,
-			aes(x=median_t, y=establishment_threshold, group=1),
+			aes(x=mean_t, y=establishment_threshold, group=1),
 			col="red", size=2.5) +
 		theme_classic() +
 		labs(x="Time (days)", y="Cumulative infections", title = pathogen) +

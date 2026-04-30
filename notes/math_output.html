@@ -4578,5 +4578,943 @@ $$q_{\text{approx}} = \frac{1}{R_0} = \frac{1}{1+\epsilon} = 1 - \epsilon + O(\e
     ]
   });
 </script>
+<hr>
+<div class="prompt">On the Mode of ς and whether modes transform under monotone maps</div>
+
+<h2>The claim in the writeup</h2>
+
+<p>The supplementary text derives \(\text{Mode}[\varsigma]\) by claiming: "The time-shift \(\varsigma = \log(W)/r\) is a monotone transformation of \(W\), so its modal value is obtained by transforming the mode of the Gamma approximation." This gives:</p>
+
+$$\text{Mode}[\varsigma]_{\text{writeup}} = \frac{1}{r}\log\!\left(\frac{k-1}{\lambda}\right) = \frac{1}{r}\log(\text{Mode}[W|\text{surv}])$$
+
+<p>where \(W|\text{surv} \sim \text{Gamma}(k, \lambda)\) with shape \(k\) and rate \(\lambda\).</p>
+
+<p><strong>This claim is wrong.</strong> Modes do not transform under nonlinear maps. If \(Y = g(X)\) with \(g\) monotone, the mode of \(Y\) is generally <em>not</em> \(g(\text{mode of } X)\), because the density transforms with a Jacobian factor:</p>
+
+$$f_Y(y) = f_X\!\bigl(g^{-1}(y)\bigr)\,\bigl|{(g^{-1})}'(y)\bigr|$$
+
+<p>The Jacobian \(|(g^{-1})'(y)|\) shifts the location of the maximum unless \(g\) is affine (linear). For \(g(w) = \log(w)/r\), the Jacobian is \(1/(ry)\), which is decidedly non-constant.</p>
+
+<h2>The correct mode of ς</h2>
+
+<p>Let \(W|\text{surv} \sim \text{Gamma}(k,\lambda)\) and \(\varsigma = \log(W)/r\). Then \(W = e^{r\varsigma}\) and the density of \(\varsigma\) is:</p>
+
+$$f_\varsigma(s) = \frac{r\,\lambda^k}{\Gamma(k)}\,e^{krs}\,\exp\!\bigl(-\lambda\, e^{rs}\bigr)$$
+
+<p>The log-density is \(\ell(s) = \text{const} + krs - \lambda\,e^{rs}\), with derivative:</p>
+
+$$\ell'(s) = r\bigl(k - \lambda\, e^{rs}\bigr)$$
+
+<p>Setting \(\ell'(s^*) = 0\):</p>
+
+$$e^{rs^*} = \frac{k}{\lambda} \quad\Longrightarrow\quad \boxed{\text{Mode}[\varsigma] = \frac{1}{r}\log\!\frac{k}{\lambda} = \frac{1}{r}\log E[W|\text{surv}] = \frac{1}{r}\log\frac{1}{p}}$$
+
+<p>since \(k/\lambda = E[W|\text{surv}] = 1/p\) where \(p = 1 - q\) is the survival probability.</p>
+
+<p>Compare with the writeup's formula, which uses \((k{-}1)/\lambda\) instead of \(k/\lambda\). The difference is:</p>
+
+$$\text{Mode}[\varsigma]_{\text{correct}} - \text{Mode}[\varsigma]_{\text{writeup}} = \frac{1}{r}\log\!\frac{k}{k-1}$$
+
+<p>This is small when \(k \gg 1\) (approximately \(1/((k{-}1)r)\)), but diverges as \(k \to 1\).</p>
+
+<h2>Three consequences</h2>
+
+<h3>1. The correct mode is always finite</h3>
+<p>The writeup's formula requires \(k > 1\) (i.e., \(\text{CV}^2[W|\text{surv}] < 1\)) for the argument of the logarithm to be positive. When \(k < 1\), the writeup gives \(-\infty\), leading to the paradox you identified.</p>
+<p>The correct formula \(\log(1/p)/r\) is finite and positive for all \(R_0 > 1\), regardless of \(\psi\) or \(k\). There is no paradox: the density of \(\varsigma\) is always unimodal, even when the Gamma density of \(W|\text{surv}\) has no interior mode.</p>
+
+<p>What happens geometrically: the Gamma density diverges like \(w^{k-1}\) as \(w \to 0^+\) when \(k < 1\), but the Jacobian contributes an extra factor of \(w = e^{rs}\), giving \(f_\varsigma(s) \propto e^{krs} \to 0\) as \(s \to -\infty\) (since \(k > 0\)). The singularity at \(W = 0\) is "stretched out" to \(\varsigma \to -\infty\) and simultaneously suppressed by the Jacobian.</p>
+
+<h3>2. The correct mode is \(\psi\)-independent</h3>
+
+<p>This is perhaps the most surprising consequence. Under the two-moment Gamma approximation, \(\text{Mode}[\varsigma] = \log(1/p)/r\), which depends only on \(R_0\) (through \(p\) and \(r\)) and not on \(\psi\) at all. The punctuation parameter \(\psi\) enters \(k\) and \(\lambda\) but not their ratio \(k/\lambda = 1/p\).</p>
+
+<p>Numerical verification (1M Monte Carlo samples per case):</p>
+
+<table style="border-collapse:collapse; margin:1em 0;">
+<tr style="border-bottom:2px solid #555;"><th style="padding:4px 12px;">Pathogen</th><th style="padding:4px 12px;">\(\psi\)</th><th style="padding:4px 12px;">\(k\)</th><th style="padding:4px 12px;">Writeup</th><th style="padding:4px 12px;">Correct</th><th style="padding:4px 12px;">\(E[\varsigma]\)</th><th style="padding:4px 12px;">Median</th></tr>
+<tr><td style="padding:3px 12px;">Influenza</td><td style="padding:3px 12px;">0</td><td style="padding:3px 12px;">0.79</td><td style="padding:3px 12px;">\(-\infty\)</td><td style="padding:3px 12px;">0.90</td><td style="padding:3px 12px;">&minus;2.07</td><td style="padding:3px 12px;">&minus;0.98</td></tr>
+<tr><td style="padding:3px 12px;">Influenza</td><td style="padding:3px 12px;">0.5</td><td style="padding:3px 12px;">0.92</td><td style="padding:3px 12px;">\(-\infty\)</td><td style="padding:3px 12px;">0.90</td><td style="padding:3px 12px;">&minus;1.62</td><td style="padding:3px 12px;">&minus;0.69</td></tr>
+<tr><td style="padding:3px 12px;">Influenza</td><td style="padding:3px 12px;">1</td><td style="padding:3px 12px;">1.08</td><td style="padding:3px 12px;">&minus;9.54</td><td style="padding:3px 12px;">0.90</td><td style="padding:3px 12px;">&minus;1.21</td><td style="padding:3px 12px;">&minus;0.44</td></tr>
+<tr><td colspan="7" style="border-bottom:1px solid #444;"></td></tr>
+<tr><td style="padding:3px 12px;">Omicron</td><td style="padding:3px 12px;">0</td><td style="padding:3px 12px;">0.41</td><td style="padding:3px 12px;">\(-\infty\)</td><td style="padding:3px 12px;">0.01</td><td style="padding:3px 12px;">&minus;4.17</td><td style="padding:3px 12px;">&minus;2.57</td></tr>
+<tr><td style="padding:3px 12px;">Omicron</td><td style="padding:3px 12px;">0.5</td><td style="padding:3px 12px;">0.76</td><td style="padding:3px 12px;">\(-\infty\)</td><td style="padding:3px 12px;">0.01</td><td style="padding:3px 12px;">&minus;2.07</td><td style="padding:3px 12px;">&minus;1.29</td></tr>
+<tr><td style="padding:3px 12px;">Omicron</td><td style="padding:3px 12px;">1</td><td style="padding:3px 12px;">1.77</td><td style="padding:3px 12px;">&minus;2.20</td><td style="padding:3px 12px;">0.01</td><td style="padding:3px 12px;">&minus;0.81</td><td style="padding:3px 12px;">&minus;0.52</td></tr>
+<tr><td colspan="7" style="border-bottom:1px solid #444;"></td></tr>
+<tr><td style="padding:3px 12px;">Measles</td><td style="padding:3px 12px;">0</td><td style="padding:3px 12px;">1.25</td><td style="padding:3px 12px;">&minus;7.03</td><td style="padding:3px 12px;">0.00</td><td style="padding:3px 12px;">&minus;1.98</td><td style="padding:3px 12px;">&minus;1.25</td></tr>
+<tr><td style="padding:3px 12px;">Measles</td><td style="padding:3px 12px;">0.5</td><td style="padding:3px 12px;">2.28</td><td style="padding:3px 12px;">&minus;2.53</td><td style="padding:3px 12px;">0.00</td><td style="padding:3px 12px;">&minus;1.03</td><td style="padding:3px 12px;">&minus;0.66</td></tr>
+<tr><td style="padding:3px 12px;">Measles</td><td style="padding:3px 12px;">1</td><td style="padding:3px 12px;">6.67</td><td style="padding:3px 12px;">&minus;0.71</td><td style="padding:3px 12px;">0.00</td><td style="padding:3px 12px;">&minus;0.34</td><td style="padding:3px 12px;">&minus;0.22</td></tr>
+</table>
+
+<p>The correct mode (column 5) is constant within each pathogen, while \(E[\varsigma]\) and the median (columns 6&ndash;7) vary strongly with \(\psi\).</p>
+
+<h3>3. The mode is a poor summary for these distributions</h3>
+
+<p>When \(k\) is near 1, the log-Gamma density of \(\varsigma\) is extremely flat near its peak (verified numerically: the density varies by &lt;3% over several days around the mode for influenza \(\psi = 0\)). The mode is therefore a poorly determined and uninformative summary.</p>
+
+<p>The mean and median are more useful:</p>
+
+$$E[\varsigma] = \frac{\psi(k) - \log\lambda}{r}$$
+
+<p>where \(\psi(k)\) is the digamma function. Unlike the mode, \(E[\varsigma]\) depends on \(k\) (and hence on \(\psi\)) through the digamma term. The qualitative pattern is consistent: smaller \(\psi\) (more punctuated) gives more negative \(E[\varsigma]\) (later typical establishment), with the effect amplified by \(R_0\).</p>
+
+<h2>Bottom line</h2>
+
+<p>The writeup's Mode[\(\varsigma\)] formula has a mathematical error (modes don't transform under \(\log\)), which creates the false impression that Mode[\(\varsigma\)] is undefined when \(k < 1\). The corrected mode is always finite but \(\psi\)-independent under the Gamma approximation, making it uninteresting as a summary. The mean \(E[\varsigma]\) (or median) captures the \(\psi\)-dependence and is the right quantity to plot and discuss.</p>
+
+<hr>
+
+<div class="prompt">Do the mean or median of the ς distribution have clean, closed-form expressions that reveal the ψ-dependence?</div>
+
+<h1>Closed-form expressions for E[ς], Var[ς], and Median[ς]</h1>
+
+<p>Under the two-moment Gamma approximation \(W \mid \text{surv} \sim \text{Gamma}(k, \lambda)\), the time shift is \(\varsigma = \frac{1}{r}\log W\). We can extract exact expressions for the moments of \(\varsigma\) using known formulas for the log-Gamma distribution.</p>
+
+<h2>1. The shape parameter k</h2>
+
+<p>Recall from earlier: \(k = E_{\text{cond}}^2 / \text{Var}_{\text{cond}}\) with \(E_{\text{cond}} = 1/p\) and \(\text{Var}_{\text{cond}} = (1 + \text{Var}(W))/p - 1/p^2\). Expanding:</p>
+
+$$k = \frac{1/p^2}{(1 + \text{Var}(W))/p - 1/p^2} = \frac{1}{p(1 + \text{Var}(W)) - 1} = \frac{1}{p\,\text{Var}(W) - q}$$
+
+<p>Substituting \(\text{Var}(W) = \frac{c^\alpha + \sigma^{(1-\psi)\alpha} - 1}{1 - c^\alpha}\):</p>
+
+\begin{align}
+p\,\text{Var}(W) - q &= \frac{p(c^\alpha + \sigma^{(1-\psi)\alpha} - 1)}{1 - c^\alpha} - q \\
+&= \frac{p\,c^\alpha + p\,\sigma^{(1-\psi)\alpha} - p - q(1 - c^\alpha)}{1 - c^\alpha} \\
+&= \frac{c^\alpha + p\,\sigma^{(1-\psi)\alpha} - 1}{1 - c^\alpha}
+\end{align}
+
+<p>where we used \(p + q = 1\) and \((p+q)\,c^\alpha = c^\alpha\). So:</p>
+
+<div class="highlight">
+$$\boxed{k = \frac{1 - c^\alpha}{c^\alpha + p\,\sigma^{(1-\psi)\alpha} - 1}}$$
+</div>
+
+<p>where \(c = \mu/(2\mu-1)\), \(\sigma = \mu^2/(2\mu-1)\), \(\mu = R_0^{1/\alpha}\), and \(p = 1 - q\) is the survival probability. All ψ-dependence in k enters through the single term \(\sigma^{(1-\psi)\alpha}\). Since \(\sigma > 1\) for any \(R_0 > 1\), this term is monotonically <strong>decreasing</strong> in \(\psi\), so \(k\) is monotonically <strong>increasing</strong> in \(\psi\) (more punctuated = smaller k = more skewed W).</p>
+
+<h2>2. Mean of ς: digamma formula</h2>
+
+<p>For \(X \sim \text{Gamma}(k, \lambda)\), the classical result is \(E[\log X] = \psi(k) - \log\lambda\), where \(\psi(\cdot)\) is the <strong>digamma function</strong>. Since \(\varsigma = \frac{1}{r}\log W\):</p>
+
+$$E[\varsigma] = \frac{\psi(k) - \log\lambda}{r}$$
+
+<p>Now use \(k/\lambda = E_{\text{cond}} = 1/p\), so \(\log\lambda = \log k + \log p\):</p>
+
+<div class="highlight">
+$$\boxed{E[\varsigma] = \underbrace{\frac{\log(1/p)}{r}}_{\text{Mode}[\varsigma]} + \underbrace{\frac{\psi(k) - \log k}{r}}_{\text{correction } (<0)}}$$
+</div>
+
+<p>This is a clean decomposition:</p>
+<ul>
+<li>The <strong>first term</strong> is exactly Mode[ς] = log(1/p)/r — ψ-independent, depending only on \(R_0\).</li>
+<li>The <strong>second term</strong> is \((\psi(k) - \log k)/r\), which carries <em>all</em> the ψ-dependence through \(k\).</li>
+</ul>
+
+<p>Properties of the correction term \(\psi(k) - \log k\):</p>
+<ul>
+<li>Always <strong>negative</strong>, so \(E[\varsigma] < \text{Mode}[\varsigma]\) always.</li>
+<li>For large \(k\): \(\psi(k) - \log k \approx -\frac{1}{2k} - \frac{1}{12k^2} + \cdots\), so the correction vanishes. This happens at large ψ (smooth profiles).</li>
+<li>As \(k \to 0^+\): \(\psi(k) - \log k \to -\infty\), so \(E[\varsigma] \to -\infty\). This happens at extreme punctuation (ψ → 0) with moderate \(R_0\).</li>
+</ul>
+
+<p>Interpretation: more punctuated profiles (smaller ψ → smaller k) push the <em>expected</em> epidemic timing later (larger E[ς] in absolute value means the stochastic epidemic is more delayed relative to the deterministic one).</p>
+
+<h2>3. Variance and SD of ς: trigamma formula</h2>
+
+<p>For \(X \sim \text{Gamma}(k, \lambda)\), \(\text{Var}[\log X] = \psi'(k)\), the <strong>trigamma function</strong>. So:</p>
+
+<div class="highlight">
+$$\boxed{\text{Var}[\varsigma] = \frac{\psi'(k)}{r^2}, \qquad \text{SD}[\varsigma] = \frac{\sqrt{\psi'(k)}}{r}}$$
+</div>
+
+<p>For large \(k\): \(\psi'(k) \approx 1/k + 1/(2k^2) + \cdots\), so \(\text{SD}[\varsigma] \approx 1/(r\sqrt{k})\). Again, all ψ-dependence enters through \(k\).</p>
+
+<h2>4. Median of ς</h2>
+
+<p>The median of a Gamma distribution has <strong>no closed-form expression</strong>. However, there is a good approximation due to Wilson–Hilferty (1931): for \(X \sim \text{Gamma}(k, \lambda)\) with \(k \geq 1\):</p>
+
+$$\text{Median}[X] \approx \frac{k}{\lambda}\left(1 - \frac{1}{9k}\right)^3$$
+
+<p>Since \(k/\lambda = 1/p\), this gives:</p>
+
+$$\text{Median}[\varsigma] \approx \frac{1}{r}\log\!\left[\frac{1}{p}\left(1 - \frac{1}{9k}\right)^3\right] = \frac{\log(1/p)}{r} + \frac{3\log(1 - 1/(9k))}{r}$$
+
+<p>The correction term \(3\log(1-1/(9k))/r \approx -1/(3kr)\) for large \(k\), which is similar in magnitude to the mean's correction \(\approx -1/(2kr)\). However, this approximation degrades for \(k < 1\), precisely where we most need it. In practice, <strong>numerical evaluation</strong> via <code>qgamma(0.5, k, λ)</code> is simplest.</p>
+
+<h2>5. Summary table</h2>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1em 0;">
+<tr><th>Quantity</th><th>Expression</th><th>Closed form?</th><th>ψ-dependent?</th></tr>
+<tr><td>Mode[ς]</td><td>\(\frac{1}{r}\log\frac{1}{p}\)</td><td>Yes (elementary)</td><td>No</td></tr>
+<tr><td>E[ς]</td><td>\(\frac{1}{r}\!\left[\log\frac{1}{p} + \psi(k) - \log k\right]\)</td><td>Yes (digamma)</td><td>Yes, through \(k(\psi)\)</td></tr>
+<tr><td>Var[ς]</td><td>\(\psi'(k)/r^2\)</td><td>Yes (trigamma)</td><td>Yes, through \(k(\psi)\)</td></tr>
+<tr><td>Median[ς]</td><td>\(\frac{1}{r}\log F_\Gamma^{-1}(0.5; k, \lambda)\)</td><td>No</td><td>Yes, through \(k(\psi)\)</td></tr>
+</table>
+
+<p>All ψ-dependence enters through the single parameter:</p>
+
+$$k(\psi) = \frac{1 - c^\alpha}{c^\alpha + p\,\sigma^{(1-\psi)\alpha} - 1}$$
+
+<p>which is monotonically increasing in ψ (smooth → large k → small corrections → ς distribution concentrates near Mode). The digamma and trigamma functions are standard special functions available in R as <code>digamma()</code> and <code>trigamma()</code>.</p>
+
+<h2>6. What to plot</h2>
+
+<p><strong>Recommended:</strong> Plot \(E[\varsigma]\) vs \(\psi\) for each pathogen. The formula \(E[\varsigma] = (\psi(k) - \log\lambda)/r\) is exact (not an approximation beyond the initial Gamma moment-matching), reveals the ψ-dependence cleanly, and has the nice interpretation as Mode + correction. Alternatively, plotting \(E[\varsigma] \pm \text{SD}[\varsigma]\) as a ribbon would show both the shift and spread.</p>
+
+<hr>
+
+<div class="prompt">The supplement says "since ς and W are monotonically related" we can infer Var[ς] behaviour from Var[W]. Is that correct? And how should the supplement be restructured?</div>
+
+<h1>Restructuring the supplement: from Var[W] to E[ς] and Var[ς]</h1>
+
+<h2>1. Is the monotone-relationship claim correct?</h2>
+
+<p><strong>The conclusion is correct but the reasoning is incomplete.</strong> The claim on line 60 of <code>supplementary.tex</code> is:</p>
+
+<blockquote>"Since \(\varsigma\) and \(W\) are monotonically related, we can derive an expression for \(\text{Var}[W]\) and will interpret its implications for \(\text{Var}[\varsigma]\) at the end."</blockquote>
+
+<p>Monotone transformations <strong>do not generally preserve variance ordering</strong>. Counterexample: let \(X \sim \text{Exp}(1)\) and \(Y \sim \text{Exp}(2)\). Then \(\text{Var}[X] = 1 > \text{Var}[Y] = 1/4\). But \(\text{Var}[\log X] = \text{Var}[\log Y] = \pi^2/6\) — the variance of a log-Exponential is always \(\pi^2/6\) regardless of the rate. So more variance in \(W\) does <em>not</em> automatically imply more variance in \(\log W\).</p>
+
+<p>In our setting, the claim happens to be true for a <strong>specific reason</strong>: as \(\psi\) varies, \(W|\text{surv}\) traces a one-parameter curve through the Gamma family, parameterised by \(k\) alone (since \(\lambda = kp\) with \(1/p\) fixed). Along this curve:</p>
+
+<ul>
+<li>\(\text{Var}[W|\text{surv}] = k/\lambda^2 = 1/(p^2 k)\), decreasing in \(k\)</li>
+<li>\(\text{Var}[\varsigma] = \psi'(k)/r^2\), also decreasing in \(k\) (trigamma is monotonically decreasing)</li>
+</ul>
+
+<p>Since \(k\) is monotonically increasing in \(\psi\), both variances decrease in \(\psi\). But this follows from the <em>Gamma moment-matching</em> and the specific way \(\psi\) enters \(k\) — not from the monotone relationship between \(W\) and \(\varsigma\) per se.</p>
+
+<h2>2. What the supplement already gives you</h2>
+
+<p>The existing derivation does almost all the work. After the \(\text{Var}[W]\) derivation (lines 62–157) and the moment-matching (lines 161–216), the supplement has:</p>
+
+<ul>
+<li>\(k = 1/\text{CV}^2[W|\text{surv}]\) — line 200</li>
+<li>\(\lambda = kp\) — line 201</li>
+<li>Explicit \(\text{CV}^2\) in terms of \(z\) and \(\psi\) — lines 208–216</li>
+</ul>
+
+<p>From these, \(E[\varsigma]\) and \(\text{Var}[\varsigma]\) are each a <strong>one-line derivation</strong>. The heavy lifting is done.</p>
+
+<h2>3. Proposed restructuring</h2>
+
+<p>The supplement currently ends the moment-matching section with the (incorrect) Mode[\(\varsigma\)] derivation (lines 220–228). <strong>Replace</strong> those ~8 lines with:</p>
+
+<h3>New text (LaTeX):</h3>
+
+<pre><code>Since $W|\text{surv} \sim \text{Gamma}(k, \lambda)$ approximately,
+and $\varsigma = \log(W)/r$, we can use the standard log-Gamma
+moment formulas. For $X \sim \text{Gamma}(k, \lambda)$,
+%
+\begin{equation}
+    E[\log X] = \psi(k) - \log\lambda, \qquad
+    \text{Var}[\log X] = \psi'(k)
+\end{equation}
+%
+where $\psi(\cdot)$ and $\psi'(\cdot)$ are the digamma and
+trigamma functions, respectively. Since $\lambda = kp$:
+%
+\begin{align}
+    E[\varsigma]
+    &= \frac{\psi(k) - \log\lambda}{r}
+    = \frac{\log(1/p)}{r} + \frac{\psi(k) - \log k}{r}
+    \label{eq:mean_varsigma} \\[6pt]
+    \text{Var}[\varsigma]
+    &= \frac{\psi'(k)}{r^2}
+    \label{eq:var_varsigma}
+\end{align}
+%
+The mean decomposes into a $\psi$-independent baseline
+$\log(1/p)/r$ and a correction $(\psi(k) - \log k)/r$
+that carries all the $\psi$-dependence through $k$.
+The correction is always negative (so the stochastic
+epidemic is always delayed relative to the deterministic
+prediction), and vanishes as $k \to \infty$
+($\psi(k) - \log k \sim -1/(2k)$), i.e., as the profile
+becomes less punctuated.</code></pre>
+
+<h3>Adjust the framing on line 60:</h3>
+
+<p>Replace the "monotonically related" sentence with:</p>
+
+<pre><code>Our strategy is to derive $\text{Var}[W]$, moment-match the
+conditional distribution $W|\text{surv}$ to a
+$\text{Gamma}(k,\lambda)$, and then obtain $E[\varsigma]$
+and $\text{Var}[\varsigma]$ from standard log-Gamma moment
+formulas.</code></pre>
+
+<h3>Update the monotonicity references (lines 243, 269, 295):</h3>
+
+<p>These lines reference "Mode[\(\varsigma\)]" when discussing how \(\alpha\log\sigma\) modulates ψ-sensitivity. Replace "Mode[\(\varsigma\)]" with "\(E[\varsigma]\)" or "\(\text{Var}[\varsigma]\)" as appropriate. The mathematical content of those sections (the partial derivatives of \(\alpha\log\sigma\)) is entirely correct — only the verbal references to the mode need changing.</p>
+
+<h2>4. Summary of changes</h2>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1em 0;">
+<tr><th>Section</th><th>Current</th><th>Proposed</th></tr>
+<tr><td>Line 60 (framing)</td><td>"monotonically related"</td><td>"moment-match → log-Gamma formulas"</td></tr>
+<tr><td>Lines 62–157 (Var[W])</td><td>Full derivation</td><td><strong>Keep as is</strong></td></tr>
+<tr><td>Lines 161–216 (moment-matching)</td><td>k, λ, CV²</td><td><strong>Keep as is</strong></td></tr>
+<tr><td>Lines 218–228 (Mode[ς])</td><td>Wrong mode transformation</td><td><strong>Replace</strong> with E[ς], Var[ς] via digamma/trigamma</td></tr>
+<tr><td>Lines 232–269 (monotonicity)</td><td>References "Mode[ς]"</td><td>Change references → "E[ς]" / "Var[ς]"</td></tr>
+</table>
+
+<p>Total: ~15 lines replaced, ~5 verbal references updated. The derivational backbone is untouched.</p>
+
+<hr>
+
+<div class="prompt">E[W] = 1 always, so why isn't E[ς] = log(1)/r = 0 and ψ-independent? Why does the expectation not map cleanly through the logarithm?</div>
+
+<h1>Why E[ς] ≠ log(E[W])/r: Jensen's inequality</h1>
+
+<p>Yes — this is exactly right, and it's the same underlying issue as the mode problem, but for means instead of modes. The expectation doesn't commute with nonlinear functions.</p>
+
+<h2>The core identity</h2>
+
+<p>For any random variable \(X > 0\) and any concave function \(g\) (like \(\log\)):</p>
+
+<div class="highlight">
+$$E[g(X)] \leq g(E[X]) \qquad\text{(Jensen's inequality)}$$
+</div>
+
+<p>Applied here: \(g = \log\), \(X = W\):</p>
+
+$$E[\log W] \leq \log E[W] = \log 1 = 0$$
+
+<p>with equality <strong>only if \(W\) is constant</strong> (i.e., zero variance). The gap is:</p>
+
+$$\log E[W] - E[\log W] = -E[\log W] \geq 0$$
+
+<p>This gap is sometimes called the <strong>Jensen gap</strong>, and it depends on the <em>curvature</em> of \(\log\) weighted by the <em>spread</em> of \(W\). More spread in \(W\) → bigger gap → more negative \(E[\log W]\) → more negative \(E[\varsigma]\).</p>
+
+<h2>Making it precise for the Gamma approximation</h2>
+
+<p>Under \(W|\text{surv} \sim \text{Gamma}(k, \lambda)\):</p>
+
+$$E[\log W|\text{surv}] = \psi(k) - \log\lambda$$
+
+<p>and \(E[W|\text{surv}] = k/\lambda = 1/p\), so \(\log E[W|\text{surv}] = \log(1/p)\). The Jensen gap is:</p>
+
+$$\log E[W|\text{surv}] - E[\log W|\text{surv}] = \log(1/p) - \psi(k) + \log\lambda = \log k - \psi(k)$$
+
+<p>This is always positive (since \(\log k > \psi(k)\) for all \(k > 0\)), and it's exactly the negative of our correction term. So:</p>
+
+<div class="highlight">
+$$E[\varsigma] = \frac{\log(1/p)}{r} - \frac{\text{Jensen gap}}{r} = \frac{\log(1/p)}{r} - \frac{\log k - \psi(k)}{r}$$
+</div>
+
+<p>The Jensen gap \(\log k - \psi(k)\) depends on \(k\), which depends on \(\psi\). <strong>That's where the \(\psi\)-dependence comes from.</strong></p>
+
+<h2>Intuition: why more punctuation → bigger Jensen gap</h2>
+
+<p>The Jensen gap for a log-Gamma scales as \(\log k - \psi(k) \approx 1/(2k)\) for large \(k\). More punctuated profiles (smaller \(\psi\)) produce smaller \(k\) (more variable \(W|\text{surv}\)), which means:</p>
+
+<ul>
+<li>The distribution of \(W\) is more spread out and right-skewed</li>
+<li>The \(\log\) transformation "compresses" the large values more than it "stretches" the small values</li>
+<li>So \(E[\log W]\) gets pulled further below \(\log E[W]\)</li>
+<li>Hence \(E[\varsigma]\) becomes more negative (epidemic delayed more)</li>
+</ul>
+
+<p>Epidemiological interpretation: with more punctuation, the <em>average</em> \(W\) is still 1 (the martingale limit is unbiased), but the <em>distribution</em> of \(W\) becomes more variable. The nonlinearity of \(\varsigma = \log(W)/r\) converts this symmetric-in-mean variability into an asymmetric shift in timing: the typical epidemic (as measured by \(E[\varsigma]\)) is systematically delayed, even though the mean of \(W\) itself is unaffected.</p>
+
+<h2>An analogy</h2>
+
+<p>This is the same reason that the geometric mean is always ≤ the arithmetic mean. If you invest in a stock that doubles (+100%) or halves (−50%) with equal probability, the arithmetic mean return is +25% per period, but the geometric mean (which governs long-run growth) is \(\sqrt{2 \times 0.5} = 1\) — zero growth. The "volatility drag" is exactly the Jensen gap of the log. Here, punctuation plays the role of volatility.</p>
+
+<hr>
+
+<div class="prompt">Is there a simple expression for E[W^n] in terms of ρ₁, ρ₂, ...?</div>
+
+<h1>Computing E[W<sup>n</sup>]: the compound Poisson recursion</h1>
+
+<h2>1. Setup: factoring out the shared latent period</h2>
+
+<p>From the distributional fixed-point equation \(W \stackrel{d}{=} \sum_{j=1}^{N} e^{-r\tau_j} W_j\), with \(\tau_j = s + \varepsilon_j\) where \(s \sim \text{Gamma}((1-\psi)\alpha, \beta)\) and \(\varepsilon_j \sim \text{Gamma}(\psi\alpha, \beta)\) are independent:</p>
+
+$$W \stackrel{d}{=} e^{-rs} \underbrace{\sum_{j=1}^{N} e^{-r\varepsilon_j} W_j}_{=:\, S}$$
+
+<p>The key observation: \(S\) does not depend on \(s\), and \(s\) is independent of \(S\). So:</p>
+
+<div class="highlight">
+$$m_n := E[W^n] = \underbrace{E[e^{-nrs}]}_{\rho_n^{(1-\psi)\alpha}} \cdot E[S^n]$$
+</div>
+
+<p>where \(\rho_k = \beta/(\beta + kr) = 1/(1+kz)\).</p>
+
+<h2>2. S is a compound Poisson sum</h2>
+
+<p>Conditional on \(s\), the terms \(Y_j = e^{-r\varepsilon_j} W_j\) are iid (the \(\varepsilon_j\) are iid and independent of the \(W_j\)), and \(N \sim \text{Poisson}(R_0)\). So \(S = \sum_{j=1}^N Y_j\) is a <strong>compound Poisson sum</strong>.</p>
+
+<p>The fundamental property of compound Poisson sums is that their cumulants are trivially related to the summand moments:</p>
+
+<div class="highlight">
+$$\kappa_n(S) = R_0 \cdot E[Y^n] = R_0 \cdot E[e^{-nr\varepsilon}] \cdot E[W^n] = R_0 \cdot \rho_n^{\psi\alpha} \cdot m_n$$
+</div>
+
+<p>This is the key simplification. No Bell polynomials are needed to <em>compute</em> the cumulants — they're just \(R_0 \cdot \rho_n^{\psi\alpha} \cdot m_n\).</p>
+
+<h2>3. Converting cumulants to moments (the standard formula)</h2>
+
+<p>The \(n\)-th moment of any random variable can be recovered from its cumulants via the standard identity:</p>
+
+$$E[S^n] = \sum_{\text{partitions } \lambda \text{ of } n} B(\lambda) \prod_{i} \kappa_{\lambda_i}$$
+
+<p>where the sum is over all integer partitions of \(n\), and \(B(\lambda)\) is the combinatorial weight for partition \(\lambda = 1^{a_1} 2^{a_2} \cdots\):</p>
+
+$$B(\lambda) = \frac{n!}{\prod_j (j!)^{a_j} \cdot a_j!}$$
+
+<p>For small \(n\), this is just:</p>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1em 0;">
+<tr><th>\(n\)</th><th>Partitions</th><th>\(E[S^n]\) in terms of cumulants</th></tr>
+<tr><td>1</td><td>(1)</td><td>\(\kappa_1\)</td></tr>
+<tr><td>2</td><td>(2), (1,1)</td><td>\(\kappa_2 + \kappa_1^2\)</td></tr>
+<tr><td>3</td><td>(3), (2,1), (1,1,1)</td><td>\(\kappa_3 + 3\kappa_1\kappa_2 + \kappa_1^3\)</td></tr>
+<tr><td>4</td><td>...</td><td>\(\kappa_4 + 4\kappa_1\kappa_3 + 3\kappa_2^2 + 6\kappa_1^2\kappa_2 + \kappa_1^4\)</td></tr>
+<tr><td>5</td><td>...</td><td>\(\kappa_5 + 5\kappa_1\kappa_4 + 10\kappa_2\kappa_3 + 10\kappa_1^2\kappa_3 + 15\kappa_1\kappa_2^2 + 10\kappa_1^3\kappa_2 + \kappa_1^5\)</td></tr>
+</table>
+
+<p>These are the <strong>complete Bell polynomials</strong> \(B_n(\kappa_1, \ldots, \kappa_n)\). The coefficients (1, 3, 6, 10, 15, ...) are the same for any distribution — they're purely combinatorial.</p>
+
+<h2>4. Solving the self-referential equation</h2>
+
+<p>Now we have a circularity: \(m_n\) appears on both sides of the equation, because \(\kappa_n = R_0 \rho_n^{\psi\alpha} m_n\) appears in \(E[S^n]\). But \(\kappa_n\) appears only in the single-part partition \(\lambda = (n)\), which contributes exactly \(\kappa_n\). Separating this term:</p>
+
+$$E[S^n] = \kappa_n + D_n$$
+
+<p>where \(D_n\) is the sum over all partitions with <strong>≥ 2 parts</strong> (which involves only \(\kappa_1, \ldots, \kappa_{n-1}\), hence only \(m_1, \ldots, m_{n-1}\)).</p>
+
+<p>Substituting \(m_n = \rho_n^{(1-\psi)\alpha} \cdot (\kappa_n + D_n)\) and \(\kappa_n = R_0 \rho_n^{\psi\alpha} m_n\):</p>
+
+$$m_n = R_0 \rho_n^\alpha \cdot m_n + \rho_n^{(1-\psi)\alpha} \cdot D_n$$
+
+<div class="highlight">
+$$\boxed{m_n = \frac{\rho_n^{(1-\psi)\alpha} \cdot D_n}{1 - R_0\,\rho_n^\alpha}, \qquad n \geq 2}$$
+</div>
+
+<p>with \(m_1 = 1\), \(\kappa_k = R_0 \rho_k^{\psi\alpha} m_k\), and \(D_n = B_n(\kappa_1, \ldots, \kappa_{n-1}, 0)\) (the Bell polynomial with the last cumulant set to 0).</p>
+
+<h2>5. Explicit formulas for n = 2, ..., 5</h2>
+
+<p>Writing \(\kappa_k\) as a shorthand for \(R_0 \rho_k^{\psi\alpha} m_k\):</p>
+
+\begin{align}
+m_2 &= \frac{\rho_2^{(1-\psi)\alpha}}{1 - R_0\rho_2^\alpha} \cdot \kappa_1^2 \\[8pt]
+m_3 &= \frac{\rho_3^{(1-\psi)\alpha}}{1 - R_0\rho_3^\alpha} \cdot (\kappa_1^3 + 3\kappa_1\kappa_2) \\[8pt]
+m_4 &= \frac{\rho_4^{(1-\psi)\alpha}}{1 - R_0\rho_4^\alpha} \cdot (\kappa_1^4 + 6\kappa_1^2\kappa_2 + 4\kappa_1\kappa_3 + 3\kappa_2^2) \\[8pt]
+m_5 &= \frac{\rho_5^{(1-\psi)\alpha}}{1 - R_0\rho_5^\alpha} \cdot (\kappa_1^5 + 10\kappa_1^3\kappa_2 + 10\kappa_1^2\kappa_3 + 15\kappa_1\kappa_2^2 + 5\kappa_1\kappa_4 + 10\kappa_2\kappa_3)
+\end{align}
+
+<p>Each is computed sequentially: \(m_1 \to \kappa_1 \to m_2 \to \kappa_2 \to m_3 \to \cdots\)</p>
+
+<h2>6. Summary</h2>
+
+<p>The "Poisson moment recursion with Bell polynomial coefficients" in the existing code is doing exactly the above. The three ingredients are:</p>
+
+<ol>
+<li><strong>Factor out</strong> the shared latent period \(s\), giving the prefactor \(\rho_n^{(1-\psi)\alpha}\)</li>
+<li><strong>Compound Poisson</strong> cumulants: \(\kappa_k = R_0 \rho_k^{\psi\alpha} m_k\) (one line, no combinatorics)</li>
+<li><strong>Cumulant → moment</strong> conversion via the standard Bell polynomial formula, then solve for \(m_n\) by isolating the self-referential \(\kappa_n\) term</li>
+</ol>
+
+<p>The only "hard-coded" part is the Bell polynomial coefficients (1, 3, 6, 10, 15, ...), which are universal combinatorial constants — the same for <em>any</em> compound Poisson, not specific to our model. They count the number of ways to partition a set of \(n\) elements into groups of specified sizes.</p>
+
+<hr>
+<h2>Verification of supplementary.tex: k, λ, and the path to E[ς] and Var[ς]</h2>
+
+<h3>Verifying k = (1 − σ₁<sup>α</sup>) / (p·σ₂<sup>(1−ψ)α</sup> + σ₁<sup>α</sup> − 1)</h3>
+
+<p>Starting from the moment-matching equations:</p>
+$$k = \frac{E[W|\text{surv}]^2}{\text{Var}[W|\text{surv}]}, \qquad \lambda = \frac{E[W|\text{surv}]}{\text{Var}[W|\text{surv}]}$$
+
+<p>We have \(E[W|\text{surv}] = 1/p\) and</p>
+$$\text{Var}[W|\text{surv}] = \frac{1+\text{Var}[W]}{p} - \frac{1}{p^2}$$
+
+<p>So the denominator of \(k\) is:</p>
+$$\text{Var}[W|\text{surv}] = \frac{p(1 + \text{Var}[W]) - 1}{p^2}$$
+
+<p>and therefore</p>
+$$k = \frac{1/p^2}{(p(1+\text{Var}[W]) - 1)/p^2} = \frac{1}{p(1 + \text{Var}[W]) - 1}$$
+
+<p>Now substituting \(\text{Var}[W] = \frac{\sigma_1^\alpha + \sigma_2^{(1-\psi)\alpha} - 1}{1 - \sigma_1^\alpha}\):</p>
+
+$$p(1 + \text{Var}[W]) - 1 = p \cdot \frac{1 - \sigma_1^\alpha + \sigma_1^\alpha + \sigma_2^{(1-\psi)\alpha} - 1}{1 - \sigma_1^\alpha} - 1 = \frac{p \cdot \sigma_2^{(1-\psi)\alpha}}{1 - \sigma_1^\alpha} - 1$$
+
+$$= \frac{p \cdot \sigma_2^{(1-\psi)\alpha} - 1 + \sigma_1^\alpha}{1 - \sigma_1^\alpha}$$
+
+<p>Therefore:</p>
+$$\boxed{k = \frac{1 - \sigma_1^\alpha}{p \cdot \sigma_2^{(1-\psi)\alpha} + \sigma_1^\alpha - 1}} \qquad \checkmark$$
+
+<p>And \(\lambda = E[W|\text{surv}] / \text{Var}[W|\text{surv}] = (1/p) \cdot p^2 / (p(1+\text{Var}[W])-1) = p \cdot k\), so:</p>
+$$\boxed{\lambda = pk} \qquad \checkmark$$
+
+<h3>The clean path to E[ς] and Var[ς]</h3>
+
+<p>Since \(W|\text{surv} \sim \text{Gamma}(k, \lambda)\) and \(\varsigma = \log(W)/r\), the log-Gamma transformation gives:</p>
+
+$$E[\varsigma|\text{surv}] = \frac{\psi(k) - \log \lambda}{r}, \qquad \text{Var}[\varsigma|\text{surv}] = \frac{\psi'(k)}{r^2}$$
+
+<p>where \(\psi(\cdot)\) is the digamma function and \(\psi'(\cdot)\) the trigamma function. Since \(\lambda = pk\):</p>
+
+$$\log \lambda = \log p + \log k$$
+
+<p>The mean decomposes as:</p>
+
+$$\boxed{E[\varsigma|\text{surv}] = \underbrace{\frac{\log(1/p)}{r}}_{\text{baseline (}\psi\text{-independent)}} + \underbrace{\frac{\psi(k) - \log k}{r}}_{\text{Jensen gap (}\psi\text{-dependent)}}}$$
+
+<p><strong>Interpretation of the two terms:</strong></p>
+<ul>
+<li>The <strong>baseline term</strong> \(\log(1/p)/r\) reflects the "head start" from conditioning on survival — epidemics that survive tend to grow faster early on, arriving \(\log(1/p)/r\) days sooner than the deterministic prediction.</li>
+<li>The <strong>Jensen gap</strong> \((\psi(k) - \log k)/r\) is always negative (since \(\psi(k) < \log k\) for all \(k > 0\)) and captures the asymmetry of the log transformation: higher variance in \(W\) (lower \(k\)) leads to a more negative gap, meaning epidemics arrive even earlier on average. This is the "volatility drag" effect.</li>
+</ul>
+
+<p>The entire \(\psi\)-dependence flows through \(k\) alone:</p>
+<ul>
+<li>As \(\psi \to 0\) (spike): \(\sigma_2^{(1-\psi)\alpha} \to \sigma_2^\alpha > 1\), making the denominator larger, so \(k\) decreases. This increases both \(|\text{Jensen gap}|\) and \(\text{Var}[\varsigma]\).</li>
+<li>As \(\psi \to 1\) (smooth): \(\sigma_2^{(1-\psi)\alpha} \to 1\), so \(k \to (1 - \sigma_1^\alpha)/(p + \sigma_1^\alpha - 1)\), the maximum value of \(k\).</li>
+</ul>
+
+<h3>Minor notational issue on line 202</h3>
+
+<p>The supplement writes:</p>
+$$E[W^2|\text{surv}] - E[W|\text{surv}]^2 = \frac{1}{p}E[W^2] - \frac{1}{p^2}E[W]$$
+
+<p>The second term should be \((E[W])^2/p^2 = 1/p^2\), not \(E[W]/p^2\). These coincide when \(E[W] = 1\), but algebraically \(E[W|\text{surv}]^2 = (E[W]/p)^2 = (E[W])^2/p^2 \neq E[W]/p^2\) in general. Suggested fix: simply write \(1/p^2\) since we've already established \(E[W] = 1\).</p>
+
+<hr>
+<h2>Properties of the Jensen gap g(k) = ψ<sup>(0)</sup>(k) − log k</h2>
+
+<p>The mean time-shift decomposes as:</p>
+$$E[\varsigma|\text{surv}] = \frac{\log(1/p)}{r} + \frac{g(k)}{r}, \qquad g(k) := \psi^{(0)}(k) - \log k$$
+
+<p>where \(\psi^{(0)}\) is the digamma function (using superscript notation to avoid collision with the punctuation parameter \(\psi\)). We need four properties of \(g(k)\).</p>
+
+<h3>Property 1: g(k) &lt; 0 for all k &gt; 0 (the gap is always negative)</h3>
+
+<p><strong>Proof via Jensen's inequality.</strong> Let \(G \sim \text{Gamma}(k, 1)\). Then \(E[G] = k\) and, by a standard identity, \(E[\log G] = \psi^{(0)}(k)\). Since \(\log\) is strictly concave and \(G\) is non-degenerate:</p>
+
+$$\psi^{(0)}(k) = E[\log G] < \log(E[G]) = \log k \qquad \blacksquare$$
+
+<p>This is exactly the "volatility drag" phenomenon: the expected log of a random variable is always less than the log of its expectation, with the gap controlled by the variance.</p>
+
+<h3>Property 2: g(k) is strictly increasing</h3>
+
+<p>We need to show \(g'(k) = \psi^{(1)}(k) - 1/k > 0\) for all \(k > 0\), where \(\psi^{(1)}\) is the trigamma function.</p>
+
+<p><strong>Proof via integral representation.</strong> Using the standard integral forms:</p>
+$$\psi^{(1)}(k) = \int_0^\infty \frac{t\, e^{-kt}}{1 - e^{-t}}\, dt, \qquad \frac{1}{k} = \int_0^\infty e^{-kt}\, dt$$
+
+<p>we obtain:</p>
+$$\psi^{(1)}(k) - \frac{1}{k} = \int_0^\infty e^{-kt} \left[\frac{t}{1 - e^{-t}} - 1\right] dt$$
+
+<p>The bracketed term is strictly positive for all \(t > 0\), since the inequality \(1 - e^{-t} < t\) (a standard result: \(e^{-t} > 1 - t\) for \(t > 0\)) rearranges to \(t/(1 - e^{-t}) > 1\). Since the integrand is strictly positive on \((0, \infty)\), the integral is strictly positive. \(\blacksquare\)</p>
+
+<h3>Property 3: g(k) → 0⁻ as k → ∞</h3>
+
+<p>From the asymptotic expansion of the digamma function:</p>
+$$\psi^{(0)}(k) = \log k - \frac{1}{2k} - \frac{1}{12k^2} + \frac{1}{120k^4} - \cdots$$
+
+<p>the leading correction is \(-1/(2k)\), so:</p>
+$$g(k) \sim -\frac{1}{2k} \quad \text{as } k \to \infty$$
+
+<p>This quantifies the gap for large \(k\) (low variance in \(W\)): the Jensen correction is small, of order \(1/k\).</p>
+
+<p><em>Note:</em> The asymptotic series involves Bernoulli numbers with alternating signs, so it cannot be used to <em>prove</em> \(g(k) < 0\) — that's what the Jensen argument in Property 1 is for. The series is only useful for <em>quantifying</em> the gap at large \(k\).</p>
+
+<h3>Property 4: g(k) → −∞ as k → 0⁺</h3>
+
+<p>For small \(k\), the digamma function has a simple pole:</p>
+$$\psi^{(0)}(k) = -\frac{1}{k} - \gamma + O(k) \qquad \text{as } k \to 0^+$$
+
+<p>where \(\gamma \approx 0.5772\) is the Euler-Mascheroni constant. Since \(\log k \to -\infty\) much more slowly than \(-1/k \to -\infty\):</p>
+$$g(k) = -\frac{1}{k} - \gamma - \log k + O(k) \to -\infty \qquad \text{as } k \to 0^+$$
+
+<h3>Summary: the complete chain</h3>
+
+<p>Combining these four properties with the fact that \(k\) is increasing in \(\psi\) (established in the Var[\(W\)] derivation):</p>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; margin: 1em auto;">
+<tr style="background: #f0f0f0;">
+  <th>More punctuation</th>
+  <th>→</th>
+  <th>Lower \(\psi\)</th>
+  <th>→</th>
+  <th>Lower \(k\)</th>
+  <th>→</th>
+  <th>More negative \(g(k)\)</th>
+  <th>→</th>
+  <th>Earlier epidemic arrival</th>
+</tr>
+<tr>
+  <td colspan="9" style="text-align:center; font-size:0.9em; color:#666;">
+    (established in<br>model definition)
+  </td>
+</tr>
+</table>
+
+<p>Each link in the chain is justified:</p>
+<ul>
+  <li>\(\psi \to k\): the denominator of \(k = (1 - \sigma_1^\alpha)/(p\sigma_2^{(1-\psi)\alpha} + \sigma_1^\alpha - 1)\) grows as \(\psi\) decreases (since \(\sigma_2 > 1\))</li>
+  <li>\(k \to g(k)\): Properties 1–2 above (Jensen + strict monotonicity)</li>
+  <li>\(g(k) \to E[\varsigma]\): the decomposition \(E[\varsigma] = \log(1/p)/r + g(k)/r\), where only \(g(k)/r\) depends on \(\psi\)</li>
+</ul>
+
+<p>For variance, the chain is even simpler: \(\text{Var}[\varsigma] = \psi^{(1)}(k)/r^2\), and \(\psi^{(1)}\) (trigamma) is a strictly decreasing function of \(k\), so lower \(k\) → higher \(\text{Var}[\varsigma]\).</p>
+
+<hr>
+<h2>Model-free generality: Var[W] and the Cauchy-Schwarz argument</h2>
+
+<p>The timing effects of punctuated infectiousness do not depend on the Gamma generation interval or the time-shifted Gamma model. The following argument uses only the additive splitting \(\tau = l + \varepsilon\) (shared shift + independent jitter) and the Cauchy-Schwarz inequality.</p>
+
+<h3>Setup</h3>
+
+<p>Let \(g\) be any generation interval distribution with Laplace transform \(M_g(s) = E[e^{-s\tau}]\). The Euler-Lotka equation gives \(R_0 M_g(r) = 1\). Suppose each index case's offspring share a common latent shift \(l\) and receive independent jitter \(\varepsilon_j\), so \(\tau_j = l + \varepsilon_j\) with \(\tau_j \sim g\). The distributions of \(l\) and \(\varepsilon\) are free, subject only to \(M_l \cdot M_\varepsilon = M_g\).</p>
+
+<h3>Model-free Var[W] formula</h3>
+
+<p>The law-of-total-variance derivation proceeds identically to the Gamma case. The only splitting-dependent step is the cross-term for \(j \neq k\):</p>
+
+$$E[e^{-r\tau_j} e^{-r\tau_k}] = E[e^{-2rl}] \cdot (E[e^{-r\varepsilon}])^2 = M_l(2r) \cdot M_\varepsilon(r)^2$$
+
+<p>Using \(M_l(2r) = M_g(2r)/M_\varepsilon(2r)\) (since \(M_g = M_l \cdot M_\varepsilon\)), this becomes \(M_g(2r) \cdot Q\), where:</p>
+
+$$\boxed{Q := \frac{M_\varepsilon(r)^2}{M_\varepsilon(2r)}}$$
+
+<p>Assembling the full formula (all steps identical to the Gamma derivation):</p>
+
+$$\text{Var}[W] = \frac{A(1 + R_0 Q) - 1}{1 - A} \qquad \text{where } A = R_0 M_g(2r)$$
+
+<p>Here \(A\) depends only on \(g\) (not on the splitting), and \(Q\) is the <strong>only place the splitting enters</strong>. Since Var[W] is affine in \(Q\) with positive slope \(R_0 A/(1-A)\), it is strictly increasing in \(Q\).</p>
+
+<h3>Three key properties of Q</h3>
+
+<p><strong>Property 1: \(Q \leq 1\), with equality iff \(\varepsilon\) is degenerate (spike).</strong></p>
+
+<p>This is Cauchy-Schwarz: \(E[e^{-2r\varepsilon}] = E[(e^{-r\varepsilon})^2] \geq (E[e^{-r\varepsilon}])^2 = M_\varepsilon(r)^2\), so \(M_\varepsilon(2r) \geq M_\varepsilon(r)^2\), giving \(Q \leq 1\). Equality holds iff \(e^{-r\varepsilon}\) is a.s. constant, i.e., \(\varepsilon\) is degenerate. \(\blacksquare\)</p>
+
+<p><strong>Property 2: Q is multiplicative under convolution.</strong></p>
+
+<p>If \(\varepsilon_2 = \varepsilon_1 + \delta\) with \(\delta\) independent, then \(M_{\varepsilon_2}(s) = M_{\varepsilon_1}(s) \cdot M_\delta(s)\), so:</p>
+
+$$Q_2 = \frac{M_{\varepsilon_1}(r)^2 M_\delta(r)^2}{M_{\varepsilon_1}(2r) M_\delta(2r)} = Q_1 \cdot Q_\delta \leq Q_1$$
+
+<p>with strict inequality iff \(\delta\) is non-degenerate. So adding independent jitter to \(\varepsilon\) strictly decreases \(Q\). \(\blacksquare\)</p>
+
+<p><strong>Property 3: The spike-vs-smooth gap is controlled by a second application of Cauchy-Schwarz.</strong></p>
+
+<p>For the spike (\(\varepsilon = 0\)): \(Q_{\text{spike}} = 1\).<br>
+For the smooth (\(\varepsilon = \tau\)): \(Q_{\text{smooth}} = M_g(r)^2/M_g(2r) = 1/(R_0^2 M_g(2r)) = 1/(R_0 A)\).</p>
+
+<p>The gap is:</p>
+
+$$\text{Var}[W]_{\text{spike}} - \text{Var}[W]_{\text{smooth}} = \frac{R_0 A(1 - Q_{\text{smooth}})}{1 - A} = \frac{R_0 A - 1}{1 - A}$$
+
+<p>Is \(R_0 A > 1\)? Yes: \(R_0 A = R_0^2 M_g(2r) \geq R_0^2 M_g(r)^2 = 1\) by Cauchy-Schwarz applied to \(X = e^{-r\tau}\), with strict inequality for non-degenerate \(g\). \(\blacksquare\)</p>
+
+<h3>Extreme cases for Q</h3>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; margin: 1em auto;">
+<tr style="background: #f0f0f0;">
+  <th>Splitting</th><th>\(Q\)</th><th>Var[W]</th>
+</tr>
+<tr>
+  <td>Spike (\(\varepsilon = 0\))</td>
+  <td>\(1\)</td>
+  <td>\(\frac{A(1 + R_0) - 1}{1 - A}\) &nbsp; (maximum)</td>
+</tr>
+<tr>
+  <td>Smooth (\(\varepsilon = \tau\))</td>
+  <td>\(\frac{1}{R_0 A}\)</td>
+  <td>\(\frac{A}{1 - A}\) &nbsp; (minimum)</td>
+</tr>
+</table>
+
+<h3>Monotonicity for parameterized families</h3>
+
+<p>For a one-parameter family \(\varepsilon_\psi\) indexed by \(\psi \in [0,1]\) with \(\varepsilon_0 = 0\) (spike) and \(\varepsilon_1 = \tau\) (smooth), if the family is ordered by convolution — meaning \(\varepsilon_{\psi_2} \overset{d}{=} \varepsilon_{\psi_1} + \delta\) for some independent \(\delta \geq 0\) whenever \(\psi_2 > \psi_1\) — then \(Q(\psi)\) is strictly decreasing and \(\text{Var}[W](\psi)\) is strictly decreasing in \(\psi\).</p>
+
+<p>The Gamma family satisfies this: \(\varepsilon \sim \text{Gamma}(\psi\alpha, \beta)\), and \(\text{Gamma}(\psi_2 \alpha, \beta) \overset{d}{=} \text{Gamma}(\psi_1 \alpha, \beta) + \text{Gamma}((\psi_2 - \psi_1)\alpha, \beta)\). But any infinitely divisible \(g\) admits such a family, as does any \(g\) that can be embedded in a convolution semigroup.</p>
+
+<h3>The full model-free chain</h3>
+
+<p>Combining with the (model-free) conditioning step and the (Gamma-approximation) digamma/trigamma properties:</p>
+
+<ol>
+<li><strong>(Model-free, Cauchy-Schwarz)</strong> More punctuation → higher \(Q\) → higher Var[\(W\)]</li>
+<li><strong>(Model-free)</strong> Higher Var[\(W\)] → higher Var[\(W|\text{surv}\)] = \((1 + \text{Var}[W])/p - 1/p^2\) → lower \(k\)</li>
+<li><strong>(Under Gamma approx., Jensen + monotonicity)</strong> Lower \(k\) → more negative \(E[\varsigma]\) and higher Var[\(\varsigma\)]</li>
+</ol>
+
+<p>Steps 1–2 are completely general: they hold for <em>any</em> non-degenerate generation interval distribution and any splitting ordered by convolution. Step 3 uses the Gamma moment-matching approximation, but only for the quantitative relationship — the qualitative direction (lower \(k\) → more variable and more negative time shift) follows from standard properties of the digamma and trigamma functions.</p>
+
+<p><strong>Bottom line:</strong> The only distributional assumption needed is that \(g\) is non-degenerate (so that Cauchy-Schwarz is strict). Unimodality, the Gamma shape, and infinite divisibility are not required for the spike-vs-smooth comparison. Monotonicity in a continuous parameter \(\psi\) additionally requires the convolution ordering, which holds for any infinitely divisible \(g\).</p>
+
+<hr>
+
+<div class="prompt">Is convex ordering a strong requirement? Is there a nice intuitive proof?</div>
+
+<h1>Convex ordering of \(W\) distributions across \(\psi\)</h1>
+
+<h2>What convex ordering means</h2>
+
+<p>Two non-negative random variables satisfy \(W_1 \geq_{cx} W_2\) (<strong>convex order</strong>, or <strong>mean-preserving spread</strong>) if \(E[W_1] = E[W_2]\) and
+$$E[f(W_1)] \geq E[f(W_2)] \quad \text{for every convex } f$$
+for which the expectations exist. Equivalently, \(W_1\) is "more spread out" than \(W_2\) in the strongest sense: every risk-averse agent prefers \(W_2\).</p>
+
+<p>Convex ordering implies variance ordering (\(\text{Var}[W_1] \geq \text{Var}[W_2]\), since \(x^2\) is convex), but the converse fails in general. Two distributions with the same mean and ordered variances need not be convex-ordered.</p>
+
+<h2>Why we want it</h2>
+
+<p>For the \(E[\varsigma]\) result: since \(-\log\) is convex, convex ordering gives us
+$$W_{\psi_1} \geq_{cx} W_{\psi_2} \quad (\psi_1 < \psi_2) \quad \Longrightarrow \quad E[-\log W_{\psi_1}] \geq E[-\log W_{\psi_2}]$$
+which translates directly to \(E[\varsigma_{\psi_1}] \leq E[\varsigma_{\psi_2}]\) (more punctuation → more negative time shift).</p>
+
+<h2>Under the Gamma approximation, it's free</h2>
+
+<p>This is the key point: <strong>if we're already using the Gamma approximation</strong> \(W|\text{surv} \sim \text{Gamma}(k_\psi, p \cdot k_\psi)\) with mean \(1/p\) for all \(\psi\), then convex ordering is a classical property of the Gamma family.</p>
+
+<p><strong>Theorem.</strong> <em>For Gamma distributions with the same mean \(\mu\): if \(k_1 < k_2\), then</em>
+$$\text{Gamma}(k_1, k_1/\mu) \geq_{cx} \text{Gamma}(k_2, k_2/\mu).$$</p>
+
+<p><strong>Intuitive proof (integer \(k\)).</strong> When \(k\) is a positive integer, \(\text{Gamma}(k, k/\mu)\) has the representation
+$$W \stackrel{d}{=} \frac{\mu}{k} \sum_{i=1}^{k} E_i$$
+where \(E_1, \ldots, E_k\) are iid \(\text{Exp}(1)\). This is \(\mu\) times the <em>sample mean</em> of \(k\) independent exponential draws.</p>
+
+<p>By the <strong>law of large numbers</strong>, as \(k\) increases, this average concentrates around its expectation \(\mu\). More averaging → less spread → smaller in convex order. This is precisely the <strong>temporal diversification argument</strong> in another guise:</p>
+
+<ul>
+<li>Small \(k\) (punctuated, low \(\psi\)): few independent "draws" → high variability, heavy tails</li>
+<li>Large \(k\) (smooth, high \(\psi\)): many independent "draws" → tight concentration around the mean</li>
+</ul>
+
+<p><strong>Formal proof sketch.</strong> If \(k_2 > k_1\) and both are integers, we can write
+$$\text{Gamma}(k_2, k_2/\mu) \stackrel{d}{=} E\!\left[\text{Gamma}(k_1, k_1/\mu) \,\big|\, \mathcal{F}\right]$$
+where \(\mathcal{F}\) is a suitable \(\sigma\)-algebra — i.e., the more concentrated distribution is a conditional expectation (martingale projection) of the more spread one. This is equivalent to saying the less concentrated one is a mean-preserving spread. For non-integer \(k\), the result follows by continuity of the Gamma family in the shape parameter and the closure of convex order under weak limits.</p>
+
+<h2>What convex ordering does and doesn't buy us</h2>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1.5em 0;">
+<tr><th>Result</th><th>Needs convex ordering?</th><th>Needs Gamma approx?</th></tr>
+<tr><td>\(\text{Var}[W]\) ordered by \(\psi\)</td><td>No (Cauchy-Schwarz suffices)</td><td>No (model-free)</td></tr>
+<tr><td>\(E[\varsigma]\) ordered by \(\psi\)</td><td>Sufficient (via \(-\log\) convex)</td><td>Alternative route (via digamma)</td></tr>
+<tr><td>\(\text{Var}[\varsigma]\) ordered by \(\psi\)</td><td><strong>Not sufficient</strong></td><td><strong>Yes, needed</strong></td></tr>
+</table>
+
+<p>The critical observation for \(\text{Var}[\varsigma]\): even with convex ordering, we <em>cannot</em> conclude that \(\text{Var}[\log W]\) is ordered. This is because \(\text{Var}[\log W] = E[(\log W)^2] - (E[\log W])^2\), and while \((\log x)^2\) happens to be convex near 0, it is <em>not</em> globally convex on \((0, \infty)\). So the Gamma approximation (which gives us \(\text{Var}[\varsigma] = \Psi^{(1)}(k)/r^2\) with trigamma decreasing in \(k\)) remains essential for the variance result.</p>
+
+<h2>The model-free case</h2>
+
+<p>Without the Gamma approximation, establishing convex ordering of the full \(W\) distributions across \(\psi\) would require specific structural assumptions about the branching process martingale limit — this is hard in general.</p>
+
+<p>However, this is somewhat moot because:</p>
+<ol>
+<li>The \(\text{Var}[W]\) result is already model-free (no convex ordering needed)</li>
+<li>The \(E[\varsigma]\) direction is strongly supported by Jensen + the concavity of \(\log\): higher \(\text{Var}[W]\) heuristically deepens the Jensen gap \(E[\log W] - \log E[W]\), even without convex ordering</li>
+<li>The \(\text{Var}[\varsigma]\) result needs the Gamma approximation regardless of whether we have convex ordering</li>
+</ol>
+
+<h2>Summary</h2>
+
+<p><strong>Convex ordering is a strong condition in the abstract, but in our setting it adds no extra burden.</strong> Under the Gamma approximation (which we already need for the \(\text{Var}[\varsigma]\) result), convex ordering is an automatic classical property of the Gamma family with fixed mean. The intuitive proof — larger shape parameter means averaging more independent terms, hence more concentration — is the same diversification argument that motivates the entire theory.</p>
+
+<hr>
+
+<div class="prompt">Does the generalized gamma also give Var[ς] monotone in Var[W]? And does the Var[W] → Var[ς] story depend only on the distribution of W, not on the specific l and ε?</div>
+
+<h1>Robustness of the Var[\(W\)] → Var[\(\varsigma\)] mapping</h1>
+
+<h2>The hierarchy of assumptions</h2>
+
+<p>It helps to separate the argument into two distinct steps:</p>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1.5em 0;">
+<tr><th>Step</th><th>What it does</th><th>What it assumes</th></tr>
+<tr>
+<td><strong>Step 1</strong></td>
+<td>\((R_0, g, \psi) \;\longrightarrow\; \text{Var}[W]\)</td>
+<td>Model-free (Cauchy-Schwarz + Euler-Lotka). Depends on \(g\) and \(\psi\) through \(Q = M_\varepsilon(r)^2/M_\varepsilon(2r)\)</td>
+</tr>
+<tr>
+<td><strong>Step 2</strong></td>
+<td>\(\text{Var}[W] \;\longrightarrow\; E[\varsigma],\; \text{Var}[\varsigma]\)</td>
+<td>Distributional assumption about \(W\) (Gamma, GenGamma, etc.) + deterministic transform \(\varsigma = \log(W)/r\)</td>
+</tr>
+</table>
+
+<p><strong>The key insight:</strong> Step 2 depends <em>only on the distribution of \(W\)</em>. The specific distributions of \(l\) (latent period) and \(\varepsilon\) (jitter) — indeed, the entire infectiousness model — enter only through Step 1, where they determine \(\text{Var}[W]\). Once \(\text{Var}[W]\) is known, the \(\varsigma\) results follow from properties of \(W\) alone.</p>
+
+<p>This means:</p>
+<ul>
+<li>Any infectiousness model (not just the time-shifted Gamma) that produces the same \(\text{Var}[W]\) will give the same \(E[\varsigma]\) and \(\text{Var}[\varsigma]\)</li>
+<li>The factorization \(M_l \cdot M_\varepsilon = M_\tau\) is used in Step 1 to <em>compute</em> \(\text{Var}[W]\), but plays no role in Step 2</li>
+<li>If we need to assume something about the distribution of \(W\), that assumption is about a branching-process limit — not about the shape of individual infectiousness profiles</li>
+</ul>
+
+<h2>Why this is a strong robustness statement</h2>
+
+<p>The distribution of \(W\) (the martingale limit) is a property of the <em>branching process as a whole</em>, not of any individual infection event. By Kesten-Stigum-type theorems, \(W\) is determined by the offspring point process, but its distribution is "smoothed" across many generations. This means:</p>
+
+<ol>
+<li>Different infectiousness models that generate the same first few moments of \(W\) will produce nearly identical \(\varsigma\) distributions</li>
+<li>The Gamma (or GenGamma) approximation to \(W\) is relatively robust because \(W\) inherits regularity from the averaging across generations</li>
+<li>The assumption "\(W|\text{surv}\) is approximately Gamma" is much milder than "the generation interval is Gamma" — it's a downstream consequence of a limit theorem, not a structural model choice</li>
+</ol>
+
+<h2>The generalized gamma</h2>
+
+<p>For \(W \sim \text{GenGamma}(a, d, p)\), a key structural property is:</p>
+
+$$\log W = \log a + \frac{1}{p}\,\log G, \qquad G \sim \text{Gamma}(d/p,\, 1)$$
+
+<p>This gives clean formulas:</p>
+
+$$E[\log W] = \log a + \frac{\Psi^{(0)}(d/p)}{p}, \qquad \text{Var}[\log W] = \frac{\Psi^{(1)}(d/p)}{p^2}$$
+
+<p>and therefore:</p>
+
+$$\text{Var}[\varsigma] = \frac{\Psi^{(1)}(d/p)}{p^2 \, r^2}$$
+
+<p>For the <strong>regular Gamma</strong> (\(p = 1\)): this reduces to \(\Psi^{(1)}(k)/r^2\), depending only on \(k\). Since \(k\) is monotone in \(\text{Var}[W]\), and \(\Psi^{(1)}\) is monotone decreasing, we get clean monotonicity.</p>
+
+<p>For the <strong>generalized Gamma</strong>: \(\text{Var}[\varsigma]\) depends on <em>two</em> parameters, \(d/p\) and \(p\). The question of monotonicity reduces to: as \(\text{Var}[W]\) increases (punctuation increases), does \(\Psi^{(1)}(d/p)/p^2\) also increase?</p>
+
+<p>This is <em>not</em> guaranteed by pure analysis — it depends on the specific path \((d(\psi), p(\psi))\) through parameter space determined by the moment-matching conditions. However:</p>
+
+<ul>
+<li>\(\Psi^{(1)}(d/p)/p^2\) is decreasing in both \(d/p\) and \(p\). So if <em>both</em> \(d/p\) and \(p\) increase as \(\psi\) increases (more smooth → more "Gaussian-like"), monotonicity is preserved.</li>
+<li>The regular Gamma is the special case \(p = 1\). If the true \(W\) distribution is close to Gamma, the GenGamma fit will have \(p \approx 1\) and the extra parameter creates no problems.</li>
+<li>The GenGamma gives a <em>more accurate</em> approximation to \(W\), so any monotonicity that holds for the <em>true</em> \(W\) distribution will be better captured by the GenGamma than by the Gamma.</li>
+</ul>
+
+<h2>What could go wrong?</h2>
+
+<p>For \(\text{Var}[\log W]\) to <em>decrease</em> when \(\text{Var}[W]\) increases, the extra variance in \(W\) would have to be concentrated in a way that specifically compresses the distribution on the log scale. This would require the right tail of \(W\) to stretch without the left tail moving — possible for pathological distributions, but extremely unlikely for branching process martingale limits, which are unimodal and right-skewed on \((0, \infty)\).</p>
+
+<h2>Summary: the robustness picture</h2>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1.5em 0;">
+<tr><th>Result</th><th>Depends on infectiousness model?</th><th>Depends on distribution of \(W\)?</th></tr>
+<tr>
+<td>\(\text{Var}[W]\) increases with punctuation</td>
+<td>Only through \(Q = M_\varepsilon(r)^2/M_\varepsilon(2r)\)</td>
+<td>No (model-free)</td>
+</tr>
+<tr>
+<td>\(E[\varsigma]\) decreases with punctuation</td>
+<td>No</td>
+<td>Jensen gap: yes (direction model-free; magnitude needs Gamma/GenGamma)</td>
+</tr>
+<tr>
+<td>\(\text{Var}[\varsigma]\) increases with punctuation</td>
+<td>No</td>
+<td>Yes: needs \(W \approx \text{Gamma}\) or similar. Proven for Gamma; strongly supported for GenGamma.</td>
+</tr>
+</table>
+
+<p><strong>Bottom line:</strong> The specific infectiousness model (time-shifted Gamma vs. anything else) matters only for computing \(\text{Var}[W]\) in Step 1. Everything downstream — the \(E[\varsigma]\) and \(\text{Var}[\varsigma]\) results — depends only on the distribution of the branching-process martingale limit \(W\), which is a much more generic object. The assumption "\(W|\text{surv}\) is approximately Gamma" is a statement about a limit theorem, not about the shape of individual infectiousness profiles, and is therefore much less fragile than it might appear.</p>
+
+<hr>
+
+<div class="prompt">Does more punctuated infectiousness (\(\psi \to 0\)) cause daily incidence to be more variable?</div>
+
+<h1>Overdispersion of daily incidence under punctuated profiles</h1>
+
+<p>We show that more punctuated individual infectiousness profiles (\(\psi \to 0\)) produce overdispersed daily incidence counts, with the index of dispersion interpolating monotonically from \(1\) (Poisson) at \(\psi = 1\) to approximately \(1 + R_0\) at \(\psi = 0\).</p>
+
+<h2>Setup</h2>
+
+<p>A single infector \(i\) produces \(\chi_i \sim \text{Poisson}(R_0)\) secondary infections at times \(\tau_j = l_i + \epsilon_j\), where:</p>
+<ul>
+<li>\(l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)\) is the shared latent period (common to all offspring of \(i\)), and</li>
+<li>\(\epsilon_j \sim \text{Gamma}(\psi\alpha, \beta)\) is the independent jitter for each offspring \(j\).</li>
+</ul>
+<p>Marginally, \(\tau_j \sim \text{Gamma}(\alpha, \beta)\), so the generation interval distribution \(g(\tau)\) is invariant in \(\psi\). Let \(N_i(t)\) denote the number of offspring of infector \(i\) whose infection times fall on calendar day \([t, t+1)\), and let \(q_t = P(\tau \in [t, t+1))\) be the probability that a generation interval lands on day \(t\).</p>
+
+<h2>Smooth case (\(\psi = 1\)): Poisson daily counts</h2>
+
+<p>When \(\psi = 1\), we have \(l_i = 0\) (degenerate) and \(\epsilon_j = \tau_j\). Offspring times are mutually independent. Conditional on \(\chi_i\), the count on day \(t\) is \(\text{Binomial}(\chi_i, q_t)\). Marginalising over \(\chi_i \sim \text{Poisson}(R_0)\) gives</p>
+
+$$N_i(t) \sim \text{Poisson}(R_0 \, q_t)$$
+
+<p>which has index of dispersion (variance-to-mean ratio)</p>
+
+$$\text{ID}_{\text{smooth}} = \frac{\text{Var}[N_i(t)]}{E[N_i(t)]} = 1.$$
+
+<h2>Spike case (\(\psi = 0\)): overdispersed counts</h2>
+
+<p>When \(\psi = 0\), the jitter is degenerate (\(\epsilon_j = 0\)) and all \(\chi_i\) offspring land at the same random instant \(\tau^* = l_i \sim \text{Gamma}(\alpha, \beta)\). The count on day \(t\) is</p>
+
+$$N_i(t) = \begin{cases} \chi_i & \text{if } \tau^* \in [t, t+1) \quad (\text{prob } q_t) \\ 0 & \text{otherwise} \quad (\text{prob } 1 - q_t) \end{cases}$$
+
+<p>Computing the moments:</p>
+
+\begin{align}
+E[N_i(t)] &= E[\chi_i] \cdot q_t = R_0 \, q_t \\
+E[N_i(t)^2] &= E[\chi_i^2] \cdot q_t = (R_0 + R_0^2) \, q_t
+\end{align}
+
+<p>where \(E[\chi_i^2] = \text{Var}[\chi_i] + (E[\chi_i])^2 = R_0 + R_0^2\) since \(\chi_i \sim \text{Poisson}(R_0)\). Therefore</p>
+
+$$\text{Var}[N_i(t)] = R_0 \, q_t + R_0^2 \, q_t(1 - q_t)$$
+
+<p>and the index of dispersion is</p>
+
+$$\text{ID}_{\text{spike}} = 1 + R_0(1 - q_t).$$
+
+<p>Since \(q_t \ll 1\) for any single day (the generation interval spans multiple days), \(\text{ID}_{\text{spike}} \approx 1 + R_0\).</p>
+
+<div class="highlight">
+<strong>Intuition:</strong> In the spike model, an infector either contributes <em>all</em> of their offspring to a single day (with probability \(q_t\)), or <em>none</em> (with probability \(1 - q_t\)). This all-or-nothing contribution creates positive correlations among the offspring landing on the same day, inflating the variance beyond the Poisson level. In the smooth model, offspring times are independent, so these correlations vanish.
+</div>
+
+<h2>General \(\psi\): monotone interpolation</h2>
+
+<p>For intermediate \(\psi\), conditional on the shared latent period \(l_i\), the offspring jitter terms \(\epsilon_j\) are independent, so the count on day \(t\) given \(l_i\) is \(\text{Poisson}(R_0 \cdot p(l_i, t))\), where \(p(l, t) = P(\epsilon \in [t - l,\, t - l + 1))\). Applying the law of total variance over \(l_i\):</p>
+
+\begin{align}
+\text{Var}[N_i(t)] &= E_{l_i}[\text{Var}[N_i(t) \mid l_i]] + \text{Var}_{l_i}[E[N_i(t) \mid l_i]] \\
+&= E_{l_i}[R_0 \, p(l_i, t)] + R_0^2 \, \text{Var}_{l_i}[p(l_i, t)] \\
+&= R_0 \, q_t + R_0^2 \, \text{Var}_{l_i}[p(l_i, t)]
+\end{align}
+
+<p>since \(E_{l_i}[p(l_i, t)] = q_t\). The index of dispersion is therefore</p>
+
+$$\text{ID}(\psi) = 1 + R_0 \cdot \frac{\text{Var}_{l_i}[p(l_i, t)]}{q_t}.$$
+
+<p>The quantity \(\text{Var}_{l_i}[p(l_i, t)] / q_t\) interpolates monotonically between the two extremes:</p>
+
+<ul>
+<li><strong>At \(\psi = 0\)</strong>: \(p(l_i, t) = \mathbf{1}(l_i \in [t, t+1))\) is nearly Bernoulli with mean \(q_t\), so \(\text{Var}_{l_i}[p] / q_t = (1 - q_t) \approx 1\), giving \(\text{ID}(0) \approx 1 + R_0\).</li>
+<li><strong>At \(\psi = 1\)</strong>: \(l_i = 0\) is degenerate, so \(p(0, t)\) is a constant and \(\text{Var}_{l_i}[p] = 0\), giving \(\text{ID}(1) = 1\).</li>
+</ul>
+
+<p>The monotonicity follows because increasing \(\psi\) transfers mass from \(l_i\) to \(\epsilon_j\): the shared component \(l_i\) has less variance, so \(p(l_i, t)\) fluctuates less across infectors, and the day-\(t\) count becomes closer to Poisson.</p>
+
+<h2>Aggregation across infectors</h2>
+
+<p>Total daily incidence on day \(t\) is \(\Delta Z(t) = \sum_i N_i(t)\), summing over all previously infected individuals. Conditional on the infection history \(\{t_i\}\), the contributions from distinct infectors are independent (each infector's offspring process is independent). By additivity of variances:</p>
+
+$$\text{Var}[\Delta Z(t) \mid \{t_i\}] = \sum_i \text{Var}[N_i(t)] = \sum_i \bigl[R_0 \, q_{t-t_i} + R_0^2 \, \text{Var}_l[p(l, t - t_i)]\bigr]$$
+
+<p>The aggregate index of dispersion is</p>
+
+$$\phi(\psi) = 1 + R_0 \cdot \frac{\sum_i \text{Var}_l[p(l, t - t_i)]}{\sum_i q_{t - t_i}}$$
+
+<p>which is a weighted average of the per-infector overdispersion factors. The overdispersion does <em>not</em> wash out with aggregation, because each infector's contribution is <em>independently</em> overdispersed by the same mechanism.</p>
+
+<div class="highlight">
+<strong>Result:</strong> Daily incidence \(\Delta Z(t)\) is quasi-Poisson with dispersion parameter \(\phi(\psi)\) that increases monotonically from \(\phi(1) = 1\) (equidispersed) to \(\phi(0) \approx 1 + R_0\) (overdispersed) as \(\psi\) decreases. Since the variance of a growth rate estimator \(\hat{r}\) obtained by regressing log-incidence on time is directly inflated by the dispersion of the daily counts, more punctuated profiles necessarily yield more uncertain growth rate estimates.
+</div>
+
+<script>
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "$", right: "$", display: false},
+      {left: "\\begin{align}", right: "\\end{align}", display: true}
+    ]
+  });
+</script>
 </body>
 </html>

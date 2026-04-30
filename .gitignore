@@ -11,5 +11,8 @@ output/
 .RData
 .Rproj.user/
 
+# SVG files (can be very large)
+*.svg
+
 # macOS
 .DS_Store
