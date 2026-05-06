@@ -402,3 +402,83 @@ $$\tau_{\text{det}} = \min(\tau_{\text{det}}^{\text{screen}}, \tau_{\text{det}}^
 (with $\tau_{\text{det}}^{\text{screen}} = \infty$ if undetected by screening, $\tau_{\text{det}}^{\text{sym}} = \infty$ if asymptomatic). The combined TE is not the sum of the individual TEs (because the second trigger is redundant conditional on the first firing earlier), but is bounded below by $`\max(\text{TE}_{\text{screen}}, \text{TE}_{\text{sym}})`$.
 
 For contact tracing, the index case is detected by one of the direct triggers, and tracing then acts on their contacts. The overall population-level impact combines: (1) direct isolation of index cases, and (2) secondary isolation of traced contacts. Both depend on $\psi$.
+
+---
+
+## Overdispersion from isolation
+
+### The Poisson mixture framework
+
+Testing effectiveness (TE) captures the mean reduction in transmission, but not the full shape of the offspring distribution. Isolation creates a **Poisson mixture**: individual $i$'s surviving offspring count is
+
+$$N_i \sim \text{Poisson}(R_0 \cdot q_i)$$
+
+where $q_i = 1 - \theta_i$ is the fraction of individual $i$'s transmission that survives isolation. Since $q_i$ varies across individuals (due to stochastic detection timing and whether isolation occurs at all), the population-level offspring distribution is overdispersed relative to Poisson.
+
+By the law of total variance:
+
+$$\text{Var}(N) = \underbrace{E[R_0 q_i]}_{\text{Poisson noise}} + \underbrace{R_0^2 \text{Var}(q_i)}_{\text{between-person variation}} = R_{\text{eff}} + R_0^2 \text{Var}(q_i)$$
+
+The overdispersion beyond Poisson is entirely governed by $\text{Var}(q_i)$, the between-person variance in the surviving fraction. The dispersion parameter is:
+
+$$k = \frac{R_{\text{eff}}^2}{R_0^2 \, \text{Var}(q_i)}$$
+
+### Analytical formula for deterministic mode-anchored isolation
+
+For the simplest case — isolation at $m_\psi + \tau_{\text{off}}$ with probability $p$, no isolation otherwise, and perfect isolation ($\eta = 1$) — the onset shift $l_i$ cancels (by mode-anchoring), so $q_i$ takes only two values:
+
+- With probability $p$: $q = F_\psi(m_\psi + \tau_{\text{off}})$ (fraction of $\text{Gamma}(\psi\alpha, \beta)$ before isolation)
+- With probability $1 - p$: $q = 1$ (no isolation)
+
+Define $\text{TE}_{\text{ind}} = 1 - F_\psi(m_\psi + \tau_{\text{off}}) = S_\psi(m_\psi + \tau_{\text{off}})$, the individual-level fraction averted for an isolated person. Then:
+
+$$\text{Var}(q_i) = p(1-p) \cdot \text{TE}_{\text{ind}}^2$$
+
+and the dispersion parameter is:
+
+$$\boxed{k = \frac{(1 - p \cdot \text{TE}_{\text{ind}})^2}{p(1-p) \cdot \text{TE}_{\text{ind}}^2}}$$
+
+**Limiting cases:**
+
+| $\psi$ | $\tau_{\text{off}}$ | $\text{TE}_{\text{ind}}$ | $k$ | Interpretation |
+|---|---|---|---|---|
+| $\to 0$ (spike) | $< 0$ | $1$ | $(1-p)/p$ | Maximally overdispersed: all-or-nothing |
+| $= 1$ (smooth) | $< 0$ | $\lesssim 1$ | $\gtrsim (1-p)/p$ | Slightly less overdispersed: some pre-isolation transmission |
+| any | $\gg 0$ | $\to 0$ | $\to \infty$ | No overdispersion: isolation too late to matter |
+
+With $p = 0.5$ and $\tau_{\text{off}} < 0$: $k \approx 1$ for spike profiles, rising slightly for smooth profiles where $\text{TE}_{\text{ind}} < 1$.
+
+### Stochastic isolation timing: binary vs graded outcomes
+
+The deterministic case above produces overdispersion only from the adherence Bernoulli. The more interesting case arises when isolation timing is itself stochastic (regular screening with random test phase, symptom-triggered with onset noise).
+
+**Spike profiles ($\psi \to 0$):** All transmission occurs at the mode. The surviving fraction $q_i$ is binary regardless of the timing mechanism:
+
+$$q_i = \begin{cases} 0 & \text{if } \tau_{\text{iso}} < \tau_i^* \\ 1 & \text{if } \tau_{\text{iso}} \geq \tau_i^* \end{cases}$$
+
+This gives $\text{Var}(q_i) = p_{\text{catch}}(1 - p_{\text{catch}})$ where $p_{\text{catch}} = P(\tau_{\text{iso}} < \tau_i^*)$, which is the **maximum possible variance** for any distribution on $[0, 1]$ with mean $1 - p_{\text{catch}}$. The dispersion parameter is:
+
+$$k_{\text{spike}} = \frac{(1 - p_{\text{catch}})}{p_{\text{catch}}}$$
+
+**Smooth profiles ($\psi = 1$):** The surviving fraction $q_i = F_\psi(\tau_{\text{iso}} - l_i)$ varies continuously with the stochastic isolation time. Even early isolation leaves some pre-isolation transmission ($q > 0$), and even late isolation blocks some tail ($q < 1$). So $q_i$ never reaches the extreme values $\{0, 1\}$, giving $\text{Var}(q_i) < p_{\text{catch}}(1 - p_{\text{catch}})$ for the same mean. Hence:
+
+$$k_{\text{smooth}} > k_{\text{spike}}$$
+
+**Spike profiles are always at least as overdispersed as smooth profiles** under any mode-anchored isolation strategy. The "all-or-nothing" nature of spike transmission maximises the variance of the surviving fraction.
+
+### Connection to establishment probability and GI distortion
+
+Lower $k$ means more overdispersed offspring, which reduces $P(\text{establishment})$ for a given $R_{\text{eff}}$. Under isolation, two "beyond-TE" effects shape epidemic dynamics:
+
+1. **Overdispersion** (this section): $k < \infty$ reduces $P(\text{establishment})$ below the Poisson$(R_{\text{eff}})$ prediction. This effect is **stronger for spike profiles** (lower $k$) and makes isolation **more effective** at preventing establishment than TE alone predicts.
+
+2. **Generation interval distortion** (see math_output Section 5): isolation truncates the tail of the GI, shortening the effective generation interval and increasing the growth rate for a given $R_{\text{eff}}$. This effect is **stronger for smooth profiles** (whose tails contain more removable mass) and makes isolation **less effective** at suppressing growth than TE alone predicts.
+
+These effects have opposite $\psi$-dependence:
+
+| Effect | Stronger for | Direction | Dominant phase |
+|---|---|---|---|
+| Overdispersion from isolation | Spike ($\psi \to 0$) | Helps intervention | Stochastic establishment |
+| GI distortion from isolation | Smooth ($\psi \to 1$) | Hurts intervention | Deterministic growth |
+
+The result is a nuanced picture: TE is conservative for spike profiles (isolation works better than predicted, because overdispersion helps) and optimistic for smooth profiles (isolation works worse than predicted, because GI shortening partially offsets the $R_{\text{eff}}$ reduction). The gap between the TE prediction and reality widens with more punctuated profiles, but in opposite directions depending on whether one measures establishment or growth rate.

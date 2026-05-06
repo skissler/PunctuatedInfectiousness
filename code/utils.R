@@ -277,8 +277,11 @@ make_contact_fn_gammapoisson <- function(R0, k_c, lambda, tinf, duration) {
 #' @param psi Punctuation parameter (psi in [0, 1]).
 #' @param k_c Shape (and rate) of Gamma distribution for contact levels.
 #' @param lambda Rate of the Poisson switching process (switches per day).
+#' @param c_max Upper truncation point for contact levels (gathering size cap).
+#'   Default Inf (no truncation). When finite, contact levels are drawn from
+#'   Gamma(k_c, k_c) truncated at c_max, reducing R0 by a factor mu_T.
 #' @return Function(tinf) returning a numeric vector of absolute attempt times.
-gen_inf_attempts_gammapoisson_contacts <- function(Tgen, R0, alpha, psi, k_c, lambda) {
+gen_inf_attempts_gammapoisson_contacts <- function(Tgen, R0, alpha, psi, k_c, lambda, c_max = Inf) {
 	stopifnot(psi >= 0, psi <= 1, k_c > 0, lambda > 0)
 	beta <- alpha / Tgen
 	traj_duration <- 5 * Tgen  # covers >99.99% of Gamma(alpha, beta) mass
@@ -287,7 +290,7 @@ gen_inf_attempts_gammapoisson_contacts <- function(Tgen, R0, alpha, psi, k_c, la
 		# Generate per-person piecewise-constant contact trajectory
 		n_switches <- rpois(1, lambda * traj_duration)
 		switch_offsets <- if (n_switches > 0) sort(runif(n_switches, 0, traj_duration)) else numeric(0)
-		levels <- rgamma(n_switches + 1, k_c, k_c)
+		levels <- rtgamma(n_switches + 1, k_c, k_c, upper = c_max)
 		breaks <- tinf + c(0, switch_offsets)
 		z_max_person <- R0 * max(levels)
 
@@ -303,6 +306,42 @@ gen_inf_attempts_gammapoisson_contacts <- function(Tgen, R0, alpha, psi, k_c, la
 		if (!any(keep)) return(numeric(0))
 		sort(res$attempts[keep])
 	}
+}
+
+#' Truncated Gamma sampler (rejection method)
+#'
+#' Draws n samples from Gamma(shape, rate) truncated above at upper.
+#' Uses simple rejection sampling. If upper = Inf, falls back to rgamma().
+#'
+#' @param n Number of draws.
+#' @param shape Shape parameter of the Gamma distribution.
+#' @param rate Rate parameter of the Gamma distribution.
+#' @param upper Upper truncation point (default Inf = no truncation).
+#' @return Numeric vector of length n.
+rtgamma <- function(n, shape, rate, upper = Inf) {
+	if (is.infinite(upper)) return(rgamma(n, shape, rate))
+	x <- numeric(n)
+	for (i in seq_len(n)) {
+		repeat {
+			draw <- rgamma(1, shape, rate)
+			if (draw <= upper) { x[i] <- draw; break }
+		}
+	}
+	x
+}
+
+#' Mean-reduction factor for truncated Gamma contact levels
+#'
+#' Computes mu_T = E[X | X <= c_max] / E[X] for X ~ Gamma(k_c, k_c),
+#' where E[X] = 1. Uses the identity E[X | X <= c] = (k_c/k_c) *
+#' pgamma(c, k_c+1, k_c) / pgamma(c, k_c, k_c).
+#'
+#' @param k_c Shape (and rate) of the Gamma contact-level distribution.
+#' @param c_max Upper truncation point (gathering size cap).
+#' @return Scalar mu_T in (0, 1].
+mu_truncated_gamma <- function(k_c, c_max) {
+	if (is.infinite(c_max)) return(1)
+	pgamma(c_max, k_c + 1, k_c) / pgamma(c_max, k_c, k_c)
 }
 
 # --- Helpers for detection-and-isolation protocols ---

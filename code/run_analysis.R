@@ -14,7 +14,7 @@ source('code/overdispersion.R')
 
 # Controlled epidemics 
 # source('code/isolation.R')
-# source('code/gatheringsize.R')
+source('code/gatheringsize.R')
 
 # Inference
 # source('code/identifiability.R')

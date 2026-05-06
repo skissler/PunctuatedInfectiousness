@@ -36,12 +36,17 @@ and $F_{a,b}(x)$ is the Gamma CDF with shape $a$ and rate $b$.  The effective re
 \end{equation}
 The truncated contact process mean $\mu_T$ does not depend on $\psi$, so the effect of gathering size restrictions on the reproduction number is invariant to the shape of the individual infectiousness kernel. 
 
-Truncating the contact process tail has a second effect, however: it also reduces the variance of the contact process, which in turn reduces the overdispersion of the secondary infection distribution. It can be shown that the ratio of the truncated-to-original Negative Binomial overdispersion factors is 
+Truncating the contact process tail has a second effect, however: it also reduces the variance of the contact process, which in turn reduces the overdispersion of the secondary infection distribution. It can be shown that the ratio of the truncated-to-original overdispersion factors is 
 \begin{equation}
-	\frac{k_{\text{new}}}{k_{\text{old}}} = \frac{\mu_T^2/V_T}{k_c}
+	\frac{\text{OD}_{\text{new}}}{\text{OD}_{\text{old}}} = \frac{k_c}{\mu_T^2/V_T}
 \end{equation}
-This ratio (\ie, the relative difference between $k_{new}$ and $k_{old}$) is also mathematically invariant to $\psi$. However, if we introduce 
+This ratio (\ie, the relative difference between $OD_{new}$ and $OD_{old}$) is also mathematically invariant to $\psi$. However, the absolute difference is 
+\begin{equation}
+	\text{OD}_{new} - \text{OD}_{old} = \text{OD}_{old} [\frac{k_c}{\mu_T^2/V_T} - 1]
+\end{equation}
+which indicates that the absolute difference in overdispersion caused by gathering size restrictions is proportional to the overdispersion of the original process. In other words, if the original process had a high overdispersion, the absolute difference in overdispersion caused by tuncation is higher than the if the original process already had a low overdispersion. Practically, this means that punctuated infectiousness profiles --- which tend to have higher overdispersion at baseline --- are more impacted by gathering size restrictions. 
 
+Gathering size restrictions thus have a partially self-defeating impact, where the tradeoff increases as the pucntuation of the individual infectiousness profile becomes sharper. Gathering size restrictions reduce the effective reproduction number  --- inhibiting transmission --- but also reduce overdispersion, which makes stochastic die-out less likely. This phenomenon is borne out by simulations. We simulated XXXX outbreaks in a population of XXXX for each of our three benchmark pathogens, using both the truncated contact process and the original process but with lower $R_0$ to match the effective $R_0$ of the truncated process. (Results). 
 
 % Briefly, we also consider epidemic control by restricting gathering sizes. 
 % \begin{itemize}

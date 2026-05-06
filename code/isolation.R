@@ -43,12 +43,18 @@ nsim           <- 200
 min_threshold    <- 10
 growth_threshold <- 100
 
+# Section 5: Overdispersion from isolation
+n_index_od    <- 10000  # index cases for offspring distribution
+psi_vals_od   <- seq(0, 1, length.out = 21)
+k_cap_od      <- 50     # cap k for plotting
+
 # Storage for composite figures
 te_fixed_list         <- list()
 te_symp_list          <- list()
 te_testing_list       <- list()
 te_testing_delay_list <- list()
 pest_tables_list      <- list()
+od_k_list             <- list()
 
 # ==============================================================================
 # Loop over pathogens
@@ -306,6 +312,144 @@ if (nrow(growthrate_iso_df) > 0) {
 
 	save_fig(fig_growthrate_iso, sprintf("fig_growthrate_iso_%s", pathogen))
 }
+
+# ==============================================================================
+# Section 5. Overdispersion from isolation
+#
+# Isolation creates a Poisson mixture: N_i ~ Poisson(R0 * q_i), where q_i is
+# the fraction of transmission before isolation. Variation in q_i across
+# individuals generates overdispersion. For spike profiles, q_i is binary
+# (all-or-nothing), producing maximum overdispersion.
+# ==============================================================================
+
+cat(sprintf("\n  [%s] Section 5: overdispersion from isolation\n", pathogen))
+
+od_results <- list()
+od_idx <- 0L
+
+# --- Strategy 1: Fixed isolation (deterministic timing, matches Section 4) ---
+for (psi_val in psi_vals_od) {
+	gfun <- gen_inf_attempts_gamma_symptoms(T, R0, alpha, psi_val,
+		mu_sym = tau_offset_sim, sigma_sym = 0,
+		lambda_act = Inf, p_sym = p_adhere, eta = 1)
+	n_off <- sapply(rep(0, n_index_od), function(t) length(gfun(t)))
+	m_off <- mean(n_off); v_off <- var(n_off)
+	od_idx <- od_idx + 1L
+	od_results[[od_idx]] <- tibble(psi = psi_val, R_eff = m_off, var_off = v_off,
+		k = if (v_off > m_off) m_off^2 / (v_off - m_off) else Inf,
+		strategy = "Fixed")
+}
+cat(sprintf("    Fixed isolation done\n"))
+
+# --- Strategy 2: Screening (Delta = 3) ---
+for (psi_val in psi_vals_od) {
+	gfun <- gen_inf_attempts_gamma_screening(T, R0, alpha, psi_val,
+		d_pre = d_pre, d_post = d_post, Delta = 3,
+		lambda_act = lambda_act, p_sens = 1, eta = 1)
+	n_off <- sapply(rep(0, n_index_od), function(t) length(gfun(t)))
+	m_off <- mean(n_off); v_off <- var(n_off)
+	od_idx <- od_idx + 1L
+	od_results[[od_idx]] <- tibble(psi = psi_val, R_eff = m_off, var_off = v_off,
+		k = if (v_off > m_off) m_off^2 / (v_off - m_off) else Inf,
+		strategy = "Screen (3-day)")
+}
+cat(sprintf("    Screening D=3 done\n"))
+
+# --- Strategy 3: Screening (Delta = 7) ---
+for (psi_val in psi_vals_od) {
+	gfun <- gen_inf_attempts_gamma_screening(T, R0, alpha, psi_val,
+		d_pre = d_pre, d_post = d_post, Delta = 7,
+		lambda_act = lambda_act, p_sens = 1, eta = 1)
+	n_off <- sapply(rep(0, n_index_od), function(t) length(gfun(t)))
+	m_off <- mean(n_off); v_off <- var(n_off)
+	od_idx <- od_idx + 1L
+	od_results[[od_idx]] <- tibble(psi = psi_val, R_eff = m_off, var_off = v_off,
+		k = if (v_off > m_off) m_off^2 / (v_off - m_off) else Inf,
+		strategy = "Screen (7-day)")
+}
+cat(sprintf("    Screening D=7 done\n"))
+
+# --- Strategy 4: Symptom-triggered (stochastic timing, sigma=2) ---
+for (psi_val in psi_vals_od) {
+	gfun <- gen_inf_attempts_gamma_symptoms(T, R0, alpha, psi_val,
+		mu_sym = tau_offset_sim, sigma_sym = 2,
+		lambda_act = Inf, p_sym = p_adhere, eta = 1)
+	n_off <- sapply(rep(0, n_index_od), function(t) length(gfun(t)))
+	m_off <- mean(n_off); v_off <- var(n_off)
+	od_idx <- od_idx + 1L
+	od_results[[od_idx]] <- tibble(psi = psi_val, R_eff = m_off, var_off = v_off,
+		k = if (v_off > m_off) m_off^2 / (v_off - m_off) else Inf,
+		strategy = "Symptom (sd=2)")
+}
+cat(sprintf("    Symptoms sd=2 done\n"))
+
+od_df <- bind_rows(od_results) %>%
+	mutate(k_capped = pmin(k, k_cap_od))
+
+# --- Analytical k for fixed isolation (theory overlay) ---
+od_theory <- tibble(psi = seq(0, 1, length.out = 201)) %>%
+	mutate(
+		a = alpha * psi,
+		mode_psi = pmax(0, (a - 1) / beta),
+		D = tau_offset_sim + mode_psi,
+		TE_ind = ifelse(a < 1e-10,
+			ifelse(D < 0, 1, 0),
+			1 - pgamma(pmax(D, 0), a, beta)),
+		k_theory = ifelse(TE_ind > 1e-10,
+			(1 - p_adhere * TE_ind)^2 / (p_adhere * (1 - p_adhere) * TE_ind^2),
+			Inf),
+		k_theory_capped = pmin(k_theory, k_cap_od)
+	)
+
+# --- Print summary ---
+cat(sprintf("\n  [%s] k by strategy and psi:\n", pathogen))
+od_df %>%
+	filter(psi %in% c(0, 0.25, 0.5, 0.75, 1)) %>%
+	select(strategy, psi, R_eff, k) %>%
+	mutate(k = round(k, 2), R_eff = round(R_eff, 3)) %>%
+	pivot_wider(names_from = psi, values_from = c(R_eff, k),
+	            names_glue = "{.value}_{psi}") %>%
+	print()
+
+# --- k vs psi plot ---
+fig_od_k <- ggplot(od_df, aes(x = psi, y = k_capped, col = strategy)) +
+	geom_line(linewidth = 0.8) +
+	geom_point(size = 1.5, alpha = 0.7) +
+	geom_line(data = od_theory %>% filter(is.finite(k_theory_capped)),
+	          aes(x = psi, y = k_theory_capped),
+	          inherit.aes = FALSE, linetype = "dashed", col = "grey30",
+	          linewidth = 0.6) +
+	scale_y_log10() +
+	theme_classic() +
+	labs(x = expression(psi),
+	     y = "Dispersion parameter k (log scale)",
+	     col = "Strategy",
+	     title = sprintf("%s: overdispersion from isolation (R0 = %g)", pathogen, R0))
+
+save_fig(fig_od_k, sprintf("fig_od_isolation_%s", pathogen), width = 8, height = 5)
+od_k_list[[pathogen]] <- fig_od_k
+
+# --- Offspring distribution histograms (fixed isolation, 3 psi values) ---
+psi_hist_vals <- c(0, 0.5, 1)
+hist_data <- list()
+for (psi_val in psi_hist_vals) {
+	gfun <- gen_inf_attempts_gamma_symptoms(T, R0, alpha, psi_val,
+		mu_sym = tau_offset_sim, sigma_sym = 0,
+		lambda_act = Inf, p_sym = p_adhere, eta = 1)
+	n_off <- sapply(rep(0, n_index_od), function(t) length(gfun(t)))
+	hist_data <- c(hist_data, list(tibble(psi = psi_val, offspring = n_off)))
+}
+hist_df <- bind_rows(hist_data)
+
+fig_hist_iso <- ggplot(hist_df, aes(x = offspring)) +
+	geom_histogram(binwidth = 1, fill = "steelblue", col = "white", alpha = 0.7) +
+	facet_wrap(~ paste0("psi = ", psi), nrow = 1, scales = "free_y") +
+	theme_classic() +
+	labs(x = "Surviving offspring", y = "Count",
+	     title = sprintf("%s: offspring under fixed isolation (p=%g, tau=%g)",
+	                     pathogen, p_adhere, tau_offset_sim))
+
+save_fig(fig_hist_iso, sprintf("fig_hist_isolation_%s", pathogen), width = 10, height = 4)
 
 cat(sprintf("  [%s] figures saved.\n", pathogen))
 

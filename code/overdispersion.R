@@ -101,6 +101,32 @@ fig_heatmap_periodic <- ggplot() +
 save_fig(fig_heatmap_periodic, sprintf("fig_heatmap_periodic_%s", pathogen), width=5, height=5)
 cat(sprintf("  Saved fig_heatmap_periodic_%s\n", pathogen))
 
+# OD = 1/k version of the periodic heatmap
+od_cap <- 1  # cap OD at 1 for visualization
+
+sim_grid_periodic <- sim_grid_periodic %>%
+	mutate(od_sim = 1 / k_sim, od_capped = pmin(od_sim, od_cap))
+
+theory_grid_periodic <- theory_grid_periodic %>%
+	mutate(od_theory = 1 / k_theory, od_capped = pmin(od_theory, od_cap))
+
+fig_heatmap_periodic_od <- ggplot() +
+	geom_tile(data = sim_grid_periodic, aes(x=psi, y=c_amp, fill=od_capped)) +
+	geom_contour(data = theory_grid_periodic,
+		aes(x=psi, y=c_amp, z=od_theory),
+		col = "black", linewidth = 1.0, breaks = c(0.02, 0.05, 0.1, 0.2, 0.5, 1)) +
+	geom_contour(data = theory_grid_periodic,
+		aes(x=psi, y=c_amp, z=od_theory),
+		col = "white", linewidth = 0.4, breaks = c(0.02, 0.05, 0.1, 0.2, 0.5, 1)) +
+	scale_fill_viridis_c(option = "inferno", name = "OD\n(1/k)", limits = c(0, od_cap)) +
+	theme_classic() +
+	labs(x = expression(psi),
+	     y = expression("Contact amplitude " * italic(A)),
+	     title = sprintf("%s (R0 = %g)", pathogen, R0))
+
+save_fig(fig_heatmap_periodic_od, sprintf("fig_heatmap_periodic_od_%s", pathogen), width=5, height=5)
+cat(sprintf("  Saved fig_heatmap_periodic_od_%s\n", pathogen))
+
 # ==============================================================================
 # Periodic contacts: epidemic simulations
 # ==============================================================================
@@ -188,6 +214,31 @@ fig_heatmap_gp <- ggplot() +
 
 save_fig(fig_heatmap_gp, sprintf("fig_heatmap_gammapoisson_%s", pathogen), width=5, height=5)
 cat(sprintf("  Saved fig_heatmap_gammapoisson_%s\n", pathogen))
+
+# OD = 1/k version of the Gamma/Poisson heatmap
+sim_grid_gp <- sim_grid_gp %>%
+	mutate(od_sim = 1 / k_sim, od_capped = pmin(od_sim, od_cap))
+
+theory_grid_gp <- theory_grid_gp %>%
+	mutate(od_theory = 1 / k_theory, od_capped = pmin(od_theory, od_cap))
+
+fig_heatmap_gp_od <- ggplot() +
+	geom_tile(data = sim_grid_gp, aes(x=psi, y=k_c, fill=od_capped)) +
+	geom_contour(data = theory_grid_gp,
+		aes(x=psi, y=k_c, z=od_theory),
+		col = "black", linewidth = 1.0, breaks = c(0.02, 0.05, 0.1, 0.2, 0.5, 1)) +
+	geom_contour(data = theory_grid_gp,
+		aes(x=psi, y=k_c, z=od_theory),
+		col = "white", linewidth = 0.4, breaks = c(0.02, 0.05, 0.1, 0.2, 0.5, 1)) +
+	scale_y_log10() +
+	scale_fill_viridis_c(option = "inferno", name = "OD\n(1/k)", limits = c(0, od_cap)) +
+	theme_classic() +
+	labs(x = expression(psi),
+	     y = expression("Contact shape " * italic(k)[c]),
+	     title = sprintf("%s: Gamma/Poisson contacts (R0 = %g, λ = %g)", pathogen, R0, lambda_gp))
+
+save_fig(fig_heatmap_gp_od, sprintf("fig_heatmap_gammapoisson_od_%s", pathogen), width=5, height=5)
+cat(sprintf("  Saved fig_heatmap_gammapoisson_od_%s\n", pathogen))
 
 # ==============================================================================
 # Gamma/Poisson contacts: epidemic simulations
