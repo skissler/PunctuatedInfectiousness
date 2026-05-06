@@ -1,6 +1,6 @@
 TEXFILES = main.tex authors.tex abstract.tex introduction.tex model.tex uncontrolled.tex \
            controlled.tex identifiability.tex discussion.tex acknowledgements.tex \
-           supplementary.tex references.bib
+           supplementary.tex zotero.bib
 
 PDFLATEX = pdflatex -interaction=nonstopmode
 

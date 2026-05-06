@@ -7,7 +7,7 @@ library(tidyverse)
 # compute the realized reproduction number for the gathering size-restructed epidemic (analytically) 
 
 # Compute the analytic secondary infection distribution under this model 
-# Compute the naalytic secondary infection distribution under gathering size restrictions 
+# Compute the analytic secondary infection distribution under gathering size restrictions 
 
 # Simulate uncontrolled epidemics
 # Simulate epidemics where contact levels use rejection sampling to get rid of large gatherings and replace them with gathering sizes under the limit. 

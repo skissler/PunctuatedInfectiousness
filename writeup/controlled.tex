@@ -26,6 +26,23 @@ Epidemic simulations illustrating differences.
 
 \section{The impact of individual infectiousness on gathering size restrictions}
 
+Gathering size restrictions may have differential impacts on epidemic dynamics depending on the punctuation of the individual infectiousness profile. To model gathering size restrictions, we considered an extension of the stochastic contact model where contact levels are drawn from a $\text{Gamma}(k_c, k_c)$ distribution truncated at $c_{max}$. Cutting off this tail reduces the mean contact rate to $\mu_T < 1$, where 
+\begin{equation}
+	\mu_T = \frac{F_{k_c+1, k_c}(c_{max})}{F_{k_c, k_c}(c_{max})}
+\end{equation}
+and $F_{a,b}(x)$ is the Gamma CDF with shape $a$ and rate $b$.  The effective reproduction number under the gathering size restriction is simply 
+\begin{equation}
+	R_0^{gs} = \mu_T R_0
+\end{equation}
+The truncated contact process mean $\mu_T$ does not depend on $\psi$, so the effect of gathering size restrictions on the reproduction number is invariant to the shape of the individual infectiousness kernel. 
+
+Truncating the contact process tail has a second effect, however: it also reduces the variance of the contact process, which in turn reduces the overdispersion of the secondary infection distribution. It can be shown that the ratio of the truncated-to-original Negative Binomial overdispersion factors is 
+\begin{equation}
+	\frac{k_{\text{new}}}{k_{\text{old}}} = \frac{\mu_T^2/V_T}{k_c}
+\end{equation}
+This ratio (\ie, the relative difference between $k_{new}$ and $k_{old}$) is also mathematically invariant to $\psi$. However, if we introduce 
+
+
 % Briefly, we also consider epidemic control by restricting gathering sizes. 
 % \begin{itemize}
 % 	\item The theory 

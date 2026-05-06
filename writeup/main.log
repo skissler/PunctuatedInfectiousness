@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  6 MAY 2026 07:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  6 MAY 2026 13:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -569,57 +569,59 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--56
 (./abstract.tex) (./introduction.tex [1
 
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<a_schematic.pdf, id=81, 464.73625pt x 115.43124pt>
-File: a_schematic.pdf Graphic file (type pdf)
-<use a_schematic.pdf>
-Package pdftex.def Info: a_schematic.pdf  used on input line 37.
+<figures/pdf/a_schematic.pdf, id=81, 464.73625pt x 115.43124pt>
+File: figures/pdf/a_schematic.pdf Graphic file (type pdf)
+<use figures/pdf/a_schematic.pdf>
+Package pdftex.def Info: figures/pdf/a_schematic.pdf  used on input line 37.
 (pdftex.def)             Requested size: 469.75502pt x 116.68149pt.
  [2
 
-]) (./model.tex [3 <./a_schematic.pdf>]
-<psi_schematic_2.pdf, id=558, 447.6725pt x 128.48pt>
-File: psi_schematic_2.pdf Graphic file (type pdf)
-<use psi_schematic_2.pdf>
-Package pdftex.def Info: psi_schematic_2.pdf  used on input line 25.
+]) (./model.tex [3 <./figures/pdf/a_schematic.pdf>]
+<figures/pdf/psi_schematic_2.pdf, id=558, 447.6725pt x 128.48pt>
+File: figures/pdf/psi_schematic_2.pdf Graphic file (type pdf)
+<use figures/pdf/psi_schematic_2.pdf>
+Package pdftex.def Info: figures/pdf/psi_schematic_2.pdf  used on input line 25
+.
 (pdftex.def)             Requested size: 469.75502pt x 134.8217pt.
+ [4
 
-[4
+ <./figures/pdf/psi_schematic_2.pdf>] [5]
+<figures/pdf/cinfcomposite.pdf, id=719, 436.63126pt x 224.84pt>
+File: figures/pdf/cinfcomposite.pdf Graphic file (type pdf)
+<use figures/pdf/cinfcomposite.pdf>
+Package pdftex.def Info: figures/pdf/cinfcomposite.pdf  used on input line 118.
 
- <./psi_schematic_2.pdf>] [5]
-<cinfcomposite.pdf, id=719, 436.63126pt x 224.84pt>
-File: cinfcomposite.pdf Graphic file (type pdf)
-<use cinfcomposite.pdf>
-Package pdftex.def Info: cinfcomposite.pdf  used on input line 118.
 (pdftex.def)             Requested size: 469.75502pt x 241.89726pt.
  [6]
-<pathogenAs.pdf, id=729, 163.61125pt x 107.40125pt>
-File: pathogenAs.pdf Graphic file (type pdf)
-<use pathogenAs.pdf>
-Package pdftex.def Info: pathogenAs.pdf  used on input line 141.
+<figures/pdf/pathogenAs.pdf, id=729, 163.61125pt x 107.40125pt>
+File: figures/pdf/pathogenAs.pdf Graphic file (type pdf)
+<use figures/pdf/pathogenAs.pdf>
+Package pdftex.def Info: figures/pdf/pathogenAs.pdf  used on input line 141.
 (pdftex.def)             Requested size: 180.67499pt x 118.60222pt.
-<cuminf.pdf, id=730, 463.7325pt x 289.08pt>
-File: cuminf.pdf Graphic file (type pdf)
-<use cuminf.pdf>
-Package pdftex.def Info: cuminf.pdf  used on input line 143.
+<figures/pdf/cuminf.pdf, id=730, 463.7325pt x 289.08pt>
+File: figures/pdf/cuminf.pdf Graphic file (type pdf)
+<use figures/pdf/cuminf.pdf>
+Package pdftex.def Info: figures/pdf/cuminf.pdf  used on input line 143.
 (pdftex.def)             Requested size: 469.75502pt x 292.84186pt.
-) (./uncontrolled.tex [7 <./cinfcomposite.pdf>] [8 <./pathogenAs.pdf> <./cuminf
-.pdf
+) (./uncontrolled.tex
+[7 <./figures/pdf/cinfcomposite.pdf>] [8 <./figures/pdf/pathogenAs.pdf> <./figu
+res/pdf/cuminf.pdf
 
-pdfTeX warning: pdflatex (file ./cuminf.pdf): PDF inclusion: multiple pdfs with
- page group included in a single page
+pdfTeX warning: pdflatex (file ./figures/pdf/cuminf.pdf): PDF inclusion: multip
+le pdfs with page group included in a single page
 >] [9
 
 ]
-<survival.pdf, id=6222, 456.70625pt x 161.60374pt>
-File: survival.pdf Graphic file (type pdf)
-<use survival.pdf>
-Package pdftex.def Info: survival.pdf  used on input line 49.
+<figures/pdf/survival.pdf, id=6222, 456.70625pt x 161.60374pt>
+File: figures/pdf/survival.pdf Graphic file (type pdf)
+<use figures/pdf/survival.pdf>
+Package pdftex.def Info: figures/pdf/survival.pdf  used on input line 49.
 (pdftex.def)             Requested size: 469.75502pt x 166.22685pt.
- [10 <./survival.pdf>] [11]
-<growthrate.pdf, id=6568, 458.71375pt x 510.90875pt>
-File: growthrate.pdf Graphic file (type pdf)
-<use growthrate.pdf>
-Package pdftex.def Info: growthrate.pdf  used on input line 95.
+ [10 <./figures/pdf/survival.pdf>] [11]
+<figures/pdf/growthrate.pdf, id=6568, 458.71375pt x 510.90875pt>
+File: figures/pdf/growthrate.pdf Graphic file (type pdf)
+<use figures/pdf/growthrate.pdf>
+Package pdftex.def Info: figures/pdf/growthrate.pdf  used on input line 95.
 (pdftex.def)             Requested size: 469.75502pt x 523.2327pt.
 
 Overfull \hbox (4.0621pt too wide) in paragraph at lines 106--107
@@ -629,15 +631,16 @@ i-vid-u-als, the sec-ondary in-fec-tion dis-tri-bu-tion be-comes overdis-persed
  []
 
 [12]
-<heatmaps.pdf, id=6576, 462.72874pt x 316.18124pt>
-File: heatmaps.pdf Graphic file (type pdf)
-<use heatmaps.pdf>
-Package pdftex.def Info: heatmaps.pdf  used on input line 129.
+<figures/pdf/heatmaps.pdf, id=6576, 462.72874pt x 316.18124pt>
+File: figures/pdf/heatmaps.pdf Graphic file (type pdf)
+<use figures/pdf/heatmaps.pdf>
+Package pdftex.def Info: figures/pdf/heatmaps.pdf  used on input line 129.
 (pdftex.def)             Requested size: 469.75502pt x 320.98569pt.
-) (./controlled.tex [13] [14 <./growthrate.pdf>] [15 <./heatmaps.pdf>])
-(./identifiability.tex [16
+) (./controlled.tex [13] [14 <./figures/pdf/growthrate.pdf>] [15 <./figures/pdf
+/heatmaps.pdf>] [16
 
-]) (./discussion.tex [17
+]) (./identifiability.tex [17]) (./discussion.tex
+[18
 
 ]
 Overfull \hbox (29.1396pt too wide) in paragraph at lines 13--14
@@ -645,7 +648,7 @@ Overfull \hbox (29.1396pt too wide) in paragraph at lines 13--14
 184/20210575/90033/The-stochastic-dynamics-
  []
 
-) [18
+) [19
 
 ] (./main.bbl
 Underfull \hbox (badness 1242) in paragraph at lines 96--105
@@ -654,20 +657,20 @@ the Royal So-ci-ety B: Bi-o-log-i-cal Sci-ences\T1/ppl/m/n/10 , 274(1609):599--
 
  []
 
-) [19
+) [20
 
-] (./acknowledgements.tex) [20
+] (./acknowledgements.tex) [21
 
-] (./supplementary.tex [21
+] (./supplementary.tex [22
 
-] [22
+] [23
 
-] [23]
-[24] [25] [26] [27] [28
+] [24]
+[25] [26] [27] [28] [29
 
-] [29] [30
+] [30] [31
 
-] [31] [32] [33]) [34
+] [32] [33] [34]) [35
 
 ] (./main.aux)
 
@@ -677,8 +680,8 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: A304C0AEC3C6EC202C806375A6D4DBB8;4785.
  ) 
 Here is how much of TeX's memory you used:
- 12921 strings out of 478994
- 188786 string characters out of 5858184
+ 12926 strings out of 478994
+ 189324 string characters out of 5858184
  512745 words of memory out of 5000000
  29934 multiletter control sequences out of 15000+600000
  469261 words of font info for 185 fonts, out of 8000000 for 9000
@@ -701,10 +704,10 @@ fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
 ype1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/u
 rw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pala
 tino/uplri8a.pfb>
-Output written on main.pdf (34 pages, 19171821 bytes).
+Output written on main.pdf (35 pages, 19174631 bytes).
 PDF statistics:
- 69974 PDF objects out of 79402 (max. 8388607)
- 46462 compressed objects within 465 object streams
- 177 named destinations out of 1000 (max. 500000)
+ 69983 PDF objects out of 79402 (max. 8388607)
+ 46470 compressed objects within 465 object streams
+ 181 named destinations out of 1000 (max. 500000)
  145 words of extra memory for PDF output out of 10000 (max. 10000000)
 

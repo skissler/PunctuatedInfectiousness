@@ -6600,6 +6600,188 @@ $$g(\tau) \propto \beta\,\tau\,e^{-\beta\tau}\!\left(1 + \frac{\beta\tau}{2}\rig
 
 <p>Point 3 is perhaps the most important for the paper's narrative. The whole point of the Gamma time-shift model is to show that \(g(\tau)\) (and hence all deterministic, mean-field quantities) can be held fixed while varying the individual-level structure. The LCT breaks this invariance, making it impossible to cleanly attribute effects to punctuation vs. generation interval changes.</p>
 
+<hr>
+<div class="prompt">Gathering size restrictions in the Gamma-Poisson contact model: rejection sampling where contact levels above c_max are re-drawn. Can we compute the reduction in R₀? Does it depend on ψ? What about the variance of ν_i? And the implications for epidemic establishment.</div>
+
+<h1>Gathering size restrictions under the Gamma-Poisson contact model</h1>
+
+<h2>1. Setup</h2>
+
+<p>Under gathering size restrictions, each contact level is drawn from \(\text{Gamma}(k_c, k_c)\) truncated to \([0,\, c_{\max}]\). Call this the truncated level distribution, with:</p>
+
+<ul>
+<li>Mean: \(\mu_T = E[c^* \mid c^* \leq c_{\max}]\)</li>
+<li>Variance: \(V_T = \text{Var}[c^* \mid c^* \leq c_{\max}]\)</li>
+</ul>
+
+<p>The switching structure is unchanged: levels still switch at Poisson rate \(\lambda\).</p>
+
+<h2>2. Reduction in \(R_0\): closed form, \(\psi\)-independent</h2>
+
+<p>Since \(c_i \perp (b_i, g_i)\), and in this model \(b_i = R_0\) for all \(i\):</p>
+
+$$R_0^{\text{new}} = R_0 \cdot E[c_i(t)] = R_0 \cdot \mu_T$$
+
+<p>Using the Gamma moment identity \(c \cdot f_{\text{Gamma}(\alpha,\beta)}(c) = (\alpha/\beta)\,f_{\text{Gamma}(\alpha+1,\beta)}(c)\):</p>
+
+$$\mu_T = \frac{P\!\left(\text{Gamma}(k_c+1,\, k_c) \leq c_{\max}\right)}{P\!\left(\text{Gamma}(k_c,\, k_c) \leq c_{\max}\right)}$$
+
+<p>In R: <code>pgamma(c_max, k_c + 1, k_c) / pgamma(c_max, k_c, k_c)</code></p>
+
+<p><b>This does not depend on \(\psi\).</b> The population-level mean contact rate is \(\mu_T\) at every time point, regardless of how individuals sample the contact process temporally.</p>
+
+<h2>3. Impact on the variance of \(\nu_i\): clean factorization</h2>
+
+<p>Recall that \(\nu_i = R_0\,\tilde{c}_i\), where \(\tilde{c}_i = \int g_i(\tau)\,c_i(t_i + \tau)\,d\tau\) is the contact process averaged over person \(i\)'s individual generation interval. The overdispersion parameter is \(k = E[\nu_i]^2 / \text{Var}[\nu_i] = E[\tilde{c}_i]^2 / \text{Var}[\tilde{c}_i]\).</p>
+
+<p>The key structural result is that \(\text{Var}[\tilde{c}_i]\) factorizes:</p>
+
+$$\text{Var}[\tilde{c}_i] = V_c \cdot \mathcal{I}(\psi\alpha,\, \lambda/\beta)$$
+
+<p>where \(V_c\) is the variance of the contact level distribution and \(\mathcal{I}(\psi\alpha, \lambda/\beta) = \frac{1}{2\pi}\int_{-\infty}^{\infty} (1 + \omega^2/\beta^2)^{-\psi\alpha} \cdot \frac{2\lambda}{\lambda^2 + \omega^2}\,d\omega\) is the spectral integral from the earlier analysis. This factorization holds because:</p>
+
+<ol>
+<li>The contact process covariance is \(\text{Cov}[c_i(t), c_i(t+\tau)] = V_c\,e^{-\lambda|\tau|}\) — same exponential decay form regardless of truncation, since the Poisson switching + iid levels structure is unchanged.</li>
+<li>The spectral integral \(\mathcal{I}\) depends only on the <em>shape</em> of the autocorrelation (the \(e^{-\lambda|\tau|}\) part) and the smoothing kernel \(g_i\), not on the scale \(V_c\).</li>
+</ol>
+
+<p>Therefore:</p>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; border-color: #555; margin: 1.2em 0;">
+<tr style="background: #2a2d2e;"><th></th><th>Unrestricted</th><th>Truncated</th></tr>
+<tr><td>Contact level variance \(V_c\)</td><td>\(1/k_c\)</td><td>\(V_T\)</td></tr>
+<tr><td>Mean contact level</td><td>\(1\)</td><td>\(\mu_T\)</td></tr>
+<tr><td>\(k = E[\tilde{c}_i]^2 / \text{Var}[\tilde{c}_i]\)</td><td>\(k_c\, / \,\mathcal{I}(\psi\alpha, \lambda/\beta)\)</td><td>\(\mu_T^2\, / \,(V_T \cdot \mathcal{I}(\psi\alpha, \lambda/\beta))\)</td></tr>
+</table>
+
+<p>Defining the <b>truncated contact dispersion</b> \(k_c^T = \mu_T^2 / V_T\) (the squared-mean-to-variance ratio of the truncated level distribution), this simplifies to:</p>
+
+$$\boxed{k_{\text{new}} = \frac{k_c^T}{\mathcal{I}(\psi\alpha,\, \lambda/\beta)}}$$
+
+<p>identical in structure to the unrestricted result \(k = k_c / \mathcal{I}\), but with \(k_c\) replaced by \(k_c^T > k_c\). The <b>proportional change</b> in \(k\) is:</p>
+
+$$\frac{k_{\text{new}}}{k_{\text{old}}} = \frac{k_c^T}{k_c}$$
+
+<p>which is <b>independent of \(\psi\)</b>.</p>
+
+<p>Since truncation removes the heavy upper tail, the coefficient of variation decreases, so \(k_c^T > k_c\): the truncated level distribution is less dispersed than the original. Computing \(V_T\) in R (using the same moment identity applied twice):</p>
+
+<pre style="background: #2a2d2e; padding: 12px; border-radius: 4px;">
+mu_T  &lt;- pgamma(c_max, k_c + 1, k_c) / pgamma(c_max, k_c, k_c)
+E_c2_T &lt;- ((k_c + 1) / k_c) * pgamma(c_max, k_c + 2, k_c) / pgamma(c_max, k_c, k_c)
+V_T   &lt;- E_c2_T - mu_T^2
+k_c_T &lt;- mu_T^2 / V_T
+</pre>
+
+<h2>4. Why simulating with the new \(R_0\) alone is insufficient</h2>
+
+<p>Suppose we want to assess the impact of gathering size restrictions on epidemic establishment probability. A naive approach: compute \(R_0^{\text{new}} = R_0 \mu_T\), then simulate a branching process with offspring distribution \(\text{Poisson}(R_0^{\text{new}})\). This is wrong for two reasons:</p>
+
+<ol>
+<li><b>It ignores the residual overdispersion.</b> Even after truncation, the offspring distribution is not Poisson — it is approximately \(\text{NegBin}(R_0^{\text{new}}, k_{\text{new}})\), with \(k_{\text{new}}\) finite (especially for small \(\psi\)).</li>
+<li><b>The error depends on \(\psi\).</b> For smooth profiles (\(\psi \approx 1\)), \(k_{\text{new}}\) is very large (near-Poisson), so the naive approach is nearly correct. For punctuated profiles (\(\psi \approx 0\)), \(k_{\text{new}}\) is moderate, and the Poisson approximation substantially underestimates the extinction probability.</li>
+</ol>
+
+<h2>5. Impact on epidemic establishment probability</h2>
+
+<p>For a branching process with offspring distribution \(\text{NegBin}(R_0, k)\), the extinction probability \(q\) satisfies:</p>
+
+$$q = G_Z(q) = \left(\frac{k}{k + R_0(1-q)}\right)^{\!k}$$
+
+<p>with establishment probability \(P_{\text{est}} = 1 - q\). Key limits:</p>
+
+<ul>
+<li>\(k \to \infty\) (Poisson): \(q = e^{-R_0(1-q)}\). Highest \(P_{\text{est}}\) for given \(R_0\).</li>
+<li>\(k = 1\) (Geometric): \(q = 1/R_0\). Much lower \(P_{\text{est}}\).</li>
+</ul>
+
+<p>Under gathering restrictions, two changes occur simultaneously:</p>
+
+<ol>
+<li>\(R_0 \to R_0 \mu_T < R_0\): reduces \(P_{\text{est}}\) (fewer expected offspring)</li>
+<li>\(k \to k \cdot k_c^T / k_c > k\): <em>increases</em> \(P_{\text{est}}\) for given \(R_0\) (more reliable transmission, less variance)</li>
+</ol>
+
+<p>These effects <b>partially offset</b>. The \(R_0\) reduction dominates (establishment becomes harder), but the \(k\) increase partially counteracts it.</p>
+
+<h3>5a. The offset is negligible for smooth profiles, significant for punctuated</h3>
+
+<p>For <b>smooth profiles</b> (\(\psi \approx 1\)): \(k_{\text{old}}\) is already very large (effectively Poisson). Multiplying a huge \(k\) by \(k_c^T/k_c\) makes it even huger — no practical change. The establishment probability is determined entirely by the \(R_0\) reduction.</p>
+
+<p>For <b>punctuated profiles</b> (\(\psi \approx 0\)): \(k_{\text{old}}\) is small (meaningful overdispersion). The increase to \(k_{\text{new}} = k_{\text{old}} \cdot k_c^T/k_c\) is a real shift. In terms of the overdispersion \(1/k\):</p>
+
+$$\frac{1}{k_{\text{new}}} - \frac{1}{k_{\text{old}}} = \frac{1}{k_{\text{old}}}\left(\frac{k_c}{k_c^T} - 1\right)$$
+
+<p>This absolute reduction in \(1/k\) is proportional to \(1/k_{\text{old}}\), which is large for punctuated profiles and negligible for smooth profiles. So <b>punctuated profiles experience a greater absolute reduction in overdispersion</b>, even though the proportional change in \(k\) is the same.</p>
+
+<h3>5b. The punctuated-vs-smooth gap diminishes under restrictions</h3>
+
+<p>Before restrictions, the difference in establishment probability between smooth and punctuated profiles arises from their different \(k\) values (same \(R_0\)). Under restrictions:</p>
+
+<ul>
+<li><b>\(R_0\) decreases equally</b> for both, pushing both toward the critical threshold \(R_0 = 1\). As \(R_0 \to 1\), \(P_{\text{est}} \to 0\) for all \(k\), so the \(\psi\)-dependent gap must shrink.</li>
+<li><b>Overdispersion decreases more (in absolute terms) for punctuated profiles</b>, narrowing the \(k\)-gap between smooth and punctuated.</li>
+</ul>
+
+<p>Both mechanisms push in the same direction: <b>gathering restrictions reduce the practical difference between punctuated and smooth profiles</b>.</p>
+
+<h3>5c. The punchline: \(\psi\) matters for predicting the impact of restrictions</h3>
+
+<div class="highlight">
+<p><b>Summary.</b> Gathering size restrictions reduce \(R_0\) by a \(\psi\)-independent factor \(\mu_T\), and increase \(k\) by a \(\psi\)-independent factor \(k_c^T/k_c\). But the establishment probability is a nonlinear function of both \(R_0\) and \(k\):</p>
+
+<ul>
+<li>For smooth profiles: \(k\) is already so large that the change is irrelevant. The impact of restrictions is fully captured by the \(R_0\) reduction.</li>
+<li>For punctuated profiles: \(k\) is small enough that the change matters. The increase in \(k\) partially offsets the \(R_0\) reduction, making restrictions somewhat less effective at preventing establishment than the \(R_0\) reduction alone would suggest.</li>
+</ul>
+
+<p>To correctly predict the impact of gathering restrictions on epidemic establishment, one needs to know \(\psi\) (or equivalently, the baseline \(k\)), not just the change in \(R_0\).</p>
+</div>
+
+<hr>
+<div class="prompt">Why does Var[c̃_i] = V_T · I(ψα, λ/β) still hold when the contact levels are drawn from a truncated distribution with mean μ_T ≠ 1? In particular, why is the autocorrelation μ_T² + V_T e^{-λ|τ|}?</div>
+
+<h1>Autocorrelation of the truncated Poisson-switching process</h1>
+
+<h2>Deriving the autocorrelation</h2>
+
+<p>The contact process \(c_i(t)\) is piecewise-constant, switching at Poisson rate \(\lambda\), with each level drawn iid from the truncated distribution \(F_T\) (mean \(\mu_T\), variance \(V_T\)). For any two times \(t\) and \(t + \tau\) with \(\tau > 0\), exactly one of two things happens:</p>
+
+<ul>
+<li><b>No switch in \((t, t+\tau)\)</b> (probability \(e^{-\lambda\tau}\)): then \(c_i(t+\tau) = c_i(t)\), so \(c_i(t)\,c_i(t+\tau) = c_i(t)^2\).</li>
+<li><b>At least one switch in \((t, t+\tau)\)</b> (probability \(1 - e^{-\lambda\tau}\)): then \(c_i(t+\tau)\) is the level of whatever segment contains \(t+\tau\), which is an independent draw from \(F_T\). So \(c_i(t)\) and \(c_i(t+\tau)\) are independent.</li>
+</ul>
+
+<p>Therefore:</p>
+
+\begin{align}
+E[c_i(t)\,c_i(t+\tau)] &= e^{-\lambda|\tau|}\,E[c_i(t)^2] + (1 - e^{-\lambda|\tau|})\,E[c_i(t)]\,E[c_i(t+\tau)] \\
+&= e^{-\lambda|\tau|}(\mu_T^2 + V_T) + (1 - e^{-\lambda|\tau|})\,\mu_T^2 \\
+&= \mu_T^2 + V_T\,e^{-\lambda|\tau|}
+\end{align}
+
+<p>The covariance is therefore \(\text{Cov}[c_i(t), c_i(t+\tau)] = V_T\,e^{-\lambda|\tau|}\). This holds for <em>any</em> level distribution with mean \(\mu_T\) and variance \(V_T\) — the exponential decay comes purely from the Poisson switching structure.</p>
+
+<h2>Why the factorization \(\text{Var}[\tilde{c}_i] = V_T \cdot \mathcal{I}\) holds</h2>
+
+<p>Recall \(\tilde{c}_i = \int g_i(\tau)\,c_i(t_i + \tau)\,d\tau\). Since \(g_i\) is a probability density (\(\int g_i = 1\)):</p>
+
+\begin{align}
+E[\tilde{c}_i^2] &= \int\!\!\int g_i(\tau)\,g_i(\tau')\,E[c_i(t_i+\tau)\,c_i(t_i+\tau')]\,d\tau\,d\tau' \\
+&= \int\!\!\int g_i(\tau)\,g_i(\tau')\left[\mu_T^2 + V_T\,e^{-\lambda|\tau - \tau'|}\right]d\tau\,d\tau' \\
+&= \mu_T^2 \underbrace{\left(\int g_i\right)^2}_{=\,1} + V_T \int\!\!\int g_i(\tau)\,g_i(\tau')\,e^{-\lambda|\tau-\tau'|}\,d\tau\,d\tau'
+\end{align}
+
+<p>And \((E[\tilde{c}_i])^2 = \mu_T^2\). Subtracting:</p>
+
+$$\text{Var}[\tilde{c}_i] = \mu_T^2 + V_T \cdot \mathcal{I} - \mu_T^2 = V_T \cdot \mathcal{I}(\psi\alpha,\, \lambda/\beta)$$
+
+<p>The \(\mu_T^2\) terms cancel exactly, for any \(\mu_T\). This cancellation is guaranteed by the normalization \(\int g_i = 1\): the constant part of the autocorrelation contributes \(\mu_T^2 \cdot 1^2\) to \(E[\tilde{c}_i^2]\), which matches \((E[\tilde{c}_i])^2 = (\mu_T \cdot 1)^2\) exactly.</p>
+
+<div class="highlight">
+<b>In spectral language:</b> The full PSD of \(c_i(t)\) has a DC spike \(2\pi\mu_T^2\,\delta(\omega)\) plus the continuous part \(V_T \cdot 2\lambda/(\lambda^2 + \omega^2)\). When computing variance (rather than second moment), the DC spike drops out. The spectral integral \(\mathcal{I}\) involves only the continuous part, so the prefactor is \(V_T\) regardless of \(\mu_T\).
+</div>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [
