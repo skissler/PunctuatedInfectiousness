@@ -7,7 +7,11 @@
 static Rcpp::Function r_sample_int("sample.int");
 
 // [[Rcpp::export]]
-Rcpp::NumericVector sim_stochastic_rcpp(int n, Rcpp::Function gen_inf_attempts) {
+Rcpp::NumericVector sim_stochastic_rcpp(int n, Rcpp::Function gen_inf_attempts,
+                                        int maxinf = -1) {
+
+  // If maxinf not specified (or negative), default to n (full population)
+  if (maxinf < 0) maxinf = n;
 
   // Initialize infection times to Inf
   Rcpp::NumericVector tinf_vec(n, R_PosInf);
@@ -18,6 +22,7 @@ Rcpp::NumericVector sim_stochastic_rcpp(int n, Rcpp::Function gen_inf_attempts) 
   // Seed infection: pick random index case using R's sample.int (1-based)
   int indexcase = Rcpp::as<int>(r_sample_int(n, 1)) - 1; // 0-based
   tinf_vec[indexcase] = 0.0;
+  int n_infected = 1;
 
   // Generate initial infection attempts from index case
   Rcpp::NumericVector init_attempts = gen_inf_attempts(0.0);
@@ -36,6 +41,9 @@ Rcpp::NumericVector sim_stochastic_rcpp(int n, Rcpp::Function gen_inf_attempts) 
     if (tinf_vec[target] == R_PosInf) {
       // Successful infection
       tinf_vec[target] = t_attempt;
+      n_infected++;
+
+      if (n_infected >= maxinf) break;
 
       // Generate new infection attempts from this newly infected person
       Rcpp::NumericVector new_attempts = gen_inf_attempts(t_attempt);

@@ -130,7 +130,7 @@ print(infpop_growthrate_table)
 fig_growthrate_infpop_hists <- ggplot(infpop_growthrate_df, aes(x = growthrate)) +
 	geom_histogram(aes(y = after_stat(density)), bins = 40,
 	               fill = "white", col = "darkgrey") +
-	geom_density(adjust = 1) +
+	geom_density(adjust = 2) +
 	geom_vline(xintercept = r_malthusian, col = "blue", lty = "dashed", linewidth = 0.8) +
 	# geom_vline(data = infpop_growthrate_table, aes(xintercept = mean),
 	           # col = "red", linewidth = 0.8) +
@@ -140,6 +140,20 @@ fig_growthrate_infpop_hists <- ggplot(infpop_growthrate_df, aes(x = growthrate))
 	     title = paste0(pathogen, " (infinite pop)"))
 
 save_fig(fig_growthrate_infpop_hists, paste0("fig_growthrate_infpop_hists_", pathogen))
+
+# Overlaid histogram of growth rates by psi
+fig_growthrate_infpop_hists_overlay <- ggplot(infpop_growthrate_df,
+                                             aes(x = growthrate, fill = psi, col = psi)) +
+	geom_histogram(aes(y = after_stat(density)), bins = 40,
+	               alpha = 0.3, position = "identity") +
+	geom_density(adjust = 2, linewidth = 0.8, fill = NA) +
+	geom_vline(xintercept = r_malthusian, col = "black", lty = "dashed", linewidth = 0.8) +
+	theme_classic() +
+	labs(x = "Empirical growth rate (1/day)", y = "Density",
+	     fill = expression(psi), col = expression(psi),
+	     title = paste0(pathogen, " (infinite pop)"))
+
+save_fig(fig_growthrate_infpop_hists_overlay, paste0("fig_growthrate_infpop_hists_overlay_", pathogen))
 
 # Growth rate lines: daily incidence on log scale in the growth window
 # Find the first full calendar day after reaching min_growth_threshold
@@ -165,15 +179,21 @@ infpop_growth_incidence <- start_days %>%
 	mutate(day0 = day - min(day)) %>%
 	ungroup()
 
+# Fit Poisson GLM per psi to get empirical intercept for reference line
+refline_df <- infpop_growth_incidence %>%
+	group_by(psi) %>%
+	summarise(
+		intercept = coef(glm(count ~ day0, family = poisson))[1] / log(10),
+		slope = r_malthusian / log(10),
+		.groups = "drop")
+
 fig_growthrate_infpop_lines <- infpop_growth_incidence %>%
 	filter(count > 0) %>%
 	ggplot(aes(x = day0, y = count, group = factor(sim))) +
 		geom_line(alpha = 0.1, linewidth = 0.3, col = "grey") +
 		geom_point(alpha = 0.2, size = 0.3, col = "grey") +
-		geom_abline(intercept = log10(r_malthusian * min_growth_threshold) +
-		                0.5 * r_malthusian / log(10),
-		            slope = r_malthusian / log(10),
-		            col = "blue", linewidth = 0.8, lty = "dashed") +
+		geom_abline(data = refline_df, aes(intercept = intercept, slope = slope),
+		            col = "blue", linewidth = 0.8, lty = "dashed", inherit.aes = FALSE) +
 		scale_y_log10() +
 		theme_classic() +
 		facet_wrap(~psi, nrow = 1) +

@@ -11,7 +11,6 @@ source('code/episims_gamma.R')
 source('code/survival_theory_2.R')
 source('code/growth_rate.R')
 source('code/variable_contacts_heatmaps.R')
-source('code/variable_contacts_episims.R')
 
 # Controlled epidemics 
 # source('code/isolation.R')

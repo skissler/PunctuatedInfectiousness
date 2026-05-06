@@ -30,7 +30,13 @@
       "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
       "WebFetch(domain:arxiv.org)",
       "Bash(xargs:*)",
-      "Bash(git status:*)"
+      "Bash(git status:*)",
+      "WebFetch(domain:www.dsprelated.com)",
+      "WebFetch(domain:archive.org)",
+      "WebFetch(domain:pdfcoffee.com)",
+      "WebFetch(domain:books.google.com)",
+      "WebFetch(domain:www.scribd.com)",
+      "WebFetch(domain:searchworks.stanford.edu)"
     ]
   }
 }

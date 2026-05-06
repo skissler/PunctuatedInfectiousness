@@ -240,6 +240,71 @@ gen_inf_attempts_gamma_contacts <- function(Tgen, z, z_max, alpha, psi) {
 	}
 }
 
+#' Generate a single random piecewise-constant contact trajectory
+#'
+#' Generates a Gamma/Poisson contact trajectory for one person: contact levels
+#' are drawn iid from Gamma(k_c, k_c) and switch at arrivals of a Poisson
+#' process with rate lambda.
+#'
+#' @param R0 Basic reproduction number (scales levels).
+#' @param k_c Shape (and rate) of Gamma distribution for contact levels.
+#' @param lambda Rate of the Poisson switching process (switches per day).
+#' @param tinf Person's infection time (trajectory start).
+#' @param duration How long the trajectory needs to cover.
+#' @return List with z (function of t returning R0*level) and z_max (R0*max(levels)).
+make_contact_fn_gammapoisson <- function(R0, k_c, lambda, tinf, duration) {
+	n_switches <- rpois(1, lambda * duration)
+	switch_times <- if (n_switches > 0) tinf + sort(runif(n_switches, 0, duration)) else numeric(0)
+	levels <- rgamma(n_switches + 1, k_c, k_c)
+	breaks <- c(tinf, switch_times)
+	z_max <- R0 * max(levels)
+	list(
+		z = function(t) R0 * levels[findInterval(t, breaks)],
+		z_max = z_max
+	)
+}
+
+#' Infection attempt generator: gamma profile with Gamma/Poisson stochastic
+#' contact rate
+#'
+#' Like \code{gen_inf_attempts_gamma_contacts}, but generates a fresh random
+#' piecewise-constant contact trajectory per person. Contact levels are iid
+#' Gamma(k_c, k_c) and switch at Poisson(lambda) arrivals.
+#'
+#' @param Tgen Mean generation interval (days).
+#' @param R0 Basic reproduction number.
+#' @param alpha Shape parameter for the population generation interval.
+#' @param psi Punctuation parameter (psi in [0, 1]).
+#' @param k_c Shape (and rate) of Gamma distribution for contact levels.
+#' @param lambda Rate of the Poisson switching process (switches per day).
+#' @return Function(tinf) returning a numeric vector of absolute attempt times.
+gen_inf_attempts_gammapoisson_contacts <- function(Tgen, R0, alpha, psi, k_c, lambda) {
+	stopifnot(psi >= 0, psi <= 1, k_c > 0, lambda > 0)
+	beta <- alpha / Tgen
+	traj_duration <- 5 * Tgen  # covers >99.99% of Gamma(alpha, beta) mass
+
+	function(tinf) {
+		# Generate per-person piecewise-constant contact trajectory
+		n_switches <- rpois(1, lambda * traj_duration)
+		switch_offsets <- if (n_switches > 0) sort(runif(n_switches, 0, traj_duration)) else numeric(0)
+		levels <- rgamma(n_switches + 1, k_c, k_c)
+		breaks <- tinf + c(0, switch_offsets)
+		z_max_person <- R0 * max(levels)
+
+		# Generate raw proposals at this person's z_max
+		raw <- .make_raw_generator(z_max_person, alpha, beta, psi)
+		res <- raw(tinf)
+		if (length(res$attempts) == 0L) return(numeric(0))
+
+		# Thin using per-person contact trajectory
+		seg_idx <- findInterval(res$attempts, breaks)
+		z_vals <- R0 * levels[seg_idx]
+		keep <- runif(length(res$attempts)) < z_vals / z_max_person
+		if (!any(keep)) return(numeric(0))
+		sort(res$attempts[keep])
+	}
+}
+
 # --- Helpers for detection-and-isolation protocols ---
 
 #' Determine isolation time under regular screening
@@ -396,7 +461,7 @@ gen_inf_attempts_gamma_symptoms <- function(Tgen, R0, alpha, psi,
 #'   function(t_inf) -> numeric vector.
 #' @return Numeric vector of length n containing infection times (Inf if the
 #'   person remains uninfected at the end of the simulation)
-sim_stochastic_fast_r <- function(n=1000, gen_inf_attempts){
+sim_stochastic_fast_r <- function(n=1000, gen_inf_attempts, maxinf=Inf){
 
 	# Initialize infection times
 	tinf_vec <- rep(Inf, n)
@@ -404,6 +469,7 @@ sim_stochastic_fast_r <- function(n=1000, gen_inf_attempts){
 	# Seed infection
 	indexcase <- sample.int(n,1)
 	tinf_vec[indexcase] <- 0
+	n_infected <- 1L
 	queue <- gen_inf_attempts(0)
 	qi <- 1L
 	qn <- length(queue)
@@ -416,6 +482,8 @@ sim_stochastic_fast_r <- function(n=1000, gen_inf_attempts){
 		target <- sample.int(n,1)
 		if(tinf_vec[target]==Inf){
 			tinf_vec[target] <- t_attempt
+			n_infected <- n_infected + 1L
+			if(n_infected >= maxinf) return(tinf_vec)
 			new_attempts <- gen_inf_attempts(t_attempt)
 			if(length(new_attempts) > 0L){
 				# Merge new events with unprocessed remainder of queue
@@ -441,8 +509,8 @@ sim_stochastic_fast_r <- function(n=1000, gen_inf_attempts){
 #'   function(t_inf) -> numeric vector.
 #' @return Numeric vector of length n containing infection times (Inf if the
 #'   person remains uninfected at the end of the simulation)
-sim_stochastic_fast <- function(n=1000, gen_inf_attempts){
-	sim_stochastic_rcpp(n, gen_inf_attempts)
+sim_stochastic_fast <- function(n=1000, gen_inf_attempts, maxinf=Inf){
+	sim_stochastic_rcpp(n, gen_inf_attempts, as.integer(if(is.infinite(maxinf)) -1L else maxinf))
 }
 
 #' Stochastic epidemic simulation with infinite population (R fallback)
@@ -509,6 +577,38 @@ sim_infinite_pop_r <- function(max_cases=1000, tmax=Inf, gen_inf_attempts){
 #'   starting with 0 for the index case
 sim_infinite_pop <- function(max_cases=1000, tmax=Inf, gen_inf_attempts){
 	sim_infinite_pop_rcpp(max_cases, tmax, gen_inf_attempts)
+}
+
+#' Overlap integral I* for the Gamma/Poisson contact model
+#'
+#' Computes I*(psi*alpha, lambda/beta) via numerical integration of the
+#' spectral formula. Used to obtain the theoretical dispersion parameter
+#' k = k_c / I*.
+#'
+#' @param psi_alpha Product of punctuation parameter and generation-interval shape.
+#' @param r Ratio lambda/beta (switching rate / generation-interval rate).
+#' @return Scalar value of I* in (0, 1].
+.I_star <- function(psi_alpha, r) {
+	if (psi_alpha < 1e-10) return(1)  # spike limit: I* = 1
+	integrand <- function(omega) {
+		(1 + omega^2)^(-psi_alpha) * (r / (r^2 + omega^2)) / pi
+	}
+	2 * integrate(integrand, 0, Inf, rel.tol = 1e-10)$value
+}
+
+#' Theoretical dispersion parameter for Gamma/Poisson contact model
+#'
+#' Computes k = k_c / I*(psi*alpha, lambda/beta) using the spectral overlap
+#' integral.
+#'
+#' @param k_c Shape (and rate) of Gamma contact-level distribution.
+#' @param psi Punctuation parameter.
+#' @param alpha Shape parameter for the population generation interval.
+#' @param lambda Poisson switching rate.
+#' @param beta Rate parameter for the population generation interval (alpha/Tgen).
+#' @return Scalar theoretical dispersion parameter k.
+k_theory_gammapoisson <- function(k_c, psi, alpha, lambda, beta) {
+	k_c / .I_star(psi * alpha, lambda / beta)
 }
 
 #' Extinction probability for a Poisson(R0) branching process

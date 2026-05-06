@@ -5506,6 +5506,954 @@ $$\phi(\psi) = 1 + R_0 \cdot \frac{\sum_i \text{Var}_l[p(l, t - t_i)]}{\sum_i q_
 <strong>Result:</strong> Daily incidence \(\Delta Z(t)\) is quasi-Poisson with dispersion parameter \(\phi(\psi)\) that increases monotonically from \(\phi(1) = 1\) (equidispersed) to \(\phi(0) \approx 1 + R_0\) (overdispersed) as \(\psi\) decreases. Since the variance of a growth rate estimator \(\hat{r}\) obtained by regressing log-incidence on time is directly inflated by the dispersion of the daily counts, more punctuated profiles necessarily yield more uncertain growth rate estimates.
 </div>
 
+<hr>
+<div class="prompt">Construct the full derivation of k under the Gamma-Poisson contact model (analogous to the Lomax derivation above, but with Gamma(k_c, k_c) levels). Expand Step 1 with more intuition about the weighted-stationary-process variance formula, and in Step 4, provide a way to recognize the integral solution by inspection before going through the full change of variables.</div>
+
+<h1>Derivation of the negative binomial \(k\) under the Gamma contact model</h1>
+
+<p><strong>Goal.</strong> Derive the overdispersion parameter \(k\) for the secondary-infection distribution when the biological profile is the time-shifted Gamma model with punctuation parameter \(\psi\) and the contact modulator is a Poisson-switching piecewise-constant process with \(\mathrm{Gamma}(k_c,k_c)\) levels (mean 1, variance \(1/k_c\)).</p>
+
+<h2>Step 0. Lloyd-Smith bridge: \(k = R_0^2 / \mathrm{Var}[M_i]\)</h2>
+
+<p>Person \(i\)'s secondary infections \(Z_i \sim \mathrm{Poisson}(M_i)\), where the individual reproduction number is</p>
+
+$$
+M_i \;=\; R_0 \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau \;=:\; R_0\,\tilde{c}_i.
+$$
+
+<p>Two-moment matching to \(\mathrm{NegBin}(R_0, k)\) gives \(k = R_0^2 / \mathrm{Var}[M_i] = 1/\mathrm{Var}[\tilde{c}_i]\), since \(\mathrm{E}[\tilde{c}_i] = 1\).</p>
+
+<h2>Step 1. Variance of \(\tilde{c}_i\) via conditioning — and why this is the right formula</h2>
+
+<p>By the law of total variance, and since \(\mathrm{E}[\tilde{c}_i \mid b_i] = 1\) is non-random:</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i] \;=\; \mathrm{E}\!\bigl[\mathrm{Var}[\tilde{c}_i \mid b_i]\bigr].
+$$
+
+<p>Conditional on \(b_i\), the quantity \(\tilde{c}_i = \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau\) is a <em>weighted average</em> of a stationary random process \(c_i(\cdot)\), with the weight function \(b_i(\tau)\) acting as a probability density. The conditional variance is:</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i \mid b_i]
+\;=\; \int_0^\infty\!\!\int_0^\infty b_i(\tau)\,b_i(\tau')\,K_c(\tau - \tau')\,d\tau\,d\tau',
+$$
+
+<p>where \(K_c(s) = \mathrm{Cov}[c_i(t), c_i(t+s)]\) is the autocovariance of the contact process.</p>
+
+<h3>Why this is the right expression</h3>
+
+<p>This follows from the standard formula for the variance of a weighted sum. Discretize time into bins of width \(\Delta\): then \(\tilde{c}_i \approx \sum_j w_j\,c_j\) where \(w_j = b_i(j\Delta)\,\Delta\) and \(c_j = c_i(t_i + j\Delta)\). The variance of a weighted sum of random variables is:</p>
+
+$$
+\mathrm{Var}\!\left[\sum_j w_j\,c_j\right] = \sum_j \sum_k w_j\,w_k\,\mathrm{Cov}[c_j, c_k].
+$$
+
+<p>Taking \(\Delta \to 0\) recovers the double integral. The formula says: how much residual variance survives the averaging depends on (a) where the weights are concentrated, and (b) how correlated the contact process is at those lag separations.</p>
+
+<h3>Intuitive shortcut to the integral in Step 2</h3>
+
+<p>There is an even more direct route. Think of \(\tilde{c}_i\) as a "smoothed" version of the contact process, where the smoothing kernel is \(b_i\). The variance of a smoothed stationary process has a clean spectral representation: if \(S_c(\omega)\) is the power spectral density of \(c_i\) and \(\hat{b}_i(\omega)\) is the Fourier transform of the kernel, then</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i \mid b_i] \;=\; \int_{-\infty}^{\infty} |\hat{b}_i(\omega)|^2\,S_c(\omega)\,d\omega.
+$$
+
+<p>This is the <strong>Wiener–Khinchin route</strong>: the variance of a filtered process equals the integral of the filter's power transfer function times the input power spectrum. One can jump directly to this expression without writing out the double-integral form at all — it is the same content expressed in the frequency domain. For our problem, both \(|\hat{b}_i(\omega)|^2\) and \(S_c(\omega)\) are known in closed form (see Steps 3–4), making the spectral route the most efficient path to the answer.</p>
+
+<h2>Step 2. Autocovariance of the Gamma-Poisson contact process</h2>
+
+<p>The process \(c_i(\cdot)\) is piecewise constant with switching epochs from a Poisson process of rate \(\lambda\), and at each epoch a fresh iid draw from \(\mathrm{Gamma}(k_c, k_c)\) is assigned. Because levels are iid and switches are memoryless:</p>
+
+$$
+K_c(s) \;=\; \mathrm{Cov}[c_i(t),\,c_i(t+s)] \;=\; V_c\,e^{-\lambda|s|},
+$$
+
+<p>where \(V_c = \mathrm{Var}[c^*] = 1/k_c\) for \(c^* \sim \mathrm{Gamma}(k_c, k_c)\).</p>
+
+<p><em>Why exponential?</em> Conditional on no switch occurring in \([t, t+s]\), both values equal the same draw, contributing variance \(V_c\). If at least one switch occurred, the two values are independent draws from the same distribution, contributing zero covariance. The probability of no switch is \(e^{-\lambda|s|}\) (Poisson process). Hence \(K_c(s) = V_c \cdot e^{-\lambda|s|}\).</p>
+
+<p><em>Power spectral density.</em> The Fourier transform of \(K_c(s) = V_c\,e^{-\lambda|s|}\) is the Lorentzian:</p>
+
+$$
+S_c(\omega) \;=\; \frac{V_c}{\pi}\,\frac{\lambda}{\lambda^2 + \omega^2} \;=\; \frac{1}{k_c}\,\frac{\lambda}{\pi(\lambda^2 + \omega^2)}.
+$$
+
+<p>Therefore</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i \mid b_i]
+\;=\; \frac{1}{k_c}\,\underbrace{\int_0^\infty\!\!\int_0^\infty b_i(\tau)\,b_i(\tau')\,e^{-\lambda|\tau-\tau'|}\,d\tau\,d\tau'}_{\displaystyle =:\;I(b_i)}.
+$$
+
+<h2>Step 3. \(I(b_i)\) does not depend on the latent period</h2>
+
+<p>Recall \(b_i(\tau) = f_\epsilon(\tau - l_i)\) for \(\tau > l_i\), where \(f_\epsilon\) is the \(\mathrm{Gamma}(\psi\alpha, \beta)\) density and \(l_i \sim \mathrm{Gamma}((1-\psi)\alpha, \beta)\). Substitute \(u = \tau - l_i\), \(u' = \tau' - l_i\):</p>
+
+$$
+I(b_i) \;=\; \int_0^\infty\!\!\int_0^\infty f_\epsilon(u)\,f_\epsilon(u')\,e^{-\lambda|u - u'|}\,du\,du'
+\;=\; \mathrm{E}\!\left[e^{-\lambda|U - U'|}\right] \;=:\; I^*,
+$$
+
+<p>where \(U, U' \overset{\text{iid}}{\sim} \mathrm{Gamma}(\psi\alpha, \beta)\). The latent period \(l_i\) drops out because shifting both integration variables by the same constant leaves \(|u - u'|\) unchanged. Consequently:</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i] \;=\; \frac{I^*}{k_c}, \qquad k \;=\; \frac{k_c}{I^*}.
+$$
+
+<div class="highlight">
+<strong>Key result so far:</strong> \(k = k_c / I^*(\psi\alpha, \lambda/\beta)\). The dispersion parameter is the contact shape \(k_c\) divided by the "overlap integral" \(I^*\), which measures how much of the contact process's autocorrelation survives averaging by the infectiousness profile.
+</div>
+
+<h2>Step 4. Evaluating \(I^*\) in closed form</h2>
+
+<h3>Recognizing the integral by inspection (spectral route)</h3>
+
+<p>Before diving into calculation, let us see that the answer can be read off almost immediately from the spectral formula. Using the Wiener–Khinchin expression from Step 1:</p>
+
+$$
+I^* \;=\; \int_{-\infty}^{\infty} |\hat{f}_\epsilon(\omega)|^2\,\frac{S_c(\omega)}{V_c}\,d\omega
+\;=\; \frac{\lambda}{\pi}\int_{-\infty}^{\infty} \frac{|\hat{f}_\epsilon(\omega)|^2}{\lambda^2 + \omega^2}\,d\omega,
+$$
+
+<p>where \(\hat{f}_\epsilon(\omega) = (\beta/(\beta - i\omega))^{\psi\alpha}\) is the characteristic function of a \(\mathrm{Gamma}(\psi\alpha, \beta)\) variable. Therefore \(|\hat{f}_\epsilon(\omega)|^2 = (1 + \omega^2/\beta^2)^{-\psi\alpha}\) and:</p>
+
+$$
+I^* \;=\; \frac{\lambda}{\pi}\int_{-\infty}^{\infty} \frac{d\omega}{(\lambda^2 + \omega^2)(1 + \omega^2/\beta^2)^{\psi\alpha}}.
+$$
+
+<p>This is an integral of the form</p>
+
+$$
+\int_{-\infty}^{\infty} \frac{d\omega}{(a^2 + \omega^2)(1 + \omega^2/b^2)^{n}}
+$$
+
+<p>with \(a = \lambda\), \(b = \beta\), \(n = \psi\alpha\). This is a <strong>standard integral of a rational-times-algebraic function</strong>, soluble by the Beta function / hypergeometric route. Specifically, after the substitution \(t = \omega/\beta\), it becomes a ratio of two quadratics raised to powers \(1\) and \(n\), integrated over \(\mathbb{R}^+\) — precisely the form catalogued in Gradshteyn–Ryzhik §3.197 (Euler-type Beta integrals with quadratic denominators). Knowing this, one can write down the \({}_2F_1\) answer directly.</p>
+
+<h3>Explicit derivation</h3>
+
+<p>By symmetry, restrict to \(\omega \geq 0\) and double. Substitute \(t = \omega/\beta\) and let \(r := \lambda/\beta\):</p>
+
+$$
+I^* \;=\; \frac{2r}{\pi}\int_0^\infty \frac{dt}{(r^2 + t^2)(1 + t^2)^{\psi\alpha}}.
+$$
+
+<p>Change variable \(u = t^2\) (so \(dt = u^{-1/2}\,du/2\)):</p>
+
+$$
+I^* \;=\; \frac{r}{\pi}\int_0^\infty \frac{u^{-1/2}\,du}{(r^2 + u)(1 + u)^{\psi\alpha}}.
+$$
+
+<p>This is an Euler-type integral of the form \(\int_0^\infty u^{\mu-1}(a + u)^{-\nu}(1+u)^{-\rho}\,du\) with \(\mu = 1/2\), \(\nu = 1\), \(\rho = \psi\alpha\), \(a = r^2\). By Gradshteyn–Ryzhik 3.197.1 (or equivalently, by recognizing this as a special case of Euler's integral representation of \({}_2F_1\)):</p>
+
+$$
+\int_0^\infty \frac{u^{-1/2}\,du}{(r^2 + u)(1+u)^{\psi\alpha}}
+\;=\; \frac{\sqrt{\pi}\,\Gamma(\psi\alpha + \tfrac{1}{2})}{r\,\Gamma(\psi\alpha + 1)}\;{_2F_1}\!\left(\psi\alpha, \tfrac{1}{2};\,\psi\alpha + 1;\,1 - r^2\right).
+$$
+
+<p>Multiplying by the prefactor \(r/\pi\):</p>
+
+$$
+\boxed{\;
+I^* \;=\; \frac{\Gamma(\psi\alpha + \tfrac{1}{2})}{\sqrt{\pi}\,\Gamma(\psi\alpha + 1)}\;{_2F_1}\!\left(\psi\alpha,\,\tfrac{1}{2};\,\psi\alpha + 1;\,1 - \left(\tfrac{\lambda}{\beta}\right)^{\!2}\right).
+\;}
+$$
+
+<h3>Alternative recognition: Beta integral form</h3>
+
+<p>There is an even quicker way to "see" the answer without Gradshteyn–Ryzhik. Return to the \(t\)-integral:</p>
+
+$$
+I^* = \frac{2r}{\pi}\int_0^\infty \frac{dt}{(r^2 + t^2)(1+t^2)^{\psi\alpha}}.
+$$
+
+<p>Partial-fraction the first factor using the identity \(\frac{1}{r^2 + t^2} = \int_0^\infty e^{-s(r^2 + t^2)}\,ds\). This interchanges the integral into a Laplace transform of a known Gamma-type integral in \(t\), which evaluates to Kummer/hypergeometric forms. But more directly: for \(\psi\alpha = n \in \{1, 2, 3, \ldots\}\), the denominator is a polynomial in \(t^2\) and the integral evaluates by partial fractions over the complex poles, giving rational expressions in \(r\). The \({}_2F_1\) is the analytic continuation to non-integer \(\psi\alpha\). Concretely:</p>
+
+<ul>
+  <li>\(\psi\alpha = 1\): \(\displaystyle\frac{2r}{\pi}\int_0^\infty \frac{dt}{(r^2+t^2)(1+t^2)} = \frac{2r}{\pi}\cdot\frac{1}{1-r^2}\left[\frac{\pi}{2r} - \frac{\pi}{2}\right] = \frac{1}{1+r}\). ✓</li>
+  <li>\(\psi\alpha = 2\): Partial fractions give \(\frac{r+2}{2(1+r)^2}\). ✓</li>
+</ul>
+
+<p>The pattern — rational in \(r\) for integer \(\psi\alpha\), with \({}_2F_1\) interpolating — lets one write down the hypergeometric answer by inspection once the integral parameters \((a, b, c, z) = (\psi\alpha, \tfrac{1}{2}, \psi\alpha+1, 1-r^2)\) are identified.</p>
+
+<h2>Step 5. Assembling \(k\)</h2>
+
+<p>From Step 3, \(k = k_c / I^*\). Substituting the expression for \(I^*\):</p>
+
+$$
+\boxed{\;
+k \;=\; \underbrace{k_c\vphantom{\frac{\sqrt{\pi}\,\Gamma(\psi\alpha+1)}{\Gamma(\psi\alpha+\tfrac12)}}}_{\text{(i) contact shape}}\;\cdot\;
+\underbrace{\frac{\sqrt{\pi}\,\Gamma(\psi\alpha+1)}{\Gamma\!\left(\psi\alpha+\tfrac{1}{2}\right)}}_{\text{(ii) profile-width factor}}\;\cdot\;
+\underbrace{\frac{1}{{_2F_1}\!\left(\psi\alpha,\tfrac{1}{2};\,\psi\alpha+1;\,1-(\lambda/\beta)^2\right)}}_{\text{(iii) switching-rate factor}}.
+\;}
+$$
+
+<p>Compared to the Lomax derivation, the only structural difference is <strong>factor (i)</strong>: the Lomax model has \((\alpha_{\!P}-2)/\alpha_{\!P} = 1/V_c\) (which depends on the tail exponent and approaches 0 for heavy tails), while the Gamma model simply has \(k_c = 1/V_c\) (which directly parameterizes the variance as \(1/k_c\)). Factors (ii) and (iii) are identical — they depend only on the biological profile and the switching dynamics, not on the contact-level distribution.</p>
+
+<p>The three factors have transparent interpretations:</p>
+
+<ol>
+  <li><strong>Contact shape \(k_c\).</strong> This is \(1/V_c\), the reciprocal variance of the contact level distribution. Smaller \(k_c\) means more heterogeneous contacts and smaller \(k\) (more overdispersion). As \(k_c \to \infty\), contacts become homogeneous, \(V_c \to 0\), and \(k \to \infty\) (Poisson offspring).</li>
+
+  <li><strong>Profile-width factor</strong> \(\sqrt{\pi}\,\Gamma(\psi\alpha+1)/\Gamma(\psi\alpha+\tfrac{1}{2})\). Depends only on the effective individual-profile shape \(\psi\alpha\). Equals \(1\) when \(\psi = 0\) (spike), and grows like \(\sqrt{\pi\psi\alpha}\) for large \(\psi\alpha\) (by Stirling). Wider individual profiles \(\Rightarrow\) more temporal averaging \(\Rightarrow\) larger \(k\) \(\Rightarrow\) less overdispersion.</li>
+
+  <li><strong>Switching-rate factor</strong> \({_2F_1}(\psi\alpha, \tfrac{1}{2}; \psi\alpha+1; 1-r^2)^{-1}\) where \(r = \lambda/\beta\). Captures the interplay between the infectiousness timescale (\(1/\beta\)) and the contact-switching timescale (\(1/\lambda\)). When switching is fast (\(r \gg 1\)), this factor is large and \(k\) is large (contacts average out). When switching is slow (\(r \ll 1\)), this factor approaches \(\Gamma(\psi\alpha+\tfrac{1}{2})/(\sqrt{\pi}\,\Gamma(\psi\alpha+1))\), cancelling factor (ii) and yielding \(k \to k_c\).</li>
+</ol>
+
+<h2>Sanity checks and limiting cases</h2>
+
+<h3>(a) Spike limit \(\psi \to 0\)</h3>
+
+<p>With \(\psi\alpha \to 0\):</p>
+<ul>
+  <li>Factor (ii): \(\sqrt{\pi}\,\Gamma(1)/\Gamma(\tfrac{1}{2}) = 1\).</li>
+  <li>Factor (iii): \({_2F_1}(0, \tfrac{1}{2}; 1; x) = 1\) (series terminates), so inverse is \(1\).</li>
+</ul>
+<p>Hence \(k \to k_c\). This matches the direct argument: when \(b_i \to \delta_{\tau_i^*}\), \(\tilde{c}_i\) is a single draw from \(\mathrm{Gamma}(k_c, k_c)\), so \(\mathrm{Var}[\tilde{c}_i] = 1/k_c\) and \(k = k_c\). ✓</p>
+
+<h3>(b) Slow-switching limit \(\lambda \to 0\) (any \(\psi\))</h3>
+
+<p>Here \(r \to 0\), so \(1 - r^2 \to 1\). By Gauss's summation theorem, \({_2F_1}(\psi\alpha, \tfrac{1}{2}; \psi\alpha+1; 1) = \sqrt{\pi}\,\Gamma(\psi\alpha+1)/\Gamma(\psi\alpha+\tfrac{1}{2})\), which exactly cancels factor (ii). So \(k \to k_c\) for any \(\psi\). ✓</p>
+
+<p><em>Interpretation.</em> When contact regimes persist much longer than the infectious window (\(1/\lambda \gg 1/\beta\)), each person is stuck at a single contact level for their entire infectious period. The temporal profile shape is irrelevant; all overdispersion comes from the level distribution, giving \(k = k_c\).</p>
+
+<h3>(c) Fast-switching limit \(\lambda \to \infty\) (any \(\psi > 0\))</h3>
+
+<p>Here \(r \to \infty\). The integrand in \(I^*\) is dominated by \(r^{-2}\), giving \(I^* = O(r^{-2}) \to 0\), so \(k \to \infty\). ✓</p>
+
+<p><em>Interpretation.</em> When regimes flip much faster than the infectious window, the contact process time-averages to its mean \(1\) over each person's interval, yielding deterministic \(\tilde{c}_i = 1\) and Poisson offspring.</p>
+
+<h3>(d) Exact result for \(\psi\alpha = 1\)</h3>
+
+<p>When \(\psi\alpha = 1\), the \({}_2F_1\) simplifies. By partial fractions (or direct calculation: \(U, U' \sim \mathrm{Exp}(\beta)\) implies \(|U - U'| \sim \mathrm{Exp}(\beta)\)), we get \(I^* = 1/(1+r)\) and:</p>
+
+$$
+\boxed{k = k_c(1 + r) = k_c\!\left(1 + \frac{\lambda}{\beta}\right) \qquad \text{when } \psi\alpha = 1.}
+$$
+
+<p>Transparent interpretation: \(k/k_c = 1 + \lambda/\beta\) counts (roughly) how many independent contact regimes fit in one generation interval. More regimes \(\Rightarrow\) more averaging \(\Rightarrow\) less overdispersion.</p>
+
+<h3>(e) Exact result for \(\psi\alpha = 2\)</h3>
+
+$$
+I^* = \frac{r+2}{2(r+1)^2}, \qquad k = k_c \cdot \frac{2(1+r)^2}{r+2} \qquad \text{when } \psi\alpha = 2.
+$$
+
+<p>For \(r \gg 1\): \(k/k_c \approx 2r\), growing linearly. For \(r \ll 1\): \(k/k_c \approx 1\). ✓</p>
+
+<h2>Comparison with the Lomax derivation</h2>
+
+<p>The two derivations are structurally identical through Steps 1–4; the only difference is in the "front factor":</p>
+
+<table border="1" cellpadding="6" style="border-collapse: collapse; margin: 1em auto;">
+<thead><tr><th>Model</th><th>Level distribution</th><th>\(V_c\)</th><th>Factor (i) \(= 1/V_c\)</th></tr></thead>
+<tbody>
+<tr><td>Lomax</td><td>\(\mathrm{Lomax}(\alpha_{\!P}, \alpha_{\!P}-1)\)</td><td>\(\alpha_{\!P}/(\alpha_{\!P}-2)\)</td><td>\((\alpha_{\!P}-2)/\alpha_{\!P}\)</td></tr>
+<tr><td>Gamma</td><td>\(\mathrm{Gamma}(k_c, k_c)\)</td><td>\(1/k_c\)</td><td>\(k_c\)</td></tr>
+</tbody>
+</table>
+
+<p>This confirms the <strong>distribution-agnostic structure</strong>: for <em>any</em> mean-1 level distribution with variance \(V_c\),</p>
+
+$$
+k \;=\; \frac{1}{V_c \cdot I^*(\psi\alpha, \lambda/\beta)},
+$$
+
+<p>with \(I^*\) depending only on the biological profile width and the switching rate, not on the distributional form of contact levels.</p>
+
+<h2>Numerical implementation</h2>
+
+<p>For computation, the integral form is most convenient (avoids hypergeometric libraries):</p>
+
+<pre><code>.I_star <- function(psi_alpha, r) {
+    if (psi_alpha < 1e-10) return(1)
+    integrand <- function(omega) {
+        (1 + omega^2)^(-psi_alpha) * (r / (r^2 + omega^2)) / pi
+    }
+    2 * integrate(integrand, 0, Inf, rel.tol = 1e-10)$value
+}
+
+k_theory_gammapoisson <- function(k_c, psi, alpha, lambda, beta) {
+    k_c / .I_star(psi * alpha, lambda / beta)
+}</code></pre>
+
+<p>The integrand is smooth, positive, and decays as \(\omega^{-(2\psi\alpha + 2)}\), so <code>integrate()</code> handles it reliably for all parameter values.</p>
+
+<hr>
+<div class="prompt">Derive k for both the periodic and Gamma-Poisson contact models in parallel, using only the spectral (Wiener–Khinchin) approach throughout, to show exactly where the two derivations align and where they diverge.</div>
+
+<h1>Unified spectral derivation of \(k\): periodic vs. Gamma-Poisson contacts</h1>
+
+<p><strong>Overview.</strong> Both contact models — the deterministic periodic model \(c(t) = 1 - A\cos(\omega_0 t)\) and the stochastic Gamma-Poisson switching model — can be analyzed through a single spectral framework. The derivations are <em>identical</em> through Steps 0–2 (the "shared spine") and diverge only at Step 3, where the power spectral density of the contact process is substituted. This parallel presentation makes transparent why one model produces exponential growth of \(k\) in \(\psi\) while the other does not.</p>
+
+<h2 style="border-bottom: 2px solid #666; padding-bottom: 6px;">SHARED SPINE (Steps 0–2)</h2>
+
+<h2>Step 0. Lloyd-Smith bridge</h2>
+
+<p>Person \(i\), infected at time \(t_i\), has individual reproduction number</p>
+
+$$
+M_i \;=\; R_0 \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau \;=:\; R_0\,\tilde{c}_i,
+$$
+
+<p>where \(b_i(\tau)\) is the normalized individual infectiousness profile (a probability density on \([0,\infty)\)) and \(c_i(t)\) is the contact modulation experienced by person \(i\). Secondary infections \(Z_i \sim \mathrm{Poisson}(M_i)\), and two-moment matching to \(\mathrm{NegBin}(R_0, k)\) gives</p>
+
+$$
+k \;=\; \frac{1}{\mathrm{Var}[\tilde{c}_i]}.
+$$
+
+<p><em>Common to both models.</em></p>
+
+<h2>Step 1. The spectral variance formula</h2>
+
+<p>In both models, from the perspective of computing the variance of \(\tilde{c}_i\) across the population, the contact modulation experienced by each person is effectively a draw from a <strong>wide-sense stationary</strong> process:</p>
+
+<ul>
+  <li><strong>Periodic model:</strong> \(c(t)\) is deterministic, but infection times \(t_i\) are uniformly distributed over one period. From any single person's perspective, they are "dropped" at a random phase into the same periodic signal — equivalent to observing a stationary process with spectral mass concentrated at \(\pm\omega_0\).</li>
+  <li><strong>Gamma-Poisson model:</strong> Each person \(i\) has their own independent stationary Poisson-switching process \(c_i(\cdot)\).</li>
+</ul>
+
+<p>In either case, \(\tilde{c}_i = \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau\) is a <strong>filtered version</strong> of a stationary process, with filter kernel \(b_i\). By the Wiener–Khinchin theorem, the variance of a filtered stationary process is:</p>
+
+$$
+\boxed{\;
+\mathrm{Var}[\tilde{c}_i \mid b_i] \;=\; \int_{-\infty}^{\infty} |\hat{b}_i(\omega)|^2\,S_c(\omega)\,d\omega,
+\;}
+$$
+
+<p>where \(\hat{b}_i(\omega) = \int_0^\infty b_i(\tau)\,e^{i\omega\tau}\,d\tau\) is the Fourier transform of the filter and \(S_c(\omega)\) is the power spectral density of the contact process.</p>
+
+<p><em>Common to both models.</em></p>
+
+<h2>Step 2. The universal filter: \(|\hat{b}_i(\omega)|^2 = (1 + \omega^2/\beta^2)^{-\psi\alpha}\)</h2>
+
+<p>The biological profile is \(b_i(\tau) = f_\epsilon(\tau - l_i)\), where \(f_\epsilon\) is the \(\mathrm{Gamma}(\psi\alpha, \beta)\) density (the "jitter") and \(l_i \sim \mathrm{Gamma}((1-\psi)\alpha, \beta)\) is the latent period. The Fourier transform factorizes:</p>
+
+$$
+\hat{b}_i(\omega) \;=\; e^{i\omega l_i}\,\hat{f}_\epsilon(\omega), \qquad \hat{f}_\epsilon(\omega) = \left(\frac{\beta}{\beta - i\omega}\right)^{\!\psi\alpha}.
+$$
+
+<p>Taking the squared modulus, the phase factor \(e^{i\omega l_i}\) drops out:</p>
+
+$$
+|\hat{b}_i(\omega)|^2 \;=\; |\hat{f}_\epsilon(\omega)|^2 \;=\; \left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}.
+$$
+
+<p>This is the <strong>power transfer function</strong> of the biological filter. It is a low-pass filter with cutoff frequency \(\sim\beta\) and roll-off exponent \(\psi\alpha\). Key features:</p>
+<ul>
+  <li>\(\psi \to 0\) (spike): \(|\hat{b}|^2 \to 1\) for all \(\omega\) — no filtering, all frequencies pass through.</li>
+  <li>\(\psi \to 1\) (smooth): steeper roll-off (\(\sim\omega^{-2\alpha}\) for large \(\omega\)) — aggressive low-pass filtering.</li>
+</ul>
+
+<p>Since \(|\hat{b}_i(\omega)|^2\) does not depend on \(l_i\) or on the realization of \(b_i\), the conditional variance equals the unconditional variance:</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i] \;=\; \int_{-\infty}^{\infty} \left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha} S_c(\omega)\,d\omega.
+$$
+
+<div class="highlight">
+<strong>This is the master formula.</strong> Everything that distinguishes the two contact models enters solely through \(S_c(\omega)\). The biological profile contributes one universal multiplicative filter \((1 + \omega^2/\beta^2)^{-\psi\alpha}\), and the contact model contributes the spectral content that this filter acts upon. All that remains is to specify \(S_c(\omega)\) for each model.
+</div>
+
+<p><em>Common to both models.</em></p>
+
+<h2 style="border-bottom: 2px solid #666; padding-bottom: 6px;">DIVERGENCE POINT (Step 3): The power spectral density</h2>
+
+<p>The two models diverge here — and <em>only</em> here — in the spectral content of contact variability.</p>
+
+<table border="1" cellpadding="10" style="border-collapse: collapse; margin: 1.5em auto; width: 100%;">
+<thead>
+<tr style="background: #2a2d2e;">
+  <th style="width: 15%;">Model</th>
+  <th style="width: 35%;">Contact process</th>
+  <th style="width: 25%;">Autocovariance \(K_c(s)\)</th>
+  <th style="width: 25%;">PSD \(S_c(\omega)\)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Periodic</strong></td>
+  <td>\(c(t) = 1 - A\cos(\omega_0 t)\), shared by all; infection times uniform over one period</td>
+  <td>\(\dfrac{A^2}{2}\cos(\omega_0 s)\)</td>
+  <td>\(\dfrac{A^2}{4}\bigl[\delta(\omega - \omega_0) + \delta(\omega + \omega_0)\bigr]\)</td>
+</tr>
+<tr>
+  <td><strong>Gamma-Poisson</strong></td>
+  <td>Piecewise constant; levels iid \(\mathrm{Gamma}(k_c, k_c)\), switches at Poisson rate \(\lambda\); independent per person</td>
+  <td>\(\dfrac{1}{k_c}\,e^{-\lambda|s|}\)</td>
+  <td>\(\dfrac{1}{k_c}\,\dfrac{\lambda}{\pi(\lambda^2 + \omega^2)}\)</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Periodic: derivation of \(S_c(\omega)\)</h3>
+
+<p>The zero-mean contact fluctuation is \(\eta(t) = -A\cos(\omega_0 t)\). When \(t_i \sim \mathrm{Uniform}(0, 2\pi/\omega_0)\), the "autocovariance" across the population is:</p>
+
+$$
+K_c(s) = \mathrm{E}_{t_i}[\eta(t_i)\,\eta(t_i + s)] = A^2\,\mathrm{E}[\cos(\omega_0 t_i)\cos(\omega_0 t_i + \omega_0 s)] = \frac{A^2}{2}\cos(\omega_0 s).
+$$
+
+<p>The Fourier transform of a cosine is a pair of delta functions: \(S_c(\omega) = \tfrac{A^2}{4}[\delta(\omega - \omega_0) + \delta(\omega + \omega_0)]\). All spectral power is at a single frequency.</p>
+
+<h3>Gamma-Poisson: derivation of \(S_c(\omega)\)</h3>
+
+<p>The process \(c_i(t)\) is piecewise constant with iid \(\mathrm{Gamma}(k_c, k_c)\) levels and Poisson(\(\lambda\)) switches. Its autocovariance is \(K_c(s) = V_c\,e^{-\lambda|s|}\) where \(V_c = 1/k_c\) (since \(P(\text{no switch in } [t, t+|s|]) = e^{-\lambda|s|}\), and if there's a switch the levels are independent). The Fourier transform of \(e^{-\lambda|s|}\) is the Lorentzian \(2\lambda/(\lambda^2 + \omega^2)\), giving the PSD above. Spectral power is spread across all frequencies, with half-power bandwidth \(\lambda\).</p>
+
+<h2 style="border-bottom: 2px solid #666; padding-bottom: 6px;">EVALUATION (Step 4): Substituting into the master formula</h2>
+
+<h3>Periodic model</h3>
+
+<p>Substituting the delta-function PSD into the master formula:</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i] \;=\; \int_{-\infty}^{\infty} \left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}\!\cdot\frac{A^2}{4}\bigl[\delta(\omega - \omega_0) + \delta(\omega + \omega_0)\bigr]\,d\omega.
+$$
+
+<p>The delta functions collapse the integral immediately:</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i] \;=\; \frac{A^2}{4}\left[\left(1 + \frac{\omega_0^2}{\beta^2}\right)^{-\psi\alpha} + \left(1 + \frac{\omega_0^2}{\beta^2}\right)^{-\psi\alpha}\right] \;=\; \frac{A^2}{2}\left(1 + \frac{\omega_0^2}{\beta^2}\right)^{-\psi\alpha}.
+$$
+
+<p>Therefore:</p>
+
+$$
+\boxed{\;k_{\text{periodic}} \;=\; \frac{2}{A^2}\left(1 + \frac{\omega_0^2}{\beta^2}\right)^{\!\psi\alpha}.\;}
+$$
+
+<p><em>The evaluation is trivial — a delta-function PSD means the filter is sampled at exactly one frequency.</em></p>
+
+<h3>Gamma-Poisson model</h3>
+
+<p>Substituting the Lorentzian PSD into the master formula:</p>
+
+$$
+\mathrm{Var}[\tilde{c}_i] \;=\; \frac{1}{k_c}\,\frac{\lambda}{\pi}\int_{-\infty}^{\infty} \frac{(1 + \omega^2/\beta^2)^{-\psi\alpha}}{\lambda^2 + \omega^2}\,d\omega
+\;=\; \frac{1}{k_c}\,\underbrace{\frac{2\lambda}{\pi}\int_0^{\infty} \frac{d\omega}{(\lambda^2 + \omega^2)(1 + \omega^2/\beta^2)^{\psi\alpha}}}_{\displaystyle =:\; I^*}.
+$$
+
+<p>Substitute \(t = \omega/\beta\) and let \(r := \lambda/\beta\):</p>
+
+$$
+I^* \;=\; \frac{2r}{\pi}\int_0^\infty \frac{dt}{(r^2 + t^2)(1 + t^2)^{\psi\alpha}}.
+$$
+
+<p>This is an integral of the form \(\int_0^\infty [(a^2 + t^2)(1+t^2)^n]^{-1}\,dt\) — a standard Euler-type Beta integral with two quadratic factors (GR §3.252 / §3.197 after the substitution \(u = t^2\)). Its solution is a Gauss hypergeometric function:</p>
+
+$$
+\boxed{\;
+I^* \;=\; \frac{\Gamma(\psi\alpha + \tfrac{1}{2})}{\sqrt{\pi}\,\Gamma(\psi\alpha + 1)}\;{_2F_1}\!\left(\psi\alpha,\,\tfrac{1}{2};\,\psi\alpha + 1;\,1 - r^2\right).
+\;}
+$$
+
+<p>Therefore:</p>
+
+$$
+\boxed{\;k_{\text{Gamma-Poisson}} \;=\; \frac{k_c}{I^*(\psi\alpha,\;\lambda/\beta)}.\;}
+$$
+
+<p><em>The evaluation requires a genuine integral — the broadband PSD forces the filter to be tested at all frequencies simultaneously.</em></p>
+
+<h2 style="border-bottom: 2px solid #666; padding-bottom: 6px;">COMPARISON (Step 5): Why the models behave so differently</h2>
+
+<h3>Side-by-side summary</h3>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1.5em auto; width: 100%;">
+<thead>
+<tr style="background: #2a2d2e;">
+  <th></th>
+  <th>Periodic</th>
+  <th>Gamma-Poisson</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>PSD type</strong></td>
+  <td>Point mass (single frequency)</td>
+  <td>Lorentzian (broadband)</td>
+</tr>
+<tr>
+  <td><strong>Var[\(\tilde{c}_i\)]</strong></td>
+  <td>\(\dfrac{A^2}{2}(1 + \omega_0^2/\beta^2)^{-\psi\alpha}\)</td>
+  <td>\(\dfrac{1}{k_c}\cdot I^*(\psi\alpha, \lambda/\beta)\)</td>
+</tr>
+<tr>
+  <td><strong>\(k\)</strong></td>
+  <td>\(\dfrac{2}{A^2}(1 + \omega_0^2/\beta^2)^{\psi\alpha}\)</td>
+  <td>\(\dfrac{k_c}{I^*(\psi\alpha, \lambda/\beta)}\)</td>
+</tr>
+<tr>
+  <td><strong>Growth in \(\psi\)</strong></td>
+  <td>Exponential: \(\sim(1+\omega_0^2/\beta^2)^{\psi\alpha}\)</td>
+  <td>Subexponential (polynomial for moderate \(\psi\alpha\))</td>
+</tr>
+<tr>
+  <td><strong>Spike limit (\(\psi\to 0\))</strong></td>
+  <td>\(k \to 2/A^2\)</td>
+  <td>\(k \to k_c\)</td>
+</tr>
+<tr>
+  <td><strong>Smooth limit (\(\psi\to 1\))</strong></td>
+  <td>\(k \to (2/A^2)(1+\omega_0^2/\beta^2)^{\alpha}\) (large)</td>
+  <td>\(k \to k_c \cdot O(\sqrt{\alpha})\) (moderate)</td>
+</tr>
+</tbody>
+</table>
+
+<h3>The spectral explanation for divergent behavior</h3>
+
+<p>The strikingly different dependence on \(\psi\) has a single spectral cause:</p>
+
+<p><strong>Periodic model.</strong> All spectral power sits at \(\omega_0\). The filter \((1 + \omega^2/\beta^2)^{-\psi\alpha}\) is evaluated at exactly this point. As \(\psi\) increases, the filter's attenuation at \(\omega_0\) grows exponentially (it is literally \((\text{constant})^{-\psi\alpha}\)). Once the filter is strong enough, it annihilates the contact signal completely, and \(k \to \infty\) exponentially fast in \(\psi\).</p>
+
+<p><strong>Gamma-Poisson model.</strong> Spectral power is spread across <em>all</em> frequencies, including \(\omega = 0\). The filter \((1 + \omega^2/\beta^2)^{-\psi\alpha}\) passes \(\omega \approx 0\) perfectly regardless of \(\psi\) (since \((1+0)^{-\psi\alpha} = 1\) always). No matter how aggressively the filter suppresses high-frequency contact fluctuations, the low-frequency components survive. This is why \(k\) grows only polynomially in \(\psi\): the Lorentzian's DC component can never be filtered away.</p>
+
+<div class="highlight">
+<strong>Key insight:</strong> The periodic model can be "averaged away" because its single-frequency signal can be targeted and suppressed by a sufficiently wide biological profile. The stochastic model cannot be averaged away because it contains power at all frequencies — especially at \(\omega = 0\), where no biological profile provides any attenuation. This is why <em>stochastic contact heterogeneity produces fundamentally more robust overdispersion than periodic contact variation</em>.
+</div>
+
+<h3>Quantitative comparison at matched parameters</h3>
+
+<p>To compare the models meaningfully, match them by equating their contact variance: set \(A^2/2 = 1/k_c\), i.e., \(k_c = 2/A^2\). Then both models have the same \(\mathrm{Var}[c^*]\), and in the spike limit (\(\psi = 0\)) both give \(k = k_c = 2/A^2\). The models are "calibrated" to the same baseline overdispersion.</p>
+
+<p>At this matched calibration point, the ratio of \(k\)-values is:</p>
+
+$$
+\frac{k_{\text{periodic}}}{k_{\text{GP}}} \;=\; \frac{(1 + \omega_0^2/\beta^2)^{\psi\alpha}}{1/I^*(\psi\alpha, \lambda/\beta)}.
+$$
+
+<p>For \(\psi > 0\), this ratio is always \(> 1\) (the periodic model gives a larger \(k\), i.e., <em>less</em> overdispersion than the Gamma-Poisson model). The gap widens as \(\psi\alpha\) increases.</p>
+
+<h3>Matching the switching rate to the periodic frequency</h3>
+
+<p>Setting \(\lambda = \omega_0\) (matching timescales):</p>
+
+<ul>
+  <li><strong>Periodic:</strong> \(k = (2/A^2)(1 + \omega_0^2/\beta^2)^{\psi\alpha}\)</li>
+  <li><strong>Gamma-Poisson:</strong> \(k = k_c/I^*(\psi\alpha, \omega_0/\beta)\)</li>
+</ul>
+
+<p>For \(\psi\alpha = 1\) and \(r = \omega_0/\beta\):</p>
+<ul>
+  <li>Periodic: \(k = (2/A^2)(1 + r^2)\)</li>
+  <li>Gamma-Poisson: \(k = k_c(1 + r)\)</li>
+</ul>
+
+<p>With \(k_c = 2/A^2\), the ratio is \((1+r^2)/(1+r) = 1 + r(r-1)/(1+r)\). For \(r > 1\) (fast switching), the periodic model already shows much less overdispersion. For \(r = 2\pi/\beta \approx 8.7\) (diurnal for influenza): \(k_{\text{periodic}}/k_{\text{GP}} \approx 8\) — an order of magnitude difference.</p>
+
+<h2>Conceptual summary</h2>
+
+<p>The full derivation, viewed through the spectral lens, has a clean three-part structure:</p>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1.5em auto;">
+<thead>
+<tr style="background: #2a2d2e;">
+  <th>Component</th>
+  <th>Role</th>
+  <th>Shared?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>\(k = 1/\mathrm{Var}[\tilde{c}_i]\)</td>
+  <td>Lloyd-Smith framework</td>
+  <td>✓ (both models)</td>
+</tr>
+<tr>
+  <td>\(\mathrm{Var}[\tilde{c}_i] = \int |\hat{b}(\omega)|^2 S_c(\omega)\,d\omega\)</td>
+  <td>Wiener–Khinchin theorem</td>
+  <td>✓ (both models)</td>
+</tr>
+<tr>
+  <td>\(|\hat{b}(\omega)|^2 = (1+\omega^2/\beta^2)^{-\psi\alpha}\)</td>
+  <td>Biological low-pass filter</td>
+  <td>✓ (both models)</td>
+</tr>
+<tr>
+  <td>\(S_c(\omega)\)</td>
+  <td>Contact spectral content</td>
+  <td>✗ (divergence point)</td>
+</tr>
+<tr>
+  <td>\(\int |\hat{b}|^2 S_c\,d\omega\)</td>
+  <td>Final evaluation</td>
+  <td>✗ (trivial vs. non-trivial)</td>
+</tr>
+</tbody>
+</table>
+
+<p>The biological filter is the same in both models — it is determined entirely by the generation-interval parameters \((\alpha, \beta, \psi)\). The contact model enters only through \(S_c(\omega)\), which determines (a) how much total variance is available to drive overdispersion, and (b) at which frequencies that variance sits. The exponential-vs-polynomial dichotomy in the \(\psi\)-dependence of \(k\) is a direct consequence of narrowband (periodic) vs. broadband (stochastic) spectral content.</p>
+
+<hr>
+<div class="prompt">Give me a very simple, intuitive description of this derivation. Is c̃_i an expected value? Can we use the Wiener–Khinchin theorem for "expected values of stationary processes" in general? What does the PSD mean in layman's terms? How might we have guessed the master formula from the outset? What's the definition of the PSD, and what do the specific PSDs look like? For the Gamma-Poisson PSD, can we jump directly to it from properties of Poisson processes?</div>
+
+<h1>Intuitive guide to the spectral derivation of \(k\)</h1>
+
+<h2>1. \(\tilde{c}_i\) as an expected value</h2>
+
+<p>Yes — the integral</p>
+
+$$
+\tilde{c}_i \;=\; \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau
+$$
+
+<p>is <em>exactly</em> an expected value: it is \(\mathrm{E}_\tau[c_i(t_i + \tau)]\) where \(\tau\) is drawn from the probability distribution \(b_i(\tau)\). In words: <strong>pick a random moment during person \(i\)'s infectious period (with the "clock" set by their biological profile \(b_i\)), and read off their contact level at that moment.</strong> The quantity \(\tilde{c}_i\) is the average contact level a person experiences, weighted by when they are most infectious.</p>
+
+<p>So the question "how overdispersed is the offspring distribution?" reduces to: "how variable is this weighted-average contact level across people?" If everyone gets roughly the same weighted average (because they're infectious for a long time and the contact process fluctuates fast), then \(\mathrm{Var}[\tilde{c}_i]\) is small and \(k\) is large. If the weighted average fluctuates wildly (because infectiousness is concentrated in a brief spike that catches whatever contact level happens to be active), then \(\mathrm{Var}[\tilde{c}_i]\) is large and \(k\) is small.</p>
+
+<h2>2. Expected values of stationary processes and Wiener–Khinchin</h2>
+
+<p>The Wiener–Khinchin theorem isn't specifically about "expected values of stationary processes" — it's about <strong>the variance of a weighted average of a stationary process</strong>. But that's exactly what we need, because \(\tilde{c}_i\) <em>is</em> a weighted average.</p>
+
+<p>The general principle is: if you take a stationary random signal and average it with some weighting kernel \(w(\tau)\), the variance of the resulting number depends on two things:</p>
+<ol>
+  <li>How "spread out" the kernel is (a wider kernel averages over more of the signal, reducing variance)</li>
+  <li>How "quickly" the signal decorrelates (a rapidly fluctuating signal is easier to average away)</li>
+</ol>
+
+<p>The Wiener–Khinchin theorem lets you compute this by multiplying together the <em>frequency-domain</em> representations of these two ingredients and integrating. This is exactly analogous to how, in signal processing, the output power of a filtered signal equals the input power spectrum times the filter's transfer function.</p>
+
+<p>So yes: <strong>any time you want the variance of a weighted average of a stationary process, you can use this approach.</strong> Our problem is a textbook instance.</p>
+
+<h2>3. What is the power spectral density, in layman's terms?</h2>
+
+<p>The <strong>power spectral density</strong> \(S_c(\omega)\) answers the question: <em>"how much of the signal's variability comes from oscillations at frequency \(\omega\)?"</em></p>
+
+<p>Think of the contact process as a superposition of waves at different frequencies. Some contact patterns oscillate slowly (low frequency — e.g., a person who has high contacts for a week and then low contacts for a week). Others oscillate rapidly (high frequency — e.g., fluctuating hour to hour). The PSD tells you how much "energy" (variance) sits at each frequency.</p>
+
+<p><strong>Formal definition:</strong> For a wide-sense stationary process with autocovariance \(K_c(s)\), the PSD is its Fourier transform:</p>
+
+$$
+S_c(\omega) \;=\; \int_{-\infty}^{\infty} K_c(s)\,e^{-i\omega s}\,ds.
+$$
+
+<p>Conversely, total variance is the integral of the PSD: \(\mathrm{Var}[c(t)] = K_c(0) = \int_{-\infty}^{\infty} S_c(\omega)\,d\omega\). The PSD decomposes total variance by frequency.</p>
+
+<h2>4. How we might have guessed the master formula from the outset</h2>
+
+<p>Here is the "cocktail napkin" reasoning that leads directly to the master formula without going through the double-integral covariance route:</p>
+
+<ol>
+  <li><p><strong>Start with the question:</strong> How much variability in contact levels survives the biological averaging?</p></li>
+
+  <li><p><strong>Filtering analogy:</strong> The biological profile \(b_i\) is a smoothing kernel. Smoothing kills high-frequency fluctuations and preserves low-frequency ones. The output variance after smoothing a stationary signal is a standard result in signal processing: it's the integral of (input power spectrum) × (filter gain squared).</p></li>
+
+  <li><p><strong>Write it down:</strong> Input PSD is \(S_c(\omega)\). Filter gain at frequency \(\omega\) is \(|\hat{b}_i(\omega)|\). Therefore:</p>
+  $$\text{residual variance} = \int |\hat{b}_i(\omega)|^2\,S_c(\omega)\,d\omega.$$
+  </li>
+
+  <li><p><strong>Invert to get \(k\):</strong> \(k = 1/(\text{residual variance})\).</p></li>
+</ol>
+
+<p>That's it. If you know the filtering-of-stationary-processes result, the master formula is essentially a one-liner. The entire derivation is: (a) identify the filter, (b) identify the input spectrum, (c) multiply and integrate.</p>
+
+<h2>5. What the periodic PSD looks like</h2>
+
+<p>For the periodic model \(c(t) = 1 - A\cos(\omega_0 t)\):</p>
+
+$$
+S_c(\omega) = \frac{A^2}{4}\bigl[\delta(\omega - \omega_0) + \delta(\omega + \omega_0)\bigr].
+$$
+
+<p><strong>What this means:</strong> All the signal's variability comes from a single frequency — \(\omega_0\) (one cycle per period). The PSD is two infinitely tall, infinitely thin spikes at \(\pm\omega_0\) and is zero everywhere else. This is the spectral signature of a pure tone (a single cosine wave).</p>
+
+<p><strong>Visually:</strong> If you plotted \(S_c(\omega)\) for the periodic model, you would see nothing except two vertical arrows at \(\pm\omega_0\). Compare this to a broadband signal (white noise, for example), whose PSD is flat across all frequencies.</p>
+
+<p><strong>Consequence for filtering:</strong> When you multiply this by the biological filter \(|\hat{b}(\omega)|^2\), the delta functions "sample" the filter at exactly \(\omega_0\). The integral collapses to a single evaluation: \(\text{residual variance} = (A^2/2) \times |\hat{b}(\omega_0)|^2\). If the filter happens to strongly attenuate \(\omega_0\) (which happens when the biological profile is wide enough to smooth over one period), the variance vanishes and \(k \to \infty\).</p>
+
+<h2>6. Jumping directly to the Gamma-Poisson PSD from Poisson process properties</h2>
+
+<p>Yes — there is a direct route that bypasses computing the autocovariance first.</p>
+
+<p><strong>The key fact:</strong> A Poisson-switching process with rate \(\lambda\) has the <em>same correlation structure as an Ornstein–Uhlenbeck process</em> with relaxation rate \(\lambda\). This is because the only thing that matters for second-order statistics is: "what's the probability that the signal hasn't been refreshed in the last \(s\) seconds?" For a Poisson process, that probability is \(e^{-\lambda s}\) — which gives exponential autocorrelation.</p>
+
+<p><strong>The standard result:</strong> Any process with exponential autocorrelation \(K(s) = \sigma^2 e^{-\lambda|s|}\) has a Lorentzian PSD:</p>
+
+$$
+S(\omega) = \frac{\sigma^2}{\pi}\,\frac{\lambda}{\lambda^2 + \omega^2}.
+$$
+
+<p>This is one of the most well-known spectral pairs (it's the continuous analogue of the AR(1) process, whose PSD is also a Lorentzian). If you know this fact — "Poisson switching gives exponential autocorrelation gives Lorentzian PSD" — you can write down \(S_c(\omega)\) immediately without any calculation.</p>
+
+<p><strong>Intuition for the Lorentzian shape:</strong></p>
+<ul>
+  <li>At low frequencies (\(\omega \ll \lambda\)): \(S_c(\omega) \approx \sigma^2/(\pi\lambda)\) — flat. The process has plenty of power at low frequencies because the levels persist for durations \(\sim 1/\lambda\), creating slow fluctuations.</li>
+  <li>At high frequencies (\(\omega \gg \lambda\)): \(S_c(\omega) \approx \sigma^2\lambda/(\pi\omega^2)\) — falls off as \(1/\omega^2\). The process can't fluctuate faster than its switching rate, so high-frequency power is suppressed.</li>
+  <li>The half-power point is at \(\omega = \lambda\) — the switching rate sets the "bandwidth" of the contact process.</li>
+</ul>
+
+<p><strong>Visually:</strong> The Lorentzian is a smooth bell-shaped curve on a log-frequency axis, centered near \(\omega = 0\), rolling off at \(\omega \sim \lambda\). Compare this to the periodic model's two needle-like spikes. The Lorentzian fills the entire frequency axis; the periodic PSD occupies a single point.</p>
+
+<h2>7. Putting it all together: the intuitive story</h2>
+
+<p>Here is the full derivation in plain language:</p>
+
+<ol>
+  <li><p><strong>Overdispersion comes from variable contact levels.</strong> Each person's effective reproduction number is their average contact level during their infectious period. If this average varies across people, offspring counts are overdispersed.</p></li>
+
+  <li><p><strong>The biological profile is a smoothing filter.</strong> It determines how much of the contact variability each person "sees." A broader profile (larger \(\psi\)) smooths more aggressively, reducing person-to-person variation and making offspring counts more Poisson-like (larger \(k\)).</p></li>
+
+  <li><p><strong>How much variability survives the smoothing depends on where the variability sits in frequency space.</strong> High-frequency variability (rapid fluctuations) is easily averaged away. Low-frequency variability (slow drifts) survives any amount of smoothing.</p></li>
+
+  <li><p><strong>The periodic model puts all variability at one frequency.</strong> If the biological filter happens to attenuate that frequency, all variability is destroyed. This gives the exponential dependence on \(\psi\): the filter's attenuation at a single point grows exponentially with the filter's steepness parameter \(\psi\alpha\).</p></li>
+
+  <li><p><strong>The stochastic model spreads variability across all frequencies, including zero.</strong> The biological filter can suppress the high-frequency portion, but the low-frequency portion (especially the DC-adjacent content) passes through unscathed regardless of \(\psi\). This gives the subexponential (polynomial) dependence on \(\psi\): you can never fully average away a broadband signal.</p></li>
+</ol>
+
+<div class="highlight">
+<strong>One-sentence summary:</strong> Overdispersion in offspring counts equals "contact variability divided by how much the infectious profile smooths it away" — which is computed by multiplying the contact spectrum by the profile's frequency response and integrating, giving a result that depends critically on whether the contact variability is narrowband (periodic → fragile, easily averaged) or broadband (stochastic → robust, always survives).
+</div>
+
+<hr>
+<div class="prompt">The Wikipedia article on Wiener–Khinchin doesn't say anything about variances. Where does the variance formula come from? How does it follow from the theorem?</div>
+
+<h1>How the variance formula follows from Wiener–Khinchin</h1>
+
+<h2>What the Wiener–Khinchin theorem actually says</h2>
+
+<p>The theorem is a statement about Fourier pairs. For a wide-sense stationary process \(X(t)\) with autocovariance \(K(s) = \mathrm{Cov}[X(t), X(t+s)]\), it says:</p>
+
+$$
+S(\omega) = \int_{-\infty}^{\infty} K(s)\,e^{-i\omega s}\,ds
+\qquad\text{and}\qquad
+K(s) = \int_{-\infty}^{\infty} S(\omega)\,e^{i\omega s}\,d\omega.
+$$
+
+<p>That's it. The autocovariance function and the power spectral density are a Fourier transform pair. The theorem doesn't mention filtering or variances of weighted averages.</p>
+
+<h2>The variance formula we use</h2>
+
+<p>What we actually need is: if \(Y = \int h(\tau)\,X(\tau)\,d\tau\) (a weighted average of a stationary process), then</p>
+
+$$
+\mathrm{Var}[Y] = \int_{-\infty}^{\infty} |H(\omega)|^2\,S(\omega)\,d\omega,
+$$
+
+<p>where \(H(\omega) = \int h(\tau)\,e^{i\omega\tau}\,d\tau\) is the Fourier transform of the kernel. This is <strong>not</strong> the Wiener–Khinchin theorem — it's a corollary that follows from it in three steps.</p>
+
+<h2>The three-step derivation</h2>
+
+<h3>Step A. Write the variance as a double integral (definition of covariance)</h3>
+
+<p>By the definition of variance:</p>
+
+$$
+\mathrm{Var}[Y] = \mathrm{Cov}\!\left[\int h(\tau)X(\tau)\,d\tau,\;\int h(\tau')X(\tau')\,d\tau'\right] = \int\!\!\int h(\tau)\,h(\tau')\,K(\tau - \tau')\,d\tau\,d\tau'.
+$$
+
+<p>This step uses only linearity of covariance. Nothing spectral yet.</p>
+
+<h3>Step B. Recognize the double integral as a convolution evaluated at zero</h3>
+
+<p>Define the <strong>autocorrelation of \(h\)</strong>:</p>
+
+$$
+R_h(s) := \int h(\tau)\,h(\tau + s)\,d\tau.
+$$
+
+<p>Then, substituting \(s = \tau - \tau'\) in the double integral:</p>
+
+$$
+\mathrm{Var}[Y] = \int_{-\infty}^{\infty} K(s)\,R_h(s)\,ds.
+$$
+
+<p>The variance is the inner product of the autocovariance \(K\) and the kernel's autocorrelation \(R_h\). Still no spectral theory — this is just a change of variables.</p>
+
+<h3>Step C. Apply Parseval's theorem to move to the frequency domain</h3>
+
+<p><strong>Parseval's theorem</strong> (also called Plancherel's theorem) says that inner products are preserved under the Fourier transform:</p>
+
+$$
+\int_{-\infty}^{\infty} f(s)\,g(s)\,ds = \int_{-\infty}^{\infty} \hat{f}(\omega)\,\hat{g}(\omega)\,d\omega
+$$
+
+<p>(when \(f, g\) are real and symmetric, as ours are). Apply this with \(f = K\) and \(g = R_h\):</p>
+
+<ul>
+  <li>Fourier transform of \(K(s)\) is \(S(\omega)\) — <strong>this is where Wiener–Khinchin enters</strong>.</li>
+  <li>Fourier transform of \(R_h(s)\) is \(|H(\omega)|^2\) — this is the <strong>autocorrelation theorem</strong> (the Fourier transform of a function's autocorrelation is the squared modulus of its Fourier transform).</li>
+</ul>
+
+<p>Therefore:</p>
+
+$$
+\mathrm{Var}[Y] = \int_{-\infty}^{\infty} K(s)\,R_h(s)\,ds = \int_{-\infty}^{\infty} S(\omega)\,|H(\omega)|^2\,d\omega. \qquad\square
+$$
+
+<h2>Summary: the logical chain</h2>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1.5em auto;">
+<thead>
+<tr style="background: #2a2d2e;">
+  <th>Ingredient</th>
+  <th>What it contributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Definition of variance</td>
+  <td>\(\mathrm{Var}[Y] = \iint h(\tau)\,h(\tau')\,K(\tau-\tau')\,d\tau\,d\tau'\)</td>
+</tr>
+<tr>
+  <td>Change of variables</td>
+  <td>\(= \int K(s)\,R_h(s)\,ds\)</td>
+</tr>
+<tr>
+  <td>Wiener–Khinchin theorem</td>
+  <td>\(K(s) \xleftrightarrow{\mathcal{F}} S(\omega)\)</td>
+</tr>
+<tr>
+  <td>Autocorrelation theorem</td>
+  <td>\(R_h(s) \xleftrightarrow{\mathcal{F}} |H(\omega)|^2\)</td>
+</tr>
+<tr>
+  <td>Parseval's theorem</td>
+  <td>\(\int K \cdot R_h\,ds = \int S \cdot |H|^2\,d\omega\)</td>
+</tr>
+</tbody>
+</table>
+
+<p>So the variance formula uses Wiener–Khinchin (to replace \(K\) with \(S\)) but it also needs two other standard Fourier results (autocorrelation theorem and Parseval). It's a three-ingredient recipe, and Wiener–Khinchin is just one of them.</p>
+
+<h2>Why this is often called "the Wiener–Khinchin approach"</h2>
+
+<p>In the signal processing literature, the entire framework — "express everything in terms of power spectra and transfer functions" — is colloquially attributed to Wiener–Khinchin, even though the theorem itself is only the \(K \leftrightarrow S\) correspondence. The variance formula is such an immediate consequence (and so ubiquitous in applications) that it's often presented as part of the same conceptual package. But strictly speaking, if you look up the theorem on Wikipedia, you'll only find the Fourier-pair statement — the filtering result is a corollary that the applied literature takes for granted.</p>
+
+<hr>
+<div class="prompt">Why is Var[Y] = ∫ S_YY(ω) dω?</div>
+
+<h1>Why total variance = integral of the PSD</h1>
+
+<p>This is a one-line consequence of the Wiener–Khinchin theorem. The theorem says the autocovariance function and the PSD are a Fourier pair:</p>
+
+$$
+K_Y(s) \;=\; \int_{-\infty}^{\infty} S_{YY}(\omega)\,e^{i\omega s}\,d\omega.
+$$
+
+<p>Now set \(s = 0\):</p>
+
+$$
+K_Y(0) \;=\; \int_{-\infty}^{\infty} S_{YY}(\omega)\,d\omega.
+$$
+
+<p>But \(K_Y(0) = \mathrm{Cov}[Y(t), Y(t+0)] = \mathrm{Var}[Y]\). So:</p>
+
+$$
+\boxed{\;\mathrm{Var}[Y] \;=\; \int_{-\infty}^{\infty} S_{YY}(\omega)\,d\omega.\;}
+$$
+
+<p>That's it. The PSD decomposes variance by frequency; integrating over all frequencies recovers the total. It's the spectral analogue of "the sum of all the parts equals the whole."</p>
+
+<hr>
+<div class="prompt">Papoulis gives R(τ) = (1/2π) ∫ S(ω) e^{iωτ} dω, and says R(0) = E[|x(t)|²]. There's a 1/2π, and R(0) is the second moment not the variance. How do we reconcile?</div>
+
+<h1>Reconciling Papoulis's conventions with ours</h1>
+
+<p>There are two separate differences. Both are purely notational — no physics changes.</p>
+
+<h2>Issue 1: The \(1/2\pi\) factor (Fourier convention)</h2>
+
+<p>There are two common conventions for the Fourier transform pair:</p>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin: 1.5em auto;">
+<thead>
+<tr style="background: #2a2d2e;">
+  <th>Convention</th>
+  <th>Forward</th>
+  <th>Inverse</th>
+  <th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>A</strong> (asymmetric)</td>
+  <td>\(S_A(\omega) = \displaystyle\int R(\tau)\,e^{-i\omega\tau}\,d\tau\)</td>
+  <td>\(R(\tau) = \dfrac{1}{2\pi}\displaystyle\int S_A(\omega)\,e^{i\omega\tau}\,d\omega\)</td>
+  <td>Papoulis, most EE texts</td>
+</tr>
+<tr>
+  <td><strong>B</strong> (absorbed)</td>
+  <td>\(S_B(\omega) = \dfrac{1}{2\pi}\displaystyle\int R(\tau)\,e^{-i\omega\tau}\,d\tau\)</td>
+  <td>\(R(\tau) = \displaystyle\int S_B(\omega)\,e^{i\omega\tau}\,d\omega\)</td>
+  <td>Our derivation</td>
+</tr>
+</tbody>
+</table>
+
+<p>These are related by \(S_B(\omega) = S_A(\omega)/(2\pi)\). Same information, the \(1/(2\pi)\) just lives in a different place.</p>
+
+<p><strong>Verification with our Lorentzian.</strong> For \(K(s) = \sigma^2 e^{-\lambda|s|}\):</p>
+<ul>
+  <li>Convention A: \(S_A(\omega) = \displaystyle\int \sigma^2 e^{-\lambda|\tau|} e^{-i\omega\tau}\,d\tau = \sigma^2 \cdot \dfrac{2\lambda}{\lambda^2 + \omega^2}\)</li>
+  <li>Convention B: \(S_B(\omega) = S_A/(2\pi) = \sigma^2 \cdot \dfrac{\lambda}{\pi(\lambda^2 + \omega^2)}\) ← what we wrote ✓</li>
+</ul>
+
+<p>The total-variance formula in each convention:</p>
+<ul>
+  <li>Papoulis: \(\mathrm{Var} = \dfrac{1}{2\pi}\displaystyle\int S_A(\omega)\,d\omega\)</li>
+  <li>Ours: \(\mathrm{Var} = \displaystyle\int S_B(\omega)\,d\omega\)</li>
+</ul>
+
+<p>Same number. The filtering formula similarly:</p>
+<ul>
+  <li>Papoulis: \(\mathrm{Var}[Y] = \dfrac{1}{2\pi}\displaystyle\int |H(\omega)|^2\,S_A(\omega)\,d\omega\)</li>
+  <li>Ours: \(\mathrm{Var}[Y] = \displaystyle\int |H(\omega)|^2\,S_B(\omega)\,d\omega\)</li>
+</ul>
+
+<h2>Issue 2: \(R(0) = E[|x|^2]\) vs. \(\mathrm{Var}[x]\)</h2>
+
+<p>Papoulis defines the <strong>autocorrelation</strong>:</p>
+
+$$
+R(\tau) = E[x(t)\,x(t+\tau)].
+$$
+
+<p>We use the <strong>autocovariance</strong>:</p>
+
+$$
+K(\tau) = \mathrm{Cov}[x(t),\,x(t+\tau)] = R(\tau) - \mu^2,
+$$
+
+<p>where \(\mu = E[x(t)]\). Evaluating at zero:</p>
+<ul>
+  <li>\(R(0) = E[x^2] = \mathrm{Var}[x] + \mu^2\) — the <strong>second moment</strong> ("total power")</li>
+  <li>\(K(0) = \mathrm{Var}[x]\) — the <strong>variance</strong> ("AC power," fluctuations only)</li>
+</ul>
+
+<p>When \(\mu \neq 0\), the Papoulis PSD contains a delta function at zero representing the DC power:</p>
+
+$$
+S_A(\omega) = S_A^{\text{centered}}(\omega) \;+\; 2\pi\mu^2\,\delta(\omega).
+$$
+
+<p>Integrating: \(\tfrac{1}{2\pi}\int S_A\,d\omega = \mathrm{Var}[x] + \mu^2 = E[x^2] = R(0)\). ✓</p>
+
+<p>If you want just the variance, either:</p>
+<ol>
+  <li>Subtract \(\mu^2\) at the end: \(\mathrm{Var} = R(0) - \mu^2\), or</li>
+  <li>Work with the centered process \(x(t) - \mu\) from the start, so that \(R = K\) and there's no delta at zero.</li>
+</ol>
+
+<h2>What we do in our derivation</h2>
+
+<p>Our contact process has \(E[c(t)] = 1 \neq 0\). We work with the <strong>autocovariance</strong> \(K_c(\tau) = \mathrm{Cov}[c(t), c(t+\tau)]\), which is equivalent to working with the centered process \(c(t) - 1\). This means:</p>
+
+<ul>
+  <li>Our \(S_c(\omega)\) is the PSD of the fluctuations \(c(t) - 1\). No delta function at zero.</li>
+  <li>Our formula \(\mathrm{Var}[\tilde{c}_i] = \int |H(\omega)|^2 S_c(\omega)\,d\omega\) gives the variance directly — no need to subtract \(\mu^2\).</li>
+  <li>We use convention B (the \(1/2\pi\) absorbed into \(S\)).</li>
+</ul>
+
+<p><strong>To translate between our notation and Papoulis's:</strong></p>
+
+$$
+\underbrace{\int |H(\omega)|^2\,S_B(\omega)\,d\omega}_{\text{our formula}}
+\;=\;
+\underbrace{\frac{1}{2\pi}\int |H(\omega)|^2\,S_A^{\text{centered}}(\omega)\,d\omega}_{\text{Papoulis, using centered PSD}}.
+$$
+
+<p>Same quantity. The physics — "multiply the filter's frequency response by the spectral density of the input fluctuations and integrate" — is invariant to these notational choices.</p>
+
 <script>
   renderMathInElement(document.body, {
     delimiters: [

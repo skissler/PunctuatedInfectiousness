@@ -21,15 +21,7 @@ The punctuated Gamma model has four epidemiological parameters: the basic  repro
 	\label{eq:euler_lotka}
 \end{equation}
 %
-provides one constraint among them, leaving three free parameters. We  choose to work with $(R_0, \bar{g}, \alpha)$ as the free parameters,  since each has a direct epidemiological interpretation:
-%
-\begin{itemize}
-    \item $R_0$: the basic reproduction number, measuring transmissibility;
-    \item $\bar{g}$: the mean generation time;
-    \item $\alpha$: the shape parameter of the generation interval  distribution, where larger $\alpha$ corresponds to a more concentrated  (less variable) generation interval distribution for fixed $\bar{g}$.
-\end{itemize}
-%
-Given $(R_0, \bar{g}, \alpha)$, the remaining parameters are fully  determined. The rate parameter $\beta$ follows immediately from the  definition of the mean:
+provides one constraint among them, leaving three free parameters. We  choose to work with $(R_0, \bar{g}, \alpha)$ as the free parameters,  since each has a direct epidemiological interpretation. The rate parameter $\beta$ follows immediately from the  definition of the mean generation interval:
 %
 \begin{equation}
     \beta = \frac{\alpha}{\bar{g}},
@@ -659,240 +651,389 @@ The first two links are model-free: the only assumption is that $g$ is non-degen
 % %
 % Together, these results confirm that punctuated infectiousness  ($\psi < 1$) has the greatest impact on epidemic timing variability  when $R_0$ is large and the generation interval is dispersed ---  precisely the regime in which the individual infectiousness profile  has the most temporal structure for offspring timing to inherit.
 
-\clearpage
+% \clearpage
 
-\subsubsection*{Overdispersion arising from periodic contact patterns}
+% \subsubsection*{Overdispersion arising from periodic contact patterns}
 
-Here, we derive the Negative Binomial overdispersion parameter $k$ \citep{lloyd-smith_superspreading_2005} of the secondary infection distribution under the periodic contact model (Eq.~\ref{eq:periodic_c}), which we restate here in a stationary form with a common random phase $\Phi \sim \text{Uniform}[0, 2\pi)$:
-%
+% Here, we derive the Negative Binomial overdispersion parameter $k$ \citep{lloyd-smith_superspreading_2005} of the secondary infection distribution under the periodic contact model (Eq.~\ref{eq:periodic_c}), which we restate here in a stationary form with a common random phase $\Phi \sim \text{Uniform}[0, 2\pi)$:
+% %
+% \begin{equation}
+% 	c_i(t) = 1 - A \cos(\omega t + \Phi), \qquad A \in [0,1].
+% 	\label{eq:periodic_c_supp}
+% \end{equation}
+% %
+% Randomizing $\Phi$ makes $c_i(\cdot)$ stationary and is equivalent to assuming that the infection-time phase $t_i \bmod 2\pi/\omega$ is uniform across individuals, which holds in good approximation during sustained exponential growth.
+
+% \paragraph{Lloyd--Smith bridge.} The number of secondary infections from person $i$ is $Z_i \sim \text{Poisson}(M_i)$ with $M_i = \int_0^\infty a_i(t_i, \tau)\,d\tau = \nu_i\,\tilde{c}_i$, where
+% %
+% \begin{equation}
+% 	\tilde{c}_i := \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau.
+% 	\label{eq:tilde_c_def}
+% \end{equation}
+% %
+% Matching the mean and variance of the mixed-Poisson offspring law to those of $\text{NegBin}(R_0, k)$ in the Lloyd-Smith parameterization gives $k = R_0^2/\text{Var}[M_i]$. With $\nu_i \equiv R_0$ held fixed (isolating the contribution of punctuation and contact variability), this reduces to
+% %
+% \begin{equation}
+% 	k = \frac{1}{\text{Var}[\tilde{c}_i]}.
+% 	\label{eq:k_bridge}
+% \end{equation}
+% %
+% The rest of the derivation computes $\text{Var}[\tilde{c}_i]$.
+
+% \paragraph{Mean.} Conditional on $b_i$, stationarity gives $E[c_i(t)] = 1$, hence
+% %
+% \begin{equation}
+% 	E[\tilde{c}_i \mid b_i] = \int_0^\infty b_i(\tau)\,d\tau = 1,
+% \end{equation}
+% %
+% using that $b_i$ is a probability density. Therefore $E[\tilde{c}_i] = 1$ (and $E[M_i] = R_0$), and by the law of total variance $\text{Var}[\tilde{c}_i] = E\bigl[\text{Var}[\tilde{c}_i \mid b_i]\bigr]$.
+
+% \paragraph{Autocovariance.} Averaging over the uniform random phase $\Phi$,
+% %
+% \begin{equation}
+% 	\text{Cov}[c_i(t), c_i(t+s)] = A^2\,E_\Phi[\cos(\omega t + \Phi)\cos(\omega(t+s) + \Phi)] = \frac{A^2}{2}\cos(\omega s),
+% 	\label{eq:periodic_cov}
+% \end{equation}
+% %
+% so $\text{Var}[c_i(t)] = A^2/2$ and the spectrum of the contact process is concentrated at the single frequency $\omega$.
+
+% \paragraph{Conditional variance of $\tilde{c}_i$.} Substituting Eq.~\ref{eq:periodic_cov} into the double-integral form of the conditional variance,
+% %
+% \begin{align}
+% 	\text{Var}[\tilde{c}_i \mid b_i]
+% 	&= \int_0^\infty\!\!\int_0^\infty b_i(\tau)\,b_i(\tau')\,\frac{A^2}{2}\cos\bigl(\omega(\tau - \tau')\bigr)\,d\tau\,d\tau' \notag\\
+% 	&= \frac{A^2}{2}\,\text{Re}\!\left[\left(\int_0^\infty b_i(\tau)\,e^{i\omega\tau}\,d\tau\right)\!\left(\int_0^\infty b_i(\tau')\,e^{-i\omega\tau'}\,d\tau'\right)\right] \notag\\
+% 	&= \frac{A^2}{2}\,\bigl|\hat{b}_i(\omega)\bigr|^2,
+% 	\label{eq:var_cond}
+% \end{align}
+% %
+% where $\hat{b}_i(\omega) = \int_0^\infty b_i(\tau)\,e^{-i\omega\tau}\,d\tau$ is the Fourier transform (equivalently, the characteristic function at $\omega$) of the biological profile.
+
+% \paragraph{Evaluating $|\hat{b}_i(\omega)|^2$.} For the time-shifted Gamma model, $b_i(\tau) = f_\epsilon(\tau - l_i)$ with $f_\epsilon$ a $\text{Gamma}(\psi\alpha, \beta)$ density and random latent period $l_i$. A time shift multiplies the Fourier transform by a unit-modulus phase, so
+% %
+% \begin{equation}
+% 	\hat{b}_i(\omega) = e^{-i\omega l_i}\,\hat{f}_\epsilon(\omega), \qquad \bigl|\hat{b}_i(\omega)\bigr|^2 = \bigl|\hat{f}_\epsilon(\omega)\bigr|^2,
+% \end{equation}
+% %
+% with the $l_i$-dependence dropping out entirely. The characteristic function of $\text{Gamma}(\psi\alpha, \beta)$ is $\hat{f}_\epsilon(\omega) = (1 - i\omega/\beta)^{-\psi\alpha}$, giving
+% %
+% \begin{equation}
+% 	\bigl|\hat{f}_\epsilon(\omega)\bigr|^2 = \left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}.
+% 	\label{eq:cf_gamma}
+% \end{equation}
+% %
+% Because Eq.~\ref{eq:cf_gamma} is deterministic, the outer expectation over $b_i$ in the law of total variance is trivial:
+% %
+% \begin{equation}
+% 	\text{Var}[\tilde{c}_i] = \frac{A^2}{2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}.
+% 	\label{eq:var_tildec}
+% \end{equation}
+
+% \paragraph{Closed-form expression for $k$.} Combining Eqs.~\ref{eq:k_bridge} and~\ref{eq:var_tildec},
+% %
+% \begin{equation}
+% 	\boxed{\;
+% 	k = \frac{2}{A^2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{\psi\alpha}.
+% 	\;}
+% 	\label{eq:k_periodic}
+% \end{equation}
+% %
+% The expression has two factors with transparent interpretations. The prefactor $2/A^2$ is the reciprocal variance of a uniformly-phased sinusoid with amplitude $A$, and it sets the overall scale: larger contact-oscillation amplitude $\Rightarrow$ smaller $k$ $\Rightarrow$ more overdispersion. The bracketed factor $(1 + \omega^2/\beta^2)^{\psi\alpha}$ is the reciprocal of the squared characteristic function of $b_i$ at the contact frequency $\omega$, and it quantifies how much the biological profile's temporal window fails to average out the contact oscillation. This factor increases with $\psi$ for any $\omega > 0$, so narrower profiles always produce more overdispersion in the presence of any periodic contact variation.
+
+% \paragraph{Limiting cases.}
+% \begin{itemize}
+% 	\item \textbf{Spike profile, $\psi \to 0$:} the bracketed factor becomes $1$, leaving $k = 2/A^2$. A spike profile samples $c_i$ at a single instant, so the conditional variance of $\tilde{c}_i$ equals $\text{Var}[c_i] = A^2/2$ regardless of $\omega$ or $\beta$.
+% 	\item \textbf{Smooth profile, $\psi \to 1$:} $k = (2/A^2)(1 + \omega^2/\beta^2)^{\alpha}$, strictly larger than the spike value whenever $\omega > 0$.
+% 	\item \textbf{Slow oscillation, $\omega/\beta \to 0$:} the contact process looks locally constant over the infection window, so $\tilde{c}_i \approx c_i(t_i)$ for any $\psi$, and $k \to 2/A^2$ independent of $\psi$.
+% 	\item \textbf{Fast oscillation, $\omega/\beta \to \infty$:} the contact process averages out over any infection window with $\psi > 0$, driving $\text{Var}[\tilde{c}_i] \to 0$ and $k \to \infty$ (Poisson).
+% 	\item \textbf{No contact variation, $A \to 0$:} $k \to \infty$ trivially.
+% \end{itemize}
+% %
+% These limits are consistent with the intuition that overdispersion arises from incomplete averaging of contact variation by the biological profile window, and that the degree of averaging is controlled by both $\psi\alpha$ (profile width) and $\omega/\beta$ (ratio of profile timescale to contact timescale).
+
+% \subsubsection{Renewal equation model}
+
+% Early work by Hudson, and later by Kermack and McKendrick \citep{kermack_contribution_1927}, modeled the transmission of a permanently immunizing infection using an integral equation. In modern notation \citep{breda_formulation_2012}, the force of infection is
+% %
+% \begin{equation} 
+% F(t) = \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau 
+% \label{eq:foi}
+% \end{equation}
+% %
+% where $F(t)$ is the force of infection at time $t$, $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the infectiousness profile describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is the product of the force of infection and the susceptible density (\ie, $-\frac{dS}{dt} = F(t) S(t)$); thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds. 
+
+% \clearpage
+
+% \subsubsection*{Bias in empirical growth rate estimation}
+
+% The early-epidemic growth rate is estimated by fitting a Poisson generalised linear model (GLM) with log link and identity offset to daily incidence counts within a cumulative-case window $[Z_{\min}, Z_{\max}]$, where $Z_{\min} = 100$ and $Z_{\max} = 500$ in our simulations. The fitted slope estimates the exponential growth rate $\hat{r}$, which we compare to the theoretical Euler--Lotka rate $r = \beta(R_0^{1/\alpha} - 1)$. Three sources of downward bias in $\hat{r}$ relative to $r$ are present; we describe each in turn.
+
+% \paragraph{Susceptible depletion (dominant source).} The Euler--Lotka growth rate $r$ assumes an effectively infinite susceptible pool. In a finite population of size $N$, the effective reproduction number at cumulative incidence $Z$ is $R_{\text{eff}}(Z) = R_0 (1 - Z/N)$, and the corresponding instantaneous growth rate is
+% %
+% \begin{equation}
+% 	r_{\text{eff}}(Z) = \beta \Bigl[\bigl(R_0 (1 - Z/N)\bigr)^{1/\alpha} - 1\Bigr].
+% \end{equation}
+% %
+% The Poisson GLM fits an average slope over the estimation window. Evaluating at the midpoint $Z_{\text{mid}} = (Z_{\min} + Z_{\max})/2$ and expanding for small $f = Z_{\text{mid}} / N$ gives the approximate relative bias:
+% %
+% \begin{equation}
+% 	\frac{\hat{r} - r}{r}
+% 	\approx -\frac{R_0^{1/\alpha} \cdot f}{\alpha \bigl(R_0^{1/\alpha} - 1\bigr)}.
+% 	\label{eq:saturation_bias}
+% \end{equation}
+% %
+% With $Z_{\min} = 100$, $Z_{\max} = 500$, and $N = 10{,}000$, the midpoint fraction is $f = 0.03$. Evaluating Eq.~\eqref{eq:saturation_bias} for each pathogen:
+
+% \begin{center}
+% \begin{tabular}{lccc}
+% 	\hline\hline
+% 	Pathogen & $\alpha$ & $R_0^{1/\alpha}$ & Predicted bias \\
+% 	\hline
+% 	Influenza & 2.32 & 1.35 & $-5.0\%$ \\
+% 	Omicron   & 2.39 & 2.12 & $-2.4\%$ \\
+% 	Measles   & 11.36 & 1.24 & $-1.3\%$ \\
+% 	\hline\hline
+% \end{tabular}
+% \end{center}
+
+% \noindent These predictions agree well with empirical simulation results (influenza: $-5.7\%$; omicron: $-3.5\%$; measles: $-0.1\%$). The quantity $R_0^{1/\alpha}/[\alpha(R_0^{1/\alpha} - 1)]$ in Eq.~\eqref{eq:saturation_bias} is the elasticity of $r$ with respect to $R_0$: it measures how sensitively the growth rate responds to changes in the effective reproduction number. This elasticity is largest when $R_0$ is close to the epidemic threshold ($R_0^{1/\alpha} \to 1$), because the growth rate $r = \beta(R_0^{1/\alpha} - 1)$ vanishes at $R_0 = 1$ and is steeply increasing just above it. Influenza ($R_0 = 2$) has the highest elasticity (1.67), so even a 3\% depletion of susceptibles produces a $-5\%$ reduction in $r$. Measles ($R_0 = 12$) has the lowest elasticity (0.45), both because it is far from threshold and because its large $\alpha$ ensures that $R_0^{1/\alpha}$ is close to 1 despite the high $R_0$. The bias can be reduced by using a narrower window (smaller $Z_{\max}$) or a larger population $N$, at the cost of increased estimator variance or computational expense.
+
+% \paragraph{Boundary-day truncation (corrected).} Because the estimation window is defined by cumulative case counts rather than calendar time, the first and last calendar days of each simulation's window are partial: the first day contains only infections occurring after the cumulative count crosses $Z_{\min}$, and the last day contains only infections before the count reaches $Z_{\max}$. Daily incidence counts on these boundary days are therefore systematically lower than the true daily rate. In a Poisson GLM, the high-count final day receives disproportionate weight (the Poisson likelihood weights observations inversely by their variance, which equals the mean), so even modest truncation of the last day's count pulls the fitted slope downward. In an unweighted log-linear fit, the effect is smaller but still present. We verified this bias empirically using a non-homogeneous Poisson process (NHPP) simulator with known rate $\lambda(t) = \lambda_0 e^{rt}$: with boundary days included, the Poisson GLM underestimated $r$ by approximately $34\%$; dropping the first and last calendar days from the fit eliminated the bias (residual $< 0.5\%$). All growth rate estimates reported in this paper use the corrected estimator with boundary days removed.
+
+% \paragraph{Generational cohort structure (affects spike profiles).} For highly punctuated profiles ($\psi \to 0$), secondary infections arrive in discrete cohorts separated by approximately one mean generation time $\bar{g} = \alpha/\beta$. If the estimation window spans fewer than approximately two generation times in calendar time, the daily incidence series may capture the rise and fall of a single generational cohort rather than the average exponential trend. This produces noisy slope estimates and occasional negative values. The effect is most pronounced for measles at $\psi = 0$: the generation time is $\bar{g} = 12.2$ days while the $[100, 500]$ window spans only $\approx \log(5)/r \approx 7$ days, less than one full generation. For influenza ($\bar{g} = 3.2$ days, window $\approx 6.4$ days) and omicron ($\bar{g} = 7.1$ days, window $\approx 4.3$ days), the window covers at least one full generation and the cohort effect is attenuated. This source of bias is inherent to the spike model and diminishes as $\psi$ increases: for $\psi = 1$, offspring times are independent and daily incidence follows a smooth exponential trend even over short windows.
+
+% \paragraph{Summary.} The dominant source of downward bias is susceptible depletion, which is quantitatively predicted by Eq.~\eqref{eq:saturation_bias} and is independent of the punctuation parameter $\psi$. After correcting for boundary-day truncation, the residual bias is consistent with the depletion prediction for all three pathogens. The theoretical growth rate $r$ from the Euler--Lotka equation remains the correct characterisation of the early epidemic; the empirical estimates are biased downward because they necessarily operate in a regime where finite-population effects have begun to reduce the effective reproduction number below $R_0$.
+
+% \clearpage
+
+% \subsubsection*{Variance of the growth rate estimator and dependence on $\psi$}
+
+% In simulations, the standard deviation of the empirical growth rate $\hat{r}$ increases monotonically as $\psi \to 0$ (Table~\ref{tab:growthrate_sd}). Here we provide an analytic explanation for this pattern, based on the overdispersion of daily incidence counts induced by offspring synchronisation.
+
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{llccc}
+% 	\hline\hline
+% 	Pathogen & $\psi$ & $n$ (established) & Mean $\hat{r}$ & SD $\hat{r}$ \\
+% 	\hline
+% 	Influenza & 0   & 792  & 0.195 & 0.066 \\
+% 	          & 0.5 & 788  & 0.197 & 0.058 \\
+% 	          & 1   & 803  & 0.197 & 0.052 \\[4pt]
+% 	Omicron   & 0   & 997  & 0.281 & 0.127 \\
+% 	          & 0.5 & 997  & 0.275 & 0.086 \\
+% 	          & 1   & 999  & 0.279 & 0.079 \\[4pt]
+% 	Measles   & 0   & 1000 & 0.227 & 0.128 \\
+% 	          & 0.5 & 1000 & 0.200 & 0.054 \\
+% 	          & 1   & 1000 & 0.191 & 0.043 \\
+% 	\hline\hline
+% \end{tabular}
+% \caption{Mean and standard deviation of the empirical growth rate estimator $\hat{r}$ across established epidemics, by pathogen and punctuation parameter $\psi$. Based on 1000 simulations per pathogen with $N = 10{,}000$, estimation window $[Z_{\min}, Z_{\max}] = [100, 500]$.}
+% \label{tab:growthrate_sd}
+% \end{table}
+
+% \paragraph{Per-infector index of dispersion.} Consider a single infector who produces $\chi \sim \text{Poisson}(R_0)$ offspring. Let $q_t = P(\tau \in [t, t+1))$ denote the probability that a generation interval $\tau \sim g(\tau)$ falls in the calendar day $[t, t+1)$, and let $N_i(t)$ denote the number of this infector's offspring whose infection times fall on day~$t$.
+
+% In the \textbf{smooth model} ($\psi = 1$), offspring arrive at independent times $\tau_j \sim g(\tau)$. Conditional on $\chi$, the count on day $t$ is $\text{Binomial}(\chi, q_t)$. Marginalising over $\chi \sim \text{Poisson}(R_0)$ gives $N_i(t) \sim \text{Poisson}(R_0 q_t)$, with index of dispersion
+% %
+% \begin{equation}
+% 	\text{ID}_{\text{smooth}} = \frac{\text{Var}[N_i(t)]}{E[N_i(t)]} = 1.
+% \end{equation}
+
+% In the \textbf{spike model} ($\psi = 0$), all $\chi$ offspring land at the same instant $\tau^* \sim g(\tau)$. The count on day $t$ is either $0$ (with probability $1 - q_t$) or $\chi$ (with probability $q_t$). Computing the first two moments:
+% %
+% \begin{align}
+% 	E[N_i(t)] &= R_0 \, q_t, \\[4pt]
+% 	E[N_i(t)^2] &= E[\chi^2] \cdot q_t = (R_0 + R_0^2) \, q_t,
+% \end{align}
+% %
+% so $\text{Var}[N_i(t)] = R_0 \, q_t + R_0^2 \, q_t(1 - q_t)$ and
+% %
+% \begin{equation}
+% 	\text{ID}_{\text{spike}} = 1 + R_0(1 - q_t).
+% 	\label{eq:id_spike}
+% \end{equation}
+% %
+% Since $q_t \ll 1$ for any single day (the generation interval spans multiple days), $\text{ID}_{\text{spike}} \approx 1 + R_0$.
+
+% \paragraph{General $\psi$.} For intermediate $\psi$, the offspring from infector $i$ are born at times $\tau_j = l_i + \epsilon_j$, where $l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)$ is the shared latent period and $\epsilon_j \sim \text{Gamma}(\psi\alpha, \beta)$ is independent jitter. Conditional on $l_i$, the $\epsilon_j$ are independent, so the count on day $t$ given $l_i$ is $\text{Poisson}(R_0 \cdot p(l_i, t))$ where $p(l, t) = P(\epsilon \in [t - l, t - l + 1))$. Marginalising over $l_i$ using the law of total variance:
+% %
+% \begin{equation}
+% 	\text{Var}[N_i(t)] = R_0 \, q_t + R_0^2 \, \text{Var}_{l_i}\bigl[p(l_i, t)\bigr],
+% \end{equation}
+% %
+% giving index of dispersion
+% %
+% \begin{equation}_{}
+% 	\text{ID}(\psi) = 1 + R_0 \cdot \frac{\text{Var}_{l_i}[p(l_i, t)]}{q_t}.
+% 	\label{eq:id_psi}
+% \end{equation}
+% %
+% The quantity $\text{Var}_{l_i}[p(l_i, t)] / q_t$ interpolates monotonically from $1 - q_t \approx 1$ at $\psi = 0$ (where $p(l_i, t) \approx \mathbf{1}(l_i \in [t, t+1))$ is nearly Bernoulli) to $0$ at $\psi = 1$ (where $l_i \approx 0$ and $p$ is deterministic). Thus the per-infector index of dispersion decreases monotonically from $1 + R_0$ to $1$ as $\psi$ increases from $0$ to $1$.
+
+% \paragraph{Aggregation.} The total daily incidence on day $t$ is $\Delta Z(t) = \sum_i N_i(t)$, summing over all previously infected individuals. Conditional on the infection times $\{t_i\}$, the contributions $N_i$ from distinct infectors are independent (each infector's offspring process is independent of every other's). Therefore, by the additivity of variances:
+% %
+% \begin{equation}
+% 	\text{Var}[\Delta Z(t) \mid \{t_i\}] = \sum_i \text{Var}[N_i(t)] = \sum_i \bigl[R_0 \, q_{t-t_i} + R_0^2 \, \text{Var}_l[p(l, t-t_i)]\bigr].
+% \end{equation}
+% %
+% Since $E[\Delta Z(t) \mid \{t_i\}] = \sum_i R_0 \, q_{t-t_i}$, the aggregate index of dispersion is
+% %
+% \begin{equation}
+% 	\phi(\psi) = 1 + R_0 \cdot \frac{\sum_i \text{Var}_l[p(l, t - t_i)]}{\sum_i q_{t-t_i}},
+% \end{equation}
+% %
+% a weighted average of the per-infector overdispersion across all contributing infectors. The overdispersion does not wash out with aggregation because each infector's contribution is independently overdispersed by the same mechanism. The total daily incidence is therefore quasi-Poisson with dispersion parameter $\phi(\psi)$ that interpolates from $\phi(0) \approx 1 + R_0$ to $\phi(1) = 1$.
+
+% \paragraph{Implication for growth rate estimation.} Because the growth rate $\hat{r}$ is estimated by regressing log daily incidence on time, the variance of daily incidence directly inflates the variance of $\hat{r}$. Since the aggregate dispersion parameter $\phi(\psi)$ increases monotonically from $1$ at $\psi = 1$ to approximately $1 + R_0$ at $\psi = 0$, the growth rate estimator is correspondingly more variable for more punctuated profiles. This prediction is confirmed by the simulation results in Table~\ref{tab:growthrate_sd}: for all three pathogens, $\text{SD}(\hat{r})$ increases as $\psi$ decreases from $1$ to $0$, with the effect most pronounced for measles ($R_0 = 12$), where the dispersion ratio $\phi(0)/\phi(1) \approx 1 + R_0 = 13$ is largest.
+
+\clearpage 
+
+\subsubsection*{Calculating overdispersion}
+
+{\bf \boldmath Deriving an expression for the overdispersion parameter $k$.} We begin with the standard assumption that the number of offspring $Z_i$ produced by an index case $i$ is Poisson-distributed: 
 \begin{equation}
-	c_i(t) = 1 - A \cos(\omega t + \Phi), \qquad A \in [0,1].
-	\label{eq:periodic_c_supp}
+	Z_i \sim \text{Poisson}(\nu_i)
 \end{equation}
-%
-Randomizing $\Phi$ makes $c_i(\cdot)$ stationary and is equivalent to assuming that the infection-time phase $t_i \bmod 2\pi/\omega$ is uniform across individuals, which holds in good approximation during sustained exponential growth.
-
-\paragraph{Lloyd--Smith bridge.} The number of secondary infections from person $i$ is $Z_i \sim \text{Poisson}(M_i)$ with $M_i = \int_0^\infty a_i(t_i, \tau)\,d\tau = \nu_i\,\tilde{c}_i$, where
-%
+When $\nu_i$ is uniform across people ($\nu_i \equiv R_0$), then the $Z_i$ are truly Poisson-distributed. Overdispersion occurs when $\nu_i$ varies across individuals. To capture this overdispersion, the standard approach is to describe $Z_i$ using a Negative Binomial distribution: 
 \begin{equation}
-	\tilde{c}_i := \int_0^\infty b_i(\tau)\,c_i(t_i + \tau)\,d\tau.
-	\label{eq:tilde_c_def}
+	Z_i \sim \text{NegBin}(R_0, k)
 \end{equation}
-%
-Matching the mean and variance of the mixed-Poisson offspring law to those of $\text{NegBin}(R_0, k)$ in the Lloyd-Smith parameterization gives $k = R_0^2/\text{Var}[M_i]$. With $\nu_i \equiv R_0$ held fixed (isolating the contribution of punctuation and contact variability), this reduces to
-%
+which has expectation $R_0$ and variance $R_0 (1 + R_0 / k)$. Thus, $k$ captures overdispersion, with $k \rightarrow \infty$ yielding Poisson-distributed $Z_i$ and $k \rightarrow 0$ yielding increasingly heavier Negative Binomial tails (\ie, more overdispersion). The Negative Binomial expression is exact when $\nu_i$ are Gamma-distributed; otherwise, it is an approximation to the distribution of $Z_i$. Either way, the parameter $k$ can be obtained {\it via} moment matching by re-arranging the variance expression: 
 \begin{equation}
-	k = \frac{1}{\text{Var}[\tilde{c}_i]}.
-	\label{eq:k_bridge}
+	k = \frac{R_0^2}{\text{Var}[Z_i] - R_0}
 \end{equation}
-%
-The rest of the derivation computes $\text{Var}[\tilde{c}_i]$.
-
-\paragraph{Mean.} Conditional on $b_i$, stationarity gives $E[c_i(t)] = 1$, hence
-%
+Furthermore, since
 \begin{equation}
-	E[\tilde{c}_i \mid b_i] = \int_0^\infty b_i(\tau)\,d\tau = 1,
+	\text{Var}[Z_i] = \text{Var}[E[Z_i | \nu_i]] + E[\text{Var}[Z_i | \nu_i]] = \text{Var}[\nu_i] + E[\nu_i] = \text{Var}[\nu_i] + R_0
 \end{equation}
-%
-using that $b_i$ is a probability density. Therefore $E[\tilde{c}_i] = 1$ (and $E[M_i] = R_0$), and by the law of total variance $\text{Var}[\tilde{c}_i] = E\bigl[\text{Var}[\tilde{c}_i \mid b_i]\bigr]$.
-
-\paragraph{Autocovariance.} Averaging over the uniform random phase $\Phi$,
-%
+the expression for $k$ simplifies to 
 \begin{equation}
-	\text{Cov}[c_i(t), c_i(t+s)] = A^2\,E_\Phi[\cos(\omega t + \Phi)\cos(\omega(t+s) + \Phi)] = \frac{A^2}{2}\cos(\omega s),
-	\label{eq:periodic_cov}
+	k = \frac{R_0^2}{\text{Var}[\nu_i]}
+	\label{eq:k_expression}
 \end{equation}
-%
-so $\text{Var}[c_i(t)] = A^2/2$ and the spectrum of the contact process is concentrated at the single frequency $\omega$.
 
-\paragraph{Conditional variance of $\tilde{c}_i$.} Substituting Eq.~\ref{eq:periodic_cov} into the double-integral form of the conditional variance,
-%
+Next, if we assume everyone's inherent biological infectiousness is the same ($b_i \equiv R_0$), we have 
+\begin{equation}
+	\nu_i = R_0 \int_0^\infty g_i(\tau) c_i(t_i + \tau) d\tau := R_0 \tilde{c}_i
+\end{equation}
+Plugging in to \ref{eq:k_expression} gives 
+\begin{equation}
+	\boxed{k = \frac{1}{\text{Var}[\tilde{c}_i]}}
+\end{equation}
+Thus, the overdispersion $k$ depends only on the variance of $\tilde{c}_i = \int_0^\infty g_i(\tau) c_i(t_i + \tau) d\tau$. 
+
+\noindent {\bf \boldmath Deriving an expression for $\text{Var}[\tilde{c}_i]$.} The random variable $\tilde{c}_i$ inherits randomness from both $g_i(\tau)$ and $c_i(t_i+\tau)$. To manage this, we again apply the Law of Total Variance: 
 \begin{align}
-	\text{Var}[\tilde{c}_i \mid b_i]
-	&= \int_0^\infty\!\!\int_0^\infty b_i(\tau)\,b_i(\tau')\,\frac{A^2}{2}\cos\bigl(\omega(\tau - \tau')\bigr)\,d\tau\,d\tau' \notag\\
-	&= \frac{A^2}{2}\,\text{Re}\!\left[\left(\int_0^\infty b_i(\tau)\,e^{i\omega\tau}\,d\tau\right)\!\left(\int_0^\infty b_i(\tau')\,e^{-i\omega\tau'}\,d\tau'\right)\right] \notag\\
-	&= \frac{A^2}{2}\,\bigl|\hat{b}_i(\omega)\bigr|^2,
-	\label{eq:var_cond}
+	\text{Var}[\tilde{c}_i] &= \text{Var}[E[\tilde{c}_i | g_i ]] + E[\text{Var}[\tilde{c}_i | g_i ]] \\ 
+	&= \text{Var}[1] + E[\text{Var}[\tilde{c}_i | g_i ]] \\ 
+	&= E[\text{Var}[\tilde{c}_i | g_i ]]
 \end{align}
-%
-where $\hat{b}_i(\omega) = \int_0^\infty b_i(\tau)\,e^{-i\omega\tau}\,d\tau$ is the Fourier transform (equivalently, the characteristic function at $\omega$) of the biological profile.
-
-\paragraph{Evaluating $|\hat{b}_i(\omega)|^2$.} For the time-shifted Gamma model, $b_i(\tau) = f_\epsilon(\tau - l_i)$ with $f_\epsilon$ a $\text{Gamma}(\psi\alpha, \beta)$ density and random latent period $l_i$. A time shift multiplies the Fourier transform by a unit-modulus phase, so
-%
+Thus, we are interested in 
 \begin{equation}
-	\hat{b}_i(\omega) = e^{-i\omega l_i}\,\hat{f}_\epsilon(\omega), \qquad \bigl|\hat{b}_i(\omega)\bigr|^2 = \bigl|\hat{f}_\epsilon(\omega)\bigr|^2,
+\tilde{c}_i | g_i = \int_0^\infty g_i(\tau) c_i(t_i+\tau) d\tau 
 \end{equation}
-%
-with the $l_i$-dependence dropping out entirely. The characteristic function of $\text{Gamma}(\psi\alpha, \beta)$ is $\hat{f}_\epsilon(\omega) = (1 - i\omega/\beta)^{-\psi\alpha}$, giving
-%
-\begin{equation}
-	\bigl|\hat{f}_\epsilon(\omega)\bigr|^2 = \left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}.
-	\label{eq:cf_gamma}
-\end{equation}
-%
-Because Eq.~\ref{eq:cf_gamma} is deterministic, the outer expectation over $b_i$ in the law of total variance is trivial:
-%
-\begin{equation}
-	\text{Var}[\tilde{c}_i] = \frac{A^2}{2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{-\psi\alpha}.
-	\label{eq:var_tildec}
-\end{equation}
-
-\paragraph{Closed-form expression for $k$.} Combining Eqs.~\ref{eq:k_bridge} and~\ref{eq:var_tildec},
-%
-\begin{equation}
-	\boxed{\;
-	k = \frac{2}{A^2}\left(1 + \frac{\omega^2}{\beta^2}\right)^{\psi\alpha}.
-	\;}
-	\label{eq:k_periodic}
-\end{equation}
-%
-The expression has two factors with transparent interpretations. The prefactor $2/A^2$ is the reciprocal variance of a uniformly-phased sinusoid with amplitude $A$, and it sets the overall scale: larger contact-oscillation amplitude $\Rightarrow$ smaller $k$ $\Rightarrow$ more overdispersion. The bracketed factor $(1 + \omega^2/\beta^2)^{\psi\alpha}$ is the reciprocal of the squared characteristic function of $b_i$ at the contact frequency $\omega$, and it quantifies how much the biological profile's temporal window fails to average out the contact oscillation. This factor increases with $\psi$ for any $\omega > 0$, so narrower profiles always produce more overdispersion in the presence of any periodic contact variation.
-
-\paragraph{Limiting cases.}
-\begin{itemize}
-	\item \textbf{Spike profile, $\psi \to 0$:} the bracketed factor becomes $1$, leaving $k = 2/A^2$. A spike profile samples $c_i$ at a single instant, so the conditional variance of $\tilde{c}_i$ equals $\text{Var}[c_i] = A^2/2$ regardless of $\omega$ or $\beta$.
-	\item \textbf{Smooth profile, $\psi \to 1$:} $k = (2/A^2)(1 + \omega^2/\beta^2)^{\alpha}$, strictly larger than the spike value whenever $\omega > 0$.
-	\item \textbf{Slow oscillation, $\omega/\beta \to 0$:} the contact process looks locally constant over the infection window, so $\tilde{c}_i \approx c_i(t_i)$ for any $\psi$, and $k \to 2/A^2$ independent of $\psi$.
-	\item \textbf{Fast oscillation, $\omega/\beta \to \infty$:} the contact process averages out over any infection window with $\psi > 0$, driving $\text{Var}[\tilde{c}_i] \to 0$ and $k \to \infty$ (Poisson).
-	\item \textbf{No contact variation, $A \to 0$:} $k \to \infty$ trivially.
-\end{itemize}
-%
-These limits are consistent with the intuition that overdispersion arises from incomplete averaging of contact variation by the biological profile window, and that the degree of averaging is controlled by both $\psi\alpha$ (profile width) and $\omega/\beta$ (ratio of profile timescale to contact timescale).
-
-\subsubsection{Renewal equation model}
-
-Early work by Hudson, and later by Kermack and McKendrick \citep{kermack_contribution_1927}, modeled the transmission of a permanently immunizing infection using an integral equation. In modern notation \citep{breda_formulation_2012}, the force of infection is
-%
-\begin{equation} 
-F(t) = \int_0^\infty F(t - \tau) S(t - \tau) A(\tau) d\tau 
-\label{eq:foi}
-\end{equation}
-%
-where $F(t)$ is the force of infection at time $t$, $S(t)$ is the density of susceptible individuals in the population at time $t$, and $A(\tau)$ is the infectiousness profile describing the expected contribution to the force of infection from an individual who was infected $\tau$ time units ago. The incidence of disease is the product of the force of infection and the susceptible density (\ie, $-\frac{dS}{dt} = F(t) S(t)$); thus, the infectiousness profile $A(\tau)$ is the fundamental object that determines how an epidemic unfolds. 
-
-\clearpage
-
-\subsubsection*{Bias in empirical growth rate estimation}
-
-The early-epidemic growth rate is estimated by fitting a Poisson generalised linear model (GLM) with log link and identity offset to daily incidence counts within a cumulative-case window $[Z_{\min}, Z_{\max}]$, where $Z_{\min} = 100$ and $Z_{\max} = 500$ in our simulations. The fitted slope estimates the exponential growth rate $\hat{r}$, which we compare to the theoretical Euler--Lotka rate $r = \beta(R_0^{1/\alpha} - 1)$. Three sources of downward bias in $\hat{r}$ relative to $r$ are present; we describe each in turn.
-
-\paragraph{Susceptible depletion (dominant source).} The Euler--Lotka growth rate $r$ assumes an effectively infinite susceptible pool. In a finite population of size $N$, the effective reproduction number at cumulative incidence $Z$ is $R_{\text{eff}}(Z) = R_0 (1 - Z/N)$, and the corresponding instantaneous growth rate is
-%
-\begin{equation}
-	r_{\text{eff}}(Z) = \beta \Bigl[\bigl(R_0 (1 - Z/N)\bigr)^{1/\alpha} - 1\Bigr].
-\end{equation}
-%
-The Poisson GLM fits an average slope over the estimation window. Evaluating at the midpoint $Z_{\text{mid}} = (Z_{\min} + Z_{\max})/2$ and expanding for small $f = Z_{\text{mid}} / N$ gives the approximate relative bias:
-%
-\begin{equation}
-	\frac{\hat{r} - r}{r}
-	\approx -\frac{R_0^{1/\alpha} \cdot f}{\alpha \bigl(R_0^{1/\alpha} - 1\bigr)}.
-	\label{eq:saturation_bias}
-\end{equation}
-%
-With $Z_{\min} = 100$, $Z_{\max} = 500$, and $N = 10{,}000$, the midpoint fraction is $f = 0.03$. Evaluating Eq.~\eqref{eq:saturation_bias} for each pathogen:
-
-\begin{center}
-\begin{tabular}{lccc}
-	\hline\hline
-	Pathogen & $\alpha$ & $R_0^{1/\alpha}$ & Predicted bias \\
-	\hline
-	Influenza & 2.32 & 1.35 & $-5.0\%$ \\
-	Omicron   & 2.39 & 2.12 & $-2.4\%$ \\
-	Measles   & 11.36 & 1.24 & $-1.3\%$ \\
-	\hline\hline
-\end{tabular}
-\end{center}
-
-\noindent These predictions agree well with empirical simulation results (influenza: $-5.7\%$; omicron: $-3.5\%$; measles: $-0.1\%$). The quantity $R_0^{1/\alpha}/[\alpha(R_0^{1/\alpha} - 1)]$ in Eq.~\eqref{eq:saturation_bias} is the elasticity of $r$ with respect to $R_0$: it measures how sensitively the growth rate responds to changes in the effective reproduction number. This elasticity is largest when $R_0$ is close to the epidemic threshold ($R_0^{1/\alpha} \to 1$), because the growth rate $r = \beta(R_0^{1/\alpha} - 1)$ vanishes at $R_0 = 1$ and is steeply increasing just above it. Influenza ($R_0 = 2$) has the highest elasticity (1.67), so even a 3\% depletion of susceptibles produces a $-5\%$ reduction in $r$. Measles ($R_0 = 12$) has the lowest elasticity (0.45), both because it is far from threshold and because its large $\alpha$ ensures that $R_0^{1/\alpha}$ is close to 1 despite the high $R_0$. The bias can be reduced by using a narrower window (smaller $Z_{\max}$) or a larger population $N$, at the cost of increased estimator variance or computational expense.
-
-\paragraph{Boundary-day truncation (corrected).} Because the estimation window is defined by cumulative case counts rather than calendar time, the first and last calendar days of each simulation's window are partial: the first day contains only infections occurring after the cumulative count crosses $Z_{\min}$, and the last day contains only infections before the count reaches $Z_{\max}$. Daily incidence counts on these boundary days are therefore systematically lower than the true daily rate. In a Poisson GLM, the high-count final day receives disproportionate weight (the Poisson likelihood weights observations inversely by their variance, which equals the mean), so even modest truncation of the last day's count pulls the fitted slope downward. In an unweighted log-linear fit, the effect is smaller but still present. We verified this bias empirically using a non-homogeneous Poisson process (NHPP) simulator with known rate $\lambda(t) = \lambda_0 e^{rt}$: with boundary days included, the Poisson GLM underestimated $r$ by approximately $34\%$; dropping the first and last calendar days from the fit eliminated the bias (residual $< 0.5\%$). All growth rate estimates reported in this paper use the corrected estimator with boundary days removed.
-
-\paragraph{Generational cohort structure (affects spike profiles).} For highly punctuated profiles ($\psi \to 0$), secondary infections arrive in discrete cohorts separated by approximately one mean generation time $\bar{g} = \alpha/\beta$. If the estimation window spans fewer than approximately two generation times in calendar time, the daily incidence series may capture the rise and fall of a single generational cohort rather than the average exponential trend. This produces noisy slope estimates and occasional negative values. The effect is most pronounced for measles at $\psi = 0$: the generation time is $\bar{g} = 12.2$ days while the $[100, 500]$ window spans only $\approx \log(5)/r \approx 7$ days, less than one full generation. For influenza ($\bar{g} = 3.2$ days, window $\approx 6.4$ days) and omicron ($\bar{g} = 7.1$ days, window $\approx 4.3$ days), the window covers at least one full generation and the cohort effect is attenuated. This source of bias is inherent to the spike model and diminishes as $\psi$ increases: for $\psi = 1$, offspring times are independent and daily incidence follows a smooth exponential trend even over short windows.
-
-\paragraph{Summary.} The dominant source of downward bias is susceptible depletion, which is quantitatively predicted by Eq.~\eqref{eq:saturation_bias} and is independent of the punctuation parameter $\psi$. After correcting for boundary-day truncation, the residual bias is consistent with the depletion prediction for all three pathogens. The theoretical growth rate $r$ from the Euler--Lotka equation remains the correct characterisation of the early epidemic; the empirical estimates are biased downward because they necessarily operate in a regime where finite-population effects have begun to reduce the effective reproduction number below $R_0$.
-
-\clearpage
-
-\subsubsection*{Variance of the growth rate estimator and dependence on $\psi$}
-
-In simulations, the standard deviation of the empirical growth rate $\hat{r}$ increases monotonically as $\psi \to 0$ (Table~\ref{tab:growthrate_sd}). Here we provide an analytic explanation for this pattern, based on the overdispersion of daily incidence counts induced by offspring synchronisation.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{llccc}
-	\hline\hline
-	Pathogen & $\psi$ & $n$ (established) & Mean $\hat{r}$ & SD $\hat{r}$ \\
-	\hline
-	Influenza & 0   & 792  & 0.195 & 0.066 \\
-	          & 0.5 & 788  & 0.197 & 0.058 \\
-	          & 1   & 803  & 0.197 & 0.052 \\[4pt]
-	Omicron   & 0   & 997  & 0.281 & 0.127 \\
-	          & 0.5 & 997  & 0.275 & 0.086 \\
-	          & 1   & 999  & 0.279 & 0.079 \\[4pt]
-	Measles   & 0   & 1000 & 0.227 & 0.128 \\
-	          & 0.5 & 1000 & 0.200 & 0.054 \\
-	          & 1   & 1000 & 0.191 & 0.043 \\
-	\hline\hline
-\end{tabular}
-\caption{Mean and standard deviation of the empirical growth rate estimator $\hat{r}$ across established epidemics, by pathogen and punctuation parameter $\psi$. Based on 1000 simulations per pathogen with $N = 10{,}000$, estimation window $[Z_{\min}, Z_{\max}] = [100, 500]$.}
-\label{tab:growthrate_sd}
-\end{table}
-
-\paragraph{Per-infector index of dispersion.} Consider a single infector who produces $\chi \sim \text{Poisson}(R_0)$ offspring. Let $q_t = P(\tau \in [t, t+1))$ denote the probability that a generation interval $\tau \sim g(\tau)$ falls in the calendar day $[t, t+1)$, and let $N_i(t)$ denote the number of this infector's offspring whose infection times fall on day~$t$.
-
-In the \textbf{smooth model} ($\psi = 1$), offspring arrive at independent times $\tau_j \sim g(\tau)$. Conditional on $\chi$, the count on day $t$ is $\text{Binomial}(\chi, q_t)$. Marginalising over $\chi \sim \text{Poisson}(R_0)$ gives $N_i(t) \sim \text{Poisson}(R_0 q_t)$, with index of dispersion
-%
-\begin{equation}
-	\text{ID}_{\text{smooth}} = \frac{\text{Var}[N_i(t)]}{E[N_i(t)]} = 1.
-\end{equation}
-
-In the \textbf{spike model} ($\psi = 0$), all $\chi$ offspring land at the same instant $\tau^* \sim g(\tau)$. The count on day $t$ is either $0$ (with probability $1 - q_t$) or $\chi$ (with probability $q_t$). Computing the first two moments:
-%
+where $g_i$ is known (\ie, conditioned upon). This has the form of a classic problem in signal processing: $c_i$ is a wide-sense stationary stochastic process (an input signal); $g_i$ is an impulse response; and $\tilde{c}_i | g_i$ is the output signal evaluated at time $t_i$. Together, this comprises a linear system. Following standard theory, we can express $\text{Var}[\tilde{c}_i | g_i]$ in terms of the autocorrelation $R(\tau)$ of the signal $\tilde{c}_i | g_i$ at time lag $\tau$. Specifically, 
 \begin{align}
-	E[N_i(t)] &= R_0 \, q_t, \\[4pt]
-	E[N_i(t)^2] &= E[\chi^2] \cdot q_t = (R_0 + R_0^2) \, q_t,
+	\text{Var}[\tilde{c}_i | g_i] &= E[(\tilde{c}_i | g_i)^2]  - E[\tilde{c}_i | g_i]^2  \\ 
+	&= 	R_{\tilde{c}_i | g_i}(0) - E[\tilde{c}_i | g_i]^2 \\
+	&= 	R_{\tilde{c}_i | g_i}(0) - 1 
 \end{align}
-%
-so $\text{Var}[N_i(t)] = R_0 \, q_t + R_0^2 \, q_t(1 - q_t)$ and
-%
-\begin{equation}
-	\text{ID}_{\text{spike}} = 1 + R_0(1 - q_t).
-	\label{eq:id_spike}
-\end{equation}
-%
-Since $q_t \ll 1$ for any single day (the generation interval spans multiple days), $\text{ID}_{\text{spike}} \approx 1 + R_0$.
 
-\paragraph{General $\psi$.} For intermediate $\psi$, the offspring from infector $i$ are born at times $\tau_j = l_i + \epsilon_j$, where $l_i \sim \text{Gamma}((1-\psi)\alpha, \beta)$ is the shared latent period and $\epsilon_j \sim \text{Gamma}(\psi\alpha, \beta)$ is independent jitter. Conditional on $l_i$, the $\epsilon_j$ are independent, so the count on day $t$ given $l_i$ is $\text{Poisson}(R_0 \cdot p(l_i, t))$ where $p(l, t) = P(\epsilon \in [t - l, t - l + 1))$. Marginalising over $l_i$ using the law of total variance:
-%
+\noindent {\bf \boldmath Deriving an expression for $R_{\tilde{c}_i | g_i}(0)$.} Deriving an expression for the second moment of the output process, $R_{\tilde{c}_i | g_i}(0)$, is easiest in frequency space. We can introduce $S_\bullet$ as the Fourier transform of $R_\bullet$ and $\hat{g}_i$ as the Fourier transform of $g_i$, \ie 
 \begin{equation}
-	\text{Var}[N_i(t)] = R_0 \, q_t + R_0^2 \, \text{Var}_{l_i}\bigl[p(l_i, t)\bigr],
+S_\bullet(\omega) = \int_{-\infty}^{\infty} e^{-i \omega \tau} R_\bullet(\tau) d\tau 
+\qquad \text{ and } \qquad 
+\hat{g}_i(\omega) = \int_{-\infty}^{\infty} e^{-i \omega \tau} g_i(\tau) d\tau
 \end{equation}
-%
-giving index of dispersion
-%
+By the inverse Fourier transform, 
 \begin{equation}
-	\text{ID}(\psi) = 1 + R_0 \cdot \frac{\text{Var}_{l_i}[p(l_i, t)]}{q_t}.
-	\label{eq:id_psi}
+R_\bullet(\tau) = \frac{1}{2\pi} \int_{-\infty}^{\infty} S_\bullet(\omega) e^{i \omega \tau} d\omega
 \end{equation}
-%
-The quantity $\text{Var}_{l_i}[p(l_i, t)] / q_t$ interpolates monotonically from $1 - q_t \approx 1$ at $\psi = 0$ (where $p(l_i, t) \approx \mathbf{1}(l_i \in [t, t+1))$ is nearly Bernoulli) to $0$ at $\psi = 1$ (where $l_i \approx 0$ and $p$ is deterministic). Thus the per-infector index of dispersion decreases monotonically from $1 + R_0$ to $1$ as $\psi$ increases from $0$ to $1$.
+and thus 
+\begin{equation}
+R_\bullet(0) = \frac{1}{2\pi} \int_{-\infty}^{\infty} S_\bullet(\omega) d\omega
+\end{equation}
+We thus seek an expression for $S_{\tilde{c}_i | g_i}(\omega)$, which we can obtain from the fundamental theorem for linear systems: 
+\begin{equation}
+	S_{\tilde{c}_i | g_i}(\omega) = |\hat{g}_i(\omega)|^2 S_{c_i}(\omega)
+\end{equation}
 
-\paragraph{Aggregation.} The total daily incidence on day $t$ is $\Delta Z(t) = \sum_i N_i(t)$, summing over all previously infected individuals. Conditional on the infection times $\{t_i\}$, the contributions $N_i$ from distinct infectors are independent (each infector's offspring process is independent of every other's). Therefore, by the additivity of variances:
-%
+\noindent {\bf \boldmath Deriving $\hat{g}_i(\omega).$} We begin by examining $\hat{g}_i(\omega)$. Under the Gamma time-shift model, $g_i(\tau) = f_\epsilon(\tau - l_i)$, where $f_\epsilon$ is the $\text{Gamma}(\psi \alpha, \beta)$ density and $l_i \sim \text{Gamma}((1-\psi) \alpha, \beta)$. Taking the Fourier transform, 
+\begin{align}
+	\hat{g}_i(\omega) &= \int_{-\infty}^{\infty} g_i(\tau) e^{-i \omega \tau} d\tau \\ 
+	&=	\int_{l_i}^{\infty} f_\epsilon(\tau - l_i) e^{-i \omega \tau}  d\tau\\ 
+	&= \int_0^\infty f_\epsilon(\tau) e^{-i \omega (\tau + l_i)} d\tau \\
+	&=  e^{-i \omega l_i} \int_0^\infty f_\epsilon(\tau) e^{-i \omega \tau} d\tau \\ 
+	&= e^{-i \omega l_i} \int_0^\infty \frac{\beta^{\psi \alpha}}{\Gamma(\psi \alpha)} \tau^{\psi \alpha - 1} e^{-\beta \tau} e^{-i\omega\tau} d\tau \\
+&= e^{-i \omega l_i} \Bigl(  \frac{\beta}{\beta + i \omega}\Bigr)^{\psi \alpha}
+\end{align}
+Taking the squared modulus gives 
 \begin{equation}
-	\text{Var}[\Delta Z(t) \mid \{t_i\}] = \sum_i \text{Var}[N_i(t)] = \sum_i \bigl[R_0 \, q_{t-t_i} + R_0^2 \, \text{Var}_l[p(l, t-t_i)]\bigr].
+ |\hat{g}_i(\omega)|^2 = \Bigl(1 + \frac{\omega^2}{\beta^2}\Bigr)^{-\psi \alpha}
 \end{equation}
-%
-Since $E[\Delta Z(t) \mid \{t_i\}] = \sum_i R_0 \, q_{t-t_i}$, the aggregate index of dispersion is
-%
-\begin{equation}
-	\phi(\psi) = 1 + R_0 \cdot \frac{\sum_i \text{Var}_l[p(l, t - t_i)]}{\sum_i q_{t-t_i}},
-\end{equation}
-%
-a weighted average of the per-infector overdispersion across all contributing infectors. The overdispersion does not wash out with aggregation because each infector's contribution is independently overdispersed by the same mechanism. The total daily incidence is therefore quasi-Poisson with dispersion parameter $\phi(\psi)$ that interpolates from $\phi(0) \approx 1 + R_0$ to $\phi(1) = 1$.
+This is the power transfer function; it is constant across individuals and does not depend on $l_i$. 
 
-\paragraph{Implication for growth rate estimation.} Because the growth rate $\hat{r}$ is estimated by regressing log daily incidence on time, the variance of daily incidence directly inflates the variance of $\hat{r}$. Since the aggregate dispersion parameter $\phi(\psi)$ increases monotonically from $1$ at $\psi = 1$ to approximately $1 + R_0$ at $\psi = 0$, the growth rate estimator is correspondingly more variable for more punctuated profiles. This prediction is confirmed by the simulation results in Table~\ref{tab:growthrate_sd}: for all three pathogens, $\text{SD}(\hat{r})$ increases as $\psi$ decreases from $1$ to $0$, with the effect most pronounced for measles ($R_0 = 12$), where the dispersion ratio $\phi(0)/\phi(1) \approx 1 + R_0 = 13$ is largest.
+\noindent {\bf \boldmath Deriving $S_{c_i}(\omega)$ for the periodic contact model.} For the periodic contact model
+\begin{equation}
+c_i(t) = 1 - c_{amp} \cos(\omega_0 t)
+\end{equation}
+the autocorrelation is 
+\begin{align}
+R_{c_i}(\tau)  &= E[(1 - c_{amp} \cos(\omega_0 t)) (1 - c_{amp} \cos(\omega_0 (t + \tau)))] \\ 
+&= E[1] - c_{amp}E[\cos(\omega_0 t)] - c_{amp}E[\cos(\omega_0 (t + \tau))] + c_{amp}^2 E[\cos(\omega_0 t) \cos(\omega_0 (t + \tau))] \\ 
+&= 1 + \frac{c_{amp}^2}{2} \cos(\omega_0 \tau) 
+\end{align}
+Taking the Fourier transform, 
+\begin{align}
+	S_{c_i}(\omega) &= \int_{-\infty}^{\infty} \Bigl[ 1 + \frac{c_{amp}^2}{2} \cos(\omega_0\tau) \Bigr] e^{-i\omega\tau}d\tau \\ 
+	&= 2 \pi \delta(\omega) + \frac{\pi c_{amp}^2}{2}[\delta(\omega - \omega_0) + \delta(\omega + \omega_0)] 
+\end{align}
+
+\noindent {\bf \boldmath Constructing $k$ for the periodic contact model.} Putting everything together, we have: 
+\begin{align}
+\text{Var}[\tilde{c}_i | g_i] &= R_{\tilde{c}_i | g_i}(0) - 1 \\
+&= \frac{1}{2\pi} \int_{-\infty}^{\infty} S_{\tilde{c}_i | g_i}(\omega) d\omega  - 1 \\
+&= \frac{1}{2\pi} \int_{-\infty}^\infty \Bigl(1 + \frac{\omega^2}{\beta^2}\Bigr)^{-\psi \alpha} 
+\Bigl[ 2 \pi \delta(\omega) + \frac{\pi c_{amp}^2}{2} [\delta(\omega - \omega_0) + \delta(\omega + \omega_0)] \Bigr] d \omega  - 1\\ 
+&= 1 + \frac{c_{amp}^2}{2} \Bigl(1 + \frac{\omega_0^2}{\beta^2}\Bigr)^{-\psi \alpha} - 1 \\
+&= \frac{c_{amp}^2}{2} \Bigl(1 + \frac{\omega_0^2}{\beta^2}\Bigr)^{-\psi \alpha}
+\end{align}
+Thus, 
+\begin{equation}
+	\boxed{k = \frac{2}{c_{amp}^2} \Bigl(1 + \frac{\omega_0^2}{\beta^2}\Bigr)^{\psi \alpha}}
+\end{equation}
+
+\noindent {\bf \boldmath Deriving $S_{c_i}(\omega)$ for the Gamma-Poisson contact model.} Let $X \sim \text{Gamma}(k_c, k_c)$ be a contact-level draw from the Gamma-Poisson contact model. Then, the autocorrelation 
+\begin{equation}
+	R_{c_i}(\tau) = E[c_i(t) c_i(t + \tau)]
+\end{equation}
+is equal to $E[X^2] = \text{Var}[X] + E[X]^2 = \frac{1}{k_c} + 1$ with probability $e^{-\lambda |\tau|}$ (\ie, if the contact levels have not switched between times $t$ and $t + \tau$), and is equal to $E[X]^2 = 1$ otherwise. That is: 
+\begin{align}
+	R_{c_i}(\tau) &= (\frac{1}{k_c} +1) e^{-\lambda |\tau|} + (1)(1 - e^{-\lambda |\tau|}) \\ 
+	&= \frac{1}{k_c} e^{-\lambda |\tau|} + 1
+\end{align}
+Thus: 
+\begin{align}
+S_{c_i}(\omega) &= \int_{-\infty}^{\infty} [\frac{1}{k_c}e^{-\lambda |\tau| } + 1] e^{-i \omega \tau} d\tau \\ 
+&= \frac{1}{k_c} \int_{-\infty}^{0} e^{ \lambda \tau} e^{- i \omega \tau} d\tau + 
+\frac{1}{k_c} \int_{0}^{\infty} e^{- \lambda \tau } e^{- i \omega \tau} d\tau + 2\pi \delta(\omega) \\ 
+&= \frac{1}{k_c} \Bigl[ \frac{1}{\lambda - i \omega} + \frac{1}{\lambda + i \omega} \Bigr]  + 2\pi \delta(\omega) \\
+&= \frac{2 \lambda}{k_c (\lambda^2 + \omega^2)} + 2\pi \delta(\omega) 
+\end{align}
+
+\noindent {\bf \boldmath Constructing $k$ for the Gamma-Poisson contact model.} Putting everything together, we have: 
+\begin{align}
+\text{Var}[\tilde{c}_i | g_i] &= R_{\tilde{c}_i | g_i}(0) - 1 \\
+&= \frac{1}{2\pi} \int_{-\infty}^{\infty} 
+\Bigl[\frac{2 \lambda}{k_c (\lambda^2 + \omega^2)} + 2\pi \delta(\omega)\Bigr]
+\Bigl( 1 + \frac{\omega^2}{\beta^2}\Bigr )^{-\psi \alpha} d\omega - 1 \\
+&= \frac{1}{2\pi} \int_{-\infty}^{\infty} 
+\Bigl[\frac{2 \lambda}{k_c (\lambda^2 + \omega^2)} \Bigr] \Bigl( 1 + \frac{\omega^2}{\beta^2}\Bigr )^{-\psi \alpha} d\omega \\
+&= \frac{1}{k_c}\int_{-\infty}^{\infty} \frac{\lambda}{\pi (\lambda^2 + \omega^2)} \Bigl( 1 + \frac{\omega^2}{\beta^2}\Bigr )^{-\psi \alpha} d\omega
+\end{align}
+and $k$ is the reciprocal of this integral. The integral can be solved in closed form using special functions, but its final form is not especially illuminating; in practice, we evaluate this expression by numerically solving the integral. 
+
+\clearpage
 
 \subsection*{Supplementary Figures}
 
