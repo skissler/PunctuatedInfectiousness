@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  5 MAY 2026 22:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.29)  6 MAY 2026 07:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -616,22 +616,28 @@ File: survival.pdf Graphic file (type pdf)
 Package pdftex.def Info: survival.pdf  used on input line 49.
 (pdftex.def)             Requested size: 469.75502pt x 166.22685pt.
  [10 <./survival.pdf>] [11]
-Overfull \hbox (4.0621pt too wide) in paragraph at lines 98--99
+<growthrate.pdf, id=6568, 458.71375pt x 510.90875pt>
+File: growthrate.pdf Graphic file (type pdf)
+<use growthrate.pdf>
+Package pdftex.def Info: growthrate.pdf  used on input line 95.
+(pdftex.def)             Requested size: 469.75502pt x 523.2327pt.
+
+Overfull \hbox (4.0621pt too wide) in paragraph at lines 106--107
 \T1/ppl/m/n/10 When $\OML/zplm/m/it/10 ^^W[]$ \T1/ppl/m/n/10 varies across in-d
 i-vid-u-als, the sec-ondary in-fec-tion dis-tri-bu-tion be-comes overdis-persed
 . This overdis-
  []
 
 [12]
-<heatmaps.pdf, id=6575, 462.72874pt x 316.18124pt>
+<heatmaps.pdf, id=6576, 462.72874pt x 316.18124pt>
 File: heatmaps.pdf Graphic file (type pdf)
 <use heatmaps.pdf>
-Package pdftex.def Info: heatmaps.pdf  used on input line 123.
+Package pdftex.def Info: heatmaps.pdf  used on input line 129.
 (pdftex.def)             Requested size: 469.75502pt x 320.98569pt.
-) (./controlled.tex [13 <./heatmaps.pdf>]) (./identifiability.tex [14
+) (./controlled.tex [13] [14 <./growthrate.pdf>] [15 <./heatmaps.pdf>])
+(./identifiability.tex [16
 
-])
-(./discussion.tex [15
+]) (./discussion.tex [17
 
 ]
 Overfull \hbox (29.1396pt too wide) in paragraph at lines 13--14
@@ -639,7 +645,7 @@ Overfull \hbox (29.1396pt too wide) in paragraph at lines 13--14
 184/20210575/90033/The-stochastic-dynamics-
  []
 
-) [16
+) [18
 
 ] (./main.bbl
 Underfull \hbox (badness 1242) in paragraph at lines 96--105
@@ -648,20 +654,20 @@ the Royal So-ci-ety B: Bi-o-log-i-cal Sci-ences\T1/ppl/m/n/10 , 274(1609):599--
 
  []
 
-) [17
+) [19
 
-] (./acknowledgements.tex) [18
+] (./acknowledgements.tex) [20
 
-] (./supplementary.tex [19
+] (./supplementary.tex [21
 
-] [20
+] [22
 
-] [21]
-[22] [23] [24] [25] [26
+] [23]
+[24] [25] [26] [27] [28
 
-] [27] [28
+] [29] [30
 
-] [29] [30] [31]) [32
+] [31] [32] [33]) [34
 
 ] (./main.aux)
 
@@ -671,13 +677,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: A304C0AEC3C6EC202C806375A6D4DBB8;4785.
  ) 
 Here is how much of TeX's memory you used:
- 12911 strings out of 478994
- 188613 string characters out of 5858184
- 512652 words of memory out of 5000000
- 29928 multiletter control sequences out of 15000+600000
+ 12921 strings out of 478994
+ 188786 string characters out of 5858184
+ 512745 words of memory out of 5000000
+ 29934 multiletter control sequences out of 15000+600000
  469261 words of font info for 185 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 71i,15n,74p,1737b,450s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 71i,15n,74p,1868b,450s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></usr/local/t
 exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
@@ -695,10 +701,10 @@ fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
 ype1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/u
 rw/palatino/uplr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/pala
 tino/uplri8a.pfb>
-Output written on main.pdf (32 pages, 10879371 bytes).
+Output written on main.pdf (34 pages, 19171821 bytes).
 PDF statistics:
- 18414 PDF objects out of 18468 (max. 8388607)
- 12314 compressed objects within 124 object streams
- 174 named destinations out of 1000 (max. 500000)
- 140 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 69974 PDF objects out of 79402 (max. 8388607)
+ 46462 compressed objects within 465 object streams
+ 177 named destinations out of 1000 (max. 500000)
+ 145 words of extra memory for PDF output out of 10000 (max. 10000000)
 
